@@ -1,0 +1,12 @@
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+	public function __construct()
+	{
+	    $this->contextObj = new [% model_name %]();
+        $this->baseViewPath = '[% index_view_name %]';
+        $this->baseFlash = '[% model_name_title %] details ';
+	}
+	

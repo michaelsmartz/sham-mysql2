@@ -1,0 +1,4 @@
+    public function [% relation_name %]()
+    {
+        return $this->[% relation_type %]([% relation_params %]);
+    }

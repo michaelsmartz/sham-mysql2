@@ -1,0 +1,75 @@
+@extends('[% layout_name %]')
+@section('title','[% model_plural %]')
+@section('content')
+    <div class="flex-wrapper">
+        @if(count($[% model_name_plural_variable %]) > 0)
+        <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
+            <form action="" class="table-search-form" autocomplete="off">
+                <input type="search" value="" placeholder="Search" class="search-input">
+                <div class="search-option">
+                    <button type="reset" data-wenk="Reset all Criteria & reload the list" data-tootik-conf="left">
+                        <i class="fa fa-refresh"></i>
+                    </button>
+                </div>
+            </form>
+            <ul class="nav">
+                <li><p class="menu-label">Quick Filters</p></li>
+                <li><a href="{{route('[% model_name_plural_variable %].index')}}?is_public=1"><span class="icon circle info"></span>Public</a></li>
+                <li><a href="{{route('[% model_name_plural_variable %].index')}}?is_public=0"><span class="icon circle default"></span>Private</a></li>
+                <li><a href="{{route('[% model_name_plural_variable %].index')}}"><span class="icon circle"></span>Unfiltered</a></li>
+            </ul>
+        </div>
+        @endif
+        <div id="table-container">
+            @if(count($[% model_name_plural_variable %]) > 0)
+            <div id="toolbar" class="shadow-eff1">
+                <div class="btn-group">
+                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
+                        <i class="glyphicon glyphicon-plus"></i> Add New
+                    </button>
+                    <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
+                        <i class="glyphicon glyphicon-align-left"></i> 
+                        <span>Filters</span>
+                    </button>
+                </div>
+            </div>
+            @endif
+            <div class="table-responsive">
+            @if(count($[% model_name_plural_variable %]) == 0)
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a to add a new [% model_name %]</h4>
+            @else
+                <table id="new-table" data-toggle="table">
+                    <thead>
+                        <tr>
+                            [% header_cells %]
+                            <th data-sortable="false" data-tableexport-display="none">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($[% model_name_plural_variable %] as $[% model_name_singular_variable %])
+                        <tr id="tr{{$[% model_name_singular_variable %]->id}}">
+                            [% body_cells %]
+                            <td data-html2canvas-ignore="true">
+                                <div class="btn-group btn-group-xs" role="group">
+                                    <button title="Edit" data-wenk="Edit" type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$[% model_name_singular_variable %]->id}}', event)">
+                                        <i class="glyphicon glyphicon-edit text-primary"></i>
+                                    </button>
+                                    <button type="submit" class="b-n b-n-r bg-transparent item-remove" title="Remove" data-wenk="Remove" onclick="deleteForm('{{$[% model_name_singular_variable %]->id}}')">
+                                        <i class="glyphicon glyphicon-remove text-danger"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <nav>
+                    {!! $[% model_name_plural_variable %]->render() !!}
+                </nav>
+            @endif
+            </div>
+            @component('partials.index', ['routeName'=> '[% model_name_plural_variable %].destroy'])
+            @endcomponent
+        </div>
+    </div>
+@endsection

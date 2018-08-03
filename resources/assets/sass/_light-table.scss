@@ -1,0 +1,125 @@
+.light-table, table#new-table {
+    border-spacing: 0 .3em !important;
+    border-collapse: separate !important;
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+.light-table thead,.light-table tbody,.light-table tbody tr,
+table#new-table thead, table#new-table tbody, table#new-table tbody tr{
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+.light-table thead tr th:first-child, .light-table tbody tr td:first-child {
+    border-radius: .3em 0 0 .3em;
+}
+.light-table thead th:last-child, .light-table tbody tr td:last-child {
+    border-radius: 0 .3em .3em 0;
+    padding-left: 0 !important;
+}
+.table-no-bordered thead th, .table-no-bordered tbody td,
+table#new-table thead th, table#new-table tbody td {
+    border-left: 1px solid transparent !important;
+    padding: 8px 30px 8px .4em;
+    background-color: #fff;
+}
+.fixed-table-container .table-no-bordered tbody td {
+    border-left: 1px solid transparent !important;
+}
+.light-table .table.table-no-bordered > tbody > tr > td > button, .light-table.table-no-bordered > tbody > tr > td > button {
+    padding-right: 0;
+    outline: none;
+    color: $brand-primary;
+}
+.fixed-table-container thead th .sortable {
+    cursor: pointer;
+    background-position: 100%;
+    background-repeat: no-repeat;
+    padding-left: 0 !important;
+    padding-right: 30px !important;
+}
+.fixed-table-container tbody td .th-inner, .fixed-table-container thead th .th-inner {
+    padding: 8px 0;
+    line-height: 24px;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+ button[class^='item-'] i,button[class*='item-'] i {
+    font-size: 120%;
+ }
+.text-grey-light {
+    color: $brand-grey-light;
+}
+.fixed-table-container.table-no-bordered {
+    border: none;
+}
+.fixed-table-container {
+    position: relative;
+    clear: both;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+}
+.fixed-table-container table {
+    width: 100%;
+}
+.fixed-table-container thead th .sortable {
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
+
+.fixed-table-container thead th .both {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC');
+}
+
+.fixed-table-container thead th .asc {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZ0lEQVQ4y2NgGLKgquEuFxBPAGI2ahhWCsS/gDibUoO0gPgxEP8H4ttArEyuQYxAPBdqEAxPBImTY5gjEL9DM+wTENuQahAvEO9DMwiGdwAxOymGJQLxTyD+jgWDxCMZRsEoGAVoAADeemwtPcZI2wAAAABJRU5ErkJggg==');
+}
+
+.fixed-table-container thead th .desc {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZUlEQVQ4y2NgGAWjYBSggaqGu5FA/BOIv2PBIPFEUgxjB+IdQPwfC94HxLykus4GiD+hGfQOiB3J8SojEE9EM2wuSJzcsFMG4ttQgx4DsRalkZENxL+AuJQaMcsGxBOAmGvopk8AVz1sLZgg0bsAAAAASUVORK5CYII= ');
+}
+
+.fixed-table-toolbar{
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    line-height: 34px;
+    display: block;
+}
+.fixed-table-loading {
+    display: none;
+    position: absolute;
+    top: 42px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 99;
+    background-color: #fff;
+    text-align: center;
+}
+.fixed-table-toolbar .columns-right {
+    margin-left: 5px;
+}
+.fixed-table-toolbar .bs-bars,
+.fixed-table-toolbar .search,
+.fixed-table-toolbar .columns {
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    line-height: 34px;
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.fixed-table-toolbar .columns label {
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+}

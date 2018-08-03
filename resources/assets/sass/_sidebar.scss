@@ -1,0 +1,154 @@
+@media screen and (max-width: 768px) {
+
+  #filter-sidebar {
+    margin-left: -250px;
+  }
+  #filter-sidebar.active {
+    margin-left: 0;
+  }
+  #sidebarCollapse span {
+    display: none;
+  }
+
+}
+
+.shadow-eff1{
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  background: #fff;
+  border-radius: 2px;
+  margin: 1rem 1rem 1rem 0;
+}
+
+.flex-wrapper {
+  display: flex;
+  align-items: stretch;
+}
+
+#filter-sidebar{
+  min-width: 250px;
+  max-width: 250px;
+  transition: all 0.3s;
+}
+
+#filter-sidebar a,
+#filter-sidebar a:hover,
+#filter-sidebar a:focus {
+  color: inherit;
+}
+
+#filter-sidebar.active {
+  margin-left: -270px;
+}
+
+#table-container{
+  width: 100%;
+}
+
+.table-search-form {
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translate(5%, 20%);
+  transition: all 0.3s ease;
+  height: 40px;
+  width: 90%;
+  margin-bottom: 25px;
+
+  &.focus {
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.search-input {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border: none;
+  appearance: none;
+  outline: none;
+  background: lighten(whitesmoke, 5%);
+
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  &:focus{
+    color: darken(#999, 20%);
+  }
+}
+
+.search-option {
+  position: absolute;
+  text-align: right;
+  top: 10px;
+  right: 15px;
+
+    button {
+      position: relative;
+      display: inline-block;
+      margin: 0 1px;
+      cursor: pointer;
+      border: none;
+      appearance: none;
+      outline: none;
+      background: inherit;
+      transition: all .2s ease-in-out;
+      color: lighten(#999, 10%);
+
+      &:focus, &:hover {
+        color: darken(#999, 20%);
+      }
+    }
+}
+
+#filter-sidebar ul{
+  margin-left: 10px
+}
+#filter-sidebar .menu-label {
+	font-weight: 700;
+	font-size: 15px;
+  margin-top: 4px;
+	margin-bottom: 0.75em;
+	color: $brand-default;
+}
+#filter-sidebar li a {
+  display: flex;
+  align-items: center;
+}
+.icon {
+	display: inline-block;
+	font-size: 21px;
+	height: 24px;
+	line-height: 24px;
+	text-align: center;
+	vertical-align: top;
+	width: 24px;
+}
+.circle {
+  border-radius: 50%;
+}
+.icon.circle {
+	border: 3px solid currentColor;
+	width: 15px;
+	height: 15px;
+	margin-right: 10px;
+}
+
+.icon.circle.primary{
+  border: 3px solid $brand-primary;
+}
+.icon.circle.info{
+  border: 3px solid $brand-info;
+}
+.icon.circle.primary{
+  border: 3px solid $brand-primary;
+}
+.icon.circle.default{
+  border: 3px solid $brand-default;
+}
+.icon.circle.success{
+  border: 3px solid $brand-success;
+}

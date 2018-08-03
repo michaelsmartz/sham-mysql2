@@ -1,0 +1,163 @@
+[
+    {
+        "model-name": "Team",
+        "resource-file": "teams.json"
+    },
+    {
+        "model-name": "Timegroup",
+        "resource-file": "timegroups.json"
+    },
+    {
+        "model-name": "Title",
+        "resource-file": "titles.json"
+    },
+    {
+        "model-name": "Gender",
+        "resource-file": "genders.json"
+    },
+    {
+        "model-name": "MaritalStatus",
+        "resource-file": "marital_statuses.json"
+    },
+    {
+        "model-name": "Language",
+        "resource-file": "languages.json"
+    },
+    {
+        "model-name": "Law",
+        "resource-file": "laws.json"
+    },
+    {
+        "model-name": "LawCategory",
+        "resource-file": "law_categories.json"
+    },
+    {
+        "model-name": "Policy",
+        "resource-file": "policies.json"
+    },
+    {
+        "model-name": "PolicyCategory",
+        "resource-file": "policy_categories.json"
+    },
+    {
+        "model-name": "PolicyDocument",
+        "resource-file": "policy_documents.json"
+    },
+    {
+        "model-name": "AssetCondition",
+        "resource-file": "asset_conditions.json"
+    },
+    {
+        "model-name": "AssetGroup",
+        "resource-file": "asset_groups.json"
+    },
+    {
+        "model-name": "AssetSupplier",
+        "resource-file": "asset_suppliers.json"
+    },
+    {
+        "model-name": "Asset",
+        "resource-file": "assets.json"
+    },
+    {
+        "model-name": "Course",
+        "resource-file": "courses.json"
+    },
+    {
+        "model-name": "Module",
+        "resource-file": "modules.json"
+    },
+    {
+        "model-name": "Topic",
+        "resource-file": "topics.json"
+    },
+    {
+        "model-name": "Employee",
+        "resource-file": "employees.json"
+    },
+    {
+        "model-name": "Address",
+        "resource-file": "addresses.json"
+    },
+    {
+        "model-name": "Company",
+        "resource-file": "companies.json"
+    },
+    {
+        "model-name": "Zoom",
+        "resource-file": "zooms.json"
+    },
+    {
+        "model-name": "Reward",
+        "resource-file": "rewards.json"
+    },
+    {
+        "model-name": "DisciplinaryAction",
+        "resource-file": "disciplinary_actions.json"
+    },
+    {
+        "model-name": "CourseTrainingSession",
+        "resource-file": "course_training_sessions.json"
+    },
+    {
+        "model-name": "TrainingDeliveryMethod",
+        "resource-file": "training_delivery_methods.json"
+    },
+    {
+        "model-name": "TaxStatus",
+        "resource-file": "tax_statuses.json"
+    },
+    {
+        "model-name": "Division",
+        "resource-file": "divisions.json"
+    },
+    {
+        "model-name": "Department",
+        "resource-file": "departments.json"
+    },
+    {
+        "model-name": "AddressType",
+        "resource-file": "address_types.json",
+        "table-name": "address_types"
+    },
+    {
+        "model-name": "EthnicGroup",
+        "resource-file": "ethnic_groups.json",
+        "table-name": "ethnic_groups"
+    },
+    {
+        "model-name": "ImmigrationStatus",
+        "resource-file": "immigration_statuses.json",
+        "table-name": "immigration_statuses"
+    },
+    {
+        "model-name": "JobTitle",
+        "resource-file": "job_titles.json",
+        "table-name": "job_titles"
+    },
+    {
+        "model-name": "Branch",
+        "resource-file": "branches.json",
+        "table-name": "branches"
+    },
+    {
+        "model-name": "Skill",
+        "resource-file": "skills.json",
+        "table-name": "skills"
+    },
+    {
+        "model-name": "Country",
+        "resource-file": "countries.json",
+        "table-name": "countries"
+    },
+    {
+        "model-name": "EmailAddress",
+        "resource-file": "email_addresses.json",
+        "table-name": "email_addresses"
+    },
+    {
+        "model-name": "Qualification",
+        "resource-file": "qualifications.json",
+        "table-name": "qualifications"
+    }
+]

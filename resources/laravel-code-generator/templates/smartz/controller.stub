@@ -1,0 +1,91 @@
+<?php
+
+namespace [% namespace %];
+
+[% use_command_placeholder %]
+use Illuminate\Support\Facades\Input;
+
+class [% controller_name %] [% controller_extends %]
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->contextObj = new [% model_name_studly %]();
+        $this->baseViewPath = '[% model_name_snake %]';
+        $this->baseFlash = '[% model_name_title %] details ';
+    }
+
+    /**
+     * Display a listing of the [% model_name_plural %].
+     *
+     * @return Illuminate\View\View
+     */
+    public function index()
+    {
+        $[% model_name_plural_variable %] = $this->contextObj::filter(Input::all())->get();
+        return view($this->baseViewPath .'.index', compact('[% model_name_plural_variable %]'));
+    }
+
+    /**
+     * Store a new [% model_name %] in the storage.
+     *
+     * @param [% request_fullname %] [% request_variable %]
+     *
+     * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
+     */
+    public function store(Request $request)
+    {
+        $this->validator($request);
+
+        $input = array_except($request->all(),array('_token'));
+
+        $this->contextObj->addData($input);
+
+        \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Update the specified [% model_name %] in the storage.
+     *
+     * @param  int $id
+     * @param Request [% request_variable %]
+     *
+     * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
+     */
+    public function update(Request $request, $id)
+    {
+        $this->validator($request);
+
+        $input = array_except($request->all(),array('_token','_method'));
+
+        $this->contextObj->updateData($id, $input);
+
+        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+
+        return redirect()->route($this->baseViewPath .'.index');       
+    }
+
+    /**
+     * Remove the specified [% model_name %] from the storage.
+     *
+     * @param  int $id
+     *
+     * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
+     */
+    public function destroy($id)
+    {
+        $this->contextObj->destroyData($id);
+
+        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+
+        return redirect()->route($this->baseViewPath .'.index');
+    }
+    [% affirm_method %]
+    [% upload_method %]
+}

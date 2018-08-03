@@ -1,0 +1,17 @@
+    
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param  Request $request
+     *
+     * @return boolean
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            [% validation_rules %] 
+        ];
+        [% file_validation_snippet %]
+
+        $this->validate($request, $validateFields);
+    }
