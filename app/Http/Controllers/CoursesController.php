@@ -49,9 +49,12 @@ class CoursesController extends CustomController
     {
         $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
-
-        $this->contextObj->addData($input);
+        $modules = array_get($request->all(),'modules.id');
+        $input = array_except($request->all(),array('_token', 'modules'));
+        
+        $data = $this->contextObj->addData($input);
+        $data->modules()
+             ->sync($modules); //sync what has been selected
 
         \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -78,6 +81,7 @@ class CoursesController extends CustomController
     public function update(Request $request, $id)
     {
         $this->validator($request);
+        
         $modules = array_get($request->all(),'modules.id');
         $input = array_except($request->all(),array('_token','_method','modules'));
 
@@ -100,6 +104,8 @@ class CoursesController extends CustomController
      */
     public function destroy($id)
     {
+        $data = Course::find($id);
+        $data->modules()->sync([]); //detach all linked course modules
         $this->contextObj->destroyData($id);
 
         \Session::put('success', $this->baseFlash . 'deleted Successfully!');
@@ -117,15 +123,13 @@ class CoursesController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-                    'description' => 'string|min:5|max:100|nullable',
+            'description' => 'string|min:5|max:100|nullable',
             'is_public' => 'boolean|nullable',
             'overview' => 'string|min:1|nullable',
             'objectives' => 'string|min:1|nullable',
-            'passmark_percentage' => 'numeric|nullable',
-     
+            'passmark_percentage' => 'numeric|nullable',     
         ];
         
-
         $this->validate($request, $validateFields);
     }
 

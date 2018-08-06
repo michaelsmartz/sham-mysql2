@@ -14339,9 +14339,9 @@ button.close {
 
 .alert .close {
   float: right;
-  margin: 3px 18px 0px 0px;
+  margin: 3px 24px 0px 0px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .alert .close i {
@@ -14350,7 +14350,7 @@ button.close {
 
 .alert .inner,
 .alert .close {
-  color: #585858;
+  color: #fff;
 }
 
 .alert input {
@@ -14391,7 +14391,7 @@ button.close {
 
 .alert.success .inner,
 .alert.success .close {
-  color: #2ab27b;
+  color: #fff;
 }
 
 @-webkit-keyframes dismiss {

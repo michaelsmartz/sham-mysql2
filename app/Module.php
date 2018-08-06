@@ -24,7 +24,7 @@ class Module extends Model
 
     public function topics()
     {
-        return $this->hasMany('App\Topic');
+        return $this->belongsToMany(Topic::class);
     }
 
     public function courses()

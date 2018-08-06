@@ -41,6 +41,10 @@ Auth::routes();
         #region e-Learning
             Route::resource('courses', 'CoursesController' );
             Route::resource('modules', 'ModulesController' );
+
+            Route::get('topics/embed/{file}', 'TopicsController@embedMedia');
+            Route::get('topics/snippets', 'TopicsController@getSnippets');
+            Route::resource('topics', 'TopicsController' );
         #endregion
   
     });

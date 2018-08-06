@@ -10,7 +10,7 @@
         <div class="checkbox">
             <label for="is_public_1">
             	<input id="is_public_1" class="" name="is_public" type="checkbox" value="1" {{ old('is_public', isset($course->is_public) ? $course->is_public : null) == '1' ? 'checked' : '' }}>
-                <span class="badge badge-success">Yes</span>
+                <span class="badge badge-info">Yes</span>
             </label>
         </div>
         {!! $errors->first('is_public', '<p class="help-block">:message</p>') !!}
@@ -18,7 +18,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('passmark_percentage') ? 'has-error' : '' }}">
         <label for="passmark_percentage">Passmark Percentage</label>
-        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($course->passmark_percentage) ? $course->passmark_percentage : null) }}" placeholder="Enter passmark percentage here...">
+        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($course->passmark_percentage) ? $course->passmark_percentage : null) }}" placeholder="Enter passmark percentage...">
         {!! $errors->first('passmark_percentage', '<p class="help-block">:message</p>') !!}
     </div>
 

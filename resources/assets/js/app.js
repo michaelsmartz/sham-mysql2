@@ -5,6 +5,7 @@ import asyncJS from 'async-js';
 import draggable from 'jquery-ui/ui/widgets/draggable';
 import droppable from 'jquery-ui/ui/widgets/droppable';
 import resizable from 'jquery-ui/ui/widgets/resizable';
+import sortable from 'jquery-ui/ui/widgets/sortable';
 import datepicker from 'jquery-ui/ui/widgets/datepicker';
 
 window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');

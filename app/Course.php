@@ -34,15 +34,6 @@ class Course extends Model
         'is_public' => WhereFilter::class,
     ];
 
-    protected $casts = [
-        'modules' => 'array'
-    ];
-
-    public function setModulesAttribute($options)
-    {
-        $this->attributes['modules'] = json_encode($options);
-    }
-
     public function modules()
     {
         return $this->belongsToMany(Module::class);

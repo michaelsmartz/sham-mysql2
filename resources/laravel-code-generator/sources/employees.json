@@ -3,12 +3,12 @@
         {
             "name": "id",
             "labels": "Id",
-            "html-type": "text",
+            "html-type": "number",
             "css-class": "",
             "options": {},
             "html-value": null,
             "validation": "",
-            "is-on-index": false,
+            "is-on-index": true,
             "is-on-show": false,
             "is-on-form": false,
             "data-type": "int",
@@ -41,7 +41,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -52,7 +52,7 @@
             "is-unique": false,
             "is-primary": false,
             "comment": null,
-            "is-nullable": false,
+            "is-nullable": true,
             "is-header": false,
             "is-unsigned": true,
             "is-auto-increment": false,
@@ -68,11 +68,20 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Title",
-                    "title_id"
+                    "title_id",
+                    "id"
                 ],
                 "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "title_id",
+                "references": "titles",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Title",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -83,12 +92,14 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:10",
+            "validation": "nullable|string|min:0|max:10",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [10],
+            "data-type-params": [
+                10
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -117,18 +128,20 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "required|string|min:1|max:50",
+            "validation": "nullable|string|min:0|max:50",
             "is-on-index": true,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
             "is-primary": false,
             "comment": null,
-            "is-nullable": false,
+            "is-nullable": true,
             "is-header": false,
             "is-unsigned": false,
             "is-auto-increment": false,
@@ -151,18 +164,20 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "required|string|min:1|max:50",
+            "validation": "nullable|string|min:0|max:50",
             "is-on-index": true,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
             "is-primary": false,
             "comment": null,
-            "is-nullable": false,
+            "is-nullable": true,
             "is-header": false,
             "is-unsigned": false,
             "is-auto-increment": false,
@@ -180,17 +195,19 @@
         },
         {
             "name": "known_as",
-            "labels": "Second Name",
+            "labels": "Known As",
             "html-type": "text",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:50",
+            "validation": "nullable|string|min:0|max:50",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -219,7 +236,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "date_format:j/n/Y",
+            "validation": "nullable|date_format:j/n/Y",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -247,13 +264,13 @@
             "on-update": null
         },
         {
-            "name": "maritalstatus_id",
-            "labels": "Maritalstatus",
+            "name": "marital_status_id",
+            "labels": "Marital Status",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -272,7 +289,7 @@
             "is-date": false,
             "date-format": "",
             "cast-as": "",
-            "placeholder": "Select maritalstatus",
+            "placeholder": "Select marital status",
             "delimiter": "; ",
             "range": [],
             "foreign-relation": {
@@ -280,29 +297,40 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Maritalstatus",
-                    "maritalstatus_id"
+                    "marital_status_id",
+                    "id"
                 ],
                 "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "marital_status_id",
+                "references": "maritalstatuses",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Maritalstatus",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
         {
             "name": "id_number",
             "labels": "Id Number",
-            "html-type": "number",
+            "html-type": "text",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "required|string|min:1|max:25",
+            "validation": "required|numeric",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [25],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
-            "is-index": false,
+            "is-index": true,
             "is-unique": false,
             "is-primary": false,
             "comment": null,
@@ -323,13 +351,13 @@
             "on-update": null
         },
         {
-            "name": "passportcountry_id",
-            "labels": "Passportcountry",
+            "name": "passport_country_id",
+            "labels": "Passport Country",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable|numeric|min:0|max:4294967295",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -348,19 +376,28 @@
             "is-date": false,
             "date-format": "",
             "cast-as": "",
-            "placeholder": "Enter passportcountry",
+            "placeholder": "Enter passport country",
             "delimiter": "; ",
             "range": [],
             "foreign-relation": {
-                "name": "passportcountry",
+                "name": "country",
                 "type": "belongsTo",
                 "params": [
-                    "App\\Passportcountry",
-                    "passportcountry_id"
+                    "App\\Country",
+                    "passport_country_id",
+                    "id"
                 ],
-                "field": "id"
+                "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "passport_country_id",
+                "references": "countries",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Country",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -371,12 +408,14 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:50",
+            "validation": "nullable|string|min:0|max:50",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -400,12 +439,12 @@
         },
         {
             "name": "language_id",
-            "labels": "Main Language",
+            "labels": "Language",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "numeric|min:0|max:4294967295",
+            "validation": "nullable|numeric|min:0|max:4294967295",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -432,11 +471,20 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Language",
-                    "language_id"
+                    "language_id",
+                    "id"
                 ],
                 "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "language_id",
+                "references": "languages",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Language",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -447,7 +495,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -474,22 +522,31 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Gender",
-                    "gender_id"
+                    "gender_id",
+                    "id"
                 ],
                 "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "gender_id",
+                "references": "genders",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Gender",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
         {
-            "name": "ethnicgroup_id",
+            "name": "ethnic_group_id",
             "labels": "Ethnic Group",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -512,26 +569,35 @@
             "delimiter": "; ",
             "range": [],
             "foreign-relation": {
-                "name": "ethnicgroup",
+                "name": "ethnicGroup",
                 "type": "belongsTo",
                 "params": [
-                    "App\\Ethnicgroup",
-                    "ethnicgroup_id"
+                    "App\\EthnicGroup",
+                    "ethnic_group_id",
+                    "id"
                 ],
-                "field": "id"
+                "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "ethnic_group_id",
+                "references": "ethnic_groups",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\EthnicGroup",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
         {
-            "name": "immigrationstatus_id",
+            "name": "immigration_status_id",
             "labels": "Immigration Status",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -554,29 +620,38 @@
             "delimiter": "; ",
             "range": [],
             "foreign-relation": {
-                "name": "immigrationstatus",
+                "name": "immigrationStatus",
                 "type": "belongsTo",
                 "params": [
-                    "App\\Immigrationstatus",
-                    "immigrationstatus_id"
+                    "App\\ImmigrationStatus",
+                    "immigration_status_id",
+                    "Id"
                 ],
-                "field": "id"
+                "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "immigration_status_id",
+                "references": "immigration_statuses",
+                "on": "Id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\ImmigrationStatus",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
         {
-            "name": "timegroup_id",
-            "labels": "Timegroup",
+            "name": "time_group_id",
+            "labels": "Time Group",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
-            "is-on-show": false,
-            "is-on-form": false,
+            "is-on-show": true,
+            "is-on-form": true,
             "data-type": "int",
             "data-type-params": [],
             "data-value": null,
@@ -595,7 +670,15 @@
             "placeholder": "Select time group",
             "delimiter": "; ",
             "range": [],
-            "foreign-relation": null,
+            "foreign-relation": {
+                "name": "timeGroup",
+                "type": "belongsTo",
+                "params": [
+                    "App\\TimeGroup",
+                    "time_group_id"
+                ],
+                "field": "Description"
+            },
             "foreign-constraint": null,
             "on-store": null,
             "on-update": null
@@ -607,12 +690,14 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:50",
+            "validation": "nullable|string|min:0|max:50",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -641,12 +726,14 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:50",
+            "validation": "nullable|string|min:0|max:50",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -676,17 +763,19 @@
             "options": {},
             "html-value": null,
             "validation": "required|string|min:1|max:50",
-            "is-on-index": true,
+            "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
-            "is-unique": false,
+            "is-unique": true,
             "is-primary": false,
             "comment": null,
-            "is-nullable": true,
+            "is-nullable": false,
             "is-header": false,
             "is-unsigned": false,
             "is-auto-increment": false,
@@ -709,18 +798,20 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:50",
+            "validation": "required|string|min:1|max:50",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
-            "is-unique": false,
+            "is-unique": true,
             "is-primary": false,
             "comment": null,
-            "is-nullable": true,
+            "is-nullable": false,
             "is-header": false,
             "is-unsigned": false,
             "is-auto-increment": false,
@@ -739,16 +830,18 @@
         {
             "name": "tax_number",
             "labels": "Tax Number",
-            "html-type": "number",
+            "html-type": "text",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:50",
+            "validation": "nullable|numeric",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [50],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -771,13 +864,13 @@
             "on-update": null
         },
         {
-            "name": "taxstatus_id",
+            "name": "tax_status_id",
             "labels": "Tax Status",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -796,7 +889,7 @@
             "is-date": false,
             "date-format": "",
             "cast-as": "",
-            "placeholder": "Select taxstatus",
+            "placeholder": "Select tax status",
             "delimiter": "; ",
             "range": [],
             "foreign-relation": {
@@ -804,11 +897,20 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Taxstatus",
-                    "taxstatus_id"
+                    "tax_status_id",
+                    "id"
                 ],
                 "field": "id"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "tax_status_id",
+                "references": "taxstatuses",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Taxstatus",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -819,14 +921,14 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "date_format:j/n/Y",
+            "validation": "nullable|string|min:0",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
-            "data-type": "date",
+            "data-type": "string",
             "data-type-params": [],
             "data-value": null,
-            "is-index": false,
+            "is-index": true,
             "is-unique": false,
             "is-primary": false,
             "comment": null,
@@ -853,14 +955,14 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "date_format:j/n/Y",
+            "validation": "nullable|string|min:0",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
-            "data-type": "date",
+            "data-type": "string",
             "data-type-params": [],
             "data-value": null,
-            "is-index": false,
+            "is-index": true,
             "is-unique": false,
             "is-primary": false,
             "comment": null,
@@ -887,7 +989,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": true,
             "is-on-show": true,
             "is-on-form": true,
@@ -914,11 +1016,20 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Department",
-                    "department_id"
+                    "department_id",
+                    "id"
                 ],
-                "field": "id"
+                "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "department_id",
+                "references": "departments",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Department",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -929,7 +1040,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -956,22 +1067,31 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Team",
-                    "team_id"
+                    "team_id",
+                    "Id"
                 ],
                 "field": "Id"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "team_id",
+                "references": "teams",
+                "on": "Id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Team",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
         {
-            "name": "employeestatus_id",
+            "name": "employee_status_id",
             "labels": "Employee Status",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -994,15 +1114,24 @@
             "delimiter": "; ",
             "range": [],
             "foreign-relation": {
-                "name": "employeestatus",
+                "name": "employeeStatus",
                 "type": "belongsTo",
                 "params": [
-                    "App\\Employeestatus",
-                    "employeestatus_id"
+                    "App\\EmployeeStatus",
+                    "employee_status_id",
+                    "id"
                 ],
                 "field": "id"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "employee_status_id",
+                "references": "employee_statuses",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\EmployeeStatus",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -1013,12 +1142,14 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1",
+            "validation": "nullable|string|min:0|max:50",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [],
+            "data-type-params": [
+                50
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -1041,13 +1172,13 @@
             "on-update": null
         },
         {
-            "name": "jobtitle_id",
+            "name": "job_title_id",
             "labels": "Job Title",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": true,
             "is-on-show": true,
             "is-on-form": true,
@@ -1070,15 +1201,24 @@
             "delimiter": "; ",
             "range": [],
             "foreign-relation": {
-                "name": "jobtitle",
+                "name": "jobTitle",
                 "type": "belongsTo",
                 "params": [
-                    "App\\Jobtitle",
-                    "jobtitle_id"
+                    "App\\JobTitle",
+                    "job_title_id",
+                    "id"
                 ],
-                "field": "id"
+                "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "job_title_id",
+                "references": "job_titles",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\JobTitle",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -1089,7 +1229,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -1116,11 +1256,20 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Division",
-                    "division_id"
+                    "division_id",
+                    "id"
                 ],
-                "field": "id"
+                "field": "description"
             },
-            "foreign-constraint": null,
+            "foreign-constraint": {
+                "field": "division_id",
+                "references": "divisions",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Division",
+                "is-self-reference": false
+            },
             "on-store": null,
             "on-update": null
         },
@@ -1131,7 +1280,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "",
+            "validation": "nullable",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
@@ -1158,10 +1307,56 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\Branch",
-                    "branch_id"
+                    "branch_id",
+                    "id"
                 ],
-                "field": "id"
+                "field": "description"
             },
+            "foreign-constraint": {
+                "field": "branch_id",
+                "references": "branches",
+                "on": "id",
+                "on-delete": "no action",
+                "on-update": "no action",
+                "references-model": "App\\\\Branch",
+                "is-self-reference": false
+            },
+            "on-store": null,
+            "on-update": null
+        },
+        {
+            "name": "is_active",
+            "labels": "Is Active",
+            "html-type": "checkbox",
+            "css-class": "",
+            "options": {
+                "0": "No",
+                "1": "Yes"
+            },
+            "html-value": null,
+            "validation": "",
+            "is-on-index": false,
+            "is-on-show": false,
+            "is-on-form": false,
+            "data-type": "bool",
+            "data-type-params": [],
+            "data-value": "1",
+            "is-index": false,
+            "is-unique": false,
+            "is-primary": false,
+            "comment": null,
+            "is-nullable": true,
+            "is-header": false,
+            "is-unsigned": false,
+            "is-auto-increment": false,
+            "is-inline-options": false,
+            "is-date": false,
+            "date-format": "",
+            "cast-as": "",
+            "placeholder": {},
+            "delimiter": "; ",
+            "range": [],
+            "foreign-relation": null,
             "foreign-constraint": null,
             "on-store": null,
             "on-update": null
@@ -1169,16 +1364,18 @@
         {
             "name": "picture",
             "labels": "Picture",
-            "html-type": "file",
+            "html-type": "text",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "file",
+            "validation": "nullable|file",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",
-            "data-type-params": [],
+            "data-type-params": [
+                4294967295
+            ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
@@ -1201,20 +1398,20 @@
             "on-update": null
         },
         {
-            "name": "linemanager_id",
+            "name": "line_manager_id",
             "labels": "Line Manager",
             "html-type": "select",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "numeric|min:0|max:4294967295",
+            "validation": "nullable|numeric|min:0|max:4294967295",
             "is-on-index": false,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "int",
             "data-type-params": [],
             "data-value": null,
-            "is-index": false,
+            "is-index": true,
             "is-unique": false,
             "is-primary": false,
             "comment": null,
@@ -1229,7 +1426,15 @@
             "placeholder": "Enter line manager",
             "delimiter": "; ",
             "range": [],
-            "foreign-relation": null,
+            "foreign-relation": {
+                "name": "lineManager",
+                "type": "belongsTo",
+                "params": [
+                    "App\\LineManager",
+                    "line_manager_id"
+                ],
+                "field": "id"
+            },
             "foreign-constraint": null,
             "on-store": null,
             "on-update": null
@@ -1237,15 +1442,15 @@
         {
             "name": "leave_balance_at_start",
             "labels": "Leave Balance At Start",
-            "html-type": "text",
+            "html-type": "number",
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1",
+            "validation": "nullable",
             "is-on-index": false,
-            "is-on-show": false,
-            "is-on-form": false,
-            "data-type": "string",
+            "is-on-show": true,
+            "is-on-form": true,
+            "data-type": "int",
             "data-type-params": [],
             "data-value": null,
             "is-index": false,
@@ -1269,43 +1474,6 @@
             "on-update": null
         },
         {
-            "name": "is_active",
-            "labels": "Is Active",
-            "html-type": "checkbox",
-            "css-class": "",
-            "options": {
-                "0": "No",
-                "1": "Yes"
-            },
-            "html-value": null,
-            "validation": "boolean",
-            "is-on-index": false,
-            "is-on-show": true,
-            "is-on-form": false,
-            "data-type": "bool",
-            "data-type-params": [],
-            "data-value": null,
-            "is-index": false,
-            "is-unique": false,
-            "is-primary": false,
-            "comment": null,
-            "is-nullable": true,
-            "is-header": false,
-            "is-unsigned": false,
-            "is-auto-increment": false,
-            "is-inline-options": false,
-            "is-date": false,
-            "date-format": "",
-            "cast-as": "",
-            "placeholder": {},
-            "delimiter": "; ",
-            "range": [],
-            "foreign-relation": null,
-            "foreign-constraint": null,
-            "on-store": null,
-            "on-update": null
-        },
-        {
             "name": "created_at",
             "labels": "Created At",
             "html-type": "text",
@@ -1316,9 +1484,9 @@
             "is-on-index": false,
             "is-on-show": false,
             "is-on-form": false,
-            "data-type": "datetime",
+            "data-type": "string",
             "data-type-params": [],
-            "data-value": null,
+            "data-value": "CURRENT_TIMESTAMP",
             "is-index": false,
             "is-unique": false,
             "is-primary": false,
@@ -1350,9 +1518,9 @@
             "is-on-index": false,
             "is-on-show": false,
             "is-on-form": false,
-            "data-type": "datetime",
+            "data-type": "string",
             "data-type-params": [],
-            "data-value": null,
+            "data-value": "CURRENT_TIMESTAMP",
             "is-index": false,
             "is-unique": false,
             "is-primary": false,
@@ -1384,7 +1552,7 @@
             "is-on-index": false,
             "is-on-show": false,
             "is-on-form": false,
-            "data-type": "datetime",
+            "data-type": "string",
             "data-type-params": [],
             "data-value": null,
             "is-index": false,
@@ -1410,92 +1578,480 @@
     ],
     "relations": [
         {
-            "name":"addresses",
-            "type":"hasMany",
+            "name": "addresses",
+            "type": "hasMany",
             "params": [
-                "App\\Address"
-            ]
-        },        
-        {
-            "name":"emailaddresses",
-            "type":"hasMany",
-            "params": [
-                "App\\EmailAddress"
-            ]
+                "App\\Address",
+                "employee_id",
+                "id"
+            ],
+            "field": "unit_no"
         },
         {
-            "name":"telephonenumbers",
-            "type":"hasMany",
+            "name": "assetallocation",
+            "type": "hasOne",
             "params": [
-                "App\\TelephoneNumber"
-            ]
+                "App\\Assetallocation",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
         },
         {
-            "name":"qualifications",
-            "type":"hasMany",
+            "name": "bankingdetail",
+            "type": "hasOne",
             "params": [
-                "App\\Qualification"
-            ]
+                "App\\Bankingdetail",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
         },
         {
-            "name":"skills",
-            "type":"belongsToMany",
-            "params": [
-                "App\\Skill"
-            ]
-        },
-        {
-            "name":"attachments",
-            "type":"hasMany",
-            "params": [
-                "App\\EmployeeAttachment"
-            ]
-        },
-        {
-            "name":"assetallocations",
-            "type":"hasMany",
-            "params": [
-                "App\\AssetAllocation"
-            ]
-        },
-        {
-            "name":"courses",
-            "type":"belongsToMany",
+            "name": "courses",
+            "type": "belongsToMany",
             "params": [
                 "App\\Course"
             ]
         },
         {
-            "name":"disciplinaryactions",
-            "type":"hasMany",
+            "name": "commentdetail",
+            "type": "hasOne",
             "params": [
-                "App\\DisciplinaryAction"
+                "App\\Commentdetail",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "courseDiscussion",
+            "type": "hasOne",
+            "params": [
+                "App\\CourseDiscussion",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "courseEmployees",
+            "type": "hasMany",
+            "params": [
+                "App\\CourseEmployee",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "courseProgresses",
+            "type": "hasMany",
+            "params": [
+                "App\\CourseProgress",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "disciplinaryActions",
+            "type": "hasMany",
+            "params": [
+                "App\\DisciplinaryAction",
+                "employee_id",
+                "id"
+            ],
+            "field": "violation_date"
+        },
+        {
+            "name": "emailAddresses",
+            "type": "hasMany",
+            "params": [
+                "App\\EmailAddress",
+                "employee_id",
+                "id"
+            ],
+            "field": "email_address"
+        },
+        {
+            "name": "employeeAttachment",
+            "type": "hasOne",
+            "params": [
+                "App\\EmployeeAttachment",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "employeeSkills",
+            "type": "hasMany",
+            "params": [
+                "App\\EmployeeSkill",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "employeeattendancerecord",
+            "type": "hasOne",
+            "params": [
+                "App\\Employeeattendancerecord",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "employeesleaveschedule",
+            "type": "hasOne",
+            "params": [
+                "App\\Employeesleaveschedule",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "employeetimerecords",
+            "type": "hasMany",
+            "params": [
+                "App\\Employeetimerecord",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "employeetimerecords",
+            "type": "hasMany",
+            "params": [
+                "App\\Employeetimerecord",
+                "CreatedBy",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "employeetimerecords",
+            "type": "hasMany",
+            "params": [
+                "App\\Employeetimerecord",
+                "UpdatedBy",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "evaluationassessors",
+            "type": "hasMany",
+            "params": [
+                "App\\Evaluationassessor",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "evaluationresult",
+            "type": "hasOne",
+            "params": [
+                "App\\Evaluationresult",
+                "AssessorEmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "evaluation",
+            "type": "hasOne",
+            "params": [
+                "App\\Evaluation",
+                "UserEmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "evaluations",
+            "type": "hasMany",
+            "params": [
+                "App\\Evaluation",
+                "CreatedByEmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "eventtaskinstances",
+            "type": "hasMany",
+            "params": [
+                "App\\Eventtaskinstance",
+                "EmployeeCreatedId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "eventtaskinstances",
+            "type": "hasMany",
+            "params": [
+                "App\\Eventtaskinstance",
+                "EmployeeAllocatedId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "eventtaskinstances",
+            "type": "hasMany",
+            "params": [
+                "App\\Eventtaskinstance",
+                "TargetId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "historydepartments",
+            "type": "hasMany",
+            "params": [
+                "App\\Historydepartment",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "historydisciplinaryactions",
+            "type": "hasMany",
+            "params": [
+                "App\\Historydisciplinaryaction",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "historyjobtitles",
+            "type": "hasMany",
+            "params": [
+                "App\\Historyjobtitle",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "historyjoinsterminations",
+            "type": "hasMany",
+            "params": [
+                "App\\Historyjoinstermination",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "historyqualification",
+            "type": "hasOne",
+            "params": [
+                "App\\Historyqualification",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "historyrewards",
+            "type": "hasMany",
+            "params": [
+                "App\\Historyreward",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "historytraining",
+            "type": "hasOne",
+            "params": [
+                "App\\Historytraining",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "leaveapplicationforms",
+            "type": "hasMany",
+            "params": [
+                "App\\Leaveapplicationform",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "moduleassessmentresponses",
+            "type": "hasMany",
+            "params": [
+                "App\\Moduleassessmentresponse",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "moduleassessments",
+            "type": "hasMany",
+            "params": [
+                "App\\Moduleassessment",
+                "TrainerId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "qualifications",
+            "type": "hasMany",
+            "params": [
+                "App\\Qualification",
+                "employee_id",
+                "id"
+            ],
+            "field": "reference"
+        },
+        {
+            "name": "recruitmentrequest",
+            "type": "hasOne",
+            "params": [
+                "App\\Recruitmentrequest",
+                "HiringManagerEmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "rewards",
+            "type": "hasMany",
+            "params": [
+                "App\\Reward",
+                "employee_id",
+                "id"
+            ],
+            "field": "description"
+        },
+        {
+            "name": "shamusers",
+            "type": "hasMany",
+            "params": [
+                "App\\Shamuser",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "telephoneNumbers",
+            "type": "hasMany",
+            "params": [
+                "App\\TelephoneNumber",
+                "employee_id",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "timelines",
+            "type": "hasMany",
+            "params": [
+                "App\\Timeline",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "trainingsessionparticipant",
+            "type": "hasOne",
+            "params": [
+                "App\\Trainingsessionparticipant",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "travelexpenseclaims",
+            "type": "hasMany",
+            "params": [
+                "App\\Travelexpenseclaim",
+                "ReviewerEmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "travelrequests",
+            "type": "hasMany",
+            "params": [
+                "App\\Travelrequest",
+                "RequestedByEmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "travelrequests",
+            "type": "hasMany",
+            "params": [
+                "App\\Travelrequest",
+                "ReviewedByEmployeeId",
+                "id"
+            ],
+            "field": "id"
+        },
+        {
+            "name": "viewedcomment",
+            "type": "hasOne",
+            "params": [
+                "App\\Viewedcomment",
+                "EmployeeId",
+                "id"
+            ],
+            "field": "id"
+        }
+    ],
+    "indexes": [
+        {
+            "name": "IX_Employees",
+            "type": "index",
+            "columns": [
+                "id_number",
+                "employee_code"
             ]
         },
         {
-            "name":"evaluationassessors",
-            "type":"hasMany",
-            "params": [
-                "App\\EvaluationAssessor"
+            "name": "IX_Employees_Joined_Terminated",
+            "type": "index",
+            "columns": [
+                "date_joined",
+                "date_terminated",
+                "is_active"
             ]
         },
         {
-            "name":"evaluationresults",
-            "type":"hasMany",
-            "params": [
-                "App\\EvaluationResult"
-            ]
-        },
-        {
-            "name":"evaluations",
-            "type":"hasMany",
-            "params": [
-                "App\\Evaluation"
+            "name": "IX_Employees_TerminationDate_Active",
+            "type": "index",
+            "columns": [
+                "date_terminated",
+                "is_active"
             ]
         }
-
     ],
-    "indexes": [],
     "auto-manage-created-and-updated-at": true,
     "table-name": "employees",
     "protection": {

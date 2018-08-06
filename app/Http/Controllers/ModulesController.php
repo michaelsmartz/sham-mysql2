@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Module;
+use App\Topic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,6 +33,11 @@ class ModulesController extends CustomController
         return view($this->baseViewPath .'.index', compact('modules'));
     }
 
+    public function create() {
+        $topics = Topic::pluck('header', 'id');
+        return view($this->baseViewPath . '.create',compact('topics'));
+    }
+
     /**
      * Store a new module in the storage.
      *
@@ -43,13 +49,25 @@ class ModulesController extends CustomController
     {
         $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
-
-        $this->contextObj->addData($input);
+        $topics = array_get($request->all(),'topics.id');
+        $input = array_except($request->all(),array('_token', 'topics'));
+        
+        $data = $this->contextObj->addData($input);
+        $data->topics()
+             ->sync($topics); //sync what has been selected
 
         \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    public function edit($id)
+    {
+        $data = $this->contextObj->findData($id);
+        $moduleTopics = $data->topics->pluck('id');
+        $topics = Topic::pluck('header', 'id');
+
+        return view($this->baseViewPath . '.edit', compact('data', 'topics', 'moduleTopics'));
     }
 
     /**
@@ -64,9 +82,13 @@ class ModulesController extends CustomController
     {
         $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
+        $topics = array_get($request->all(),'topics.id');
+        $input = array_except($request->all(),array('_token','_method', 'topics'));
 
         $this->contextObj->updateData($id, $input);
+        $data = Module::find($id);
+        $data->topics()
+             ->sync($topics); //sync what has been selected
 
         \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -82,6 +104,8 @@ class ModulesController extends CustomController
      */
     public function destroy($id)
     {
+        $data = Course::find($id);
+        $data->topics()->sync([]); //detach all linked module topics
         $this->contextObj->destroyData($id);
 
         \Session::put('success', $this->baseFlash . 'deleted Successfully!!');

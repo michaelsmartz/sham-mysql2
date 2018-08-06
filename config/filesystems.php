@@ -63,6 +63,11 @@ return [
             'bucket' => env('AWS_BUCKET'),
         ],
 
+        'elearning' => [
+            'driver' => 'local',
+            'root' => env('ELEARNING_STORAGE_PATH'),
+        ]
+
     ],
 
 ];

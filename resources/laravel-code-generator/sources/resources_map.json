@@ -72,10 +72,6 @@
         "resource-file": "topics.json"
     },
     {
-        "model-name": "Employee",
-        "resource-file": "employees.json"
-    },
-    {
         "model-name": "Address",
         "resource-file": "addresses.json"
     },
@@ -159,5 +155,10 @@
         "model-name": "Qualification",
         "resource-file": "qualifications.json",
         "table-name": "qualifications"
+    },
+    {
+        "model-name": "Employee",
+        "resource-file": "employees.json",
+        "table-name": "employees"
     }
 ]
