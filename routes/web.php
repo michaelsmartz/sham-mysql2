@@ -15,22 +15,32 @@ Route::get('/', 'MiscController@welcome');
 Route::get('test', 'MiscController@test');
 
 Auth::routes();
+
 #region auth middleware routes
     Route::group(['middleware' => ['auth']], function() {
 
         // logout using get
         Route::get('auth/logout', 'Auth\LoginController@logout')->name('logout');
-        Route::resource('home', 'HomeController', [ 'only' => ['index'] ]);
-        Route::resource('dashboard', 'HomeController', [ 'only' => ['index'] ]);
-        
-        Route::get('getHeadcountData', 'HomeController@getHeadcountData')->name('getHeadcountData');
-        Route::get('getHeadcountDeptData', 'HomeController@getHeadcountDeptData')->name('getHeadcountDeptData');
-        Route::get('getNewHiresData', 'HomeController@getNewHiresData')->name('getNewHiresData');
-        Route::get('getAssetData', 'HomeController@getAssetData')->name('getAssetData');
-        Route::get('getCourseData', 'HomeController@getCourseData')->name('getCourseData');
-        Route::any('getRewardCount', 'HomeController@getRewardCount')->name('getRewardCount');
-        Route::any('getDisciplinaryActionCount', 'HomeController@getDisciplinaryActionCount')->name('getDisciplinaryActionCount');
-        
+
+        #region Dashboard & Reports
+            Route::resource('home', 'HomeController', [ 'only' => ['index'] ]);
+            Route::resource('dashboard', 'HomeController', [ 'only' => ['index'] ]);
+            
+            Route::get('getHeadcountData', 'HomeController@getHeadcountData')->name('getHeadcountData');
+            Route::get('getHeadcountDeptData', 'HomeController@getHeadcountDeptData')->name('getHeadcountDeptData');
+            Route::get('getNewHiresData', 'HomeController@getNewHiresData')->name('getNewHiresData');
+            Route::get('getAssetData', 'HomeController@getAssetData')->name('getAssetData');
+            Route::get('getCourseData', 'HomeController@getCourseData')->name('getCourseData');
+            Route::any('getRewardCount', 'HomeController@getRewardCount')->name('getRewardCount');
+            Route::any('getDisciplinaryActionCount', 'HomeController@getDisciplinaryActionCount')->name('getDisciplinaryActionCount');
+        #endregion
+
+        #region Central HR
+            Route::resource('employees', 'EmployeesController');
+            Route::resource('laws', 'LawsController');
+            Route::resource('policies', 'PoliciesController');
+        #endregion
+
         #region Configuration parameters routes
             Route::group(['prefix'=>'config'], function(){
                 Route::get('employees', 'ConfigDropdownsController@employees')->name('employees');
@@ -38,7 +48,7 @@ Auth::routes();
             });
         #endregion
 
-        #region e-Learning
+        #region E-Learning
             Route::resource('courses', 'CoursesController' );
             Route::resource('modules', 'ModulesController' );
 

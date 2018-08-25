@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 
 class CustomController extends Controller
 {
@@ -30,10 +31,21 @@ class CustomController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        $data = $this->contextObj->findData($id);
-
+        $data = null;
+        if($request->has('id')) {
+            $data = $this->contextObj->findData($id);
+            $id = $request->id;
+        }
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter']
+            ]);
+        }
         return view($this->baseViewPath . '.edit', compact('data'));
     }
 

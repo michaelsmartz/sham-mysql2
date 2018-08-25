@@ -10,8 +10,6 @@ class Policy extends Model
     
     use SoftDeletes;
 
-
-
     /**
      * Attributes that should be mass-assignable.
      *
@@ -20,23 +18,21 @@ class Policy extends Model
     protected $fillable = [
                   'title',
                   'content',
-                  'policycategory_id',
-                  'expires_on',
-                  'is_active'
+                  'policy_category_id',
+                  'expires_on'
               ];
 
-    /**
-     * Get the policycategory for this model.
-     */
+    public $searchable = ['title', 'policy_category_id'];
+
     public function policyCategory()
     {
-        return $this->hasOne('App\PolicyCategory','id','policycategory_id');
+        return $this->belongsTo('App\PolicyCategory','policy_category_id','id');
     }
 
-    public function policyDocuments()
+    public function policydocument()
     {
-      return $this->hasMany(PolicyDocument::class);
-    } 
+        return $this->hasOne('App\Policydocument','policy_id','id');
+    }
 
 
 }

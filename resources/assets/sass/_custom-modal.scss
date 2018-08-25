@@ -1,0 +1,111 @@
+@mixin vishidden { 
+  position: absolute; 
+  overflow: hidden; 
+  clip: rect(0 0 0 0); 
+  opacity: 0;
+  height: 1px; width: 1px; 
+  margin: -1px; padding: 0; border: 0; 
+}
+
+.modal {
+    position: fixed;
+    z-index: 20;
+    max-width: 85%;
+    width: 450px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    margin: 0 auto;
+    opacity: 1;
+    transition: margin-top 150ms ease-out, 
+                opacity 150ms ease-out;
+    background: $body-bg;
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.6);
+    
+    @media screen and (max-height: 500px) {
+      width: 80%;
+      height: 80vh; // Landscape orientation delivers a landscape modal
+    }
+    
+    // This is the hidden checkbox.
+    &__toggler {
+      display: none;
+      
+      // If the checkbox is not checked, hide the .modal and .modal__mask
+      &:not(:checked) {
+        ~ .modal {
+          @include vishidden;
+          margin-top: -10px; // Here is where you can add some styles for transitions.
+        }
+        ~ .modal__mask {
+          @include vishidden;
+        }
+      }
+    }
+    
+    &__mask {
+      position: fixed;
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      opacity: 1;
+      transition: opacity 150ms ease-out;
+      background: rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+    }
+    
+    &__close {
+      // Plenty of ways to make a close icon. Here is just one way for demonstration purposes...
+      &::after {
+        content: "\2715"; // Close symbol (X)
+        position: absolute;
+        display: inline-block;
+        top: 10px;
+        right: 10px;
+        padding: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    }
+    
+    &__title {
+      margin: 0;
+      font-weight: 700;
+    }
+    
+    &__header {
+      display:flex;
+      flex-direction:row;
+      justify-items:space-between;
+      padding: 0 30px 10px 30px;
+    }
+    
+    &__content {
+      padding: 0 30px;
+      max-height: 60vh;
+      overflow-y: auto;
+      
+      
+      @media screen and (max-height: 500px) {
+        max-height: 45vh; // Landscape orientation delivers a landscape modal
+      }
+    }
+    
+    &__footer {
+      padding: 15px 30px;
+      text-align: right;
+    }
+    
+    &__window {
+      max-height: 80vh; // Max-height: 80% of viewport height.
+      overflow-y: auto; // Scroll content if it gets too tall.
+      background: #eee;
+    }
+    
+    &__container {
+      // No CSS needed. This element should exist though, so I named it!
+    }
+  }
+  

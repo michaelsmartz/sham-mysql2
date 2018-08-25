@@ -5,7 +5,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class LawCategory extends Model
+class DisabilityCategory extends Model
 {
     
     use SoftDeletes;
@@ -18,13 +18,13 @@ class LawCategory extends Model
      * @var array
      */
     protected $fillable = [
-                  'description'
+                  'description',
+                  'is_system_predefined'
               ];
 
-    public function laws()
+    public function disabilities()
     {
-        return $this->hasMany('App\Law','law_category_id','id');
+        return $this->hasMany('App\Disability','disability_category_id');
     }
-
 
 }

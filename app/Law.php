@@ -10,38 +10,36 @@ class Law extends Model
     
     use SoftDeletes;
 
-
-
     /**
      * Attributes that should be mass-assignable.
      *
      * @var array
      */
     protected $fillable = [
-                  'mainHeading',
-                  'subHeading',
+                  'main_heading',
+                  'sub_heading',
                   'country_id',
-                  'lawcategory_id',
-                  'is_public',
-                  'expires_on',
+                  'law_category_id',
                   'content',
-                  'is_active'
+                  'is_public',
+                  'expires_on'
               ];
 
-    /**
-     * Get the country for this model.
-     */
+    public $searchable = ['main_heading', 'country_id', 'law_category_id'];
+
     public function country()
     {
-        return $this->belongsTo('App\Country','country_id');
+        return $this->belongsTo('App\Country','country_id','id');
     }
 
-    /**
-     * Get the lawcategory for this model.
-     */
     public function lawCategory()
     {
-        return $this->belongsTo('App\LawCategory','lawcategory_id');
+        return $this->belongsTo('App\LawCategory','law_category_id','id');
+    }
+
+    public function lawDocuments()
+    {
+        return $this->hasMany('App\LawDocument','law_id','id');
     }
 
 

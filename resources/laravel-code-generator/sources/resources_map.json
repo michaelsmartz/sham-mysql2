@@ -24,26 +24,6 @@
         "resource-file": "languages.json"
     },
     {
-        "model-name": "Law",
-        "resource-file": "laws.json"
-    },
-    {
-        "model-name": "LawCategory",
-        "resource-file": "law_categories.json"
-    },
-    {
-        "model-name": "Policy",
-        "resource-file": "policies.json"
-    },
-    {
-        "model-name": "PolicyCategory",
-        "resource-file": "policy_categories.json"
-    },
-    {
-        "model-name": "PolicyDocument",
-        "resource-file": "policy_documents.json"
-    },
-    {
         "model-name": "AssetCondition",
         "resource-file": "asset_conditions.json"
     },
@@ -160,5 +140,50 @@
         "model-name": "Employee",
         "resource-file": "employees.json",
         "table-name": "employees"
+    },
+    {
+        "model-name": "EmployeeStatus",
+        "resource-file": "employee_statuses.json",
+        "table-name": "employee_statuses"
+    },
+    {
+        "model-name": "DisabilityCategory",
+        "resource-file": "disability_categories.json",
+        "table-name": "disability_categories"
+    },
+    {
+        "model-name": "Disability",
+        "resource-file": "disabilities.json",
+        "table-name": "disabilities"
+    },
+    {
+        "model-name": "LawCategory",
+        "resource-file": "law_categories.json",
+        "table-name": "law_categories"
+    },
+    {
+        "model-name": "PolicyCategory",
+        "resource-file": "policy_categories.json",
+        "table-name": "policy_categories"
+    },
+    {
+        "model-name": "PolicyDocument",
+        "resource-file": "policy_documents.json",
+        "table-name": "policy_documents"
+    },
+    {
+        "model-name": "LawDocument",
+        "resource-file": "law_documents.json",
+        "table-name": "law_documents"
+    },
+    {
+        "model-name": "Law",
+        "resource-file": "laws.json",
+        "table-name": "laws"
+    },
+    {
+        "model-name": "Policy",
+        "resource-file": "policies.json",
+        "table-name": "policies"
     }
 ]

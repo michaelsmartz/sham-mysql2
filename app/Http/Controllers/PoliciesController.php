@@ -1,11 +1,14 @@
 <?php
 
-namespace [% namespace %];
+namespace App\Http\Controllers;
 
-[% use_command_placeholder %]
+use App\Policy;
+use App\PolicyCategory;
+use Illuminate\Http\Request;
+use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 
-class [% controller_name %] [% controller_extends %]
+class PoliciesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -14,26 +17,26 @@ class [% controller_name %] [% controller_extends %]
      */
     public function __construct()
     {
-        $this->contextObj = new [% model_name_studly %]();
-        $this->baseViewPath = '[% model_name_snake %]';
-        $this->baseFlash = '[% model_name_title %] details ';
+        $this->contextObj = new Policy();
+        $this->baseViewPath = 'policies';
+        $this->baseFlash = 'Policy details ';
     }
 
     /**
-     * Display a listing of the [% model_name_plural %].
+     * Display a listing of the policies.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $[% model_name_plural_variable %] = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('[% model_name_plural_variable %]'));
+        $policies = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('policies'));
     }
 
     /**
-     * Store a new [% model_name %] in the storage.
+     * Store a new policy in the storage.
      *
-     * @param [% request_fullname %] [% request_variable %]
+     * @param Illuminate\Http\Request $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
@@ -51,10 +54,10 @@ class [% controller_name %] [% controller_extends %]
     }
 
     /**
-     * Update the specified [% model_name %] in the storage.
+     * Update the specified policy in the storage.
      *
      * @param  int $id
-     * @param Request [% request_variable %]
+     * @param Request $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
@@ -72,7 +75,7 @@ class [% controller_name %] [% controller_extends %]
     }
 
     /**
-     * Remove the specified [% model_name %] from the storage.
+     * Remove the specified policy from the storage.
      *
      * @param  int $id
      *
@@ -86,6 +89,27 @@ class [% controller_name %] [% controller_extends %]
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-    [% affirm_method %]
-    [% upload_method %]
+        
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param  Request $request
+     *
+     * @return boolean
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+                    'title' => 'required|string|min:1|max:100',
+            'content' => 'required|string|min:1|max:4294967295',
+            'policy_category_id' => 'nullable',
+            'expires_on' => 'nullable|string|min:0',
+     
+        ];
+        
+
+        $this->validate($request, $validateFields);
+    }
+
+    
 }

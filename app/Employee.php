@@ -53,6 +53,37 @@ class Employee extends Model
                   'leave_balance_at_start'
               ];
 
+    
+    protected $with = ['department', 'jobTitle'];
+
+    public $searchable = ['first_name', 'surname'];
+
+    protected $appends = ['full_name'];
+    
+    public function scopeEmployeesLite($query)
+    {
+        $this->withEmployeesLite($query);
+    }
+
+    protected function withEmployeesLite($query)
+    {
+        $query->select(['job_title_id','first_name','surname','id'])
+              ->whereNull('deleted_at');
+    }
+
+    /**
+     * Get full name
+     * @return string
+    */
+    public function getFullNameAttribute(){
+        return $this->first_name . ' ' . $this->surname;
+    }
+
+    public function disabilities()
+    {
+        return $this->hasMany('App\Disability','disability_id','id');
+    }
+
     public function title()
     {
         return $this->belongsTo('App\Title','title_id','id');
@@ -100,7 +131,7 @@ class Employee extends Model
 
     public function department()
     {
-        return $this->belongsTo('App\Department','department_id','id');
+        return $this->belongsTo('App\Department');
     }
 
     public function team()
@@ -115,7 +146,7 @@ class Employee extends Model
 
     public function jobTitle()
     {
-        return $this->belongsTo('App\JobTitle','job_title_id','id');
+        return $this->belongsTo('App\JobTitle');
     }
 
     public function division()

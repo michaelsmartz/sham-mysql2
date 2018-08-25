@@ -110,15 +110,33 @@
                     @yield('content')
                 </div>
             </div>
+            
+            <div class="modal__container">
+                <input type="checkbox" id="open-modal" class="modal__toggler" />
+                <label class="modal__mask" for="open-modal"></label>
+                <div class="modal">
+                    <label class="modal__close" for="open-modal"></label>
+                    <div class="modal__header">
+                        <h2 class="modal__title">@yield('modalTitle')</h2>
+                    </div>
+                    <div class="modal__content">
+                        @yield('modalContent')
+                    </div>
+                    <div class="modal__footer">
+                        @yield('modalFooter')
+                    </div>
+                </div>
+            </div>
 
-            <div id="md" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
+            {{-- 
+            <div id="md" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="true" >
                 <div class="modal-dialog modal-lg">
-                    <div id="md-content" class="modal-content">@yield('modal')</div>
+                    <div id="md-content" class="modal-content"></div>
                 </div>
             </div>
             <div id="mdd" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
                 <div class="modal-dialog modal-md">
-                    <div id="md-content" class="modal-content">@yield('modal')</div>
+                    <div id="md-content" class="modal-content"></div>
                 </div>
             </div>
             <div id="mde" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="true" >
@@ -139,6 +157,7 @@
                     </div>
                 </div>
             </div>
+            --}}
 
             @if(Session::has('success') || Session::has('error'))
                 @include('alert')

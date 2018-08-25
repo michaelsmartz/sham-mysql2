@@ -536,7 +536,7 @@ return [
      */
     'generic_view_labels' => [
         'create' => [
-            'text' => 'Create New [% model_name_title %]',
+            'text' => 'Add [% model_name_title %]',
             'template' => 'create_model',
         ],
         'delete' => [

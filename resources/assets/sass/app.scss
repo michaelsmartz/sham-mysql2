@@ -6,7 +6,11 @@
 @import "variables";
 
 // Bootstrap
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+// see "node_modules/bootstrap-sass/assets/stylesheets/bootstrap.scss" for original import
+@import "bootstrap-individuals";
+
+//custom modals
+@import "custom-modal";
 
 //Font Awesome
 @import "node_modules/font-awesome/scss/font-awesome.scss";

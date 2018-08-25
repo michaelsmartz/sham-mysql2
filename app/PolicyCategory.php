@@ -18,10 +18,13 @@ class PolicyCategory extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
-                  'is_active'
+                  'description'
               ];
 
+    public function policies()
+    {
+        return $this->hasMany('App\Policy','policy_category_id','id');
+    }
 
 
 }

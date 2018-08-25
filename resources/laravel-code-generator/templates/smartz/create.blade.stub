@@ -1,31 +1,36 @@
-@extends('[% layout_name %]')
+@extends(Request::ajax()?'blank':'[% layout_name %]')
 @section('title', '[% create_model %]')
-@section('content')
-    <div class="box box-primary">
-        <form method="POST" action="{{ route('[% model_name_plural_variable %].store') }}" accept-charset="UTF-8" id="[% form_id %]" name="[% form_name %]" class="form-horizontal"[% upload_files %]>
-            {{ csrf_field() }}
-            <div class="box-body">
-                <div class="row">
-                    <!-- left column -->
-                    <div class="col-md-12">
-                        <!-- general form elements -->
-                        <div class="col-sm-12">
-                            <div class="panel-body">
-                            @include('[% form_view_name %]', [
-                                        '[% model_name_singular_variable %]' => null,
-                                    ])
+@section('modalTitle', '[% edit_model %]')
 
-                        </div>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <input class="btn btn-primary pull-right" type="submit" value="[% add %]">
-                    <a href="{{ route('[% model_name_plural_variable %].index') }}" class="btn btn-default pull-right" title="Show all [% model_plural %]">
-                        <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-                    </a>
-                </div>
-        </form>
-    </div>
+@section('modalFooter')
+    <input class="btn btn-primary pull-right" type="submit" value="[% add %]">
+    <a href="{{ route('[% model_name_plural_variable %].index') }}" class="btn btn-default pull-right" title="Show all [% model_plural %]">
+        <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+    </a>
 @endsection
 
+@section('modalContent')
+    <form method="POST" action="{{ route('[% model_name_plural_variable %].store') }}" accept-charset="UTF-8" id="[% form_id %]" name="[% form_name %]" class="form-horizontal"[% upload_files %]>
+        {{ csrf_field() }}
+        <div class="row">
+            <div class="col-sm-12">
+                @include('[% form_view_name %]', [
+                    '[% model_name_singular_variable %]' => null,
+                ])
+            </div>
+        </div>
+        @if(!Request::ajax())
+        <div class="box-footer">
+            @yield('modalFooter') 
+        </div>
+        @endif
+    </form>
+@endsection
 
+@section('content')
+    <div class="box box-primary">
+        <div class="box-body">
+                @yield('modalContent') 
+        </div>
+    </div>
+@endsection
