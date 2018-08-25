@@ -27,7 +27,7 @@ class SuccessfulLogin
      */
     public function handle(Login $event)
     {
-        $profileId = $event->user->shamuserprofile_id;
+        $profileId = $event->user->sham_user_profile_id;
         $s = ShamUserProfile::find($profileId);
         $allowedModules = $s->listMatrix();
         session(['allowedModules' => $allowedModules]);        

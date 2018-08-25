@@ -19,10 +19,13 @@ class AssetGroup extends Model
      */
     protected $fillable = [
                   'name',
-                  'description',
-                  'is_active'
+                  'description'
               ];
 
+    public function assets()
+    {
+        return $this->hasMany('App\Asset','asset_group_id','id');
+    }
 
 
 }

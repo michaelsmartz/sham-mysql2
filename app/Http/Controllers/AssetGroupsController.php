@@ -28,7 +28,7 @@ class AssetGroupsController extends CustomController
      */
     public function index()
     {
-        $assetGroups = $this->contextObj::filter(Input::all())->get();
+        $assetGroups = $this->contextObj::filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('assetGroups'));
     }
 

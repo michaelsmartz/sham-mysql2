@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
-class AssetSupplierController extends CustomController
+class AssetSuppliersController extends CustomController
 {
 
     public function __construct(){

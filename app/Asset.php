@@ -19,41 +19,36 @@ class Asset extends Model
      */
     protected $fillable = [
                   'name',
-                  'assetgroup_id',
-                  'assetsupplier_id',
-                  'assetcondition_id',
+                  'asset_group_id',
+                  'asset_supplier_id',
                   'tag',
                   'serial_no',
                   'purchase_price',
                   'po_number',
-                  'warrantyexpires_at',
+                  'warranty_expiry_date',
+                  'asset_condition_id',
                   'comments',
-                  'is_available',
-                  'is_active'
+                  'is_available'
               ];
 
-    /**
-     * Get the assetgroup for this model.
-     */
     public function assetGroup()
     {
-        return $this->belongsTo('App\AssetGroup','assetgroup_id');
+        return $this->belongsTo('App\AssetGroup','asset_group_id','id');
     }
 
-    /**
-     * Get the assetsupplier for this model.
-     */
     public function assetSupplier()
     {
-        return $this->belongsTo('App\AssetSupplier','assetsupplier_id');
+        return $this->belongsTo('App\AssetSupplier','asset_supplier_id','id');
     }
 
-    /**
-     * Get the assetcondition for this model.
-     */
     public function assetCondition()
     {
-        return $this->belongsTo('App\AssetCondition','assetcondition_id');
+        return $this->belongsTo('App\AssetCondition','asset_condition_id','id');
+    }
+
+    public function assetEmployees()
+    {
+        return $this->belongsToMany('App\Employee');
     }
 
 

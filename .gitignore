@@ -6,7 +6,7 @@
 Homestead.json
 Homestead.yaml
 .env
-/.history
+/.history/**
 /.vscode
 composer.lock
 package-lock.json

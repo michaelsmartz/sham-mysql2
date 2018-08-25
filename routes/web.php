@@ -19,6 +19,8 @@ Auth::routes();
 #region auth middleware routes
     Route::group(['middleware' => ['auth']], function() {
 
+        Overtrue\LaravelUploader\LaravelUploader::routes();
+
         // logout using get
         Route::get('auth/logout', 'Auth\LoginController@logout')->name('logout');
 
@@ -37,14 +39,24 @@ Auth::routes();
 
         #region Central HR
             Route::resource('employees', 'EmployeesController');
+
+            Route::get('employees/{employee?}/qualifications', 'EmployeesController@qualifications')->name('get-qualifications');
+            Route::get('employees/{employee?}/check-name', 'EmployeesController@checkEmployee')->name('check-name');
+            Route::get('employees/{employee?}/check-id', 'EmployeesController@checkId')->name('check-id');
+            Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
+            Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
+
             Route::resource('laws', 'LawsController');
             Route::resource('policies', 'PoliciesController');
+            Route::resource('assets', 'AssetsController');
+            Route::resource('assetgroups', 'AssetGroupsController');
+            Route::resource('assetsuppliers', 'AssetSuppliersController');
         #endregion
 
         #region Configuration parameters routes
             Route::group(['prefix'=>'config'], function(){
                 Route::get('employees', 'ConfigDropdownsController@employees')->name('employees');
-                Route::resource('assetsuppliers', 'AssetSupplierController');
+                Route::resource('assetsuppliers', 'AssetSuppliersController');
             });
         #endregion
 

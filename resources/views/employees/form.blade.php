@@ -1,302 +1,384 @@
-<div class="row">
-    
-<div class="form-group col-xs-12 {{ $errors->has('title_id') ? 'has-error' : '' }}">
-    <label for="title_id">Title</label>
-        <select class="form-control" id="title_id" name="title_id">
-        	    <option value="" style="display: none;" {{ old('title_id', isset($employee->title_id) ? $employee->title_id : '') == '' ? 'selected' : '' }} disabled selected>Select title</option>
-        	@foreach ($titles as $key => $title)
-			    <option value="{{ $key }}" {{ old('title_id', isset($employee->title_id) ? $employee->title_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $title }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('title_id', '<p class="help-block">:message</p>') !!}
-</div>
+<div class="position-center" id="accordion-app">
+    <ul data-direction="vertical" data-multiple="true" data-initial-index="[0,1]" data-event="click" class="accordion accordion--box accordion--vertical">
+        <li class="accordion__panel">
+            <span class="accordion__heading">Personal<i class="-icon -icon--right" data-wenk-pos="left" data-wenk="Click to expand/collapse this section"></i></span>
+            <div class="accordion__expander">
+                <div class="form-group">
+                    <div class="col-xs-2">
+                        <div class="avatar-upload">
+                            <div class="avatar-edit">
+                                <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
+                                <label for="imageUpload" title="change profile image"></label>
+                            </div>
+                            <div class="avatar-preview">
+                                <div id="imagePreview" style="background-image: url({{URL::to('/')}}/img/avatar.png);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                    <span class="field">
+                        {!! Form::text('birth_date', old('birth_date', isset($employee->birth_date) ? $employee->birth_date : null), ['class'=>'form-control datepicker field-required', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
+                        <label for="birth_date">Date of birth</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-2">
+                        {!! Form::select('gender_id', $genders, old('gender_id', isset($employee->gender_id) ? $employee->gender_id : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Gender..', 'required', 'title'=>'Required']) !!}
+                    </div>
+                    <div class="col-sm-2">
+                        {!! Form::select('title_id', $titles, old('title_id', isset($employee->title_id) ? $employee->title_id : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Title..', 'data-field-name'=>'Title', 'required', 'title'=>'Required']) !!}
+                    </div>
+                    <div class="col-sm-4">
+                        {!! Form::select('marital_status_id', $maritalstatuses, old('marital_status_id', isset($employee->marital_status_id) ? $employee->marital_status_id : null), ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Marital Status..']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-3">
+                    <span class="field">
+                        {!! Form::text('first_name', old('first_name', isset($employee->first_name) ? $employee->first_name : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'First Name', 'required', 'title'=>'Required','id'=>'first_name']) !!}
+                        <label for="first_name">First Name</label>
+                    </span>
 
-<div class="form-group col-xs-12 {{ $errors->has('initials') ? 'has-error' : '' }}">
-    <label for="initials">Initials</label>
-        <input class="form-control" name="initials" type="text" id="initials" value="{{ old('initials', isset($employee->initials) ? $employee->initials : null) }}" maxlength="10" placeholder="Enter initials">
-        {!! $errors->first('initials', '<p class="help-block">:message</p>') !!}
-</div>
+                    </div>
+                    <div class="col-sm-3">
+                        {!! Form::text('known_as', old('known_as', isset($employee->known_as) ? $employee->known_as : null), ['class'=>'form-control title-case', 'autocomplete'=>'off', 'placeholder'=>'Second/Other names']) !!}
+                    </div>
+                    <div class="col-sm-4">
+                    <span class="field">
+                        {!! Form::text('surname', old('surname', isset($employee->surname) ? $employee->surname : null), ['class'=>'form-control title-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Surname', 'required', 'title'=>'Required','id'=>'surname']) !!}
+                        <label for="surname">Surname</label>
+                    </span>
+                    </div>
+                </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('first_name') ? 'has-error' : '' }}">
-    <label for="first_name">First Name</label>
-        <input class="form-control" name="first_name" type="text" id="first_name" value="{{ old('first_name', isset($employee->first_name) ? $employee->first_name : null) }}" maxlength="50" placeholder="Enter first name">
-        {!! $errors->first('first_name', '<p class="help-block">:message</p>') !!}
-</div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-3">
+                        {!! Form::select('passport_country_id', $countries, old('passport_country_id', isset($employee->passport_country_id) ? $employee->passport_country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Passport Country..', 'id'=>'passport_country_id']) !!}
+                    </div>
+                    <div class="col-sm-3">
+                    <span class="field">
+                        {!! Form::text('passport_no', old('passport_no', isset($employee->passport_no) ? $employee->passport_no : null), ['class'=>'form-control', 'dependsOnFieldNotEmpty'=>'passport_country_id', 'autocomplete'=>'off', 'placeholder'=>'Passport No',
+                                'data-parsley-validate-if-empty'=>'true',
+                                'data-parsley-required-if'=>'#passport_country_id',
+                                'data-parsley-trigger'=>'focusout',
+                                'data-parsley-remote',
+                                'data-parsley-remote-validator'=>'checkPassport',
+                                'data-parsley-remote-message'=>'Passport Number is already in use'])
+                        !!}
+                        <label for="passport_no">Passport No</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-4">
+                        {!! Form::select('immigration_status_id', $immigrationStatuses, old('immigration_status_id', isset($employee->immigration_status_id) ? $employee->immigration_status_id : null), ['class'=>'form-control', 'dependsOnFieldNotEmpty'=>'passport_country_id', 'autocomplete'=>'off', 'placeholder'=>'Immigration Status..']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-3">
+                    <span class="field">
+                        {!! Form::text('id_number', old('id_number', isset($employee->id_number) ? $employee->id_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'ID Number',
+                                'required', 'title' => 'Required', 'id' => 'id_number',
+                                'data-parsley-trigger' => 'focusout',
+                                'data-parsley-remote',
+                                'data-parsley-remote-validator'=>'checkId',
+                                'data-parsley-remote-message' => 'Id Number is already in use']) !!}
+                        <label for="id_number">ID Number</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-3">
+                    <span class="field">
+                        {!! Form::text('nationality', old('nationality', isset($employee->nationality) ? $employee->nationality : null),['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Nationality']) !!}
+                        <label for="nationality">Nationality</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-4">
+                        {!! Form::select('ethnic_group_id', $ethnicGroups, old('ethnic_group_id', isset($employee->ethnic_group_id) ? $employee->ethnic_group_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Ethnic Group..']) !!}
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="accordion__panel">
+            <span class="accordion__heading">Address<i class="-icon -icon--right" data-wenk-pos="left" data-wenk="Click to expand/collapse this section"></i></span>
+            <div class="accordion__expander">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Home Address</label>
+                    <div class="col-sm-5">
+                    <span class="field">
+                        {!! Form::text('homeAddress[addr_line_1]', old('homeAddress[addr_line_1]', isset($employee->homeAddress->addr_line_1) ? $employee->homeAddress->addr_line_1 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 1', 'id'=>'homeaddr1', 'data-mirror'=>'#postaladdr1']) !!}
+                        <label for="homeAddress[addr_line_1]">Address Line 1</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-5">
+                    <span class="field">
+                        {!! Form::text('homeAddress[addr_line_2]', old('homeAddress[addr_line_2]', isset($employee->homeAddress->addr_line_2) ? $employee->homeAddress->addr_line_2 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 2', 'id'=>'homeaddr2', 'data-mirror'=>'#postaladdr2']) !!}
+                        <label for="homeAddress[addr_line_2]">Address Line 2</label>
+                    </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-3">
+                    <span class="field">
+                        {!! Form::text('homeAddress[city]', old('homeAddress[city]', isset($employee->homeAddress->city) ? $employee->homeAddress->city : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'City', 'id'=>'homecity', 'data-mirror'=>'#postalcity']) !!}
+                        <label for="homeAddress[city]">City</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-2">
+                    <span class="field">
+                        {!! Form::text('homeAddress[province]', old('homeAddress[province]', isset($employee->homeAddress->province) ? $employee->homeAddress->province : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Province', 'id'=>'homeprovince', 'data-mirror'=>'#postalprovince']) !!}
+                        <label for="homeAddress[province]">Province</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-2">
+                    <span class="field">
+                        {!! Form::text('homeAddress[zip_code]', old('homeAddress[zip_code]', isset($employee->homeAddress->zip_code) ? $employee->homeAddress->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'homezip', 'data-mirror'=>'#postalzip']) !!}
+                        <label for="homeAddress[zip_code]">Zip Code</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-3">
+                        {!! Form::select('homeAddress[country_id]', $countries, old('homeAddress[country_id]', isset($employee->homeAddress->country_id) ? $employee->homeAddress->country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Country..', 'id'=>'homecountry', 'data-mirror'=>'#postalcountry']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Postal Address</label>
+                    <div class="col-sm-5">
+                    <span class="field">
+                        {!! Form::text('postalAddress[addr_line_1]', old('postalAddress[addr_line_1]', isset($employee->postalAddress->addr_line_1) ? $employee->postalAddress->addr_line_1 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 1', 'id'=>'postaladdr1']) !!}
+                        <label for="postalAddress[addr_line_1]">Address Line 1</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-5">
+                    <span class="field">
+                        {!! Form::text('postalAddress[addr_line_2]', old('postalAddress[addr_line_2]', isset($employee->postalAddress->addr_line_2) ? $employee->postalAddress->addr_line_2 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 2', 'id'=>'postaladdr2']) !!}
+                        <label for="postalAddress[addr_line_2]">Address Line 2</label>
+                    </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-3">
+                    <span class="field">
+                        {!! Form::text('postalAddress[city]', old('postalAddress[city]', isset($employee->postalAddress->city) ? $employee->postalAddress->city : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'City', 'id'=>'postalcity']) !!}
+                        <label for="postalAddress[city]">City</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-2">
+                    <span class="field">
+                        {!! Form::text('postalAddress[province]', old('postalAddress[province]', isset($employee->postalAddress->province) ? $employee->postalAddress->province : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Province', 'id'=>'postalprovince']) !!}
+                        <label for="postalAddress[province]">Province</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-2">
+                    <span class="field">
+                        {!! Form::text('postalAddress[zip_code]', old('postalAddress[zip_code]', isset($employee->postalAddress->zip_code) ? $employee->postalAddress->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'postalzip']) !!}
+                        <label for="postalAddress[zip_code]">Zip Code</label>
+                    </span>
+                    </div>
+                    <div class="col-sm-3">
+                        {!! Form::select('postalAddress[country_id]', $countries, old('postalAddress[country_id]', isset($employee->postalAddress->country_id) ? $employee->postalAddress->country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Country..', 'id'=>'postalcountry']) !!}
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="accordion__panel">
+            <span class="accordion__heading">Contact<i class="-icon -icon--right" data-wenk-pos="left" data-wenk="Click to expand/collapse this section"></i></span>
+            <div class="accordion__expander">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Phones</label>
+                    <div class="col-sm-3">
+                        <span class="field">
+                            {!! Form::text('homePhone[tel_number]', old('homePhone[tel_number]', isset($employee->homePhone->tel_number) ? $employee->homePhone->tel_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'id'=>'phone', 'placeholder'=>'Home']) !!}
+                            <label for="homePhone[tel_number]">Home Phone</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-3">
+                        <span class="field">
+                            {!! Form::text('mobilePhone[tel_number]', old('mobilePhone[tel_number]', isset($employee->mobilePhone->tel_number) ? $employee->mobilePhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'cell', 'placeholder'=>'Mobile', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$"]) !!}
+                            <label for="mobilePhone[tel_number]">Mobile Phone</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="field">
+                            {!! Form::text('workPhone[tel_number]', old('workPhone[tel_number]', isset($employee->workPhone->tel_number) ? $employee->workPhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'emergency', 'placeholder'=>'Emergency Contact', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$"]) !!}
+                            <label for="workPhone[tel_number]">Emergency Contact</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::text('privateEmail[email_address]', old('privateEmail[email_address]', isset($employee->privateEmail->tel_number) ? $employee->privateEmail->email_address : null), ['class'=>'form-control email', 'autocomplete'=>'off', 'placeholder'=>'Private Email']) !!}
+                            <label for="privateEmail[email_address]">Private Email</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::text('workEmail[email_address]', old('workEmail[email_address]', isset($employee->workEmail->email_address) ? $employee->workEmail->email_address : null), ['class'=>'form-control email', 'autocomplete'=>'off', 'placeholder'=>'Work Email']) !!}
+                            <label for="workEmail[email_address]">Work Email</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Next Of Kin</label>
+                    <div class="col-sm-5">
+                        {!! Form::text('spouse_full_name', old('spouse_full_name', isset($employee->spouse_full_name) ? $employee->spouse_full_name : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Full Name']) !!}
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="accordion__panel">
+            <span class="accordion__heading">Employment<i class="-icon -icon--right" data-wenk-pos="left" data-wenk="Click to expand/collapse this section"></i></span>
+            <div class="accordion__expander">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Company</label>
+                    <div class="col-sm-2">
+                        {!! Form::select('division_id', $divisions, old('division_id', isset($employee->division_id) ? $employee->division_id : null), ['placeholder' => 'Division..','class' => 'form-control']) !!}
+                    </div>
+                    <div class="col-sm-2">
+                        {!! Form::select('branch_id', $branches, old('branch_id', isset($employee->branch_id) ? $employee->branch_id : null), ['placeholder' => 'Branch..','class' => 'form-control']) !!}
+                    </div>
+                    <div class="col-sm-3">
+                        {!! Form::select('department_id', $departments, old('branch_id', isset($employee->department_id) ? $employee->department_id : null), ['placeholder' => 'Department..','class' => 'form-control field-required', 'required', 'title'=>'Required']) !!}
+                    </div>
+                    <div class="col-sm-3">
+                        {!! Form::select('team_id',$teams, old('team_id', isset($employee->team_id) ? $employee->team_id : null), ['placeholder' => 'Team..','class' => 'form-control field-required', 'required', 'title'=>'Required']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Reporting Line</label>
 
-<div class="form-group col-xs-12 {{ $errors->has('surname') ? 'has-error' : '' }}">
-    <label for="surname">Surname</label>
-        <input class="form-control" name="surname" type="text" id="surname" value="{{ old('surname', isset($employee->surname) ? $employee->surname : null) }}" maxlength="50" placeholder="Enter surname">
-        {!! $errors->first('surname', '<p class="help-block">:message</p>') !!}
-</div>
+                    <div class="col-sm-4">
+                        <select id="job_title_id" name="job_title_id" class="form-control field-required" placeholder="Job Title.."></select>
+                    </div>
+                    <div class="col-sm-6">
+                        <select id="line_manager_id" name="line_manager_id" placeholder="Reporting Line.."></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Identification</label>
+                    <div class="col-sm-2">
+                        <span class="field">
+                            {!! Form::text('physical_file_no', old('physical_file_no', isset($employee->physical_file_no) ? $employee->physical_file_no : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Physical File Number']) !!}
+                            <label for="physical_file_no">Physical File Number</label>
+                        </span>
 
-<div class="form-group col-xs-12 {{ $errors->has('known_as') ? 'has-error' : '' }}">
-    <label for="known_as">Known As</label>
-        <input class="form-control" name="known_as" type="text" id="known_as" value="{{ old('known_as', isset($employee->known_as) ? $employee->known_as : null) }}" maxlength="50" placeholder="Enter known as">
-        {!! $errors->first('known_as', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('birth_date') ? 'has-error' : '' }}">
-    <label for="birth_date">Birth Date</label>
-        <input class="form-control" name="birth_date" type="text" id="birth_date" value="{{ old('birth_date', isset($employee->birth_date) ? $employee->birth_date : null) }}" placeholder="Enter birth date">
-        {!! $errors->first('birth_date', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('marital_status_id') ? 'has-error' : '' }}">
-    <label for="marital_status_id">Marital Status</label>
-        <select class="form-control" id="marital_status_id" name="marital_status_id">
-        	    <option value="" style="display: none;" {{ old('marital_status_id', isset($employee->marital_status_id) ? $employee->marital_status_id : '') == '' ? 'selected' : '' }} disabled selected>Select marital status</option>
-        	@foreach ($maritalstatuses as $key => $maritalstatus)
-			    <option value="{{ $key }}" {{ old('marital_status_id', isset($employee->marital_status_id) ? $employee->marital_status_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $maritalstatus }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('marital_status_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('id_number') ? 'has-error' : '' }}">
-    <label for="id_number">Id Number</label>
-        <input class="form-control" name="id_number" type="text" id="id_number" value="{{ old('id_number', isset($employee->id_number) ? $employee->id_number : null) }}" min="1" max="50" required="true" placeholder="Enter id number">
-        {!! $errors->first('id_number', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('passport_country_id') ? 'has-error' : '' }}">
-    <label for="passport_country_id">Passport Country</label>
-        <select class="form-control" id="passport_country_id" name="passport_country_id">
-        	    <option value="" style="display: none;" {{ old('passport_country_id', isset($employee->passport_country_id) ? $employee->passport_country_id : '') == '' ? 'selected' : '' }} disabled selected>Enter passport country</option>
-        	@foreach ($countries as $key => $country)
-			    <option value="{{ $key }}" {{ old('passport_country_id', isset($employee->passport_country_id) ? $employee->passport_country_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $country }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('passport_country_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('nationality') ? 'has-error' : '' }}">
-    <label for="nationality">Nationality</label>
-        <input class="form-control" name="nationality" type="text" id="nationality" value="{{ old('nationality', isset($employee->nationality) ? $employee->nationality : null) }}" maxlength="50" placeholder="Enter nationality">
-        {!! $errors->first('nationality', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('language_id') ? 'has-error' : '' }}">
-    <label for="language_id">Language</label>
-        <select class="form-control" id="language_id" name="language_id">
-        	    <option value="" style="display: none;" {{ old('language_id', isset($employee->language_id) ? $employee->language_id : '') == '' ? 'selected' : '' }} disabled selected>Enter language</option>
-        	@foreach ($languages as $key => $language)
-			    <option value="{{ $key }}" {{ old('language_id', isset($employee->language_id) ? $employee->language_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $language }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('language_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('gender_id') ? 'has-error' : '' }}">
-    <label for="gender_id">Gender</label>
-        <select class="form-control" id="gender_id" name="gender_id">
-        	    <option value="" style="display: none;" {{ old('gender_id', isset($employee->gender_id) ? $employee->gender_id : '') == '' ? 'selected' : '' }} disabled selected>Select gender</option>
-        	@foreach ($genders as $key => $gender)
-			    <option value="{{ $key }}" {{ old('gender_id', isset($employee->gender_id) ? $employee->gender_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $gender }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('gender_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('ethnic_group_id') ? 'has-error' : '' }}">
-    <label for="ethnic_group_id">Ethnic Group</label>
-        <select class="form-control" id="ethnic_group_id" name="ethnic_group_id">
-        	    <option value="" style="display: none;" {{ old('ethnic_group_id', isset($employee->ethnic_group_id) ? $employee->ethnic_group_id : '') == '' ? 'selected' : '' }} disabled selected>Select ethnic group</option>
-        	@foreach ($ethnicGroups as $key => $ethnicGroup)
-			    <option value="{{ $key }}" {{ old('ethnic_group_id', isset($employee->ethnic_group_id) ? $employee->ethnic_group_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $ethnicGroup }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('ethnic_group_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('immigration_status_id') ? 'has-error' : '' }}">
-    <label for="immigration_status_id">Immigration Status</label>
-        <select class="form-control" id="immigration_status_id" name="immigration_status_id">
-        	    <option value="" style="display: none;" {{ old('immigration_status_id', isset($employee->immigration_status_id) ? $employee->immigration_status_id : '') == '' ? 'selected' : '' }} disabled selected>Select immigration status</option>
-        	@foreach ($immigrationStatuses as $key => $immigrationStatus)
-			    <option value="{{ $key }}" {{ old('immigration_status_id', isset($employee->immigration_status_id) ? $employee->immigration_status_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $immigrationStatus }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('immigration_status_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('passport_no') ? 'has-error' : '' }}">
-    <label for="passport_no">Passport No</label>
-        <input class="form-control" name="passport_no" type="text" id="passport_no" value="{{ old('passport_no', isset($employee->passport_no) ? $employee->passport_no : null) }}" maxlength="50" placeholder="Enter passport no">
-        {!! $errors->first('passport_no', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('spouse_full_name') ? 'has-error' : '' }}">
-    <label for="spouse_full_name">Spouse Full Name</label>
-        <input class="form-control" name="spouse_full_name" type="text" id="spouse_full_name" value="{{ old('spouse_full_name', isset($employee->spouse_full_name) ? $employee->spouse_full_name : null) }}" maxlength="50" placeholder="Enter spouse full name">
-        {!! $errors->first('spouse_full_name', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('employee_no') ? 'has-error' : '' }}">
-    <label for="employee_no">Employee No</label>
-        <input class="form-control" name="employee_no" type="text" id="employee_no" value="{{ old('employee_no', isset($employee->employee_no) ? $employee->employee_no : null) }}" minlength="1" maxlength="50" required="true" placeholder="Enter employee no">
-        {!! $errors->first('employee_no', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('employee_code') ? 'has-error' : '' }}">
-    <label for="employee_code">Employee Code</label>
-        <input class="form-control" name="employee_code" type="text" id="employee_code" value="{{ old('employee_code', isset($employee->employee_code) ? $employee->employee_code : null) }}" minlength="1" maxlength="50" required="true" placeholder="Enter employee code">
-        {!! $errors->first('employee_code', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('tax_number') ? 'has-error' : '' }}">
-    <label for="tax_number">Tax Number</label>
-        <input class="form-control" name="tax_number" type="text" id="tax_number" value="{{ old('tax_number', isset($employee->tax_number) ? $employee->tax_number : null) }}" min="0" max="50" placeholder="Enter tax number">
-        {!! $errors->first('tax_number', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('tax_status_id') ? 'has-error' : '' }}">
-    <label for="tax_status_id">Tax Status</label>
-        <select class="form-control" id="tax_status_id" name="tax_status_id">
-        	    <option value="" style="display: none;" {{ old('tax_status_id', isset($employee->tax_status_id) ? $employee->tax_status_id : '') == '' ? 'selected' : '' }} disabled selected>Select tax status</option>
-        	@foreach ($taxstatuses as $key => $taxstatus)
-			    <option value="{{ $key }}" {{ old('tax_status_id', isset($employee->tax_status_id) ? $employee->tax_status_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $taxstatus }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('tax_status_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('date_joined') ? 'has-error' : '' }}">
-    <label for="date_joined">Date Joined</label>
-        <input class="form-control" name="date_joined" type="text" id="date_joined" value="{{ old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null) }}" placeholder="Enter date joined">
-        {!! $errors->first('date_joined', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('date_terminated') ? 'has-error' : '' }}">
-    <label for="date_terminated">Date Terminated</label>
-        <input class="form-control" name="date_terminated" type="text" id="date_terminated" value="{{ old('date_terminated', isset($employee->date_terminated) ? $employee->date_terminated : null) }}" placeholder="Enter date terminated">
-        {!! $errors->first('date_terminated', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('department_id') ? 'has-error' : '' }}">
-    <label for="department_id">Department</label>
-        <select class="form-control" id="department_id" name="department_id">
-        	    <option value="" style="display: none;" {{ old('department_id', isset($employee->department_id) ? $employee->department_id : '') == '' ? 'selected' : '' }} disabled selected>Select department</option>
-        	@foreach ($departments as $key => $department)
-			    <option value="{{ $key }}" {{ old('department_id', isset($employee->department_id) ? $employee->department_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $department }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('department_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('team_id') ? 'has-error' : '' }}">
-    <label for="team_id">Team</label>
-        <select class="form-control" id="team_id" name="team_id">
-        	    <option value="" style="display: none;" {{ old('team_id', isset($employee->team_id) ? $employee->team_id : '') == '' ? 'selected' : '' }} disabled selected>Select team</option>
-        	@foreach ($teams as $key => $team)
-			    <option value="{{ $key }}" {{ old('team_id', isset($employee->team_id) ? $employee->team_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $team }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('team_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('employee_status_id') ? 'has-error' : '' }}">
-    <label for="employee_status_id">Employee Status</label>
-        <select class="form-control" id="employee_status_id" name="employee_status_id">
-        	    <option value="" style="display: none;" {{ old('employee_status_id', isset($employee->employee_status_id) ? $employee->employee_status_id : '') == '' ? 'selected' : '' }} disabled selected>Select employee status</option>
-        	@foreach ($employeeStatuses as $key => $employeeStatus)
-			    <option value="{{ $key }}" {{ old('employee_status_id', isset($employee->employee_status_id) ? $employee->employee_status_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $employeeStatus }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('employee_status_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('physical_file_no') ? 'has-error' : '' }}">
-    <label for="physical_file_no">Physical File No</label>
-        <input class="form-control" name="physical_file_no" type="text" id="physical_file_no" value="{{ old('physical_file_no', isset($employee->physical_file_no) ? $employee->physical_file_no : null) }}" maxlength="50" placeholder="Enter physical file no">
-        {!! $errors->first('physical_file_no', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('job_title_id') ? 'has-error' : '' }}">
-    <label for="job_title_id">Job Title</label>
-        <select class="form-control" id="job_title_id" name="job_title_id">
-        	    <option value="" style="display: none;" {{ old('job_title_id', isset($employee->job_title_id) ? $employee->job_title_id : '') == '' ? 'selected' : '' }} disabled selected>Select job title</option>
-        	@foreach ($jobTitles as $key => $jobTitle)
-			    <option value="{{ $key }}" {{ old('job_title_id', isset($employee->job_title_id) ? $employee->job_title_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $jobTitle }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('job_title_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('division_id') ? 'has-error' : '' }}">
-    <label for="division_id">Division</label>
-        <select class="form-control" id="division_id" name="division_id">
-        	    <option value="" style="display: none;" {{ old('division_id', isset($employee->division_id) ? $employee->division_id : '') == '' ? 'selected' : '' }} disabled selected>Select division</option>
-        	@foreach ($divisions as $key => $division)
-			    <option value="{{ $key }}" {{ old('division_id', isset($employee->division_id) ? $employee->division_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $division }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('division_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('branch_id') ? 'has-error' : '' }}">
-    <label for="branch_id">Branch</label>
-        <select class="form-control" id="branch_id" name="branch_id">
-        	    <option value="" style="display: none;" {{ old('branch_id', isset($employee->branch_id) ? $employee->branch_id : '') == '' ? 'selected' : '' }} disabled selected>Select branch</option>
-        	@foreach ($branches as $key => $branch)
-			    <option value="{{ $key }}" {{ old('branch_id', isset($employee->branch_id) ? $employee->branch_id : null) == $key ? 'selected' : '' }}>
-			    	{{ $branch }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('branch_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-12 {{ $errors->has('picture') ? 'has-error' : '' }}">
-    <label for="picture">Picture</label>
-        <input class="form-control" name="picture" type="text" id="picture" value="{{ old('picture', isset($employee->picture) ? $employee->picture : null) }}" maxlength="4294967295">
-        {!! $errors->first('picture', '<p class="help-block">:message</p>') !!}
-</div>
-
-{{-- 
-<div class="form-group col-xs-12 {{ $errors->has('line_manager_id') ? 'has-error' : '' }}">
-    <label for="line_manager_id">Line Manager</label>
-    {!! Form::select("line_manager_id", $lineManagers, isset($employee->line_manager_id) ? $employee->line_manager_id : null, array('class' => 'form-control')) !!}
-    {!! $errors->first('line_manager_id', '<p class="help-block">:message</p>') !!}
-</div>
---}}
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="field">
+                            {!! Form::text('employee_no', old('employee_no', isset($employee->employee_no) ? $employee->employee_no : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Employee No', 'required', 'title'=>'Required',
+                               'data-parsley-trigger'=>'focusout',
+                               'data-parsley-remote',
+                               'data-parsley-remote-validator'=>'checkEmployeeNo',
+                               'data-parsley-remote-message'=>'Employee No is already in use']) !!}
+                            <label for="employee_no">Employee Number</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="field">
+                            {!! Form::text('employee_code', old('employee_code', isset($employee->employee_code) ? $employee->employee_code : null), ['class'=>'form-control','disabled', 'autocomplete'=>'off', 'placeholder'=>'Employee Code']) !!}
+                            <label for="employee_code">Employee Code</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Join/Termination Dates</label>
+                    <div class="col-sm-3">
+                        <span class="field">
+                            {!! Form::text('date_joined', old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null), ['class'=>'form-control datepicker', 'placeholder'=>'Joined Date', 'id'=>'JoinedDate']) !!}
+                            <label for="date_joined">Date Joined</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-3">
+                        <span class="field">
+                            {!! Form::text('date_terminated', old('date_terminated', isset($employee->date_terminated) ? $employee->date_terminated : null), ($_mode=='view' || $_mode=='create')?['class'=>'form-control','disabled', 'placeholder'=>'Termination Date']:['class'=>'form-control datepicker', 'placeholder'=>'Termination Date', 'id'=>'TerminationDate']) !!}
+                            <label for="date_terminated">Termination Date</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-4">
+                        {!! Form::select('employee_status_id', $employeeStatuses, old('employee_status_id', isset($employee->employee_status_id) ? $employee->employee_status_id : null), ($_mode=='view')?['placeholder' => '','class'=>'form-control','disabled']:['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Employee Status..']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Tax Details</label>
+                    <div class="col-sm-4">
+                        {!! Form::select('tax_status_id', $taxstatuses, old('tax_status_id', isset($employee->tax_status_id) ? $employee->tax_status_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Tax Status..']) !!}
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="field">
+                            {!! Form::text('tax_number', old('tax_number', isset($employee->tax_number) ? $employee->tax_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Tax No']) !!}
+                            <label for="tax_number">Tax Number</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Skills</label>
+                    <div class="col-sm-10">
+                        {!! Form::select('skills', $skills, old('skills', isset($employeeSkills) ? $employeeSkills : null), ['class' => 'form-control select-multiple', 'multiple'=>'multiple']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Disabilities</label>
+                    <div class="col-sm-10">
+                        {!! Form::groupSelect('disabilities', $disabilities, 'disabilities', 
+                                              'description', 'description', 'id', 
+                                              isset($employeeDisabilities) ? $employeeDisabilities : null, ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
+                                             ) !!}
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="accordion__panel">
+            <span class="accordion__heading">Qualifications<i class="-icon -icon--right" data-wenk-pos="left" data-wenk="Click to expand/collapse this section"></i></span>
+            <div class="accordion__expander">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <button class="btn btn-default" v-on:click="addNewQual" type="button" data-wenk-pos="right"
+                                    data-wenk="Add New Qualification">
+                                <i class="fa fa-plus text-success"></i>
+                            </button>
+                        </div>
+                        <label class="col-sm-1">Ref</label>
+                        <label class="col-sm-3">Description</label>
+                        <label class="col-sm-3">Institution</label>
+                        <label class="col-sm-2">Student Number</label>
+                        <label class="col-sm-2">Date Obtained</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row" v-for="(qual, index) in quals">
+                        <div class="col-xs-1">
+                            <button type="button" v-on:click="removeQual(index)" class="btn btn-default" data-wenk-pos="right"
+                                    data-wenk="Remove Qualification">
+                                <i class="fa fa-minus" style="color:rgb(255,59,48)"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-1">
+                            <input v-model="qual.reference" type="text"
+                                   name="qualifications[][reference]" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <input v-model="qual.description" type="text"
+                                   name="qualifications[][description]" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <input v-model="qual.institution" type="text"
+                                   name="Qualifications[][institution]" class="form-control">
+                        </div>
+                        <div class="col-sm-2">
+                            <input v-model="qual.student_no" type="text"
+                                   name="qualifications[][student_no]" class="form-control">
+                        </div>
+                        <div class="col-sm-2">
+                            <DatePicker v-model="qual.obtained_on" class="form-control"
+                                    name="qualifications[][obtained_on]" :dateFormat="yy-mm-dd" :change-month="true" :change-year="true"></DatePicker>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
 </div>

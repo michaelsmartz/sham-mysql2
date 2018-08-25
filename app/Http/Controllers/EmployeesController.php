@@ -8,6 +8,7 @@ use App\Branch;
 use App\Gender;
 use App\Country;
 use App\Employee;
+use App\DisabilityCategory;
 use App\Division;
 use App\Language;
 use App\JobTitle;
@@ -19,9 +20,14 @@ use App\EthnicGroup;
 use App\Maritalstatus;
 use App\EmployeeStatus;
 use App\ImmigrationStatus;
+use App\Qualification;
+use App\Skill;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Database\Eloquent\Builder;
 
 class EmployeesController extends CustomController
 {
@@ -53,49 +59,59 @@ class EmployeesController extends CustomController
         /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        $data = $this->contextObj->findData($id);
-
-        $titles = Title::pluck('description','id')->all();
-        $genders = Gender::pluck('description','id')->all();
-        $maritalstatuses = Maritalstatus::pluck('description','id')->all();
-        $countries = Country::pluck('description','id')->all();
-        $languages = Language::pluck('description','id')->all();
-        $ethnicGroups = EthnicGroup::pluck('description','id')->all();
-        $immigrationStatuses = ImmigrationStatus::pluck('description','id')->all();
-        $taxstatuses = TaxStatus::pluck('description','id')->all();
-        $departments = Department::pluck('description','id')->all();
-        $teams = Team::pluck('description','id')->all();
-        $employeeStatuses = EmployeeStatus::pluck('description','id')->all();
-        $jobTitles = JobTitle::pluck('description','id')->all();
-        $divisions = Division::pluck('description','id')->all();
-        $branches = Branch::pluck('description','id')->all();
-
+        $data = $titles = $genders = $countries = $maritalstatuses = null;
+        $languages = $ethnicGroups = $immigrationStatuses = $taxstatuses = null;
+        $departments = $teams = $employeeStatuses = $jobTitles = $divisions = null;
+        $branches = null;
+        $_mode = 'edit';
+        $fullPageEdit = true;
         $lineManagers = array();
-        $j = JobTitle::ManagerialJobs()->with(['employees' => function($q){
-            $q->EmployeesLite();
-        }])->get();
 
-        $j->each(function($item) use (&$lineManagers){
-            $item->description = trim($item->description);
-            $lineManagers[$item->description] = array();
-            $item->employees->each(function($e) use (&$lineManagers,$item){
-                $fullName = $e->first_name . ' ' .$e->surname;
-                $temp = array($fullName => $e->id);
-                array_push($lineManagers[$item->description], $temp);
+        $id = Route::current()->parameter('employee');
+
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+
+            $data->homeAddress = $data->addresses->where('address_type_id', 1)->first();
+            $data->postalAddress = $data->addresses->where('address_type_id', 2)->first();
+
+            $data->privateEmail = $data->emails->where('email_address_type_id', 1)->first();
+            $data->workEmail = $data->emails->where('email_address_type_id', 2)->first();
+
+            $data->homePhone = $data->phones->where('telephone_number_type_id', 1)->first();
+            $data->mobilePhone = $data->phones->where('telephone_number_type_id', 2)->first();
+            $data->workPhone = $data->phones->where('telephone_number_type_id', 3)->first();
+
+            list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
+                 $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
+                 $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
+
+            $j = JobTitle::ManagerialJobs()->with(['employees' => function($q){
+                $q->EmployeesLite();
+            }])->get();
+    
+            $j->each(function($item) use (&$lineManagers){
+                $item->description = trim($item->description);
+                $lineManagers[$item->description] = array();
+                $item->employees->each(function($e) use (&$lineManagers,$item){
+                    $fullName = $e->first_name . ' ' .$e->surname;
+                    $temp = array($fullName => $e->id);
+                    array_push($lineManagers[$item->description], $temp);
+                });
             });
-        });
+        }
 
         return view($this->baseViewPath .'.edit',
-            compact('data','titles','genders','maritalstatuses',
+            compact('_mode','fullPageEdit','data','titles','genders','maritalstatuses',
                     'countries','languages','ethnicGroups',
                     'immigrationStatuses','taxstatuses','departments',
                     'teams','employeeStatuses','jobTitles',
-                    'divisions','branches','lineManagers'));
+                    'divisions','branches','skills','disabilities','lineManagers'));
     }
 
     /**
@@ -154,7 +170,116 @@ class EmployeesController extends CustomController
 
         return redirect()->route($this->baseViewPath .'.index');
     }
+
+    public function qualifications(Request $request)
+    {
+        $id = intval(Route::current()->parameter('employee'));
+        $result = Qualification::where('employee_id', $id)->get();
+
+        return Response()->json($result);
+    }
+    public function checkEmployee(Request $request) 
+    {
+        $result = false;
+        $id = intval(Route::current()->parameter('employee'));
+
+        $firstName = trim(request('firstName', false));
+        $surname = trim(request('surname', false));
+
+        $query = Employee::select(['id','first_name','surname','employee_no'])
+                           ->whereNotNull('date_terminated');
+        $query->when(request('idNumber', false), function ($q, $idNumber) { 
+            return $q->where('id_number', $idNumber);
+        });
+        $query->when(request('firstName', false), function ($q, $firstName) { 
+            return $q->where('first_name', 'like', '%'.$firstName.'%');
+        });
+        $query->when(request('surName', false), function ($q, $surName) { 
+            return $q->where('surname', 'like', '%'.$surName.'%');
+        });
+
+        if ($id != 0) {
+            $query = $query->where('id', '!=', $id);
+        }
+
+        return Response()->json($result); 
+    }
+    public function checkId(Request $request) 
+    {
+        $result = true;
+        $id = intval(Route::current()->parameter('employee'));
+
+        $firstName = trim(request('firstName', false));
+        $surname = trim(request('surname', false));
+
+        $query = Employee::select(['id','first_name','surname']);
+        // From Laravel 5.4 you can pass the same condition value as a parameter
+        // https://laraveldaily.com/less-know-way-conditional-queries/
+        $query->when(request('idNumber', false), function ($q, $idNumber) { 
+            return $q->where('id_number', $idNumber);
+        });
+
+        if ($id != 0) {
+            $query = $query->where('id', '!=', $id);
+        }
+
+        $array = $query->get();
+        $filtered = $array->filter(function ($employee, $key) use($firstName,$surname) {
+            return ($employee->first_name != $firstName && $employee->surname != $surname);
+        });
+        //dump($query->toSql());
+        //dump($query->getBindings());
+
+        $result = $filtered->count() == 0;
+        return Response()->json($result); 
+    }
+    public function checkEmployeeNo(Request $request)
+    {
+        $result = true;
+        $id = intval(Route::current()->parameter('employee'));
+
+        $query = Employee::select(['id','first_name','surname','employee_no']);
+        $query->when(request('employeeNo', false), function ($q, $employeeNo) { 
+            return $q->where('employee_no', $employeeNo);
+        });
+
+        if ($id != 0) {
+            $query = $query->where('id', '!=', $id);
+        }
         
+        $array = $query->get();
+        $result = $array->count() == 0;
+
+        return Response()->json($result);
+    }
+    public function checkPassport(Request $request)
+    {
+        $result = true;
+        $id = intval(Route::current()->parameter('employee'));
+        $firstName = trim(request('firstName', false));
+        $surname = trim(request('surname', false));
+
+        $query = Employee::select(['id','first_name','surname']);
+        $query->when(request('passportNo', false), function ($q, $passportNo) { 
+            return $q->where('passport_no', $passportNo);
+        });
+        $query->when(request('passportCountryId', false), function ($q, $passportCountryId) { 
+            return $q->where('passport_country_id', $passportCountryId);
+        });
+
+        if ($id != 0) {
+            $query = $query->where('id', '!=', $id);
+        }
+        
+        $array = $query->get();
+        $filtered = $array->filter(function ($employee, $key) use($firstName,$surname) {
+            return ($employee->first_name != $firstName && $employee->surname != $surname);
+        });
+
+        $result = $filtered->count() == 0;
+        return Response()->json($result);
+    }
+
     /**
      * Validate the given request with the defined rules.
      *
@@ -205,5 +330,30 @@ class EmployeesController extends CustomController
         $this->validate($request, $validateFields);
     }
 
-    
+    private function getDropdownsData() 
+    {
+        $titles = Title::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+        $genders = Gender::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+        $maritalstatuses = Maritalstatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+        $countries = Country::pluck('description','id')->all();
+        $languages = Language::pluck('description','id')->all();
+        $ethnicGroups = EthnicGroup::pluck('description','id')->all();
+        $immigrationStatuses = ImmigrationStatus::pluck('description','id')->all();
+        $taxstatuses = TaxStatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+        $departments = Department::pluck('description','id')->all();
+        $teams = Team::pluck('description','id')->all();
+        $employeeStatuses = EmployeeStatus::pluck('description','id')->all();
+        $jobTitles = JobTitle::pluck('description','id')->all();
+        $divisions = Division::pluck('description','id')->all();
+        $branches = Branch::pluck('description','id')->all();
+        $skills = Skill::pluck('description','id')->all();
+        $disabilities = DisabilityCategory::with('disabilities')->get();
+
+        $results = array($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups, 
+                         $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses, 
+                         $jobTitles, $divisions, $branches, $skills, $disabilities
+        );
+
+        return $results;
+    }
 }

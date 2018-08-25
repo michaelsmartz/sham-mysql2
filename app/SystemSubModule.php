@@ -230,8 +230,6 @@ class SystemSubModule extends Model
 	
     //TODO: TO BE REVIEWED WHEN IMPLEMENTING SERVICE
 	protected static $subModuleId = SystemSubModule::CONST_SYSTEM_CONFIGURATION;
-    protected static $api = "SystemSubModules";
 
-	protected $table = 'systemsubmodules';
 }
 ?>

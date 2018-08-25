@@ -9,8 +9,8 @@
 // see "node_modules/bootstrap-sass/assets/stylesheets/bootstrap.scss" for original import
 @import "bootstrap-individuals";
 
-//custom modals
-@import "custom-modal";
+//css-modal
+@import "node_modules/css-modal/modal";
 
 //Font Awesome
 @import "node_modules/font-awesome/scss/font-awesome.scss";

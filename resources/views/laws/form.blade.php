@@ -64,4 +64,11 @@
         {!! $errors->first('expires_on', '<p class="help-block">:message</p>') !!}
 </div>
 
+<div class="form-group col-xs-12 {{ $errors->has('expires_on') ? 'has-error' : '' }}">
+    <label for="expires_on">Expires On</label>
+	@uploader('images')
 </div>
+
+</div>
+
+@uploader('assets')

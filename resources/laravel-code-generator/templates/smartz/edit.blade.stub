@@ -4,7 +4,7 @@
 
 @section('modalFooter')
     <button class="btn btn-primary pull-right" type="submit">[% update %]</button>
-    <a href="{{route('[% model_name_plural_variable %].index')}}" class="btn pull-right">Cancel</a>
+    <a href="{{route('[% model_name_plural_variable %].index')}}" class="btn pull-right" data-close="Close" data-dismiss="modal">Cancel</a>
 @endsection
 
 @section('modalContent')
@@ -23,7 +23,7 @@
             @yield('modalFooter') 
         </div>
         @endif
-    </form>        
+    </form>
 @endsection
 
 @section('content')

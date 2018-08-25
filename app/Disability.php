@@ -25,7 +25,7 @@ class Disability extends Model
 
     public function disabilityCategory()
     {
-        return $this->belongsTo('App\DisabilityCategory','disability_category_id');
+        return $this->belongsTo('App\DisabilityCategory');
     }
 
 

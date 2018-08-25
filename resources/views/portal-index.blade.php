@@ -20,8 +20,8 @@
         <meta name="description" content="Smartz Human Asset Management software (c) Kalija Global">
         <meta name="author" content="Kalija Global">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <link rel="prefetch" href="{{asset('css/app.css')}}" as="stylesheet">
-        <link rel="stylesheet" href="{{asset('css/app.css')}}">
+        <link rel="prefetch" href="{{asset('css/app.min.css')}}" as="stylesheet">
+        <link rel="stylesheet" href="{{asset('css/app.min.css')}}">
         <title>Smartz Human Asset Management</title>
     </head>
 
@@ -110,23 +110,9 @@
                     @yield('content')
                 </div>
             </div>
-            
-            <div class="modal__container">
-                <input type="checkbox" id="open-modal" class="modal__toggler" />
-                <label class="modal__mask" for="open-modal"></label>
-                <div class="modal">
-                    <label class="modal__close" for="open-modal"></label>
-                    <div class="modal__header">
-                        <h2 class="modal__title">@yield('modalTitle')</h2>
-                    </div>
-                    <div class="modal__content">
-                        @yield('modalContent')
-                    </div>
-                    <div class="modal__footer">
-                        @yield('modalFooter')
-                    </div>
-                </div>
-            </div>
+
+            @component('partials.modal')
+            @endcomponent
 
             {{-- 
             <div id="md" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="true" >
@@ -407,11 +393,11 @@
             $(document).ready(function() {
                 //setInterval(keepTokenAlive, 1000 * 60 * 15); // every 15 mins
                 $(document).on('mouseenter','.tooltips', function (event) {
-                    $(this).qtip({
+                    /*$(this).qtip({
                         overwrite: false, show: { ready: true },
                         position: { at: 'top center', my: 'bottom center' },
                         style: { classes: 'qtip-tipsy' }
-                    });
+                    });*/
                 });
 
                 handleSidebarMenu();

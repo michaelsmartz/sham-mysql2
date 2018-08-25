@@ -179,12 +179,14 @@ return [
 
         App\Providers\ViewComposerServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
+        Overtrue\LaravelUploader\UploadServiceProvider::class,
         /*
          * Dev Only Providers:
          */
         App\Providers\LocalEnvironmentServiceProvider::class,
         Arrilot\Widgets\ServiceProvider::class,
         Clockwork\Support\Laravel\ClockworkServiceProvider::class
+
 
     ],
 

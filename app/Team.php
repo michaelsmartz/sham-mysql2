@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Team extends Model
 {
     
-    //use SoftDeletes;
+    use SoftDeletes;
 
 
 
@@ -19,16 +19,22 @@ class Team extends Model
      */
     protected $fillable = [
                   'description',
-                  'timegroup_id',
-                  'is_active'
+                  'time_group_id'
               ];
 
-    /**
-     * Get the timegroup for this model.
-     */
-    public function timegroup()
+    public function timeGroup()
     {
-        return $this->belongsTo('App\Timegroup');
+        return $this->belongsTo('App\TimeGroup','time_group_id','id');
+    }
+
+    public function employees()
+    {
+        return $this->hasMany('App\Employee','team_id','id');
+    }
+
+    public function teamProducts()
+    {
+        return $this->hasMany('App\TeamProduct','team_id','id');
     }
 
 

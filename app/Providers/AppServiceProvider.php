@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use DB;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Collective\Html\FormBuilder as Form;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,5 +44,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        Form::macro(
+            'groupSelect', 
+            function ($name, $collection, $relation, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
+            {
+        
+                $groups = [];
+        
+                foreach ($collection as $model)
+                {
+                    foreach($model->$relation as $rel)
+                    {
+                        $groups[$model->$groupName][$rel->$optValue] = $rel->$optName;
+                    }
+                    
+                }
+
+                return Form::select($name, $groups, $selected, $attributes);
+            }
+        );
     }
 }

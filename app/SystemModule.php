@@ -108,12 +108,11 @@ class SystemModule extends Model
 
     public function subModules()
     {
-        return $this->hasMany(SystemSubModule::class, 'systemmodule_id');
+        return $this->hasMany(SystemSubModule::class, 'system_module_id');
     }
 
     //TODO: TO BE REVIEWED WHEN IMPLEMENTING SERVICE
     protected static $subModuleId = SystemSubModule::CONST_SYSTEM_CONFIGURATION;
-    protected static $api = "SystemModules";
-    protected $table = 'systemmodules';
+
 
 }

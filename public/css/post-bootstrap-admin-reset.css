@@ -1,0 +1,256 @@
+.form-horizontal .control-label {
+    font-weight: 300;
+    font-size: 14px;
+    text-align: left;
+}
+
+input.form-control:not(disabled), input.form-control:not(aria-disabled) ,
+select.form-control:not(disabled), select.form-control:not(aria-disabled) {
+    background-color: white;
+}
+
+input.form-control[disabled],input.form-control[aria-disabled] {
+    background: white;
+    border: 1px solid #ccc;
+    opacity: 0.5;
+    box-shadow: 0 0 0 1px transparent;
+}
+
+.prf-contacts h2 {
+    color: inherit;
+    font-size: 16px;
+    margin-top: 0;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.position-center {
+    width: 99%;
+    margin: 0 auto;
+}
+
+input:required, select:required {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 483.556 483.556' style='enable-background:new 0 0 483.556 483.556;' xml:space='preserve' width='8px' height='8px'%3E%3Cg%3E%3Cg transform='matrix%281.25 0 0 -1.25 0 45%29'%3E%3Cg%3E%3Cg%3E%3Cpath d='M386.844-157.422c0-106.826-86.596-193.422-193.422-193.422S0-264.248,0-157.422 S86.596,36,193.422,36S386.844-50.596,386.844-157.422' data-original='%23DD2E44' class='active-path' fill='%23F26969'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat 95% 50%;
+    transition: all 1s;
+}
+
+input.parsley-error:required {
+    /*animation: pulse-me 3s linear infinite;*/
+    -webkit-transition: background .5s ease-out;
+    -moz-transition: background .5s ease-out;
+    -o-transition: background .5s ease-out;
+    transition: background .5s ease-out;
+}
+
+select:required {
+    background-position-x: calc(100% - 22px);
+}
+
+input.field-required, input:required, input.required,
+select.field-required, select:required, select.required {
+    padding-right: 35px;
+}
+
+.parsley-error {
+    border-color: #E81B11;
+}
+
+/* Add fade animation to dropdown menus */
+.dropdown-menu {
+    opacity: 0;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -ms-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+}
+.dropdown.open .dropdown-menu {
+    opacity: 1;
+    -webkit-animation-name:fade-scale-02;
+    -o-animation-name:fade-scale-02;
+    animation-name:fade-scale-02;
+    -webkit-animation-duration: .3s;
+    -o-animation-duration: .3s;
+    animation-duration: .3s;
+}
+
+@-webkit-keyframes fade-scale-02 {
+    0% {
+        opacity:0;
+        -webkit-transform:scale(.2);
+        transform:scale(.2)
+    }
+    100% {
+        opacity:1;
+        -webkit-transform:scale(1);
+        transform:scale(1)
+    }
+}
+@-o-keyframes fade-scale-02 {
+    0% {
+        opacity:0;
+        -o-transform:scale(.2);
+        transform:scale(.2)
+    }
+    100% {
+        opacity:1;
+        -o-transform:scale(1);
+        transform:scale(1)
+    }
+}
+@keyframes fade-scale-02 {
+    0% {
+        opacity:0;
+        -webkit-transform:scale(.2);
+        -o-transform:scale(.2);
+        transform:scale(.2)
+    }
+    100% {
+        opacity:1;
+        -webkit-transform:scale(1);
+        -o-transform:scale(1);
+        transform:scale(1)
+    }
+}
+
+/*
+.open > .dropdown-menu {
+    animation-name: fadeAnimation;
+    animation-duration: .7s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
+    animation-fill-mode: forwards;
+    -webkit-animation-name: fadeAnimation;
+    -webkit-animation-duration: .7s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-name: fadeAnimation;
+    -moz-animation-duration: .7s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease;
+    -moz-animation-fill-mode: forwards;
+}
+*/
+@keyframes fadeAnimation {
+    from {
+        opacity: 0;
+        top: 10%;
+    }
+    to {
+        opacity: 1;
+        top: 54px;
+    }
+}
+
+.field {
+    display: block;
+    position: relative;
+}
+.field label {
+    max-height: 0;
+    overflow: hidden;
+    position: absolute;
+    bottom: -15px; left: 0; right: 0;
+    padding: 0 3px 0 13px;
+    font-size: 11px;
+    color: #222;
+    background: #f1f2f7;
+    z-index: 1;
+    border-color: #ccc;
+    border-width: 0 0 1px 1px;
+    border-radius: 0 0 4px 4px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+.field input,
+.field select {
+    width: 100%;
+    padding: -10px 0 0 10px;
+    -webkit-appearance: none;
+}
+.field select:invalid {
+    color: #aaa;
+}
+
+/*  Show label instead of placeholder */
+.field input:focus,
+/*.field input:valid,*/
+.field select:focus/*,
+.field select:valid*/ {
+    padding-top: 2px;
+}
+.field input:focus ~ label,
+/*.field input:valid ~ label,*/
+.field select:focus ~ label {
+    padding-top: 1px;
+    color: #555;
+    max-height: 18px;
+    box-shadow: inset 0 1px 0 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+}
+
+/* Hide placeholder onfocus for safari */
+.field input:focus[placeholder]::-webkit-input-placeholder {
+    opacity: 0;
+}
+
+/* Animations */
+.field {
+    transition-property: height, border-width;
+    -webkit-transition-property: height, border-width;
+    -moz-transition-property: height, border-width;
+
+    transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s;
+    -moz-transition-duration: 0.3s;
+
+    transition-timing-function: ease-in;
+    -webkit-transition-timing-function: ease-in;
+    -moz-transition-timing-function: ease-in;
+}
+.field input,
+.field select {
+    transition: height 0.3s ease-in;
+    -webkit-transition: height 0.3s ease-in;
+    -moz-transition: height 0.3s ease-in;
+}
+.field label {
+    transition-property: max-height, color;
+    -webkit-transition-property: max-height, color;
+    -moz-transition-property: max-height, color;
+
+    transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s;
+    -moz-transition-duration: 0.3s;
+
+    transition-timing-function: ease-in;
+    -webkit-transition-timing-function: ease-in;
+    -moz-transition-timing-function: ease-in;
+}
+.field input[placeholder]::-webkit-input-placeholder {
+    transition: opacity 0.3s ease-in;
+    -webkit-transition: opacity 0.3s ease-in;
+    -moz-transition: opacity 0.3s ease-in;
+}
+
+.qtip-red {
+    color: white;
+    background-color: #f26969 !important;
+    text-shadow: none;
+}
+
+@keyframes pulse-me{
+    0%{
+        /*transform: scale(0.5);*/
+        opacity: 0;
+    }
+    50%{
+        opacity: 0.1;
+    }
+    70%{
+        opacity: 0.09;
+    }
+    100%{
+        /*transform: scale(5);*/
+        opacity: 0;
+    }
+}

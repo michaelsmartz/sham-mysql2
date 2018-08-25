@@ -1,16 +1,10 @@
-<div class="modal__container">
-    <input type="checkbox" id="open-modal" class="modal__toggler" />
-    <label class="modal__mask" for="open-modal"></label>
-    <div class="modal">
-        <label class="modal__close" for="open-modal"></label>
-        <div class="modal__header">
-            <h2 class="modal__title">@yield('title')</h2>
-        </div>
-        <div class="modal__content">
-            @yield('modal')
-        </div>
-        <div class="modal__footer">
-           {{ $modalFooter or '' }}
-        </div>
+<section class="modal--show" id="modal-text" tabindex="-1" role="dialog" 
+         aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-inner">
+        <header id="modal-label"><h2>@yield('modalHeader')</h2></header>
+        <div class="modal-content">@yield('modalContent')</div>
+        <footer><div class="buttons">@yield('modalFooter')</div></footer>
     </div>
-</div>
+    <a href="#!" class="modal-close" title="Close this" data-close="Close"
+        data-dismiss="modal">?</a>
+</section>

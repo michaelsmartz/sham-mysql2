@@ -7,7 +7,7 @@
             <span>@lang('home.DashboardReports')</span>
         </a>
         <ul class="sub-menu">
-            <li class="{{ (Request::is('/') ? 'active' : '') }}"><a href="{{URL::to('/')}}/dashboard">Dashboard</a></li>
+            <li class="{{ (Request::is('/') || Request::is('home')  ? 'active' : '') }}"><a href="{{URL::to('/')}}/dashboard">Dashboard</a></li>
             <li><a href="{{URL::to('/')}}/reports">Reports</a></li>
         </ul>
     </li>

@@ -1,8 +1,12 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
+    "/css/employees.css": "/css/employees.css",
+    "/js/employees.js": "/js/employees.js",
     "/js/tables.js": "/js/tables.js",
     "/js/app.min.js": "/js/app.min.js",
     "/js/tables.min.js": "/js/tables.min.js",
-    "/css/app.min.css": "/css/app.min.css"
+    "/js/employees.min.js": "/js/employees.min.js",
+    "/css/app.min.css": "/css/app.min.css",
+    "/css/employees.min.css": "/css/employees.min.css"
 }

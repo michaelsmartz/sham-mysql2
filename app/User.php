@@ -6,10 +6,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use App\Events\UserAmended;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use SoftDeletes, Notifiable;
 
     protected $dispatchesEvents = [
         'saved' => UserAmended::class,
@@ -23,7 +24,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','shamuserprofile_id'
+        'name', 'email', 'password','sham_user_profile_id'
     ];
 
     /**
@@ -36,9 +37,9 @@ class User extends Authenticatable
     ];
 
     
-    public function ShamUserProfile()
+    public function shamUserProfile()
     {
-        return $this->hasOne(ShamUserProfile::class, 'Id', 'ShamUserProfileId');
+        return $this->hasOne(ShamUserProfile::class, 'id', 'sham_user_profile_id');
     }
     
 

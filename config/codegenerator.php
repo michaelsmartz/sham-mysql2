@@ -18,7 +18,7 @@ return [
     | executed 'php artisan vendor:publish' command, will override your changes!
     |
      */
-    'template' => 'smartz',
+    'template' => 'default',
 
     /*
     |--------------------------------------------------------------------------

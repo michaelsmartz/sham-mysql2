@@ -21,13 +21,14 @@
         <div id="table-container">
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="right" onclick="addForm(event)">
-                        <i class="glyphicon glyphicon-plus"></i> <strong>Add New</strong>
-                    </button>
                     <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
                         <i class="glyphicon glyphicon-align-left"></i> 
                         <span>Filters</span>
                     </button>
+                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="right" onclick="addForm(event)">
+                        <i class="glyphicon glyphicon-plus"></i> <strong>Add New</strong>
+                    </button>
+
                 </div>
             </div>
             <div class="table-responsive">

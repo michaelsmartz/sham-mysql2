@@ -39,12 +39,12 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <button data-wenk="Edit" type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$employee->id}}', event)">
+                                    <button type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$employee->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </button>
-                                    <button type="submit" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$employee->id}}')">
+                                    <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$employee->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

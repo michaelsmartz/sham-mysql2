@@ -121,23 +121,23 @@ class ShamUserProfile extends Model
     public function listMatrix()
     {
         $temp = $this->
-        join('shamuserprofile_shampermission', 'shamuserprofiles.id', '=', 'shamuserprofile_shampermission.sham_user_profile_id')
-        ->join('systemsubmodules', 'shamuserprofile_shampermission.system_sub_module_id', '=', 'systemsubmodules.id')
-        ->join('systemmodules', 'systemsubmodules.systemmodule_id', '=', 'systemmodules.id')
-        ->select(['systemmodule_id','system_sub_module_id','sham_permission_id'])
+        join('shamuserprofile_shampermission', 'sham_user_profiles.id', '=', 'shamuserprofile_shampermission.sham_user_profile_id')
+        ->join('system_sub_modules', 'shamuserprofile_shampermission.system_sub_module_id', '=', 'system_sub_modules.id')
+        ->join('system_modules', 'system_sub_modules.system_module_id', '=', 'system_modules.id')
+        ->select(['system_module_id','system_sub_module_id','sham_permission_id'])
         ->where('sham_user_profile_id', '=', $this->id)
         ->get();
 
         $toReturn = array();
         foreach($temp as $item){
 
-            if(!isset($toReturn[$item['systemmodule_id']])){
-                $toReturn[$item['systemmodule_id']] = array();
+            if(!isset($toReturn[$item['system_module_id']])){
+                $toReturn[$item['system_module_id']] = array();
             }
-            if(!isset($toReturn[$item['systemmodule_id']][$item['system_sub_module_id']])){
-                $toReturn[$item['systemmodule_id']][$item['system_sub_module_id']] = array();
+            if(!isset($toReturn[$item['system_module_id']][$item['system_sub_module_id']])){
+                $toReturn[$item['system_module_id']][$item['system_sub_module_id']] = array();
             }
-            $toReturn[$item['systemmodule_id']][$item['system_sub_module_id']] = 1;
+            $toReturn[$item['system_module_id']][$item['system_sub_module_id']] = 1;
         }
         return $toReturn;
 
@@ -145,6 +145,6 @@ class ShamUserProfile extends Model
 
     //TODO: TO BE REVIEWED WHEN IMPLEMENTING SERVICE
 	protected static $subModuleId = SystemSubModule::CONST_SYSTEM_CONFIGURATION;
-    protected $table = 'shamuserprofiles';
+
 }
 ?>

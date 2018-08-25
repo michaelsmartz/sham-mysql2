@@ -2,16 +2,20 @@
 @section('title', 'Create New Law')
 @section('modalTitle', 'Edit Law')
 
+@section('modalHeader')
+    <form method="POST" action="{{ route('laws.store') }}" accept-charset="UTF-8" id="create_law_form" name="create_law_form" class="form-horizontal">
+        {{ csrf_field() }}
+@endsection
+
 @section('modalFooter')
     <input class="btn btn-primary pull-right" type="submit" value="Add">
     <a href="{{ route('laws.index') }}" class="btn btn-default pull-right" title="Show all Laws">
         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
     </a>
+</form>
 @endsection
 
 @section('modalContent')
-    <form method="POST" action="{{ route('laws.store') }}" accept-charset="UTF-8" id="create_law_form" name="create_law_form" class="form-horizontal">
-        {{ csrf_field() }}
         <div class="row">
             <div class="col-sm-12">
                 @include('laws.form', [
@@ -24,7 +28,6 @@
             @yield('modalFooter') 
         </div>
         @endif
-    </form>
 @endsection
 
 @section('content')

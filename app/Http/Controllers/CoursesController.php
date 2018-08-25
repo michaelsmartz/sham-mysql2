@@ -61,7 +61,7 @@ class CoursesController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
 
-    public function edit($id)
+    public function edit(Request $request)
     {
         $data = $this->contextObj->findData($id);
         $courseModules = $data->modules->pluck('id');

@@ -1,9 +1,5 @@
 [
     {
-        "model-name": "Team",
-        "resource-file": "teams.json"
-    },
-    {
         "model-name": "Timegroup",
         "resource-file": "timegroups.json"
     },
@@ -26,18 +22,6 @@
     {
         "model-name": "AssetCondition",
         "resource-file": "asset_conditions.json"
-    },
-    {
-        "model-name": "AssetGroup",
-        "resource-file": "asset_groups.json"
-    },
-    {
-        "model-name": "AssetSupplier",
-        "resource-file": "asset_suppliers.json"
-    },
-    {
-        "model-name": "Asset",
-        "resource-file": "assets.json"
     },
     {
         "model-name": "Course",
@@ -185,5 +169,30 @@
         "model-name": "Policy",
         "resource-file": "policies.json",
         "table-name": "policies"
+    },
+    {
+        "model-name": "Asset",
+        "resource-file": "assets.json",
+        "table-name": "assets"
+    },
+    {
+        "model-name": "AssetGroup",
+        "resource-file": "asset_groups.json",
+        "table-name": "asset_groups"
+    },
+    {
+        "model-name": "AssetSupplier",
+        "resource-file": "asset_suppliers.json",
+        "table-name": "asset_suppliers"
+    },
+    {
+        "model-name": "TelephoneNumber",
+        "resource-file": "telephone_numbers.json",
+        "table-name": "telephone_numbers"
+    },
+    {
+        "model-name": "Team",
+        "resource-file": "teams.json",
+        "table-name": "teams"
     }
 ]

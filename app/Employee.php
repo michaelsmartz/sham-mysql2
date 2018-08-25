@@ -2,15 +2,14 @@
 
 namespace App;
 
-
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model
 {
     
     use SoftDeletes;
-
-
 
     /**
      * Attributes that should be mass-assignable.
@@ -58,8 +57,20 @@ class Employee extends Model
 
     public $searchable = ['first_name', 'surname'];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['emails'];
+
+    protected static function boot()
+    {
+        parent::boot();
     
+        static::addGlobalScope('employeeFullName', function (Builder $builder) {
+			if(is_null($builder->getQuery()->columns)){
+				$builder->addSelect('*');
+			}
+            $builder->addSelect(DB::raw('CONCAT(first_name, " ", surname) AS full_name'));
+        });
+    }
+	
     public function scopeEmployeesLite($query)
     {
         $this->withEmployeesLite($query);
@@ -75,9 +86,9 @@ class Employee extends Model
      * Get full name
      * @return string
     */
-    public function getFullNameAttribute(){
+    /*public function getFullNameAttribute(){
         return $this->first_name . ' ' . $this->surname;
-    }
+    }*/
 
     public function disabilities()
     {
@@ -159,24 +170,27 @@ class Employee extends Model
         return $this->belongsTo('App\Branch','branch_id','id');
     }
 
-    public function lineManager()
-    {
-        return $this->belongsTo('App\LineManager','line_manager_id');
-    }
-
     public function addresses()
     {
-        return $this->hasMany('App\Address','employee_id','id');
+        return $this->hasMany('App\Address','employee_id','id')
+        ->whereIn('address_type_id', [1,2]);
     }
+
+    /*
+    public function homeAddress(){
+        return $this->hasOne('App\Address','employee_id','id')
+                    ->where('address_type_id', '=', 1);
+    }
+
+    public function postalAddress(){
+        return $this->hasOne('App\Address','employee_id','id')
+                    ->where('address_type_id', '=', 2);
+    }
+    */
 
     public function assetallocation()
     {
         return $this->hasOne('App\Assetallocation','employee_id','id');
-    }
-
-    public function bankingdetail()
-    {
-        return $this->hasOne('App\Bankingdetail','EmployeeId','id');
     }
 
     public function courses()
@@ -209,10 +223,25 @@ class Employee extends Model
         return $this->hasMany('App\DisciplinaryAction','employee_id','id');
     }
 
-    public function emailAddresses()
+    public function emails()
     {
-        return $this->hasMany('App\EmailAddress','employee_id','id');
+        return $this->hasMany('App\EmailAddress','employee_id','id')
+                    ->whereIn('email_address_type_id', [1,2]);
     }
+
+    /*
+    public function privateEmail()
+    {
+        return $this->hasOne('App\EmailAddress','employee_id','id')
+                    ->where('email_address_type_id', '=', 1);
+    }
+
+    public function workEmail()
+    {
+        return $this->hasOne('App\EmailAddress','employee_id','id')
+                    ->where('email_address_type_id', '=', 2);
+    }
+    */
 
     public function employeeAttachment()
     {
@@ -222,21 +251,6 @@ class Employee extends Model
     public function employeeSkills()
     {
         return $this->hasMany('App\EmployeeSkill','employee_id','id');
-    }
-
-    public function employeeattendancerecord()
-    {
-        return $this->hasOne('App\Employeeattendancerecord','EmployeeId','id');
-    }
-
-    public function employeesleaveschedule()
-    {
-        return $this->hasOne('App\Employeesleaveschedule','EmployeeId','id');
-    }
-
-    public function employeetimerecords()
-    {
-        return $this->hasMany('App\Employeetimerecord','UpdatedBy','id');
     }
 
     public function evaluationassessors()
@@ -299,11 +313,6 @@ class Employee extends Model
         return $this->hasOne('App\Historytraining','EmployeeId','id');
     }
 
-    public function leaveapplicationforms()
-    {
-        return $this->hasMany('App\Leaveapplicationform','EmployeeId','id');
-    }
-
     public function moduleassessmentresponses()
     {
         return $this->hasMany('App\Moduleassessmentresponse','EmployeeId','id');
@@ -334,10 +343,31 @@ class Employee extends Model
         return $this->hasMany('App\Shamuser','EmployeeId','id');
     }
 
-    public function telephoneNumbers()
+    public function phones()
     {
-        return $this->hasMany('App\TelephoneNumber','employee_id','id');
+        return $this->hasMany('App\TelephoneNumber','employee_id','id')
+                    ->whereIn('telephone_number_type_id', [1,2,3]);
     }
+    
+    /*
+    public function homePhone()
+    {
+        return $this->hasOne('App\TelephoneNumber','employee_id','id')
+                    ->where('telephone_number_type_id', '=', 1);
+    }
+
+    public function mobilePhone()
+    {
+        return $this->hasOne('App\TelephoneNumber','employee_id','id')
+                    ->where('telephone_number_type_id', '=', 2);
+    }
+
+    public function workPhone()
+    {
+        return $this->hasOne('App\TelephoneNumber','employee_id','id')
+                    ->where('telephone_number_type_id', '=', 3);
+    }
+    */
 
     public function timelines()
     {
@@ -348,21 +378,5 @@ class Employee extends Model
     {
         return $this->hasOne('App\Trainingsessionparticipant','EmployeeId','id');
     }
-
-    public function travelexpenseclaims()
-    {
-        return $this->hasMany('App\Travelexpenseclaim','ReviewerEmployeeId','id');
-    }
-
-    public function travelrequests()
-    {
-        return $this->hasMany('App\Travelrequest','ReviewedByEmployeeId','id');
-    }
-
-    public function viewedcomment()
-    {
-        return $this->hasOne('App\Viewedcomment','EmployeeId','id');
-    }
-
 
 }

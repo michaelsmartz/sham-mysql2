@@ -56,6 +56,9 @@ $link-hover-decoration: none !default;
 //table
 $table-border-color: transparent !default;
 
+//modal
+$modal-position-top: 30px !default;
+
 //custom mixin
 @mixin button-bg($bg) {
   color: #fff;	
@@ -186,6 +189,9 @@ td.dropdown {
 	transition: .3s;
 }
 
+.modal--fade, .modal--show {
+	top: $modal-position-top !important;
+}
 
 //box
 .box {

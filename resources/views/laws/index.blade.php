@@ -25,7 +25,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Main Heading</th>
+                            <th data-sortable="true">Main Heading</th>
                             <th data-sortable="true">Sub Heading</th>
                             <th data-sortable="true">Country</th>
                             <th data-sortable="true">Law Category</th>
@@ -36,22 +36,19 @@
                     <tbody>
                         @foreach($laws as $law)
                         <tr id="tr{{$law->id}}">
-                                                        <td>{{ $law->main_heading }}</td>
+                            <td>{{ $law->main_heading }}</td>
                             <td>{{ $law->sub_heading }}</td>
                             <td>{{  isset($law->country->description) ? $law->country->description : ''  }}</td>
                             <td>{{  isset($law->lawCategory->description) ? $law->lawCategory->description : ''  }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <label class="b-n b-n-r bg-transparent item-edit" for="open-modal" data-wenk="Edit" onclick="editForm('{{$law->id}}', event)">
+                                    <a href="#modal-text" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$law->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </label>
-                                    <button data-wenk="Edit" type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$law->id}}', event)">
-                                        <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </button>
-                                    <button type="submit" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$law->id}}')">
+                                    </a>
+                                    <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$law->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

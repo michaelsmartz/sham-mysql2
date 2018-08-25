@@ -1,3 +1,9 @@
+@media screen and (max-width: 540px) {
+    a[class*="item-"] i, button[class*="item-"] i {
+        font-size: 18px;
+     }
+}
+
 .light-table, table#new-table {
     border-spacing: 0 .3em !important;
     border-collapse: separate !important;
@@ -45,9 +51,10 @@ table#new-table thead th, table#new-table tbody td {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
- button[class^='item-'] i,button[class*='item-'] i {
-    font-size: 120%;
- }
+a[class*="item-"]:not(:last-child), button[class*="item-"]:not(:last-child) {
+    transition: all 0.2s;
+    margin-right:10px;
+}
 .text-grey-light {
     color: $brand-grey-light;
 }

@@ -6,12 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="preload" href="/dist/img/logo-gold-login_dy8gg5_c_scale,w_200.png" as="image">
         <title>Smartz Human Asset Management</title>
-        
-        <link rel="prefetch" href="{{asset('css/app.css')}}" as="stylesheet">
-
-        <link rel="stylesheet" href="{{asset('css/app.css')}}">
-        <!-- Font -->
-        <link rel="stylesheet" href="dist/fonts/fonts.css">
+        <link rel="prefetch" href="{{asset('css/app.min.css')}}" as="stylesheet">
+        <link rel="stylesheet" href="{{asset('css/app.min.css')}}">
 
         <!-- Styles -->
         <style>

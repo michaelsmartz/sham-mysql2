@@ -8,6 +8,13 @@
     <style>
         .alerty{ width: 500px !important;}
         .modal.fade.show{opacity:1 !important}
+        .modal-inner footer {
+            display: flex; justify-content: flex-end; align-items: center;
+            padding: 10px 1.2em 18px !important;
+        }
+        .modal-close{
+            border-radius: 4px 4px 0 0 !important;
+        }
     </style>
     <script src="{{url('/')}}/js/tables.js"></script>
     <script src="{{url('/')}}/plugins/html2canvas/html2canvas-1.0.0.a12.min.js"></script>
@@ -15,12 +22,15 @@
     <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
     <script>
 
-        var oldVal, loadUrl = function (url) {
+        var oldVal, $mainButton, loadUrl = function (url) {
+            $mainButton = $('.buttons button[type="submit"]');
+            $mainButton.button('loading');
             $.get(url).done(function (data) {
-                $(".modal__title").html(data.title);
-                $(".modal__content").html(data.content);
-                $(".modal__footer").html(data.footer);
-            })
+                $("#modal-label h2").empty().html(data.title);
+                $(".modal-content").empty().html(data.content);
+                $(".modal-inner .buttons").empty().html(data.footer);
+                $mainButton.button('reset');
+            });
         };
 
         $('#item-create,.item-create').click(function() {
@@ -36,14 +46,23 @@
         }
 
         function editForm(id, event) {
-            //event.preventDefault();
+            event.preventDefault();
             if (id) {
-                @if (isset($fullPageEdit) && $fullPageEdit === TRUE)
+                @if (isset($fullPageEdit) && $fullPageEdit == 'true')
+                console.log('yes ' + id);
                     window.location = '{{url()->current()}}/'+id+'/edit';
                 @else
+                    console.log('no ' + id);
+                    $mainButton = $('.buttons button[type="submit"]');
+                    $mainButton.button('loading');
                     loadUrl('{{url()->current()}}/'+id+'/edit');
                 @endif
             }
+        }
+
+        function editFullPage(id, event){
+            event.preventDefault();
+            window.location = '{{url()->current()}}/'+id+'/edit';
         }
 
         function deleteForm(id) {

@@ -88,6 +88,7 @@ class LawsController extends CustomController
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit', compact('data','countries','lawCategories'))
                     ->renderSections();
+
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
