@@ -66,8 +66,12 @@ return [
         'elearning' => [
             'driver' => 'local',
             'root' => env('ELEARNING_STORAGE_PATH'),
-        ]
+        ],
 
+        'uploads' => [
+            'driver' => 'local',
+            'root' => env('UPLOADS_STORAGE_PATH'),
+        ]
     ],
 
 ];

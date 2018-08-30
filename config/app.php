@@ -185,8 +185,8 @@ return [
          */
         App\Providers\LocalEnvironmentServiceProvider::class,
         Arrilot\Widgets\ServiceProvider::class,
-        Clockwork\Support\Laravel\ClockworkServiceProvider::class
-
+        Clockwork\Support\Laravel\ClockworkServiceProvider::class,
+        Plank\Mediable\MediableServiceProvider::class
 
     ],
 
@@ -241,6 +241,7 @@ return [
         'Widget' => Arrilot\Widgets\Facade::class,
         'AsyncWidget' => Arrilot\Widgets\AsyncFacade::class,
         'SearchTools' => \bnjns\SearchTools\Facades\SearchTools::class,
+        'MediaUploader' => Plank\Mediable\MediaUploaderFacade::class
     ],
 
 ];
