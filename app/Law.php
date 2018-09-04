@@ -4,11 +4,14 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
 
 class Law extends Model
 {
-    
+    use Mediable;
     use SoftDeletes;
+
+    protected $dates = ['deleted_at'];
 
     /**
      * Attributes that should be mass-assignable.
@@ -28,9 +31,9 @@ class Law extends Model
     public $searchable = ['main_heading', 'country_id', 'law_category_id'];
 
     public function country()
-    {
-        return $this->belongsTo('App\Country','country_id','id');
-    }
+{
+    return $this->belongsTo('App\Country','country_id','id');
+}
 
     public function lawCategory()
     {

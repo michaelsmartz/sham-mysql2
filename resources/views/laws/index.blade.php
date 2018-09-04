@@ -35,7 +35,7 @@
                     </thead>
                     <tbody>
                         @foreach($laws as $law)
-                        <tr id="tr{{$law->id}}">
+                        <tr id="tr{{$law->id}}" data-id='{{$law->id}}'>
                             <td>{{ $law->main_heading }}</td>
                             <td>{{ $law->sub_heading }}</td>
                             <td>{{  isset($law->country->description) ? $law->country->description : ''  }}</td>
@@ -45,6 +45,11 @@
                                 <div class="btn-group btn-group-xs" role="group">
                                     <a href="#modal-text" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$law->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
+                                    </a>
+                                    <a href="#modal-attachment" class="b-n b-n-r bg-transparent item-attachment"
+                                            data-wenk="Attach Files"
+                                            onclick="attachForm($(this).closest('tr').data('id'), event)">
+                                        <i class="glyphicon glyphicon-paperclip text-primary"></i>
                                     </a>
                                     <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$law->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>

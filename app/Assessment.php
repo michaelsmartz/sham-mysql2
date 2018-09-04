@@ -6,7 +6,7 @@ namespace App;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
 
-class Topic extends Model
+class Assessment extends Model
 {
     use Mediable;
     use SoftDeletes;
@@ -19,15 +19,9 @@ class Topic extends Model
      * @var array
      */
     protected $fillable = [
-                  'header',
-                  'description',
-                  'data'
-              ];
-
-    public function modules()
-    {
-        return $this->belongsToMany('App\Module');
-    }
-
+                'name',
+                'description',
+                'passmark_percentage'
+    ];
 
 }

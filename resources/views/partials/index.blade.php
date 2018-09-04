@@ -21,7 +21,6 @@
     <script src="{{url('/')}}/plugins/alerty/alerty.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
     <script>
-
         var oldVal, $mainButton, loadUrl = function (url) {
             $mainButton = $('.buttons button[type="submit"]');
             $mainButton.button('loading');
@@ -32,11 +31,9 @@
                 $mainButton.button('reset');
             });
         };
-
         $('#item-create,.item-create').click(function() {
             window.location = '{{url()->current()}}/create';
         });
-
         function statusModalToggle(status) {
             if (status == "success"){
                 $('#md').modal('toggle');
@@ -44,55 +41,58 @@
                 $('#mde').modal('toggle');
             }
         }
-
         function editForm(id, event) {
             event.preventDefault();
             if (id) {
                 @if (isset($fullPageEdit) && $fullPageEdit == 'true')
                 console.log('yes ' + id);
-                    window.location = '{{url()->current()}}/'+id+'/edit';
+                window.location = '{{url()->current()}}/'+id+'/edit';
                 @else
-                    console.log('no ' + id);
-                    $mainButton = $('.buttons button[type="submit"]');
-                    $mainButton.button('loading');
-                    loadUrl('{{url()->current()}}/'+id+'/edit');
+                console.log('no ' + id);
+                $mainButton = $('.buttons button[type="submit"]');
+                $mainButton.button('loading');
+                loadUrl('{{url()->current()}}/'+id+'/edit');
                 @endif
             }
         }
+
+        {{--function attachForm(id, event) {--}}
+            {{--if (id) {--}}
+                {{--alert(id);--}}
+                {{--$('#md-content').empty().load('{{url()->to('medias')}}/'+id+'/attachment' ,function(response, status){--}}
+                    {{--statusModalToggle(status);--}}
+                {{--});--}}
+            {{--}--}}
+        {{--}--}}
 
         function editFullPage(id, event){
             event.preventDefault();
             window.location = '{{url()->current()}}/'+id+'/edit';
         }
-
         function deleteForm(id) {
             $("#deleteField").val(id);
             var oldVal = $("#indexDeleteForm").attr("action");
             $("#indexDeleteForm").attr("action", $("#indexDeleteForm").attr("action").replace('deleteId', id));
-
             html2canvas(document.getElementById('tr'+id), {logging:false,width:400}).then(function(canvas) { cp(canvas); }); // here send canvas to cp
             var cp = function(canvas) {
                 var image = canvas.toDataURL("image/png");
-
                 alerty.confirm(
-                        "Are you sure to <strong class='text-danger'>delete</strong> this record?<br>" +
-                        "<img style='object-fit: cover;' src='"+image + "'>",
-                        {   title: '@yield("title")',
-                            okLabel: '<span class="text-danger">Yes</span>',
-                            cancelLabel: 'No'
-                        },
-                        function() {
-                            // ok callback
-                            $("#indexDeleteForm").submit();
-                        },
-                        function() {
-                            $("#indexDeleteForm").attr("action", oldVal);
-                        }
+                    "Are you sure to <strong class='text-danger'>delete</strong> this record?<br>" +
+                    "<img style='object-fit: cover;' src='"+image + "'>",
+                    {   title: '@yield("title")',
+                        okLabel: '<span class="text-danger">Yes</span>',
+                        cancelLabel: 'No'
+                    },
+                    function() {
+                        // ok callback
+                        $("#indexDeleteForm").submit();
+                    },
+                    function() {
+                        $("#indexDeleteForm").attr("action", oldVal);
+                    }
                 )
             };
-
         }
-
     </script>
 
 @endsection

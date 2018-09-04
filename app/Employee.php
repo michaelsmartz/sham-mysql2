@@ -5,10 +5,11 @@ namespace App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
 
 class Employee extends Model
 {
-    
+    use Mediable;
     use SoftDeletes;
 
     /**

@@ -17,7 +17,7 @@ Route::get('test', 'MiscController@test');
 Auth::routes();
 
 #region auth middleware routes
-    Route::group(['middleware' => ['auth']], function() {
+//    Route::group(['middleware' => ['auth']], function() {
 
         Overtrue\LaravelUploader\LaravelUploader::routes();
 
@@ -46,6 +46,27 @@ Auth::routes();
             Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
             Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
 
+            Route::resource('medias', 'MediasController');
+            Route::any('policies/{Id}/attachment', 'MediasController@attach' )->name('policy.attach');
+            Route::any('policies/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('policy.detach');
+            Route::get('policies/{Id}/attachment/{MediaId}', 'MediasController@download' );
+
+            Route::any('laws/{Id}/attachment', 'MediasController@attach' )->name('law.attach');
+            Route::any('laws/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('law.detach');
+            Route::get('laws/{Id}/attachment/{MediaId}', 'MediasController@download' );
+
+            Route::any('employees/{Id}/attachment', 'MediasController@attach' )->name('employee.attach');
+            Route::any('employees/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('employee.detach');
+            Route::get('employees/{Id}/attachment/{MediaId}', 'MediasController@download' );
+
+            Route::any('topics/{Id}/attachment', 'MediasController@attach' )->name('topic.attach');
+            Route::any('topics/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('topic.detach');
+            Route::get('topics/{Id}/attachment/{MediaId}', 'MediasController@download' );
+
+            Route::any('assessments/{Id}/attachment', 'MediasController@attach' )->name('assessment.attach');
+            Route::any('assessments/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('assessment.detach');
+            Route::get('assessments/{Id}/attachment/{MediaId}', 'MediasController@download' );
+
             Route::resource('laws', 'LawsController');
             Route::resource('policies', 'PoliciesController');
             Route::resource('assets', 'AssetsController');
@@ -69,5 +90,5 @@ Auth::routes();
             Route::resource('topics', 'TopicsController' );
         #endregion
   
-    });
+//    });
 #endregion
