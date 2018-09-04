@@ -12,7 +12,7 @@
         {!! $errors->first('sub_heading', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('country_id') ? 'has-error' : '' }}">
+<div class="form-group col-xs-6 {{ $errors->has('country_id') ? 'has-error' : '' }}">
     <label for="country_id">Country</label>
         <select class="form-control" id="country_id" name="country_id">
         	    <option value="" style="display: none;" {{ old('country_id', isset($law->country_id) ? $law->country_id : '') == '' ? 'selected' : '' }} disabled selected>Enter country</option>
@@ -26,7 +26,7 @@
         {!! $errors->first('country_id', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('law_category_id') ? 'has-error' : '' }}">
+<div class="form-group col-xs-6 {{ $errors->has('law_category_id') ? 'has-error' : '' }}">
     <label for="law_category_id">Law Category</label>
         <select class="form-control" id="law_category_id" name="law_category_id">
         	    <option value="" style="display: none;" {{ old('law_category_id', isset($law->law_category_id) ? $law->law_category_id : '') == '' ? 'selected' : '' }} disabled selected>Select law category</option>
@@ -46,7 +46,7 @@
         {!! $errors->first('content', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('is_public') ? 'has-error' : '' }}">
+<div class="form-group col-xs-6 {{ $errors->has('is_public') ? 'has-error' : '' }}">
     <label for="is_public">Is Public</label>
         <div class="checkbox">
             <label for="is_public_1">
@@ -58,17 +58,21 @@
         {!! $errors->first('is_public', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('expires_on') ? 'has-error' : '' }}">
+<div class="form-group col-xs-6 {{ $errors->has('expires_on') ? 'has-error' : '' }}">
     <label for="expires_on">Expires On</label>
         <input class="form-control" name="expires_on" type="text" id="expires_on" value="{{ old('expires_on', isset($law->expires_on) ? $law->expires_on : null) }}" placeholder="Enter expires on">
         {!! $errors->first('expires_on', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('expires_on') ? 'has-error' : '' }}">
-    <label for="expires_on">Expires On</label>
-	@uploader('images')
+<div class="form-group col-xs-12 {{ $errors->has('attachment') ? 'has-error' : '' }}">
+	@component('partials.uploader')
+        @slot('elementId', 'attachment')
+        @slot('fieldLabel', 'Attach Law Document')
+        @slot('desc', 'Upload documents only')
+        @slot('route', 'laws.store')
+        @slot('acceptedFiles', '.doc,.docx,.ppt,.pptx,.pdf')
+    @endcomponent
 </div>
 
 </div>
 
-@uploader('assets')

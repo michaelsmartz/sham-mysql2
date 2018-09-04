@@ -1,30 +1,45 @@
 @extends('portal-index')
 @section('title', 'Edit Course')
-@section('content')
-    <div class="box box-primary">
-        <form method="POST" action="{{ route('courses.update', $data->id) }}" id="edit_course_form" name="edit_course_form" accept-charset="UTF-8" >
-            {{ csrf_field() }}
-            <input name="_method" type="hidden" value="PATCH">
-            <div class="box-body">
-                <div class="row">
-                    <!-- left column -->
-                    <div class="col-md-12">
-                        <!-- general form elements -->
-                        <div class="col-sm-12">
-                            <div class="panel-body">
-                                @include ('courses.form', [
-                                            'course' => $data,
-                                          ])
+@section('modalTitle', 'Edit Course')
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <button class="btn btn-primary pull-right" type="submit">Update</button>
-                    <a href="{{route('courses.index')}}" class="btn pull-right">Cancel</a>
+@section('modalFooter')
+    <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
+    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+@endsection
+
+@section('modalContent')
+    <div class="row">
+        <div class="col-sm-12">
+            @include ('courses.form', [
+                        'course' => $data,
+                        ])
+        </div>
+    </div>
+@endsection
+
+@section('content')
+    <form method="POST" action="{{ route('courses.update', $data->id) }}" id="edit_course_form" name="edit_course_form" accept-charset="UTF-8" >
+        {{ csrf_field() }}
+        <input name="_method" type="hidden" value="PATCH">
+        @yield('modalContent')
+        <p>
+            <div class="row">
+                <div class="col-sm-12 text-right"> 
+                @yield('modalFooter')
                 </div>
             </div>
-        </form>
-    </div>
+        </p>
+    </form>
+@endsection
+
+@section('post-body')
+    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
+    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
+    <script>
+    $(function () {
+        $('select').multipleSelect({
+            filter: true
+        });
+    });
+    </script>
 @endsection

@@ -111,7 +111,7 @@
                 </div>
             </div>
 
-            @component('partials.modal')
+            @component('partials.light-modal')
             @endcomponent
 
             {{-- 

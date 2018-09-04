@@ -4,6 +4,8 @@ namespace [% namespace %];
 
 [% use_command_placeholder %]
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
+use Exception;
 
 class [% controller_name %] [% controller_extends %]
 {
@@ -39,13 +41,18 @@ class [% controller_name %] [% controller_extends %]
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+            $this->contextObj->addData($input);
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
@@ -60,13 +67,18 @@ class [% controller_name %] [% controller_extends %]
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
+            $input = array_except($request->all(),array('_token','_method'));
 
-        $this->contextObj->updateData($id, $input);
+            $this->contextObj->updateData($id, $input);
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');       
     }
@@ -80,9 +92,14 @@ class [% controller_name %] [% controller_extends %]
      */
     public function destroy($id)
     {
-        $this->contextObj->destroyData($id);
+        try {
+            $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }

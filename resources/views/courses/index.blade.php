@@ -62,10 +62,9 @@
                                     </div>
                                     -->
                                     <div class="btn-group btn-group-xs" role="group">
-                                        <button data-wenk="Edit" type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$course->id}}', event)">
+                                        <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$course->id}}', event)">
                                             <i class="glyphicon glyphicon-edit text-primary"></i>
-                                        </button>
-
+                                        </a>
                                         <button type="submit" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$course->id}}')">
                                             <i class="glyphicon glyphicon-remove text-danger"></i>
                                         </button>

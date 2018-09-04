@@ -68,6 +68,50 @@ const app = new Vue({
                     return true;
                 }, priority: 33
             });
+            window.Parsley.addValidator('fileextension', function (value, requirement) {
+                var fileExtension = value.split('.').pop();
+                return fileExtension === requirement;
+            }, 32)
+            .addMessage('en', 'fileextension', 'The extension doesn\'t match the required');
+
+            window.Parsley.addValidator('filemaxmegabytes', {
+                requirementType: 'string',
+                validateString: function (value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+                    var maxBytes = requirement * 1048576;
+    
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    return file.length === 1 && file[0].size <= maxBytes;
+    
+                },
+                messages: {
+                    en: 'File is to big'
+                }
+            })
+            .addValidator('filemimetypes', {
+                requirementType: 'string',
+                validateString: function (value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+    
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    var allowedMimeTypes = requirement.replace(/\s/g, "").split(',');
+                    return allowedMimeTypes.indexOf(file[0].type) !== -1;
+                },
+                messages: {
+                    en: 'File mime type not allowed'
+                }
+            });
+
             window.Parsley.addAsyncValidator('checkId',
                 function(xhr) {
                     return xhr.responseText !== 'false';

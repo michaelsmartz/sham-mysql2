@@ -13,13 +13,13 @@
 
 Route::get('/', 'MiscController@welcome');
 Route::get('test', 'MiscController@test');
-
+Route::get('/license', function(){
+    return response('Licence agreement ' .rand(1,100));
+});
 Auth::routes();
 
 #region auth middleware routes
     Route::group(['middleware' => ['auth']], function() {
-
-        Overtrue\LaravelUploader\LaravelUploader::routes();
 
         // logout using get
         Route::get('auth/logout', 'Auth\LoginController@logout')->name('logout');

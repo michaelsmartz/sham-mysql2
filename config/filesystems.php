@@ -52,7 +52,7 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
-            'visibility' => 'public',
+            'visibility' => 'public'
         ],
 
         's3' => [
@@ -66,8 +66,17 @@ return [
         'elearning' => [
             'driver' => 'local',
             'root' => env('ELEARNING_STORAGE_PATH'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public'
+        ],
+
+        'general' => [
+            'driver' => 'local',
+            'root' => env('GENERAL_STORAGE_PATH'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public'
         ]
 
-    ],
+    ]
 
 ];

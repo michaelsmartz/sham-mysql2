@@ -3,12 +3,12 @@
 @section('modalTitle', 'Edit Law')
 
 @section('modalHeader')
-    <form method="POST" action="{{ route('laws.store') }}" accept-charset="UTF-8" id="create_law_form" name="create_law_form" class="form-horizontal">
+    <form method="POST" action="{{ route('laws.store') }}" accept-charset="UTF-8" id="create_law_form" name="create_law_form" class="form-horizontal" enctype="multipart/form-data">
         {{ csrf_field() }}
 @endsection
 
 @section('modalFooter')
-    <input class="btn btn-primary pull-right" type="submit" value="Add">
+    <input class="btn btn-primary pull-right start" type="submit" id="submit" value="Add">
     <a href="{{ route('laws.index') }}" class="btn btn-default pull-right" title="Show all Laws">
         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
     </a>
@@ -31,9 +31,12 @@
 @endsection
 
 @section('content')
-    <div class="box box-primary">
-        <div class="box-body">
+    <form method="POST" action="{{ route('laws.store') }}" class="form-horizontal" enctype="multipart/form-data">
+        {{ csrf_field() }}
+        <div class="box box-primary">
+            <div class="box-body">
                 @yield('modalContent') 
+            </div>
         </div>
-    </div>
+    </form>
 @endsection

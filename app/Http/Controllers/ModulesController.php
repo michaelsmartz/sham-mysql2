@@ -7,6 +7,8 @@ use App\Topic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
+use Exception;
 
 class ModulesController extends CustomController
 {
@@ -47,25 +49,41 @@ class ModulesController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $topics = array_get($request->all(),'topics.id');
-        $input = array_except($request->all(),array('_token', 'topics'));
-        
-        $data = $this->contextObj->addData($input);
-        $data->topics()
-             ->sync($topics); //sync what has been selected
+            $topics = array_get($request->all(),'topics.id');
+            $input = array_except($request->all(),array('_token', 'topics'));
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            $data = $this->contextObj->addData($input);
+            $data->topics()
+                ->sync($topics); //sync what has been selected
+
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
 
     public function edit(Request $request)
     {
+        $id = Route::current()->parameter('module');
         $data = $this->contextObj->findData($id);
+
         $moduleTopics = $data->topics->pluck('id');
         $topics = Topic::pluck('header', 'id');
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data', 'topics', 'moduleTopics'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter']
+            ]);
+        }
 
         return view($this->baseViewPath . '.edit', compact('data', 'topics', 'moduleTopics'));
     }
@@ -80,17 +98,22 @@ class ModulesController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $topics = array_get($request->all(),'topics.id');
-        $input = array_except($request->all(),array('_token','_method', 'topics'));
+            $topics = array_get($request->all(),'topics.id');
+            $input = array_except($request->all(),array('_token','_method', 'topics'));
 
-        $this->contextObj->updateData($id, $input);
-        $data = Module::find($id);
-        $data->topics()
-             ->sync($topics); //sync what has been selected
+            $this->contextObj->updateData($id, $input);
+            $data = Module::find($id);
+            $data->topics()
+                ->sync($topics); //sync what has been selected
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
@@ -104,11 +127,16 @@ class ModulesController extends CustomController
      */
     public function destroy($id)
     {
-        $data = Course::find($id);
-        $data->topics()->sync([]); //detach all linked module topics
-        $this->contextObj->destroyData($id);
+        try {
+            $data = Module::find($id);
+            $data->topics()->sync([]); //detach all linked module topics
+            $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
@@ -126,9 +154,8 @@ class ModulesController extends CustomController
             'description' => 'required|string|min:5|max:256',
             'overview' => 'string|min:1|max:999|nullable',
             'objectives' => 'string|min:1|nullable',
-            'passmark_percentage' => 'numeric|nullable',     
+            'passmark_percentage' => 'numeric|nullable',
         ];
-        
 
         $this->validate($request, $validateFields);
     }

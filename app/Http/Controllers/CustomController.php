@@ -35,8 +35,8 @@ class CustomController extends Controller
     {
         $data = null;
         if($request->has('id')) {
-            $data = $this->contextObj->findData($id);
             $id = $request->id;
+            $data = $this->contextObj->findData($id);
         }
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();

@@ -36,4 +36,14 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
             }
         }
     });
+
+    var $table = $('#table');
+    $table.on('expand-row.bs.table', function(e, index, row, $detail) {
+        console.log(index, row, $detail);
+        $detail.html('Loading from ajax request...');
+        $.get('/license', function (res) {
+            $detail.html(res.replace(/\n/g, '<br>'));
+        });
+    });
+
 }(jQuery);

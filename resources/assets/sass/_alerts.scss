@@ -1,5 +1,5 @@
 .alert-container{
-  position: fixed; top:60px; right:0;z-index:2;
+  position: fixed; top:45px; right:0;z-index:2;
 }
 
 @media screen and (max-width: 420px) {
@@ -25,7 +25,7 @@
     float: right;
     margin: 3px 24px 0px 0px;
     cursor: pointer;
-    font-size: 16px;
+    opacity: 1;
   }
 
   .alert .close i {
@@ -57,7 +57,7 @@
   }
   
   .alert.error .inner,.alert.error .close {
-    color: $brand-danger;
+    color: $brand-danger !important;
   }
   
   .alert.success .inner {

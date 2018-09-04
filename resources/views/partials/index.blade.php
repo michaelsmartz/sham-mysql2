@@ -6,19 +6,16 @@
 
 @section('post-body')
     <style>
-        .alerty{ width: 500px !important;}
-        .modal.fade.show{opacity:1 !important}
-        .modal-inner footer {
-            display: flex; justify-content: flex-end; align-items: center;
-            padding: 10px 1.2em 18px !important;
-        }
-        .modal-close{
-            border-radius: 4px 4px 0 0 !important;
-        }
+        .alerty{ width: 500px !important; }
+
     </style>
     <script src="{{url('/')}}/js/tables.js"></script>
     <script src="{{url('/')}}/plugins/html2canvas/html2canvas-1.0.0.a12.min.js"></script>
     <script src="{{url('/')}}/plugins/alerty/alerty.min.js"></script>
+    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
+    <script src="{{URL::to('/')}}/js/uploader.js"></script>
+    <link href="{{URL::to('/')}}/css/dropzone.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
     <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
     <script>
 
@@ -26,10 +23,13 @@
             $mainButton = $('.buttons button[type="submit"]');
             $mainButton.button('loading');
             $.get(url).done(function (data) {
-                $("#modal-label h2").empty().html(data.title);
-                $(".modal-content").empty().html(data.content);
-                $(".modal-inner .buttons").empty().html(data.footer);
+                $(".light-modal-heading").empty().html(data.title);
+                $(".light-modal-body").empty().html(data.content);
+                $(".light-modal-footer .buttons").empty().html(data.footer);
                 $mainButton.button('reset');
+                $('.multipleSelect').multipleSelect({
+                    filter: true
+                });
             });
         };
 
@@ -46,13 +46,11 @@
         }
 
         function editForm(id, event) {
-            event.preventDefault();
+            //event.preventDefault();
             if (id) {
                 @if (isset($fullPageEdit) && $fullPageEdit == 'true')
-                console.log('yes ' + id);
                     window.location = '{{url()->current()}}/'+id+'/edit';
                 @else
-                    console.log('no ' + id);
                     $mainButton = $('.buttons button[type="submit"]');
                     $mainButton.button('loading');
                     loadUrl('{{url()->current()}}/'+id+'/edit');
@@ -90,7 +88,6 @@
                         }
                 )
             };
-
         }
 
     </script>

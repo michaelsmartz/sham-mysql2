@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 34);
+/******/ 	return __webpack_require__(__webpack_require__.s = 35);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -12339,14 +12339,15 @@ process.umask = function() { return 0; };
 /* 31 */,
 /* 32 */,
 /* 33 */,
-/* 34 */
+/* 34 */,
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(35);
+module.exports = __webpack_require__(36);
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12354,13 +12355,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__);
-__webpack_require__(36);
 __webpack_require__(37);
 __webpack_require__(38);
+__webpack_require__(39);
 
-window.Vue = __webpack_require__(39);
+window.Vue = __webpack_require__(40);
 
 Vue.config.devtools = true;
 Vue.config.performance = true;
@@ -12426,6 +12427,47 @@ var app = new Vue({
                     return true;
                 }, priority: 33
             });
+            window.Parsley.addValidator('fileextension', function (value, requirement) {
+                var fileExtension = value.split('.').pop();
+                return fileExtension === requirement;
+            }, 32).addMessage('en', 'fileextension', 'The extension doesn\'t match the required');
+
+            window.Parsley.addValidator('filemaxmegabytes', {
+                requirementType: 'string',
+                validateString: function validateString(value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+                    var maxBytes = requirement * 1048576;
+
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    return file.length === 1 && file[0].size <= maxBytes;
+                },
+                messages: {
+                    en: 'File is to big'
+                }
+            }).addValidator('filemimetypes', {
+                requirementType: 'string',
+                validateString: function validateString(value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    var allowedMimeTypes = requirement.replace(/\s/g, "").split(',');
+                    return allowedMimeTypes.indexOf(file[0].type) !== -1;
+                },
+                messages: {
+                    en: 'File mime type not allowed'
+                }
+            });
+
             window.Parsley.addAsyncValidator('checkId', function (xhr) {
                 return xhr.responseText !== 'false';
             }, './check-id');
@@ -12491,7 +12533,7 @@ var app = new Vue({
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12918,7 +12960,7 @@ __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
@@ -15419,7 +15461,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(2)))
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -16236,7 +16278,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27199,10 +27241,10 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(40).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(41).setImmediate))
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -27258,7 +27300,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(41);
+__webpack_require__(42);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -27272,7 +27314,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -27465,15 +27507,15 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(8)))
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(43)
+var normalizeComponent = __webpack_require__(44)
 /* script */
-var __vue_script__ = __webpack_require__(44)
+var __vue_script__ = __webpack_require__(45)
 /* template */
-var __vue_template__ = __webpack_require__(45)
+var __vue_template__ = __webpack_require__(46)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -27512,7 +27554,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -27621,7 +27663,7 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27665,7 +27707,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {

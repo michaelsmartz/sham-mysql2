@@ -13,7 +13,9 @@ return [
      */
 
     'enabled' => env('DEBUGBAR_ENABLED', null),
-
+    'except' => [
+        'license'
+    ],
     /*
      |--------------------------------------------------------------------------
      | Storage settings
@@ -27,7 +29,7 @@ return [
      |
      */
     'storage' => [
-        'enabled'    => true,
+        'enabled'    => false,
         'driver'     => 'file', // redis, file, pdo, custom
         'path'       => storage_path('debugbar'), // For file driver
         'connection' => null,   // Leave null for default connection (Redis/PDO)
@@ -99,15 +101,15 @@ return [
         'phpinfo'         => false,  // Php version
         'messages'        => true,  // Messages
         'time'            => true,  // Time Datalogger
-        'memory'          => true,  // Memory usage
+        'memory'          => false,  // Memory usage
         'exceptions'      => true,  // Exception displayer
         'log'             => false,  // Logs from Monolog (merged in messages if enabled)
         'db'              => true,  // Show database (PDO) queries and bindings
         'views'           => true,  // Views with their data
         'route'           => true,  // Current route information
         'auth'            => true, // Display Laravel authentication status
-        'gate'            => true, // Display Laravel Gate checks
-        'session'         => true,  // Display session data
+        'gate'            => false, // Display Laravel Gate checks
+        'session'         => false,  // Display session data
         'symfony_request' => true,  // Only one can be enabled..
         'mail'            => false,  // Catch mail messages
         'laravel'         => false, // Laravel version and environment

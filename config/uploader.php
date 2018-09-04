@@ -27,6 +27,16 @@ return [
         'avatar' => [
             'directory' => 'avatars/{Y}/{m}/{d}',
         ],
+
+        'compliance' => [
+            'input_name' => 'file',
+            'mimes' => ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png'],
+            'disk' => 'general',
+            'directory' => 'lawdocuments/', // directory,
+            'max_file_size' => '2m',
+            'filename_hash' => 'random', // random/md5_file/original
+        ],
+
     ],
 ];
 
