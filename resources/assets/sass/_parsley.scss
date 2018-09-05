@@ -1,6 +1,32 @@
 $parsley-success-color: #468847;
 $parsley-error-color:  #B94A48;
 
+input:required, select:required, textarea:required {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 483.556 483.556' style='enable-background:new 0 0 483.556 483.556;' xml:space='preserve' width='8px' height='8px'%3E%3Cg%3E%3Cg transform='matrix%281.25 0 0 -1.25 0 45%29'%3E%3Cg%3E%3Cg%3E%3Cpath d='M386.844-157.422c0-106.826-86.596-193.422-193.422-193.422S0-264.248,0-157.422 S86.596,36,193.422,36S386.844-50.596,386.844-157.422' data-original='%23DD2E44' class='active-path' fill='%23F26969'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat 95% 50%;
+  transition: all 1s;
+}
+
+input.parsley-error:required {
+  /*animation: pulse-me 3s linear infinite;*/
+  -webkit-transition: background .5s ease-out;
+  -moz-transition: background .5s ease-out;
+  -o-transition: background .5s ease-out;
+  transition: background .5s ease-out;
+}
+
+select:required {
+  background-position-x: calc(100% - 22px);
+}
+textarea:required {
+  background-position-y: 10%;
+}
+
+input.field-required, input:required, input.required,
+select.field-required, select:required, select.required, textarea:required {
+  padding-right: 35px;
+}
+
+
 input.parsley-success,
 select.parsley-success,
 textarea.parsley-success {

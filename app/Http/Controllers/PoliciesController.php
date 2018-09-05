@@ -7,6 +7,7 @@ use App\PolicyCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
 
 class PoliciesController extends CustomController
 {
@@ -34,6 +35,18 @@ class PoliciesController extends CustomController
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $policyCategories = PolicyCategory::pluck('description','id')->all();
+
+        return view($this->baseViewPath . '.create', compact('data','policyCategories'));
+    }
+
+    /**
      * Store a new policy in the storage.
      *
      * @param Illuminate\Http\Request $request
@@ -51,6 +64,35 @@ class PoliciesController extends CustomController
         \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request)
+    {
+        $data = $policyCategories = null;
+        $id = Route::current()->parameter('policy');
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+            $policyCategories = PolicyCategory::pluck('description','id')->all();
+        }
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data','countries','policyCategories'))
+                    ->renderSections();
+
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.edit', compact('data','countries','policyCategories'));
     }
 
     /**

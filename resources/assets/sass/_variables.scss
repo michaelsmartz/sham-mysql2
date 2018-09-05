@@ -57,7 +57,7 @@ $link-hover-decoration: none !default;
 $table-border-color: transparent !default;
 
 //modal
-$modal-position-top: 30px !default;
+$modal-position-top: 45px !default;
 
 //custom mixin
 @mixin button-bg($bg) {
@@ -189,10 +189,6 @@ td.dropdown {
 	transition: .3s;
 }
 
-.modal--fade, .modal--show {
-	top: $modal-position-top !important;
-}
-
 //box
 .box {
 	position: relative;
@@ -279,24 +275,6 @@ body {
 
 /** when keditor sidebar is opened, overlay to hide theme panel **/
 .opened-keditor-sidebar .theme-panel{z-index:auto!important}
-.theme-panel.active{right:0}
-.theme-panel .theme-list{list-style-type:none;margin:0;padding:0}
-.theme-panel .theme-list+.theme-list{margin-top:10px}
-.theme-panel .theme-list>li{float:left}
-.theme-panel .theme-list>li+li{margin-left:10px}
-.theme-panel .theme-list>li>a{text-decoration:none}
-.theme-panel .theme-list>li.active>a{position:relative}
-.theme-panel .theme-list>li.active>a:before{content:'\f00c';font-family:FontAwesome;position:absolute;left:0;right:0;top:0;bottom:0;font-size:14px;color:#fff;opacity:.4;filter:alpha(opacity=40);text-align:center}
-.theme-panel .theme-list>li.active>a.bg-white:before{color:#666}
-.theme-panel .theme-list>li>a{width:20px;height:20px;border-radius:3px;display:block;-webkit-transition:all .2s linear;-moz-transition:all .2s linear;transition:all .2s linear}
-.theme-panel .theme-list>li>a:hover,.theme-panel .theme-list>li>a:focus{opacity:.6;filter:alpha(opacity=60)}
-.theme-panel .theme-collapse-btn{position:absolute;left:-30px;top:10%;margin-top:-15px;width:30px;height:30px;line-height:30px;font-size:18px;color:#333;background:#fff;border-radius:4px 0 0 4px;text-align:center;box-shadow:-1px 0 3px -1px rgba(0,0,0,0.4);-webkit-box-shadow:-1px 0 3px -1px rgba(0,0,0,0.4);-moz-box-shadow:-1px 0 3px -1px rgba(0,0,0,0.4)}
-.theme-panel .theme-panel-content{margin:-15px;padding:15px;background:#fff;position:relative;z-index:1020}
-.theme-panel.active .theme-collapse-btn .fa:before{content:'\f00d'}
-.theme-panel .theme-list a.bg-white{border:1px solid #e2e7eb}
-.theme-panel .control-label{font-size:12px;line-height:30px}
-.theme-panel .control-label.double-line{line-height:15px}
-.theme-panel .divider{height:1px;margin:15px 0;background:#f2f2f2}
 
 @-webkit-keyframes rotation {
 	from {-webkit-transform: rotate(0deg);}
@@ -873,96 +851,6 @@ body {
 	line-height: 20px;
 	text-align: center;
 	font-size: 80%;
-}
-
-/* Pace Loader */
-.pace-inactive {
-	opacity: 0;
-}
-.ie8 .pace-inactive,
-.ie8 .pace .pace-activity {
-	display: none;
-}
-.pace {
-	background: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	-webkit-transition: opacity 1s;
-	-moz-transition: opacity 1s;
-	-o-transition: opacity 1s;
-	transition: opacity 1s;
-	z-index: 2000;
-	backface-visibility: hidden;
-}
-.pace-progress {
-	position: fixed;
-	top: 54px;
-	left: 0;
-	right: 0;
-	text-align: center;
-	height: 4px;
-	background: #d4a71a;
-	-webkit-transition: width 1s;
-	-moz-transition: width 1s;
-	-o-transition: width 1s;
-	transition: width 1s;
-	z-index: 2000;
-}
-.pace:before {
-	content: '';
-	background: none;
-	position: fixed;
-	top: 54px;
-	right: 0;
-	left: 0;
-	height: 4px;
-}
-.pace .pace-activity {
-	display: block;
-	position: fixed;
-	z-index: 2000;
-	top: 65px;
-	right: 8px;
-	width: 34px;
-	height: 34px;
-	border: solid 2px transparent;
-	border-top-color: #d4a71a;
-	border-left-color: #d4a71a;
-	border-radius: 18px;
-	-webkit-animation: pace-spinner 400ms linear infinite;
-	-moz-animation: pace-spinner 400ms linear infinite;
-	-ms-animation: pace-spinner 400ms linear infinite;
-	-o-animation: pace-spinner 400ms linear infinite;
-	animation: pace-spinner 400ms linear infinite;
-}
-@-webkit-keyframes pace-spinner {
-	0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
-	100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
-}
-@-moz-keyframes pace-spinner {
-	0% { -moz-transform: rotate(0deg); transform: rotate(0deg); }
-	100% { -moz-transform: rotate(360deg); transform: rotate(360deg); }
-}
-@-o-keyframes pace-spinner {
-	0% { -o-transform: rotate(0deg); transform: rotate(0deg); }
-	100% { -o-transform: rotate(360deg); transform: rotate(360deg); }
-}
-@-ms-keyframes pace-spinner {
-0% { -ms-transform: rotate(0deg); transform: rotate(0deg); }
-100% { -ms-transform: rotate(360deg); transform: rotate(360deg); }
-}
-@keyframes pace-spinner {
-	0% { transform: rotate(0deg); transform: rotate(0deg); }
-	100% { transform: rotate(360deg); transform: rotate(360deg); }
-}
-.pace-top .pace:before,
-.pace-top .pace-progress {
-	top: 0;
-}
-.pace-top .pace .pace-activity {
-	top: 11px;
 }
 
 .sticky-element {

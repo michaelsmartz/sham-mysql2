@@ -22,7 +22,7 @@
             @if(count($laws) == 0)
                 <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new law</h4>
             @else
-                <table id="new-table" data-toggle="table">
+                <table id="table" data-toggle="table" data-detail-view="true">
                     <thead>
                         <tr>
                             <th data-sortable="true">Main Heading</th>
@@ -35,7 +35,7 @@
                     </thead>
                     <tbody>
                         @foreach($laws as $law)
-                        <tr id="tr{{$law->id}}" data-id='{{$law->id}}'>
+                        <tr id="tr{{$law->id}}">
                             <td>{{ $law->main_heading }}</td>
                             <td>{{ $law->sub_heading }}</td>
                             <td>{{  isset($law->country->description) ? $law->country->description : ''  }}</td>
@@ -43,16 +43,12 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#modal-text" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$law->id}}', event)">
+                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$law->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <a href="laws/{{$law->id}}/attachment" class="b-n b-n-r bg-transparent item-attachment"
-                                            data-wenk="Attach Files">
-                                        <i class="glyphicon glyphicon-paperclip text-primary"></i>
-                                    </a>
-                                    <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$law->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$law->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </a>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

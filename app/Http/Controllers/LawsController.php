@@ -58,9 +58,12 @@ class LawsController extends CustomController
      */
     public function store(Request $request)
     {
+        dump($request);
+        dump($request->file('file')); die;
         $this->validator($request);
 
         $input = array_except($request->all(),array('_token'));
+        
 
         $this->contextObj->addData($input);
 

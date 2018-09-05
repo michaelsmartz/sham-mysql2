@@ -2,6 +2,7 @@
     a[class*="item-"] i, button[class*="item-"] i {
         font-size: 18px;
      }
+
 }
 
 .light-table, table#new-table {
@@ -21,6 +22,10 @@ table#new-table thead, table#new-table tbody, table#new-table tbody tr{
 .light-table thead th:last-child, .light-table tbody tr td:last-child {
     border-radius: 0 .3em .3em 0;
     padding-left: 0 !important;
+}
+.light-table tbody tr td:last-child .btn-group{
+    display: flex !important;
+    flex-direction: row;
 }
 .table-no-bordered thead th, .table-no-bordered tbody td,
 table#new-table thead th, table#new-table tbody td {

@@ -66,6 +66,15 @@ return [
         'elearning' => [
             'driver' => 'local',
             'root' => env('ELEARNING_STORAGE_PATH'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public'
+        ],
+
+        'general' => [
+            'driver' => 'local',
+            'root' => env('GENERAL_STORAGE_PATH'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public'
         ],
 
         'uploads' => [
@@ -73,5 +82,4 @@ return [
             'root' => env('UPLOADS_STORAGE_PATH'),
         ]
     ],
-
 ];

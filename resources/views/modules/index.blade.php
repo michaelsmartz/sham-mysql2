@@ -35,10 +35,10 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <button title="Edit" data-wenk="Edit" type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$module->id}}', event)">
+                                    <a href="#modal-text" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$module->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </button>
-                                    <button type="submit" class="b-n b-n-r bg-transparent item-remove" title="Remove" data-wenk="Remove" onclick="deleteForm('{{$module->id}}')">
+                                    </a>
+                                    <button type="submit" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$module->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                 </div>

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="form-group col-xs-12 {{ $errors->has('description') ? 'has-error' : '' }}">
         <label for="description">Description</label>
-            <input class="form-control" name="description" type="text" id="description" value="{{ old('description', isset($course->description) ? $course->description : null) }}" minlength="5" maxlength="100">
+            <input class="form-control" name="description" type="text" id="description" value="{{ old('description', isset($course->description) ? $course->description : null) }}" minlength="5" maxlength="100" required="required">
             {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
     </div>
 
@@ -35,22 +35,10 @@
     </div>
 
     <div class="form-group col-xs-12 {{ $errors->has('modules[id]') ? 'has-error' : '' }}">
-        <label for="modules[id]">Modules <i class="fa fa-question-circle" data-wenk="Link existing module(s) to this course"></i></label>
+        <label for="modules[id]">Modules <i class="fa fa-question-circle" data-wenk="Link existing module(s) to this course" data-wenk-pos="right"></i></label>
         <div class="flex-wrapper">
-            {!! Form::select('modules[id][]', $modules,isset($courseModules)?$courseModules:null, array('multiple' => 'multiple', 'style' => 'width:100%')) !!}
+            {!! Form::select('modules[id][]', $modules,isset($courseModules)?$courseModules:null, array('multiple' => 'multiple', 'style' => 'width:100%', 'class'=> 'multipleSelect')) !!}
             {!! $errors->first('modules[id]', '<p class="help-block">:message</p>') !!}
         </div>
     </div>
 </div>
-
-@section('post-body')
-    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
-    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
-    <script>
-    $(function () {
-        $('select').multipleSelect({
-            filter: true
-        });
-    });
-    </script>
-@endsection

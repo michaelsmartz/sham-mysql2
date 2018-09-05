@@ -46,11 +46,15 @@ mix
 
 mix.js('resources/assets/js/app.js', 'public/js');
 mix.js('resources/assets/js/employees.js', 'public/js');
+mix.js('resources/assets/js/uploader.js', 'public/js');
 
 mix.sass('resources/assets/sass/app.scss', 'public/css', {
     outputStyle: 'nested'
 });
 mix.sass('resources/assets/sass/employees.scss', 'public/css', {
+  outputStyle: 'nested'
+});
+mix.sass('resources/assets/sass/dropzone.scss', 'public/css', {
   outputStyle: 'nested'
 });
 
@@ -63,15 +67,18 @@ mix.webpackConfig({
 mix.minify('public/js/app.js');
 mix.minify('public/js/tables.js');
 mix.minify('public/js/employees.js');
+mix.minify('public/js/uploader.js');
 
 mix.minify('public/css/app.css');
 mix.minify('public/css/employees.css');
+mix.minify('public/css/dropzone.css');
 
 mix.then(() => {
     minifier.minify('public/css/app.css');
     minifier.minify('public/css/employees.css');
+    minifier.minify('public/css/dropzone.css');
 
     minifier.minify('public/js/app.js');
     minifier.minify('public/js/tables.js');
-    //minifier.minify('public/js/employees.js');
+    minifier.minify('public/js/uploader.js');
 });

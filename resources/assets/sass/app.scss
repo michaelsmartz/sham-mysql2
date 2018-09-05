@@ -10,7 +10,12 @@
 @import "bootstrap-individuals";
 
 //css-modal
-@import "node_modules/css-modal/modal";
+//$modal-small-breakpoint: 25em !default;
+//@import "node_modules/css-modal/modal";
+
+//light-modal
+//see "node_modules/light-modal/light-modal.css"
+@import "light-modal";
 
 //Font Awesome
 @import "node_modules/font-awesome/scss/font-awesome.scss";

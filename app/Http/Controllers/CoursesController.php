@@ -7,6 +7,8 @@ use App\Module;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
+use Exception;
 
 class CoursesController extends CustomController
 {
@@ -47,25 +49,42 @@ class CoursesController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $modules = array_get($request->all(),'modules.id');
-        $input = array_except($request->all(),array('_token', 'modules'));
+            $modules = array_get($request->all(),'modules.id');
+            $input = array_except($request->all(),array('_token', 'modules'));
+            
+            $data = $this->contextObj->addData($input);
+            $data->modules()
+                ->sync($modules); //sync what has been selected
+
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
         
-        $data = $this->contextObj->addData($input);
-        $data->modules()
-             ->sync($modules); //sync what has been selected
-
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
-
         return redirect()->route($this->baseViewPath .'.index');
     }
 
     public function edit(Request $request)
     {
+
+        $id = Route::current()->parameter('course');
         $data = $this->contextObj->findData($id);
+
         $courseModules = $data->modules->pluck('id');
         $modules = Module::pluck('description', 'id');
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data', 'modules', 'courseModules'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter']
+            ]);
+        }
 
         return view($this->baseViewPath . '.edit', compact('data', 'modules', 'courseModules'));
     }
@@ -80,17 +99,22 @@ class CoursesController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
-        
-        $modules = array_get($request->all(),'modules.id');
-        $input = array_except($request->all(),array('_token','_method','modules'));
+        try {
+            $this->validator($request);
+            
+            $modules = array_get($request->all(),'modules.id');
+            $input = array_except($request->all(),array('_token','_method','modules'));
 
-        $this->contextObj->updateData($id, $input);
-        $data = Course::find($id);
-        $data->modules()
-             ->sync($modules); //sync what has been selected
-        
-        \Session::put('success', $this->baseFlash . 'updated Successfully!');
+            $this->contextObj->updateData($id, $input);
+            $data = Course::find($id);
+            $data->modules()
+                ->sync($modules); //sync what has been selected
+            
+            \Session::put('success', $this->baseFlash . 'updated Successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');       
     }
@@ -104,11 +128,16 @@ class CoursesController extends CustomController
      */
     public function destroy($id)
     {
-        $data = Course::find($id);
-        $data->modules()->sync([]); //detach all linked course modules
-        $this->contextObj->destroyData($id);
+        try {
+            $data = Course::find($id);
+            $data->modules()->sync([]); //detach all linked course modules
+            $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!');
+            
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }

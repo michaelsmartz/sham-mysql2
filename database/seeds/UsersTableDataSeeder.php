@@ -15,7 +15,7 @@ class UsersTableDataSeeder extends Seeder
             'Username' => 'demo user',
             'email' => 'demouser@smartz.com',
             'password' => bcrypt('demouser'),
-            'ShamUserProfileId' => 4
+            'sham_user_profile_id' => 4
         ]);
     }
 }

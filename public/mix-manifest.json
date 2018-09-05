@@ -2,11 +2,15 @@
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
     "/css/employees.css": "/css/employees.css",
+    "/css/dropzone.css": "/css/dropzone.css",
     "/js/employees.js": "/js/employees.js",
     "/js/tables.js": "/js/tables.js",
+    "/js/uploader.js": "/js/uploader.js",
     "/js/app.min.js": "/js/app.min.js",
     "/js/tables.min.js": "/js/tables.min.js",
     "/js/employees.min.js": "/js/employees.min.js",
+    "/js/uploader.min.js": "/js/uploader.min.js",
     "/css/app.min.css": "/css/app.min.css",
-    "/css/employees.min.css": "/css/employees.min.css"
+    "/css/employees.min.css": "/css/employees.min.css",
+    "/css/dropzone.min.css": "/css/dropzone.min.css"
 }

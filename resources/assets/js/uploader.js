@@ -1,0 +1,1 @@
+window.FileUploadWithPreview = require('file-upload-with-preview');
