@@ -19,7 +19,7 @@ Route::get('/license', function(){
 Auth::routes();
 
 #region auth middleware routes
-//    Route::group(['middleware' => ['auth']], function() {
+    Route::group(['middleware' => ['auth']], function() {
 
         // logout using get
         Route::get('auth/logout', 'Auth\LoginController@logout')->name('logout');
@@ -90,5 +90,5 @@ Auth::routes();
             Route::resource('topics', 'TopicsController' );
         #endregion
   
-//    });
+    });
 #endregion
