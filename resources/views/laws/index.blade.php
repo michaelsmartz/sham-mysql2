@@ -46,9 +46,8 @@
                                     <a href="#modal-text" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$law->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <a href="#modal-attachment" class="b-n b-n-r bg-transparent item-attachment"
-                                            data-wenk="Attach Files"
-                                            onclick="attachForm($(this).closest('tr').data('id'), event)">
+                                    <a href="laws/{{$law->id}}/attachment" class="b-n b-n-r bg-transparent item-attachment"
+                                            data-wenk="Attach Files">
                                         <i class="glyphicon glyphicon-paperclip text-primary"></i>
                                     </a>
                                     <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$law->id}}')">

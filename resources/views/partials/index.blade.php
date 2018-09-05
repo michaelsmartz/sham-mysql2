@@ -56,15 +56,6 @@
             }
         }
 
-        {{--function attachForm(id, event) {--}}
-            {{--if (id) {--}}
-                {{--alert(id);--}}
-                {{--$('#md-content').empty().load('{{url()->to('medias')}}/'+id+'/attachment' ,function(response, status){--}}
-                    {{--statusModalToggle(status);--}}
-                {{--});--}}
-            {{--}--}}
-        {{--}--}}
-
         function editFullPage(id, event){
             event.preventDefault();
             window.location = '{{url()->current()}}/'+id+'/edit';

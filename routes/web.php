@@ -48,23 +48,23 @@ Auth::routes();
 
             Route::resource('medias', 'MediasController');
             Route::any('policies/{Id}/attachment', 'MediasController@attach' )->name('policy.attach');
-            Route::any('policies/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('policy.detach');
+            Route::any('policies/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('policy.detach');
             Route::get('policies/{Id}/attachment/{MediaId}', 'MediasController@download' );
 
             Route::any('laws/{Id}/attachment', 'MediasController@attach' )->name('law.attach');
-            Route::any('laws/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('law.detach');
+            Route::any('laws/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('law.detach');
             Route::get('laws/{Id}/attachment/{MediaId}', 'MediasController@download' );
 
             Route::any('employees/{Id}/attachment', 'MediasController@attach' )->name('employee.attach');
-            Route::any('employees/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('employee.detach');
+            Route::any('employees/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('employee.detach');
             Route::get('employees/{Id}/attachment/{MediaId}', 'MediasController@download' );
 
             Route::any('topics/{Id}/attachment', 'MediasController@attach' )->name('topic.attach');
-            Route::any('topics/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('topic.detach');
+            Route::any('topics/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('topic.detach');
             Route::get('topics/{Id}/attachment/{MediaId}', 'MediasController@download' );
 
             Route::any('assessments/{Id}/attachment', 'MediasController@attach' )->name('assessment.attach');
-            Route::any('assessments/{Id}/attachment/{MediaId}', 'MediasController@detach' )->name('assessment.detach');
+            Route::any('assessments/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('assessment.detach');
             Route::get('assessments/{Id}/attachment/{MediaId}', 'MediasController@download' );
 
             Route::resource('laws', 'LawsController');

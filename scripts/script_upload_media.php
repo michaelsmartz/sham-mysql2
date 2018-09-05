@@ -53,16 +53,15 @@ mkdir($disk, 0777, true);
 truncateResetAutoincrementMediaMediables($conn_mysql);
 
 //create table media and mediables
-updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $project_name, 'create');
+updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, 'create');
 
 //update table media
-updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $project_name, 'update');
+updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, 'update');
 
 
-function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $project_name, $type){
+function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $type){
     //to be inserted in mediables as autoincrement media_id
     $media_id = 1;
-    $morphTo = "";
     $varbinary = false;
 
     foreach($directories as $directory){
@@ -76,7 +75,7 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
         }
 
         switch ($directory){
-            case 'EmployeeAttachments':
+            case 'Employee':
                 $mssql = "select EmployeeId as mediableId, 
                       OriginalFileName as filename,
                       Content as content, 
@@ -88,10 +87,9 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
                     and Content is not null
                     order by OriginalFileName Asc;
                     ";
-                $morphTo = "Employee";
                 $varbinary = true;
                 break;
-            case 'Evaluations':
+            case 'Assessment':
                 $mssql = "select AssessmentId as mediableId,
                     OriginalFileName as filename,
                     QaSample as content
@@ -101,10 +99,9 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
                     and QaSample is not null
                     order by OriginalFileName Asc;
                     ";
-                $morphTo = "ProductCategory";
                 $varbinary = true;
                 break;
-            case 'LawDocuments':
+            case 'Law':
                 $mssql = "select LawId as mediableId,
                     Name as filename,
                     Content as content
@@ -113,10 +110,9 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
                     and Content is not null
                     order by Name Asc;
                     ";
-                $morphTo = "Law";
                 $varbinary = false;
                 break;
-            case 'PolicyDocuments':
+            case 'Policy':
                 $mssql = "select PolicyId as mediableId,
                     Name as filename,
                     Content as content
@@ -125,10 +121,9 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
                     and Content is not null
                     order by Name Asc;
                     ";
-                $morphTo = "Policy";
                 $varbinary = false;
                 break;
-            case 'TopicAttachments':
+            case 'Topic':
                 $mssql = "select TopicId as mediableId,
                     OriginalFileName as filename,
                     Content as content
@@ -138,7 +133,6 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
                     and Content is not null
                     order by OriginalFileName Asc;
                     ";
-                $morphTo = "Topic";
                 $varbinary = false;
                 break;
         }
@@ -160,7 +154,7 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
             $mediable_id = odbc_result($rs,"mediableId");
             $filename = odbc_result($rs,"filename");
 
-             if($directory == "EmployeeAttachments" && $type === "update"){
+             if($directory == "Employee" && $type === "update"){
                  $comment = odbc_result($rs,"comment");
                  $employeeAttachmentTypeId = odbc_result($rs,"employeeAttachmentTypeId");
                  updateMedias($conn_mysql, $media_id, $comment, $employeeAttachmentTypeId);
@@ -170,7 +164,7 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $proj
 
                  $file = $disk.$directory.DIRECTORY_SEPARATOR.$filename;
 
-                 insertMediables($conn_mysql, $media_id, $mediable_id, $morphTo, $directory, $order);
+                 insertMediables($conn_mysql, $media_id, $mediable_id, $directory, $order);
 
                  if (base64ToFile($string, $file, $varbinary)) {
                      echo "***SUCCESS*** ". $filename. " was successfully saved to <b>". $file. "</b><br><br>\n";
@@ -252,11 +246,11 @@ function updateMedias($conn_mysql, $media_id, $comment, $extrable_id){
  * @param $directory
  * @param $order
  */
-function insertMediables($conn_mysql, $mediaId, $mediableId, $morphTo, $directory, $order){
+function insertMediables($conn_mysql, $mediaId, $mediableId, $directory, $order){
 
     $mysql = "INSERT INTO mediables(media_id, mediable_type, mediable_id, tag, `order`) 
                  VALUES ($mediaId,
-                     'App\\\\".$morphTo."',
+                     'App\\\\".$directory."',
                      $mediableId,
                      '".$directory."',
                      $order

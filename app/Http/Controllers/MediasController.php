@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Plank\Mediable\Media;
 use MediaUploadException;
 use MediaUploader;
+use Plank\Mediable\Mediable;
 use Session;
 
 class MediasController extends Controller
@@ -30,30 +32,57 @@ class MediasController extends Controller
      */
     public function attach(Request $request, $Id)
     {
+        //get model className for routeName
         $routeName = $request->route()->getName();
-        $model = 'App\\'.ucfirst(explode(".", $routeName)[0]);
+        $lModelName = explode(".", $routeName)[0];
+        $uModelName = ucfirst($lModelName);
+        $modelClass = 'App\\'.$uModelName;
 
-        //Todo to make dynamic
-//        $disk = 'uploads';
-//        $tag = 'LawDocuments';
+        $relatedMedias = $modelClass::find($Id);
+        $medias = $relatedMedias->media()->get();
 
-        if ($request->isMethod('post')) {
-//            try{
-//                MediaUploader::fromSource($request->file('file'))
-//                    ->toDestination($disk, $tag)
-//                    ->upload();
-//            }catch(MediaUploadException $e){
-//                throw $this->transformMediaUploadException($e);
-//            }
+        if ($request->isMethod('post') && !is_null($request->file('Attachment'))) {
+            try{
+                //get current disk where the file will be uploaded
+                $disk = 'uploads';
+
+                $media = MediaUploader::fromSource($request->file('Attachment'))
+                    ->toDestination($disk, $uModelName)
+                    ->upload();
+            }catch(MediaUploadException $e){
+                throw $this->transformMediaUploadException($e);
+            }
+
+            //to sync mediable table with media table on upload
+            $relatedMedias->attachMedia($media, $uModelName);
+            //$relatedMedias->syncMedia($media, $modelName);
+
+            Session::put('success', $this->baseFlash . 'uploaded Successfully!');
+
+            return Redirect::back();
         }else{
-            //Todo make dynamic for different media tables
-            $list = $model::find($Id);
-            $medias = $list->media()->get();
-
-            $directory = ltrim(preg_replace('/([A-Z]+)/', " $1", $medias[0]->directory),' ');
-
-            return view($this->baseViewPath .'.medias', compact('medias','directory','routeName','Id'));
+            return view($this->baseViewPath .'.medias', compact('medias','lModelName', 'uModelName', 'routeName','Id'));
         }
+    }
+
+    /**
+     * remove media
+     * @param $pivot_mediable_id
+     * @param $mediaId
+     * @return mixed
+     */
+    public function detach($pivot_mediable_id, $mediaId)
+    {
+        dump($mediaId);
+        dump($pivot_mediable_id);
+        $media = Media::find($mediaId);
+//        $mediable = Mediable::detachMedia($pivot_mediable_id);
+//        dump($media);
+//        dump($mediable);exit;
+
+        Session::put('success', $this->baseFlash . 'removed Successfully!');
+
+        return Redirect::back();
     }
 
     /**

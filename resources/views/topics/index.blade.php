@@ -30,14 +30,16 @@
                                                         <td>{{ $topic->header }}</td>
 
                             <td data-html2canvas-ignore="true">
-                                <div class="btn-group btn-group-xs" role="group">
-                                    <button data-wenk="Edit" type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$topic->id}}', event)">
-                                        <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </button>
-                                    <button type="submit" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$topic->id}}')">
-                                        <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </button>
-                                </div>
+                                <a href="#modal-text" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$topic->id}}', event)">
+                                    <i class="glyphicon glyphicon-edit text-primary"></i>
+                                </a>
+                                <a href="topics/{{$topic->id}}/attachment" class="b-n b-n-r bg-transparent item-attachment"
+                                   data-wenk="Attach Files">
+                                    <i class="glyphicon glyphicon-paperclip text-primary"></i>
+                                </a>
+                                <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$topic->id}}')">
+                                    <i class="glyphicon glyphicon-remove text-danger"></i>
+                                </a>
                             </td>
                         </tr>
                         @endforeach
