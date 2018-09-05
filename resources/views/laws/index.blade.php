@@ -35,7 +35,7 @@
                     </thead>
                     <tbody>
                         @foreach($laws as $law)
-                        <tr id="tr{{$law->id}}">
+                        <tr id="tr{{$law->id}}" data-id="{{$law->id}}" data-url="{{url()->current()}}">
                             <td>{{ $law->main_heading }}</td>
                             <td>{{ $law->sub_heading }}</td>
                             <td>{{  isset($law->country->description) ? $law->country->description : ''  }}</td>

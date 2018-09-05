@@ -39,10 +39,18 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
 
     var $table = $('#table');
     $table.on('expand-row.bs.table', function(e, index, row, $detail) {
-        console.log(index, row, $detail);
-        $detail.html('Loading from ajax request...');
-        $.get('/license', function (res) {
-            $detail.html(res.replace(/\n/g, '<br>'));
+        // console.log(index, row, $detail);
+        let id = $('#table tr[data-index='+index+']').data('id');
+        let url = $('#table tr[data-index='+index+']').data('url');
+        //console.log(id);
+        //console.log(url);
+        let attachUrl = url+'/'+id+'/attachment';
+        //console.log(attachUrl);
+        $detail.html('Loading...');
+        $.get(attachUrl, function (res) {
+            //console.log(res);
+            // $detail.html(res.replace(/\n/g, '<br>'));
+            $detail.html(res);
         });
     });
 
