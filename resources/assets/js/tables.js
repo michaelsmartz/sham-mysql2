@@ -42,8 +42,8 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
         // console.log(index, row, $detail);
         let id = $('#table tr[data-index='+index+']').data('id');
         let url = $('#table tr[data-index='+index+']').data('url');
-        //console.log(id);
-        //console.log(url);
+        // console.log(id);
+        // console.log(url);
         let attachUrl = url+'/'+id+'/attachment';
         //console.log(attachUrl);
         $detail.html('Loading...');
@@ -55,3 +55,4 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
     });
 
 }(jQuery);
+2

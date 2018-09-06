@@ -23,9 +23,26 @@ class MediasController extends Controller
         $this->baseFlash = 'media ';
     }
 
+    /**
+     * To diplay files
+     * @param Request $request
+     * @param $Id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show(Request $request, $Id)
+    {
+        //get model className for routeName
+        $routeName = $request->route()->getName();
+        $modelClass = 'App\\'.ucfirst(explode(".", $routeName)[0]);
+
+        $relatedMedias = $modelClass::find($Id);
+        $medias = $relatedMedias->media()->get();
+
+        return view($this->baseViewPath .'.medias', compact('medias'));
+    }
 
     /**
-     * To display and upload files
+     * To upload file
      * @param Request $request
      * @param $Id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -39,17 +56,16 @@ class MediasController extends Controller
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);
-        $medias = $relatedMedias->media()->get();
 
         if ($request->isMethod('post') && !is_null($request->file('Attachment'))) {
-            try{
+            try {
                 //get current disk where the file will be uploaded
                 $disk = 'uploads';
 
                 $media = MediaUploader::fromSource($request->file('Attachment'))
                     ->toDestination($disk, $uModelName)
                     ->upload();
-            }catch(MediaUploadException $e){
+            } catch (MediaUploadException $e) {
                 throw $this->transformMediaUploadException($e);
             }
 
@@ -58,11 +74,9 @@ class MediasController extends Controller
             //$relatedMedias->syncMedia($media, $modelName);
 
             Session::put('success', $this->baseFlash . 'uploaded Successfully!');
-
             return Redirect::back();
-        }else{
-            return view($this->baseViewPath .'.medias', compact('medias','lModelName', 'uModelName', 'routeName','Id'));
         }
+        return view($this->baseViewPath .'.media-upload',compact('routeName','uModelName','Id'));
     }
 
     /**

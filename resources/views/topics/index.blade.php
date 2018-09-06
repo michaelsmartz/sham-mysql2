@@ -16,19 +16,17 @@
             @if(count($topics) == 0)
                 <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a to add a new topic</h4>
             @else
-                <table id="new-table" data-toggle="table">
+                <table id="table" data-toggle="table" data-detail-view="true">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Topic Heading</th>
-
+                            <th data-sortable="true">Topic Heading</th>
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($topics as $topic)
-                        <tr id="tr{{$topic->id}}">
-                                                        <td>{{ $topic->header }}</td>
-
+                        <tr id="tr{{$topic->id}}" data-id="{{$topic->id}}" data-url="{{url()->current()}}">
+                            <td>{{ $topic->header }}</td>
                             <td data-html2canvas-ignore="true">
                                 <a href="#modal-text" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$topic->id}}', event)">
                                     <i class="glyphicon glyphicon-edit text-primary"></i>

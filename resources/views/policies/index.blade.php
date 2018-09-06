@@ -22,10 +22,10 @@
             @if(count($policies) == 0)
                 <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a to add a new policy</h4>
             @else
-                <table id="new-table" data-toggle="table">
+                <table id="table" data-toggle="table" data-detail-view="true">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Title</th>
+                            <th data-sortable="true">Title</th>
                             <th data-sortable="true">Policy Category</th>
                             <th data-sortable="true">Expires On</th>
 
@@ -34,8 +34,8 @@
                     </thead>
                     <tbody>
                         @foreach($policies as $policy)
-                        <tr id="tr{{$policy->id}}">
-                                                        <td>{{ $policy->title }}</td>
+                        <tr id="tr{{$policy->id}}" data-id="{{$policy->id}}" data-url="{{url()->current()}}">
+                            <td>{{ $policy->title }}</td>
                             <td>{{  isset($policy->policyCategory->description) ? $policy->policyCategory->description : ''  }}</td>
                             <td>{{ $policy->expires_on }}</td>
 

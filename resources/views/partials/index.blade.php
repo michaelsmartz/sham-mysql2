@@ -63,6 +63,12 @@
             }
         }
 
+        function uploadForm(id,event){
+            $mainButton = $('.buttons button[type="submit"]');
+            $mainButton.button('loading');
+            loadUrl('{{url()->current()}}/'+id+'/upload');
+        }
+
         function editFullPage(id, event){
             event.preventDefault();
             window.location = '{{url()->current()}}/'+id+'/edit';
