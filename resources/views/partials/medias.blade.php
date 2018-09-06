@@ -1,3 +1,4 @@
+<?php if (isset($medias)&& count($medias)>0){ ?>
 <table class="table table-striped tablesorter" id="new-table" data-toggle="table">
     <thead>
     <tr class="filters">
@@ -6,7 +7,6 @@
     </tr>
     </thead>
     <tbody>
-    <?php if (isset($medias)&& count($medias)>0): ?>
     @foreach($medias as $media)
         <tr data-id='{{$media->id}}'>
             <td>
@@ -22,6 +22,12 @@
             </td>
         </tr>
     @endforeach
-    <?php endif; ?>
     </tbody>
 </table>
+<?php
+}else{
+?>
+    <p>Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new attachments<p>
+<?php
+}
+?>

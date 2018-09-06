@@ -85,14 +85,19 @@ class MediasController extends Controller
      * @param $mediaId
      * @return mixed
      */
-    public function detach($pivot_mediable_id, $mediaId)
+    public function detach(Request $request, $pivot_mediable_id, $mediaId)
     {
-        dump($mediaId);
-        dump($pivot_mediable_id);
+        //get model className for routeName
+        $routeName = $request->route()->getName();
+        $lModelName = explode(".", $routeName)[0];
+        $uModelName = ucfirst($lModelName);
+        $modelClass = 'App\\'.$uModelName;
+
+        $relatedMedias = $modelClass::find($pivot_mediable_id);
+
         $media = Media::find($mediaId);
-//        $mediable = Mediable::detachMedia($pivot_mediable_id);
-//        dump($media);
-//        dump($mediable);exit;
+        $media->delete();
+        $relatedMedias->detachMedia($media);
 
         Session::put('success', $this->baseFlash . 'removed Successfully!');
 
