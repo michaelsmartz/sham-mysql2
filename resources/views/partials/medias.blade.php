@@ -1,4 +1,5 @@
 <?php if (isset($medias)&& count($medias)>0){ ?>
+<h4 class="text-center">{{$uModelName}} Attachments</h4>
 <div class="col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
     <table class="table table-striped tablesorter" id="new-table" data-toggle="table">
         <thead>
@@ -15,10 +16,10 @@
                 </td>
                 <td style="text-align:right;">
                     <div>
-                        <a href="{{url()->current()}}/{{$media->id}}" class="b-n b-n-r bg-transparent file-download" data-wenk="Download">
+                        <a href="{{url()->current()}}/{{$media->id}}" class="b-n b-n-r bg-transparent item-download" data-wenk="Download">
                             <i class="fa fa-download text-primary"></i>
                         </a>
-                        <a href="{{url()->current()}}/{{$media->id}}/detach" class="b-n b-n-r bg-transparent file-remove" data-wenk="Remove">
+                        <a href="{{url()->current()}}/{{$media->id}}/detach" class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove">
                             <i class="glyphicon glyphicon-remove text-danger"></i>
                         </a>
                     </div>
@@ -31,7 +32,7 @@
 <?php
 }else{
 ?>
-    <p class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new attachments</p>
+    <p class="text-center">There are no {{$uModelName}} Attachments</p>
 <?php
 }
 ?>

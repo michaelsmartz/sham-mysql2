@@ -31,14 +31,13 @@ class MediasController extends Controller
      */
     public function show(Request $request, $Id)
     {
-        //get model className for routeName
-        $routeName = $request->route()->getName();
-        $modelClass = 'App\\'.ucfirst(explode(".", $routeName)[0]);
+        $uModelName = self::getModelName($request);
+        $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);
         $medias = $relatedMedias->media()->get();
 
-        return view($this->baseViewPath .'.medias', compact('medias'));
+        return view($this->baseViewPath .'.medias', compact('medias','uModelName'));
     }
 
     /**
@@ -49,10 +48,7 @@ class MediasController extends Controller
      */
     public function attach(Request $request, $Id)
     {
-        //get model className for routeName
-        $routeName = $request->route()->getName();
-        $lModelName = explode(".", $routeName)[0];
-        $uModelName = ucfirst($lModelName);
+        $uModelName = self::getModelName($request);
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);
@@ -87,10 +83,7 @@ class MediasController extends Controller
      */
     public function detach(Request $request, $pivot_mediable_id, $mediaId)
     {
-        //get model className for routeName
-        $routeName = $request->route()->getName();
-        $lModelName = explode(".", $routeName)[0];
-        $uModelName = ucfirst($lModelName);
+        $uModelName = self::getModelName($request);
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($pivot_mediable_id);
@@ -114,5 +107,16 @@ class MediasController extends Controller
     {
         $media = Media::find($mediaId);
         return response()->download($media->getAbsolutePath());
+    }
+
+    /**
+     * get modelName from routeName
+     * @param $request
+     * @return string
+     */
+    private function getModelName($request){
+        //get model className for routeName
+        $routeName = $request->route()->getName();
+        return ucfirst(explode(".", $routeName)[0]);
     }
 }
