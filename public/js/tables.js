@@ -10286,19 +10286,13 @@ __webpack_require__(59);
         // console.log(index, row, $detail);
         var id = $('#table tr[data-index=' + index + ']').data('id');
         var url = $('#table tr[data-index=' + index + ']').data('url');
-        // console.log(id);
-        // console.log(url);
         var attachUrl = url + '/' + id + '/attachment';
-        //console.log(attachUrl);
         $detail.html('Loading...');
         $.get(attachUrl, function (res) {
-            //console.log(res);
-            // $detail.html(res.replace(/\n/g, '<br>'));
             $detail.html(res);
         });
     });
 }(jQuery);
-2;
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(0)))
 
 /***/ }),

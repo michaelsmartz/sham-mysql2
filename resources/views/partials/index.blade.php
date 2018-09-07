@@ -64,9 +64,18 @@
         }
 
         function uploadForm(id,event){
-            $mainButton = $('.buttons button[type="submit"]');
-            $mainButton.button('loading');
-            loadUrl('{{url()->current()}}/'+id+'/upload');
+            //event.preventDefault();
+            let url = '{{url()->current()}}/'+id+'/attachment/attach';
+            $.get(url, function (res, status) {
+                $('.light-modal-body').html(res);
+            });
+            //event.preventDefault();
+            {{--if(id){--}}
+                {{--window.location = '{{url()->current()}}/'+id+'/attachment/attach';--}}
+                {{--$('#modal-text').empty().load('{{url()->current()}}/'+id+'/attachment/attach',function(response, status){--}}
+                    {{--statusModalToggle(status);--}}
+                {{--});--}}
+            {{--}--}}
         }
 
         function editFullPage(id, event){

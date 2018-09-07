@@ -42,17 +42,11 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
         // console.log(index, row, $detail);
         let id = $('#table tr[data-index='+index+']').data('id');
         let url = $('#table tr[data-index='+index+']').data('url');
-        // console.log(id);
-        // console.log(url);
         let attachUrl = url+'/'+id+'/attachment';
-        //console.log(attachUrl);
         $detail.html('Loading...');
         $.get(attachUrl, function (res) {
-            //console.log(res);
-            // $detail.html(res.replace(/\n/g, '<br>'));
             $detail.html(res);
         });
     });
 
 }(jQuery);
-2
