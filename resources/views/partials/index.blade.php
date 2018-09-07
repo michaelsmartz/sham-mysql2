@@ -68,6 +68,7 @@
             let url = '{{url()->current()}}/'+id+'/attachment/attach';
             $.get(url, function (res, status) {
                 $('.light-modal-body').html(res);
+                $('#light-modal').show();
             });
         }
 
