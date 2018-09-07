@@ -16,22 +16,21 @@
             @if(count($employees) == 0)
                 <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a to add a new employee</h4>
             @else
-                <table id="new-table" data-toggle="table">
+                <table id="table" data-toggle="table" data-detail-view="true">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Id</th>
+                            <th data-sortable="true">Id</th>
                             <th data-sortable="true">First Name</th>
                             <th data-sortable="true">Surname</th>
                             <th data-sortable="true">Department</th>
                             <th data-sortable="true">Job Title</th>
-
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($employees as $employee)
-                        <tr id="tr{{$employee->id}}">
-                                                        <td>{{ $employee->id }}</td>
+                        <tr id="tr{{$employee->id}}" data-id="{{$employee->id}}" data-url="{{url()->current()}}">
+                            <td>{{ $employee->id }}</td>
                             <td>{{ $employee->first_name }}</td>
                             <td>{{ $employee->surname }}</td>
                             <td>{{  isset($employee->department->description) ? $employee->department->description : ''  }}</td>
@@ -42,6 +41,9 @@
                                     <button type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$employee->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </button>
+                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-upload" data-wenk="Upload" onclick="uploadForm('{{$employee->id}}', event)">
+                                        <i class="fa fa-upload text-primary"></i>
+                                    </a>
                                     <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$employee->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </a>
