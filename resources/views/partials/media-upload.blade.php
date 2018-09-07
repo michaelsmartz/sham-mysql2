@@ -12,7 +12,7 @@
     <div class="form-group">
         <div class="row">
             <div class="col-xs-6">
-                {!! Form::label('extrable_type', 'ExtrableType', ['class' => 'extrable_type']); !!}
+                {!! Form::label('extrable_type', 'extrable_type', ['class' => 'extrable_type']); !!}
                 {!! Form::text('Extrable Type') !!}
             </div>
         </div>
@@ -20,7 +20,7 @@
     <div class="form-group">
         <div class="row">
             <div class="col-xs-6">
-                {!! Form::label('extrable_id', 'ExtrableId', ['class' => 'extrable_id']); !!}
+                {!! Form::label('extrable_id', 'extrable_id', ['class' => 'extrable_id']); !!}
                 {!! Form::text('Extrable Id') !!}
             </div>
         </div>

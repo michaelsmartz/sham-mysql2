@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CustomMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Plank\Mediable\Media;
@@ -48,6 +49,8 @@ class MediasController extends Controller
      */
     public function attach(Request $request, $Id)
     {
+        $this->validator($request);
+
         $name = self::getModelName($request);
         $uModelName = $name['model'];
         $routeName = $name['route'];
@@ -63,6 +66,12 @@ class MediasController extends Controller
 
                 $media = MediaUploader::fromSource($request->file('Attachment'))
                     ->toDestination($disk, $uModelName)
+                    // pass the callable
+                    ->beforeSave(function (Media $model) use ($request){
+                        $model->setAttribute('comment',$request->input('comment'));
+                        $model->setAttribute('extrable_id', $request->input('Extrable_Id'));
+                        $model->setAttribute('extrable_type',  $request->input('Extrable_Type'));
+                    })
                     ->setMaximumSize(10000000) //setting max upload size to 10M
                     ->upload();
             } catch (MediaUploadException $e) {
@@ -124,5 +133,23 @@ class MediasController extends Controller
         $routeName = $request->route()->getName();
         $uModelName = ucfirst(explode(".", $routeName)[0]);
         return [ 'route' => $routeName , 'model' => $uModelName];
+    }
+
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param  Request $request
+     *
+     * @return boolean
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            'extrable_id' => 'nullable',
+            'extrable_type' => 'nullable|string|min:0|max:50',
+            'comment' => 'nullable|string|min:0|max:50'
+        ];
+
+        $this->validate($request, $validateFields);
     }
 }
