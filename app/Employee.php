@@ -53,12 +53,13 @@ class Employee extends Model
                   'leave_balance_at_start'
               ];
 
-    
+    protected $dates = ['deleted_at'];
+
     protected $with = ['department', 'jobTitle'];
 
     public $searchable = ['first_name', 'surname'];
 
-    protected $appends = ['emails'];
+    //protected $appends = ['emails'];
 
     protected static function boot()
     {

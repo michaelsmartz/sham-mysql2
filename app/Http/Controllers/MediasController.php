@@ -63,9 +63,11 @@ class MediasController extends Controller
 
                 $media = MediaUploader::fromSource($request->file('Attachment'))
                     ->toDestination($disk, $uModelName)
+                    ->setMaximumSize(10000000) //setting max upload size to 10M
                     ->upload();
             } catch (MediaUploadException $e) {
-                throw $this->transformMediaUploadException($e);
+                    Session::put('error', $e->getMessage());
+                    return Redirect::back();
             }
 
             //to sync mediable table with media table on upload
