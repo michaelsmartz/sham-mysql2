@@ -1,5 +1,31 @@
 <h4 class="modal-title">{{ $uModelName." Attachments" }}</h4>
 {!! Form::open(array('route' => array($routeName, $Id),'method'=>'POST', 'files'=>true)) !!}
+@if($uModelName == "Employee")
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-6">
+                {!! Form::label('comment', 'Comment', ['class' => 'comment']); !!}
+                {!! Form::text('comment') !!}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-6">
+                {!! Form::label('extrable_type', 'ExtrableType', ['class' => 'extrable_type']); !!}
+                {!! Form::text('Extrable Type') !!}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-6">
+                {!! Form::label('extrable_id', 'ExtrableId', ['class' => 'extrable_id']); !!}
+                {!! Form::text('Extrable Id') !!}
+            </div>
+        </div>
+    </div>
+@endif
 <div class="form-group">
     <div class="row">
         <div class="col-xs-6">
