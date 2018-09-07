@@ -69,13 +69,6 @@
             $.get(url, function (res, status) {
                 $('.light-modal-body').html(res);
             });
-            //event.preventDefault();
-            {{--if(id){--}}
-                {{--window.location = '{{url()->current()}}/'+id+'/attachment/attach';--}}
-                {{--$('#modal-text').empty().load('{{url()->current()}}/'+id+'/attachment/attach',function(response, status){--}}
-                    {{--statusModalToggle(status);--}}
-                {{--});--}}
-            {{--}--}}
         }
 
         function editFullPage(id, event){
@@ -109,6 +102,21 @@
                 )
             };
 
+        }
+
+        function deleteAttachment(fileName, id, mediaId){
+            //event.preventDefault();
+            alerty.confirm(
+                "Are you sure to <strong class='text-danger'>delete</strong> file  <strong class='text-danger'>"+fileName+"</strong>?<br>",
+                {
+                    okLabel: '<span class="text-danger">Yes</span>',
+                    cancelLabel: 'No'
+                },
+                function() {
+                    //ok callback
+                    window.location = '{{url()->current()}}/'+id+'/attachment/'+mediaId+'/detach';
+                }
+            )
         }
 
     </script>

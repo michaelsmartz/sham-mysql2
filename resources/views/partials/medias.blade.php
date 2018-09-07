@@ -12,14 +12,15 @@
         @foreach($medias as $media)
             <tr data-id='{{$media->id}}'>
                 <td>
-                    {{ (isset($media))?$media->filename.'.'.$media->extension:"" }}
+                    {{ $media->filename.'.'.$media->extension }}
                 </td>
                 <td style="text-align:right;">
                     <div>
                         <a href="{{url()->current()}}/{{$media->id}}" class="b-n b-n-r bg-transparent item-download" data-wenk="Download">
                             <i class="fa fa-download text-primary"></i>
                         </a>
-                        <a href="{{url()->current()}}/{{$media->id}}/detach" class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove">
+                        <a href="#!" class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove"
+                           onclick="deleteAttachment('{{$media->filename.'.'.$media->extension}}','{{$Id}}','{{$media->id}}')">
                             <i class="glyphicon glyphicon-remove text-danger"></i>
                         </a>
                     </div>

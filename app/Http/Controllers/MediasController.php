@@ -37,7 +37,7 @@ class MediasController extends Controller
         $relatedMedias = $modelClass::find($Id);
         $medias = $relatedMedias->media()->get();
 
-        return view($this->baseViewPath .'.medias', compact('medias','uModelName'));
+        return view($this->baseViewPath .'.medias', compact('medias','uModelName','Id'));
     }
 
     /**
