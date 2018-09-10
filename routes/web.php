@@ -33,8 +33,12 @@ Auth::routes();
             Route::get('getNewHiresData', 'HomeController@getNewHiresData')->name('getNewHiresData');
             Route::get('getAssetData', 'HomeController@getAssetData')->name('getAssetData');
             Route::get('getCourseData', 'HomeController@getCourseData')->name('getCourseData');
-            Route::any('getRewardCount', 'HomeController@getRewardCount')->name('getRewardCount');
-            Route::any('getDisciplinaryActionCount', 'HomeController@getDisciplinaryActionCount')->name('getDisciplinaryActionCount');
+            Route::get('getRewardCount', 'HomeController@getRewardCount')->name('getRewardCount');
+            Route::get('getDisciplinaryActionCount', 'HomeController@getDisciplinaryActionCount')->name('getDisciplinaryActionCount');
+            Route::get('getQALastFiveDaysData', 'HomeController@getQALastFiveDaysData')->name('getQALastFiveDaysData');
+            Route::get('getQAEvaluationScoresData', 'HomeController@getQAEvaluationScoresData')->name('getQAEvaluationScoresData');
+            Route::get('getTotalAssessmentData', 'HomeController@getTotalAssessmentData')->name('getTotalAssessmentData');
+            
         #endregion
 
         #region Central HR

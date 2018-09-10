@@ -30,7 +30,6 @@ onmessage = function (e) {
                     data1: temp1
                 });
             }
-            console.log(response);
         }
 
         if (urls[0].includes("getHeadcountDeptData")) {
