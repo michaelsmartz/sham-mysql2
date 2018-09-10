@@ -10240,7 +10240,7 @@ module.exports = __webpack_require__(53);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(global, jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jspdf__ = __webpack_require__(15);
+/* WEBPACK VAR INJECTION */(function(global, jQuery, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jspdf__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jspdf___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jspdf__);
 
 
@@ -10293,7 +10293,16 @@ __webpack_require__(59);
         });
     });
 }(jQuery);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(0)))
+
+$(window).load(function () {
+    var $table = $('#table');
+    $table.find('tr td:first-child').each(function () {
+        //console.log($(this).children('a.detail-icon'));
+        $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk', 'show hide documents');
+        $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk-pos', 'right');
+    });
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(0), __webpack_require__(0)))
 
 /***/ }),
 

@@ -50,3 +50,12 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
     });
 
 }(jQuery);
+
+$(window).load(function () {
+    var $table = $('#table');
+    $table.find('tr td:first-child').each(function () {
+        //console.log($(this).children('a.detail-icon'));
+        $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk', 'show hide documents');
+        $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk-pos', 'right');
+    });
+});
