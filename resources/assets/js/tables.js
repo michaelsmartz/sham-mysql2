@@ -65,4 +65,3 @@ $(window).load(function () {
         $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk-pos', 'right');
     });
 });
-
