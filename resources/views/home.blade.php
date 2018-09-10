@@ -1,12 +1,8 @@
 @extends('portal-index')
 
 @php
-
-    $title = trans('home.dashboard');
-    View::share('title', $title);
-    //dump($user);
-    //$p = $user->ShamUserProfile();
-    //dump($p);
+    //$title = trans('home.dashboard');
+    //View::share('title', $title);
 @endphp
 
 @section('title', "Dashboard" )

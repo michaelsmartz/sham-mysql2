@@ -10,10 +10,17 @@ use App\EmployeeNewHiresView;
 use App\Course;
 use App\DisciplinaryAction;
 use App\Reward;
+use App\QAEvaluationScoresView;
+use App\QAEvaluationsView;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
+    const CONST_ELAPSE_DAYS = 370;
+    const CONST_MIN_PASS_PERCENTAGE = 95;
+    const CONST_MAX_FAIL_PERCENTAGE = 79;
+
     /**
      * Create a new controller instance.
      *
@@ -126,11 +133,119 @@ class HomeController extends Controller
         return response()->json(['response' => $temp], 200);
     }
 
-    public function getDisciplinaryActionCount(){
+    public function getDisciplinaryActionCount()
+    {
 
         $temp = DisciplinaryAction::whereHas('employee')->count();
 
         return response()->json(['response' => $temp], 200);
+    }
+
+    public function getQALastFiveDaysData() {
+
+        $ret = array();
+        $qarecords = Cache::remember('getQALastFiveDaysData', 1*60, function() {
+            $startdate = self::getStartDate();
+            return QAEvaluationsView::where('TotalPoints', '>', 0)
+            ->where('Feedbackdate', '>=', $startdate->format('Y-m-d'))->get();
+        });
+
+        if($qarecords !=null)
+        {
+            foreach ($qarecords as $result)
+            {
+                $sampleObj = new \stdClass();
+                $sampleObj->year = Carbon::parse($result->Feedbackdate)->toDateString();// => "2016-10-01 23:59:59" $result->Feedbackdate;
+                $sampleObj->name = $result->description;
+                $sampleObj->Assessment = 1;
+                $ret[] = $sampleObj;
+
+            }
+        }
+
+        return response()->json(['response'=>$ret], 200);
+    }
+
+    public function getQAEvaluationScoresData() 
+    {
+        $ret = array();
+        $qarecords = Cache::remember('getQAEvaluationScoresData', 1*60, function() {
+
+            $elapsedays = 370;
+            $date = new Carbon;
+            $startdate =  $date->subDays($elapsedays);
+            return QAEvaluationScoresView::where('Feedbackdate', '>=', $startdate->format('Y-m-d'))->get();
+        });
+
+        if($qarecords !=null)
+        {
+            foreach ($qarecords as $result)
+            {
+                if($result->Percentage >= self::CONST_MIN_PASS_PERCENTAGE){
+                    $stdObj = new \stdClass();
+                    $stdObj->value = 1;
+                    $stdObj->Name = "Pass";
+                    $ret[] = $stdObj;
+                }
+                elseif($result->Percentage <= self::CONST_MAX_FAIL_PERCENTAGE){
+                    $stdObj = new \stdClass();
+                    $stdObj->value = 1;
+                    $stdObj->Name = "Fail";
+                    $ret[] = $stdObj;
+                }
+                else{
+                    $stdObj = new \stdClass();
+                    $stdObj->value = 1;
+                    $stdObj->Name = "Other";
+                    $ret[] = $stdObj;
+                }
+            }
+        }
+        return response()->json(['response'=>$ret],  200);
+    }
+
+    public function getTotalAssessmentData() 
+    {
+        $temp = Cache::remember('getTotalAssessmentData', 1*60, function() {
+            $elapsedays = self::CONST_ELAPSE_DAYS;
+            $date = new Carbon;
+            $startdate =  $date->subDays($elapsedays);
+
+            return QAEvaluationsView::where('TotalPoints', '>', 0)
+                   ->where('Feedbackdate', '>=', $startdate->format('Y-m-d'))->get();
+        });
+
+        return response()->json(['response' => $temp], 200);
+    }
+
+    private static function getStartDate() {
+
+        $todaysdate = Carbon::now();
+
+        $elapsedays = self::CONST_ELAPSE_DAYS; // $elapsedays = 6;
+        $dates = array();
+
+        $date = new Carbon;
+        $startdate =  $date->subDays($elapsedays);
+
+        $dates = [];
+        for($date = $startdate; $date->lte($todaysdate); $date->addDay()) {
+            $dates[] = $date->format('Y-m-d');
+        }
+
+        foreach ($dates as $date)
+        {
+            $sampleObj = new \stdClass();
+            $sampleObj->year = $date;
+            $sampleObj->name = 'Product A';
+            $sampleObj->Assessment = 0;
+            $ret[] = $sampleObj;
+        }
+
+        $date = new Carbon;
+        $startdate =  $date->subDays($elapsedays);
+
+        return $startdate;
     }
 
 }
