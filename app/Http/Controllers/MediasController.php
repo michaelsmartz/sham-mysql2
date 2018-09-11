@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\CustomMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Plank\Mediable\Media;

@@ -8,6 +8,7 @@ use DB;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Collective\Html\FormBuilder as Form;
+use App\Macros\Routing\Router;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -63,5 +64,7 @@ class AppServiceProvider extends ServiceProvider
                 return Form::select($name, $groups, $selected, $attributes);
             }
         );
+
+        Router::registerMacros();
     }
 }

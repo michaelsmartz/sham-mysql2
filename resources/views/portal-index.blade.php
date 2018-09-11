@@ -193,7 +193,7 @@
                     $('meta[name="csrf-token"]').attr('content', d);
                 });
             }
-
+            /*
             function loaded(selector, callback){
                 //trigger after page load.
 
@@ -206,11 +206,10 @@
                     callback($(this));
                 });
 
-                /*
                 $(window).on("load", selector, function() {
                     callback($(this));
                 });
-                */
+
             }
 
             var makeFieldsRequired = function(container) {
@@ -222,6 +221,7 @@
                     });
                 }
             };
+            
             var markRequiredFields = function() {
 
                 // for any new fields when a modal dialog is shown
@@ -246,7 +246,7 @@
                 });
 
             };
-
+            */
             var handleDynamicMenu = function() {
                 var url = window.location;
 
@@ -339,31 +339,32 @@
                     if ($(targetContainer).hasClass(sidebarClass)) {
                         $(targetContainer).removeClass(sidebarClass);
                         if ($(targetContainer).hasClass('page-sidebar-fixed')) {
-                            if ($('#sidebar .slimScrollDiv').length !== 0) {
+                            /*if ($('#sidebar .slimScrollDiv').length !== 0) {
                                 $('#sidebar [data-scrollbar="true"]').slimScroll({destroy: true});
                                 $('#sidebar [data-scrollbar="true"]').removeAttr('style');
                             }
                             generateSlimScroll($('#sidebar [data-scrollbar="true"]'));
-                            $('#sidebar [data-scrollbar=true]').trigger('mouseover');
+                            
+                            $('#sidebar [data-scrollbar=true]').trigger('mouseover');*/
                         } else if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                            if ($('#sidebar .slimScrollDiv').length !== 0) {
+                            /*if ($('#sidebar .slimScrollDiv').length !== 0) {
                                 $('#sidebar [data-scrollbar="true"]').slimScroll({destroy: true});
                                 $('#sidebar [data-scrollbar="true"]').removeAttr('style');
                             }
-                            generateSlimScroll($('#sidebar [data-scrollbar="true"]'));
+                            generateSlimScroll($('#sidebar [data-scrollbar="true"]'));*/
                         }
                     } else {
                         $(targetContainer).addClass(sidebarClass);
 
                         if(!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                            if ($(targetContainer).hasClass('page-sidebar-fixed')) {
+                            /*if ($(targetContainer).hasClass('page-sidebar-fixed')) {
                                 $('#sidebar [data-scrollbar="true"]').slimScroll({destroy: true});
                                 $('#sidebar [data-scrollbar="true"]').removeAttr('style');
                             }
-                            $('#sidebar [data-scrollbar=true]').trigger('mouseover');
+                            $('#sidebar [data-scrollbar=true]').trigger('mouseover');*/
                         } else {
-                            $('#sidebar [data-scrollbar="true"]').css('margin-top','0');
-                            $('#sidebar [data-scrollbar="true"]').css('overflow', 'visible');
+                            //$('#sidebar [data-scrollbar="true"]').css('margin-top','0');
+                            //$('#sidebar [data-scrollbar="true"]').css('overflow', 'visible');
                         }
                     }
                     $(window).trigger('resize');
@@ -391,19 +392,20 @@
             };
 
             $(document).ready(function() {
-                //setInterval(keepTokenAlive, 1000 * 60 * 15); // every 15 mins
+                /*
+                setInterval(keepTokenAlive, 1000 * 60 * 15); // every 15 mins
                 $(document).on('mouseenter','.tooltips', function (event) {
-                    /*$(this).qtip({
+                    $(this).qtip({
                         overwrite: false, show: { ready: true },
                         position: { at: 'top center', my: 'bottom center' },
                         style: { classes: 'qtip-tipsy' }
-                    });*/
+                    });
                 });
-
+                */
                 handleSidebarMenu();
                 handleDynamicMenu();
                 handleSidebarMinify();
-                markRequiredFields();
+                //markRequiredFields();
 
                 $('.user-profile').click(function() {
                     $('#md-content').empty();

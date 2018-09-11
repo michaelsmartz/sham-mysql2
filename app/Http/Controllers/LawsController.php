@@ -63,7 +63,6 @@ class LawsController extends CustomController
         $this->validator($request);
 
         $input = array_except($request->all(),array('_token'));
-        
 
         $this->contextObj->addData($input);
 
@@ -138,7 +137,24 @@ class LawsController extends CustomController
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-        
+
+    /**
+     * To diplay files
+     * @param Request $request
+     * @param $Id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function attachment(Request $request, $Id)
+    {
+        $uModelName = self::getModelName($request)['model'];
+        $modelClass = 'App\\'.$uModelName;
+
+        $relatedMedias = $modelClass::find($Id);
+        $medias = $relatedMedias->media()->get();
+
+        return view($this->baseViewPath .'.medias', compact('medias','uModelName','Id'));
+    }
+
     /**
      * Validate the given request with the defined rules.
      *
@@ -149,19 +165,18 @@ class LawsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-                    'main_heading' => 'required|string|min:1|max:100',
+            'main_heading' => 'required|string|min:1|max:100',
             'sub_heading' => 'nullable|string|min:0|max:100',
             'country_id' => 'nullable|numeric|min:0|max:4294967295',
             'law_category_id' => 'nullable',
             'content' => 'required|string|min:1|max:4294967295',
             'is_public' => 'nullable|boolean',
-            'expires_on' => 'nullable|string|min:0',
-     
+            'expires_on' => 'nullable|string|min:0'
         ];
-        
 
         $this->validate($request, $validateFields);
     }
+
 
     
 }

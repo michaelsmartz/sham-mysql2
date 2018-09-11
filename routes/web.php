@@ -55,11 +55,13 @@ Auth::routes();
             Route::any('policies/{Id}/attachment/attach', 'MediasController@attach' )->name('policy.attach');
             Route::any('policies/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('policy.detach');
             Route::get('policies/{Id}/attachment/{MediaId}', 'MediasController@download' );
-
+            
+            /*
             Route::any('laws/{Id}/attachment', 'MediasController@show' )->name('law.show');
             Route::any('laws/{Id}/attachment/attach', 'MediasController@attach' )->name('law.attach');
             Route::any('laws/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('law.detach');
             Route::get('laws/{Id}/attachment/{MediaId}', 'MediasController@download' );
+            */
 
             Route::any('employees/{Id}/attachment', 'MediasController@show' )->name('employee.show');
             Route::any('employees/{Id}/attachment/attach', 'MediasController@attach' )->name('employee.attach');
@@ -76,7 +78,8 @@ Auth::routes();
             Route::any('assessments/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('assessment.detach');
             Route::get('assessments/{Id}/attachment/{MediaId}', 'MediasController@download' );
 
-            Route::resource('laws', 'LawsController');
+            //Route::resource('laws', 'LawsController');
+            Route::fileResource('laws');
             Route::resource('policies', 'PoliciesController');
             Route::resource('assets', 'AssetsController');
             Route::resource('assetgroups', 'AssetGroupsController');
