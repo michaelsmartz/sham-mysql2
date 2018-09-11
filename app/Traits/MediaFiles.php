@@ -14,7 +14,7 @@ use Session;
 trait MediaFiles
 {
     /**
-     * To diplay files
+     * To display files
      * @param Request $request
      * @param $Id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -34,7 +34,6 @@ trait MediaFiles
      * To upload file
      * @param Request $request
      * @param $Id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function attach(Request $request, $Id)
     {
@@ -44,27 +43,29 @@ trait MediaFiles
 
         $relatedMedias = $modelClass::find($Id);
 
-        if ($request->isMethod('post') && !is_null($request->file('attachment'))) {
-            try {
-                //get current disk where the file will be uploaded
-                $disk = 'uploads';
+        if ($request->isMethod('post') && !is_null($request->files)) {
+            foreach($request->files as $file) {
+                try {
+                    //get current disk where the file will be uploaded
+                    $disk = 'uploads';
 
-                $media = MediaUploader::fromSource($request->file('attachment'))
-                    ->toDestination($disk, $uModelName)
-                    // pass the callable
-                    ->beforeSave(function (Media $model) use ($request){
-                        $model->setAttribute('comment',$request->input('comment'));
-                        $model->setAttribute('extrable_id', $request->input('Extrable_Id'));
-                        $model->setAttribute('extrable_type',  $request->input('Extrable_Type'));
-                    })
-                    ->upload();
-            } catch (MediaUploadException $e) {
-                Session::put('error', $e->getMessage());
+                    $media = MediaUploader::fromSource($file)
+                        ->toDestination($disk, $uModelName)
+                        // pass the callable
+                        ->beforeSave(function (Media $model) use ($request) {
+                            $model->setAttribute('comment', $request->input('comment'));
+                            $model->setAttribute('extrable_id', $request->input('Extrable_Id'));
+                            $model->setAttribute('extrable_type', $request->input('Extrable_Type'));
+                        })
+                        ->upload();
+                } catch (MediaUploadException $e) {
+                    Session::put('error', $e->getMessage());
+                }
+
+                //to sync mediable table with media table on upload
+                $relatedMedias->attachMedia($media, $uModelName);
+                //$relatedMedias->syncMedia($media, $modelName);
             }
-
-            //to sync mediable table with media table on upload
-            $relatedMedias->attachMedia($media, $uModelName);
-            //$relatedMedias->syncMedia($media, $modelName);
         }
     }
 
