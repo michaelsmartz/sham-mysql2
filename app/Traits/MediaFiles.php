@@ -1,43 +1,33 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Plank\Mediable\Media;
 use MediaUploadException;
 use MediaUploader;
 use Plank\Mediable\Mediable;
 use Session;
 
-class MediasController extends Controller
+trait MediaFiles
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->baseViewPath = 'partials';
-        $this->baseFlash = 'media ';
-    }
-
     /**
      * To diplay files
      * @param Request $request
      * @param $Id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Request $request, $Id)
+    public function attachment(Request $request, $Id)
     {
-        $uModelName = self::getModelName($request)['model'];
+        $uModelName = $this->getModelName($request)['model'];
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);
         $medias = $relatedMedias->media()->get();
 
-        return view($this->baseViewPath .'.medias', compact('medias','uModelName','Id'));
+        return view('partials.medias', compact('medias','uModelName','Id'));
     }
 
     /**
@@ -48,22 +38,18 @@ class MediasController extends Controller
      */
     public function attach(Request $request, $Id)
     {
-        $this->validator($request);
-
-        $name = self::getModelName($request);
+        $name = $this->getModelName($request);
         $uModelName = $name['model'];
-        $routeName = $name['route'];
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);
-        $heading = $relatedMedias->main_heading;
 
-        if ($request->isMethod('post') && !is_null($request->file('Attachment'))) {
+        if ($request->isMethod('post') && !is_null($request->file('attachment'))) {
             try {
                 //get current disk where the file will be uploaded
                 $disk = 'uploads';
 
-                $media = MediaUploader::fromSource($request->file('Attachment'))
+                $media = MediaUploader::fromSource($request->file('attachment'))
                     ->toDestination($disk, $uModelName)
                     // pass the callable
                     ->beforeSave(function (Media $model) use ($request){
@@ -71,22 +57,15 @@ class MediasController extends Controller
                         $model->setAttribute('extrable_id', $request->input('Extrable_Id'));
                         $model->setAttribute('extrable_type',  $request->input('Extrable_Type'));
                     })
-                    ->setMaximumSize(10000000) //setting max upload size to 10M
                     ->upload();
             } catch (MediaUploadException $e) {
-                    Session::put('error', $e->getMessage());
-                    return Redirect::back();
+                Session::put('error', $e->getMessage());
             }
 
             //to sync mediable table with media table on upload
             $relatedMedias->attachMedia($media, $uModelName);
             //$relatedMedias->syncMedia($media, $modelName);
-
-            Session::put('success', $this->baseFlash . 'uploaded Successfully!');
-            return Redirect::back();
         }
-
-        return view($this->baseViewPath .'.media-upload',compact('heading', 'routeName','uModelName','Id'));
     }
 
     /**
@@ -97,7 +76,7 @@ class MediasController extends Controller
      */
     public function detach(Request $request, $pivot_mediable_id, $mediaId)
     {
-        $name = self::getModelName($request);
+        $name = $this->getModelName($request);
         $modelClass = 'App\\'.$name['model'];
 
         $relatedMedias = $modelClass::find($pivot_mediable_id);
@@ -106,13 +85,13 @@ class MediasController extends Controller
         $media->delete();
         $relatedMedias->detachMedia($media);
 
-        Session::put('success', $this->baseFlash . 'removed Successfully!');
+        Session::put('success', 'media removed Successfully!');
 
         return Redirect::back();
     }
 
     /**
-     * download media
+     * to download files
      * @param $pivot_mediable_id
      * @param $mediaId
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
@@ -130,25 +109,7 @@ class MediasController extends Controller
      */
     private function getModelName($request){
         $routeName = $request->route()->getName();
-        $uModelName = ucfirst(explode(".", $routeName)[0]);
+        $uModelName = Str::singular(ucfirst(explode(".", $routeName)[0]));
         return [ 'route' => $routeName , 'model' => $uModelName];
-    }
-
-    /**
-     * Validate the given request with the defined rules.
-     *
-     * @param  Request $request
-     *
-     * @return boolean
-     */
-    protected function validator(Request $request)
-    {
-        $validateFields = [
-            'extrable_id' => 'nullable',
-            'extrable_type' => 'nullable|string|min:0|max:50',
-            'comment' => 'nullable|string|min:0|max:50'
-        ];
-
-        $this->validate($request, $validateFields);
     }
 }

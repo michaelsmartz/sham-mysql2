@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Policy;
 use App\PolicyCategory;
+use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 class PoliciesController extends CustomController
 {
+    use MediaFiles;
     /**
      * Create a new controller instance.
      *
@@ -59,7 +61,9 @@ class PoliciesController extends CustomController
 
         $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+        $context = $this->contextObj->addData($input);
+
+        $this->attach($request, $context->id);
 
         \Session::put('success', $this->baseFlash . 'created Successfully!');
 

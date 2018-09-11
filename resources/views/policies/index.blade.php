@@ -44,11 +44,6 @@
                                     <a href="#light-modal" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$policy->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-upload"
-                                       data-wenk="Upload" onclick="uploadForm('{{$policy->id}}', event)"
-                                    >
-                                        <i class="fa fa-upload text-primary"></i>
-                                    </a>
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$policy->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>

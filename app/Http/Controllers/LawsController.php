@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Law;
 use App\Country;
 use App\LawCategory;
+use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 class LawsController extends CustomController
 {
+    use MediaFiles;
     /**
      * Create a new controller instance.
      *
@@ -58,13 +60,13 @@ class LawsController extends CustomController
      */
     public function store(Request $request)
     {
-        dump($request);
-        dump($request->file('file')); die;
         $this->validator($request);
 
         $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+        $context = $this->contextObj->addData($input);
+
+        $this->attach($request, $context->id);
 
         \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -136,23 +138,6 @@ class LawsController extends CustomController
         \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
 
         return redirect()->route($this->baseViewPath .'.index');
-    }
-
-    /**
-     * To diplay files
-     * @param Request $request
-     * @param $Id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function attachment(Request $request, $Id)
-    {
-        $uModelName = self::getModelName($request)['model'];
-        $modelClass = 'App\\'.$uModelName;
-
-        $relatedMedias = $modelClass::find($Id);
-        $medias = $relatedMedias->media()->get();
-
-        return view($this->baseViewPath .'.medias', compact('medias','uModelName','Id'));
     }
 
     /**

@@ -10284,6 +10284,8 @@ __webpack_require__(59);
     var $table = $('#table');
     $table.on('expand-row.bs.table', function (e, index, row, $detail) {
         // console.log(index, row, $detail);
+        $('#table tr[data-index=' + index + '] td:first-child a.detail-icon i').attr('data-wenk', 'Hide documents');
+
         var id = $('#table tr[data-index=' + index + ']').data('id');
         var url = $('#table tr[data-index=' + index + ']').data('url');
         var attachUrl = url + '/' + id + '/attachment';
@@ -10292,13 +10294,17 @@ __webpack_require__(59);
             $detail.html(res);
         });
     });
+
+    $table.on('collapse-row.bs.table', function (e, index, row) {
+        $('#table tr[data-index=' + index + '] td:first-child a.detail-icon i').attr('data-wenk', 'Show documents');
+    });
 }(jQuery);
 
 $(window).load(function () {
     var $table = $('#table');
     $table.find('tr td:first-child').each(function () {
         //console.log($(this).children('a.detail-icon'));
-        $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk', 'show hide documents');
+        $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk', 'Show documents');
         $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk-pos', 'right');
     });
 });

@@ -22,6 +22,7 @@ use App\EmployeeStatus;
 use App\ImmigrationStatus;
 use App\Qualification;
 use App\Skill;
+use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EmployeesController extends CustomController
 {
+    use MediaFiles;
     /**
      * Create a new controller instance.
      *
@@ -127,7 +129,9 @@ class EmployeesController extends CustomController
 
         $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+        $context = $this->contextObj->addData($input);
+
+        $this->attach($request, $context->id);
 
         \Session::put('success', $this->baseFlash . 'created Successfully!');
 

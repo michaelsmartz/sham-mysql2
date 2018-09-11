@@ -50,37 +50,12 @@ Auth::routes();
             Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
             Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
 
-            Route::resource('medias', 'MediasController');
-            Route::any('policies/{Id}/attachment', 'MediasController@show' )->name('policy.show');
-            Route::any('policies/{Id}/attachment/attach', 'MediasController@attach' )->name('policy.attach');
-            Route::any('policies/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('policy.detach');
-            Route::get('policies/{Id}/attachment/{MediaId}', 'MediasController@download' );
-            
-            /*
-            Route::any('laws/{Id}/attachment', 'MediasController@show' )->name('law.show');
-            Route::any('laws/{Id}/attachment/attach', 'MediasController@attach' )->name('law.attach');
-            Route::any('laws/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('law.detach');
-            Route::get('laws/{Id}/attachment/{MediaId}', 'MediasController@download' );
-            */
-
-            Route::any('employees/{Id}/attachment', 'MediasController@show' )->name('employee.show');
-            Route::any('employees/{Id}/attachment/attach', 'MediasController@attach' )->name('employee.attach');
-            Route::any('employees/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('employee.detach');
-            Route::get('employees/{Id}/attachment/{MediaId}', 'MediasController@download' );
-
-            Route::any('topics/{Id}/attachment', 'MediasController@show' )->name('topic.show');
-            Route::any('topics/{Id}/attachment/attach', 'MediasController@attach' )->name('topic.attach');
-            Route::any('topics/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('topic.detach');
-            Route::get('topics/{Id}/attachment/{MediaId}', 'MediasController@download' );
-
-            Route::any('assessments/{Id}/attachment', 'MediasController@show' )->name('assessment.show');
-            Route::any('assessments/{Id}/attachment/attach', 'MediasController@attach' )->name('assessment.attach');
-            Route::any('assessments/{Id}/attachment/{MediaId}/detach', 'MediasController@detach' )->name('assessment.detach');
-            Route::get('assessments/{Id}/attachment/{MediaId}', 'MediasController@download' );
-
-            //Route::resource('laws', 'LawsController');
             Route::fileResource('laws');
-            Route::resource('policies', 'PoliciesController');
+            Route::fileResource('policies');
+            Route::fileResource('topics');
+            Route::fileResource('employees');
+            Route::fileResource('assessments');
+
             Route::resource('assets', 'AssetsController');
             Route::resource('assetgroups', 'AssetGroupsController');
             Route::resource('assetsuppliers', 'AssetSuppliersController');

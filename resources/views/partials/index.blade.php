@@ -63,15 +63,6 @@
             }
         }
 
-        function uploadForm(id,event){
-            //event.preventDefault();
-            let url = '{{url()->current()}}/'+id+'/attachment/attach';
-            $.get(url, function (res, status) {
-                $('.light-modal-body').html(res);
-                $('#light-modal').show();
-            });
-        }
-
         function editFullPage(id, event){
             event.preventDefault();
             window.location = '{{url()->current()}}/'+id+'/edit';
