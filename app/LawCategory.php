@@ -20,6 +20,8 @@ class LawCategory extends Model
                   'description'
               ];
 
+    public $searchable = ['description'];
+
     public function laws()
     {
         return $this->hasMany('App\Law','law_category_id','id');

@@ -20,5 +20,7 @@ class MaritalStatus extends Model
         'is_system_predefined'
     ];
 
+    public $searchable = ['description'];
+
     protected $table = 'maritalstatuses';
 }

@@ -20,4 +20,6 @@ class Title extends Model
                   'is_system_predefined'
               ];
 
+    public $searchable = ['description'];
+
 }

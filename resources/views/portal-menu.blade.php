@@ -308,7 +308,7 @@
                             <li><a href="{{URL::to('/languages')}}">Language</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_MARITAL_STATUS]))
-                            <li><a href="{{URL::to('/maritalstatuses')}}">Marital Status</a></li>
+                            <li><a href="{{URL::to('/marital_statuses')}}">Marital Status</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_PRODUCTS]))
                             <li><a href="{{URL::to('/products')}}">Products </a></li>

@@ -20,4 +20,6 @@ class Gender extends Model
         'is_system_predefined'
     ];
 
+    public $searchable = ['description'];
+
 }

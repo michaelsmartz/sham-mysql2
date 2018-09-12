@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Gender;
+use App\MaritalStatus;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class GendersController extends CustomController
+class MaritalStatusesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -18,24 +18,24 @@ class GendersController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new Gender();
-        $this->baseViewPath = 'genders';
-        $this->baseFlash = 'Gender details ';
+        $this->contextObj = new MaritalStatus();
+        $this->baseViewPath = 'marital_statuses';
+        $this->baseFlash = 'Marital Status details ';
     }
 
     /**
-     * Display a listing of the genders.
+     * Display a listing of the marital statuses.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $genders = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('genders'));
+        $maritalStatuses = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('maritalStatuses'));
     }
 
     /**
-     * Store a new gender in the storage.
+     * Store a new marital status in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -67,7 +67,7 @@ class GendersController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $id = Route::current()->parameter('gender');
+        $id = Route::current()->parameter('marital_status');
         $data = $this->contextObj->findData($id);
 
         if($request->ajax()) {
@@ -82,7 +82,7 @@ class GendersController extends CustomController
     }
 
     /**
-     * Update the specified gender in the storage.
+     * Update the specified marital status in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -108,7 +108,7 @@ class GendersController extends CustomController
     }
 
     /**
-     * Remove the specified gender from the storage.
+     * Remove the specified marital status from the storage.
      *
      * @param  int $id
      *
@@ -117,7 +117,7 @@ class GendersController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('gender');
+            $id = Route::current()->parameter('marital_status');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -127,20 +127,6 @@ class GendersController extends CustomController
         }
 
         return redirect()->route($this->baseViewPath .'.index');
-    }
-
-    /**
-     * Validate the given request with the defined rules.
-     *
-     * @param Request $request
-     */
-    protected function validator(Request $request)
-    {
-        $validateFields = [
-            'description' => 'required|string|min:1|max:50'
-        ];
-
-        $this->validate($request, $validateFields);
     }
     
     

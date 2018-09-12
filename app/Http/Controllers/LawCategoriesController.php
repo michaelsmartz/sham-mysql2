@@ -126,7 +126,7 @@ class LawCategoriesController extends CustomController
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
 
         } catch (Exception $exception) {
-            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+            \Session::put('error', 'could not delete '. $this->baseFlash . '!');
         }
 
         return redirect()->route($this->baseViewPath .'.index');

@@ -21,6 +21,8 @@ class PolicyCategory extends Model
                   'description'
               ];
 
+    public $searchable = ['description'];
+
     public function policies()
     {
         return $this->hasMany('App\Policy','policy_category_id','id');
