@@ -43,13 +43,15 @@ trait MediaFiles
 
         $relatedMedias = $modelClass::find($Id);
 
-        if ($request->isMethod('post') && !is_null($request->files)) {
-            foreach($request->files as $file) {
+        if (!is_null($request->request->get('attachment'))) {
+            foreach($request->request->get('attachment') as $file) {
+                $stream = fopen($file['value'], 'r');
                 try {
                     //get current disk where the file will be uploaded
                     $disk = 'uploads';
 
-                    $media = MediaUploader::fromSource($file)
+                    $media = MediaUploader::fromSource($stream)
+                        ->useFilename($file['title'])
                         ->toDestination($disk, $uModelName)
                         // pass the callable
                         ->beforeSave(function (Media $model) use ($request) {

@@ -38,7 +38,7 @@
         $('#one').fileUploader({
             useFileIcons: true,
             fileMaxSize: 1.7,
-            totalMaxSize: 2,
+            totalMaxSize: 5,
             useLoadingBars: false,
             linkButtonContent: '',
             deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
