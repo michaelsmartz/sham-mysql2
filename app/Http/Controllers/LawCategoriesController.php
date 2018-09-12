@@ -1,13 +1,15 @@
 <?php
 
-namespace [% namespace %];
+namespace App\Http\Controllers;
 
-[% use_command_placeholder %]
+use App\LawCategory;
+use Illuminate\Http\Request;
+use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class [% controller_name %] [% controller_extends %]
+class LawCategoriesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -16,26 +18,26 @@ class [% controller_name %] [% controller_extends %]
      */
     public function __construct()
     {
-        $this->contextObj = new [% model_name_studly %]();
-        $this->baseViewPath = '[% model_name_plural_variable %]';
-        $this->baseFlash = '[% model_name_title %] details ';
+        $this->contextObj = new LawCategory();
+        $this->baseViewPath = 'law_categories';
+        $this->baseFlash = 'Law Category details ';
     }
 
     /**
-     * Display a listing of the [% model_name_plural %].
+     * Display a listing of the law categories.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $[% model_name_plural_variable %] = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('[% model_name_plural_variable %]'));
+        $lawCategories = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('lawCategories'));
     }
 
     /**
-     * Store a new [% model_name %] in the storage.
+     * Store a new law category in the storage.
      *
-     * @param [% request_fullname %] [% request_variable %]
+     * @param Illuminate\Http\Request $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
@@ -58,10 +60,32 @@ class [% controller_name %] [% controller_extends %]
     }
 
     /**
-     * Update the specified [% model_name %] in the storage.
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('law_category');
+        $data = $this->contextObj->findData($id);
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter']
+            ]);
+        }
+        return view($this->baseViewPath . '.edit', compact('data'));
+    }
+    /**
+     * Update the specified law category in the storage.
      *
      * @param  int $id
-     * @param Request [% request_variable %]
+     * @param Request $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
@@ -84,7 +108,7 @@ class [% controller_name %] [% controller_extends %]
     }
 
     /**
-     * Remove the specified [% model_name %] from the storage.
+     * Remove the specified law category from the storage.
      *
      * @param  int $id
      *
@@ -93,7 +117,7 @@ class [% controller_name %] [% controller_extends %]
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('[% model_name_snake %]');
+            $id = Route::current()->parameter('law_category');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -104,6 +128,20 @@ class [% controller_name %] [% controller_extends %]
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-    [% affirm_method %]
-    [% upload_method %]
+    
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param  Request $request
+     *
+     * @return boolean
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            'description' => 'required|string|min:1|max:50'
+        ];
+        
+        $this->validate($request, $validateFields);
+    }
 }

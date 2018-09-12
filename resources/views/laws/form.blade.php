@@ -66,11 +66,12 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('attachment') ? 'has-error' : '' }}">
 	@component('partials.uploader')
-        @slot('elementId', 'attachment')
         @slot('fieldLabel', 'Attach Law Document')
         @slot('desc', 'Upload documents only')
         @slot('route', 'laws.store')
-        @slot('acceptedFiles', '.doc,.docx,.ppt,.pptx,.pdf')
+        @slot('acceptedFiles')
+            ['doc','docx','ppt','pptx','pdf']
+        @endslot
     @endcomponent
 </div>
 

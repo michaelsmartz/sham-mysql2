@@ -5,6 +5,7 @@
 
 .fileUploader .dropZone {
   transition: all 1s;
+  cursor: pointer;
   -webkit-transition: all 1s; }
 
 .fileUploader {
@@ -17,13 +18,13 @@
   .fileUploader .inputContainer {
     display: none; }
   .fileUploader .dropZone {
-    min-height: 150px;
+    min-height: 100px;
     width: 100%;
     margin-top: 25px;
     border: dotted 3px #ccc;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 16px;
     font-weight: 400;
     color: gray; }
@@ -71,12 +72,10 @@
       .fileUploader .filesContainer .newElement > input, .fileUploader .filesContainer .newElement > div {
         float: left; }
       .fileUploader .filesContainer .newElement .fileTitle {
-        width: 38%;
         margin-right: 2%;
         color: #333;
         font-size: 14px;
         border: none;
-        text-align: right;
         position: relative;
         top: 10px; }
       .fileUploader .filesContainer .newElement .fileExt {
@@ -132,5 +131,6 @@
   .fileUploader .debug {
     color: #ff0000;
     text-align: center; }
-    .fileUploader .innerFileThumbs { display: table-row }
+  .fileUploader .innerFileThumbs { display: table-row }
+  .fileUploader .innerFileThumbs .errorLabel { color: #ff0000 }
 /*# sourceMappingURL=fileUploader.css.map */

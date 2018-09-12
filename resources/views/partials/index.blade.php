@@ -7,14 +7,6 @@
 @section('post-body')
     <style>
         .alerty{ width: 500px !important;}
-        .modal.fade.show{opacity:1 !important}
-        .modal-inner footer {
-            display: flex; justify-content: flex-end; align-items: center;
-            padding: 10px 1.2em 18px !important;
-        }
-        .modal-close{
-            border-radius: 4px 4px 0 0 !important;
-        }
     </style>
     <script src="{{url('/')}}/js/tables.js"></script>
     <script src="{{url('/')}}/plugins/html2canvas/html2canvas-1.0.0.a12.min.js"></script>
@@ -24,12 +16,10 @@
 
         var oldVal, $mainButton, loadUrl = function (url) {
             $mainButton = $('.buttons button[type="submit"]');
-            $mainButton.button('loading');
             $.get(url).done(function (data) {
                 $(".light-modal-heading").empty().html(data.title);
                 $(".light-modal-body").empty().html(data.content);
                 $(".light-modal-footer .buttons").empty().html(data.footer);
-                $mainButton.button('reset');
 
                 $('.multipleSelect').each(function(){
                     $(this).multipleSelect({ filter: true });
@@ -53,12 +43,9 @@
             //event.preventDefault();
             if (id) {
                 @if (isset($fullPageEdit) && $fullPageEdit == 'true')
-                console.log('yes ' + id);
                     window.location = '{{url()->current()}}/'+id+'/edit';
                 @else
-                    console.log('no ' + id);
                     $mainButton = $('.buttons button[type="submit"]');
-                    $mainButton.button('loading');
                     loadUrl('{{url()->current()}}/'+id+'/edit');
                 @endif
             }

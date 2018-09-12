@@ -11,7 +11,6 @@ class LawCategory extends Model
     use SoftDeletes;
 
 
-
     /**
      * Attributes that should be mass-assignable.
      *

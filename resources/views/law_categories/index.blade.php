@@ -1,9 +1,9 @@
-@extends('[% layout_name %]')
-@section('title','[% model_plural %]')
+@extends('portal-index')
+@section('title','Law Categories')
 @section('content')
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($[% model_name_plural_variable %]) > 0)
+            @if(count($lawCategories) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
@@ -13,26 +13,28 @@
             </div>
             @endif
             <div class="table-responsive">
-            @if(count($[% model_name_plural_variable %]) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new [% model_name %]</h4>
+            @if(count($lawCategories) == 0)
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new law category</h4>
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                            [% header_cells %]
+                                                        <th data-sortable="true">Description</th>
+
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($[% model_name_plural_variable %] as $[% model_name_singular_variable %])
-                        <tr id="tr{{$[% model_name_singular_variable %]->id}}">
-                            [% body_cells %]
+                        @foreach($lawCategories as $lawCategory)
+                        <tr id="tr{{$lawCategory->id}}">
+                                                        <td>{{ $lawCategory->description }}</td>
+
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$[% model_name_singular_variable %]->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$lawCategory->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$[% model_name_singular_variable %]->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$lawCategory->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                 </div>
@@ -42,11 +44,11 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $[% model_name_plural_variable %]->render() !!}
+                    {!! $lawCategories->render() !!}
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> '[% model_name_plural_variable %].destroy'])
+            @component('partials.index', ['routeName'=> 'law_categories.destroy'])
             @endcomponent
         </div>
     </div>

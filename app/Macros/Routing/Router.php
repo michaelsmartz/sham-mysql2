@@ -32,7 +32,7 @@ class Router
                     DefaultRouter::get($url . '/{' . $name .'}/edit', $controller . '@edit')->name($url . '.edit');
                     DefaultRouter::put($url . '/{' . $name .'}', $controller . '@update')->name($url . '.update');
                     DefaultRouter::patch($url . '/{' . $name .'}', $controller . '@update')->name($url . '.update');
-                    DefaultRouter::delete($url . '/' .$name, $controller . '@destroy')->name($url . '.destroy');
+                    DefaultRouter::delete($url . '/{' .$name .'}', $controller . '@destroy')->name($url . '.destroy');
                 });
             });
         }

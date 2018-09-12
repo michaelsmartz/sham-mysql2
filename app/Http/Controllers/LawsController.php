@@ -11,6 +11,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
+use Exception;
 
 class LawsController extends CustomController
 {
@@ -131,11 +132,18 @@ class LawsController extends CustomController
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+        try{
+            $id = Route::current()->parameter('law');
+            $this->contextObj->destroyData($id);
+
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not delete ' .$this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }

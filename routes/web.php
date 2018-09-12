@@ -13,9 +13,7 @@
 
 Route::get('/', 'MiscController@welcome');
 Route::get('test', 'MiscController@test');
-Route::get('/license', function(){
-    return response('Licence agreement ' .rand(1,100));
-});
+
 Auth::routes();
 
 #region auth middleware routes
@@ -54,7 +52,7 @@ Auth::routes();
             Route::fileResource('policies');
             Route::fileResource('topics');
             Route::fileResource('employees');
-            Route::fileResource('assessments');
+            //Route::fileResource('assessments');
 
             Route::resource('assets', 'AssetsController');
             Route::resource('assetgroups', 'AssetGroupsController');
@@ -64,8 +62,8 @@ Auth::routes();
         #region Configuration parameters routes
             Route::group(['prefix'=>'config'], function(){
                 Route::get('employees', 'ConfigDropdownsController@employees')->name('employees');
-                Route::resource('assetsuppliers', 'AssetSuppliersController');
             });
+            Route::resource('law_categories', 'LawCategoriesController');
         #endregion
 
         #region E-Learning
