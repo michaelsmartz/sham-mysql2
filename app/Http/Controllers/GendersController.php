@@ -6,6 +6,8 @@ use App\Gender;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
+use Exception;
 
 class GendersController extends CustomController
 {
@@ -17,7 +19,7 @@ class GendersController extends CustomController
     public function __construct()
     {
         $this->contextObj = new Gender();
-        $this->baseViewPath = 'genders.index';
+        $this->baseViewPath = 'genders';
         $this->baseFlash = 'Gender details ';
     }
 
@@ -28,7 +30,7 @@ class GendersController extends CustomController
      */
     public function index()
     {
-        $genders = $this->contextObj::filter(Input::all())->get();
+        $genders = $this->contextObj::filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('genders'));
     }
 
@@ -41,15 +43,42 @@ class GendersController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+            $this->contextObj->addData($input);
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Illuminate\View\View
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('gender');
+        $data = $this->contextObj->findData($id);
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter']
+            ]);
+        }
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
     /**
@@ -62,13 +91,18 @@ class GendersController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
+            $input = array_except($request->all(),array('_token','_method'));
 
-        $this->contextObj->updateData($id, $input);
+            $this->contextObj->updateData($id, $input);
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');       
     }
@@ -80,34 +114,34 @@ class GendersController extends CustomController
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $this->contextObj->destroyData($id);
+        try {
+            $id = Route::current()->parameter('gender');
+            $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-        
+
     /**
      * Validate the given request with the defined rules.
      *
-     * @param  Request $request
-     *
-     * @return boolean
+     * @param Request $request
      */
     protected function validator(Request $request)
     {
         $validateFields = [
-                    'description' => 'string|min:1|max:1000|nullable',
-            'is_active' => 'boolean|nullable',
-            'is_system_predefined' => 'boolean|nullable',
-     
+            'description' => 'required|string|min:1|max:50'
         ];
-        
 
         $this->validate($request, $validateFields);
     }
-
+    
     
 }

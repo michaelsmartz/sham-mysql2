@@ -7,7 +7,7 @@ use App\Traits\UsesPredefinedValues;
 
 class Gender extends Model
 {
-    
+
     use SoftDeletes, UsesPredefinedValues;
 
     /**
@@ -16,8 +16,8 @@ class Gender extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
-                  'is_system_predefined'
-              ];
+        'description',
+        'is_system_predefined'
+    ];
 
 }

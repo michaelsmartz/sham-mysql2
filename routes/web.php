@@ -65,6 +65,7 @@ Auth::routes();
             });
             Route::resource('law_categories', 'LawCategoriesController');
             Route::resource('policy_categories', 'PolicyCategoriesController');
+            Route::resource('genders', 'GendersController');
         #endregion
 
         #region E-Learning
