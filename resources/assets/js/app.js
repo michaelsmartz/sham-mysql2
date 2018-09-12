@@ -32,14 +32,14 @@ $.fn.clickToggle = function (f1, f2) {
     });
 };
 
-window.Popper = Popper;
-window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-disable-line
-window.Button = require('exports-loader?Button!bootstrap/js/dist/button'); // eslint-disable-line
-window.Tooltip = require('exports-loader?Tooltip!bootstrap/js/dist/tooltip'); // eslint-disable-line
-window.Modal = require('exports-loader?Modal!bootstrap/js/dist/modal'); // eslint-disable-line
-window.Popover = require('exports-loader?Tooltip!bootstrap/js/dist/popover'); // eslint-disable-line
-window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
+//window.Popper = Popper;
+//window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-disable-line
+//window.Button = require('exports-loader?Button!bootstrap/js/dist/button'); // eslint-disable-line
+//window.Tooltip = require('exports-loader?Tooltip!bootstrap/js/dist/tooltip'); // eslint-disable-line
+//window.Modal = require('exports-loader?Modal!bootstrap/js/dist/modal'); // eslint-disable-line
+//window.Popover = require('exports-loader?Tooltip!bootstrap/js/dist/popover'); // eslint-disable-line
+//window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
 
 window.asyncJS = global.asyncJS = asyncJS;
 
-require('bootstrap-confirmation2/bootstrap-confirmation.js');
+//require('bootstrap-confirmation2/bootstrap-confirmation.js');

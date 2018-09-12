@@ -30,8 +30,9 @@
                 $(".light-modal-body").empty().html(data.content);
                 $(".light-modal-footer .buttons").empty().html(data.footer);
                 $mainButton.button('reset');
-                $('.multipleSelect').multipleSelect({
-                    filter: true
+
+                $('.multipleSelect').each(function(){
+                    $(this).multipleSelect({ filter: true });
                 });
             });
         };
