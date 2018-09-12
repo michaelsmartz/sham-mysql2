@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\LawCategory;
+use App\PolicyCategory;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Exception;
 use Illuminate\View\View;
 
-class LawCategoriesController extends CustomController
+class PolicyCategoriesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -22,24 +22,24 @@ class LawCategoriesController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new LawCategory();
-        $this->baseViewPath = 'law_categories';
-        $this->baseFlash = 'Law Category details ';
+        $this->contextObj = new PolicyCategory();
+        $this->baseViewPath = 'policy_categories';
+        $this->baseFlash = 'Policy Category details ';
     }
 
     /**
-     * Display a listing of the law categories.
+     * Display a listing of the policy categories.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $lawCategories = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('lawCategories'));
+        $policyCategories = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('policyCategories'));
     }
 
     /**
-     * Store a new law category in the storage.
+     * Store a new policy category in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -65,13 +65,14 @@ class LawCategoriesController extends CustomController
 
     /**
      * Show the form for editing the specified resource.
+     *
      * @param Request $request
      * @return Factory|JsonResponse|Response|View
      */
     public function edit(Request $request)
     {
         $data = null;
-        $id = Route::current()->parameter('law_category');
+        $id = Route::current()->parameter('policy_category');
         $data = $this->contextObj->findData($id);
 
         if($request->ajax()) {
@@ -84,8 +85,9 @@ class LawCategoriesController extends CustomController
         }
         return view($this->baseViewPath . '.edit', compact('data'));
     }
+
     /**
-     * Update the specified law category in the storage.
+     * Update the specified policy category in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -111,7 +113,7 @@ class LawCategoriesController extends CustomController
     }
 
     /**
-     * Remove the specified law category from the storage.
+     * Remove the specified policy category from the storage.
      *
      * @param  int $id
      *
@@ -120,7 +122,7 @@ class LawCategoriesController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('law_category');
+            $id = Route::current()->parameter('policy_category');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -131,20 +133,18 @@ class LawCategoriesController extends CustomController
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-    
+
     /**
      * Validate the given request with the defined rules.
      *
-     * @param  Request $request
-     *
-     * @return boolean
+     * @param Request $request
      */
     protected function validator(Request $request)
     {
         $validateFields = [
             'description' => 'required|string|min:1|max:50'
         ];
-        
+
         $this->validate($request, $validateFields);
     }
 }
