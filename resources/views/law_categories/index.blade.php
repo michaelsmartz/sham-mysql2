@@ -1,6 +1,11 @@
 @extends('portal-index')
-@section('title','Law Categories')
+@section('title','Compliance')
 @section('content')
+    <br>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">Law Categories</a></li>
+        <li ><a href="{{URL::to('/')}}/policy_categories">Policy Categories</a></li>
+    </ul>
     <div class="flex-wrapper">
         <div id="table-container">
             @if(count($lawCategories) > 0)

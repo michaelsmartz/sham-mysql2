@@ -439,19 +439,8 @@
                 </li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
-                <li class="has-sub">
-                    <a href="javascript:;">Compliance <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LAW_CATEGORY]))
-                            <li><a href="{{URL::to('/lawcategories')}}">Law Category</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_POLICY_CATEGORY]))
-                            <li><a href="{{URL::to('/policycategories')}}">Policy Category</a></li>
-                        @endif
-                    </ul>
-                </li>
+                <li class="{{ (Request::is('policy_categories/*') || Request::is('policy_categories') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/law_categories">Compliance</a></li>
             @endif
-
             @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING]))
                 <li class="has-sub">
                     <a href="javascript:;">
