@@ -77,7 +77,7 @@
             langs: {
                 'en': {
                     intro_msg: '(Add attachments...)',
-                    dropZone_msg: 'Drop your files here or <strong>click</strong> in this area',
+                    dropZone_msg: '<strong>Drop</strong> your files here or <strong>click</strong> in this area',
                     maxSizeExceeded_msg: 'File too large',
                     totalMaxSizeExceeded_msg: 'Total size exceeded',
                     duplicated_msg: 'File duplicated (skipped)',
