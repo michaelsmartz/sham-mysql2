@@ -1990,7 +1990,7 @@ body {
   width: 14px;
   text-align: center;
   line-height: 20px;
-  font-size: 14px;
+  font-size: inherit;
 }
 
 .sidebar .nav > li > a i[class*="ion-"] {
@@ -2072,6 +2072,8 @@ body {
 
 .sidebar .nav > li.has-sub.active > a {
   color: #fff !important;
+  font-size: 18px !important;
+  background-color: #1b1f24;
 }
 
 .sidebar .nav .sub-menu > li > a .caret {
