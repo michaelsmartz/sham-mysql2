@@ -1,16 +1,3 @@
-<?php
-
-    $msg = '';
-    $msgAlertClass = '';
-    if ( Session::has('success_msg') ) {
-        $msg = Session::get('success_msg');
-        $msgAlertClass = 'success';
-    } elseif (Session::has('fail_msg') ) {
-        $msg = Session::get('fail_msg');
-        $msgAlertClass = 'danger';
-    }
-
-?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -100,7 +87,7 @@
                             <small>@yield('subtitle')</small>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <div class="pull-right" style="/*position:relative;*/">
+                            <div class="pull-right">
                                 @yield('right-title')
                             </div>
                         </div>
@@ -113,37 +100,6 @@
 
             @component('partials.light-modal')
             @endcomponent
-
-            {{-- 
-            <div id="md" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="true" >
-                <div class="modal-dialog modal-lg">
-                    <div id="md-content" class="modal-content"></div>
-                </div>
-            </div>
-            <div id="mdd" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" >
-                <div class="modal-dialog modal-md">
-                    <div id="md-content" class="modal-content"></div>
-                </div>
-            </div>
-            <div id="mde" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="true" >
-                <div class="modal-dialog modal-lg">
-                    <div id="md-content" class="modal-content">
-                        <div class="modal-header  b-n">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Attention!</h4>
-                        </div>
-                        <div class="modal-body p-t0 p-r5">
-                            <div class="scrolled-content-wrapper">
-                                Could not complete this operation. Please make sure you are connected and that your session has not expired then try again!
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn bg-gold b-r4 text-white has-spinner" data-dismiss="modal">OK</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            --}}
 
             @if(Session::has('success') || Session::has('error'))
                 @include('alert')
@@ -177,9 +133,6 @@
             !function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
             /*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
             !function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
-        </script>
-
-        <script>
 
             function keepTokenAlive() {
                 $.ajax({
@@ -193,60 +146,7 @@
                     $('meta[name="csrf-token"]').attr('content', d);
                 });
             }
-            /*
-            function loaded(selector, callback){
-                //trigger after page load.
 
-                $(function () {
-                    callback($(selector));
-                });
-
-                //trigger after page update eg ajax event or jquery insert.
-                $('.modal-content').on('load', selector, function () {
-                    callback($(this));
-                });
-
-                $(window).on("load", selector, function() {
-                    callback($(this));
-                });
-
-            }
-
-            var makeFieldsRequired = function(container) {
-                var requiredInputs = $(container).find(':input.field-required,:input.required');
-                if (requiredInputs.length > 0) {
-                    // add required marker on each label
-                    requiredInputs.each(function(){
-                        $(this).prev('label:not(.required)').addClass('required');
-                    });
-                }
-            };
-            
-            var markRequiredFields = function() {
-
-                // for any new fields when a modal dialog is shown
-                $('body').on('shown.bs.modal', function(e) {
-                    var element = e.target;
-
-                    var $form = $(element).find('form')[0];
-                    makeFieldsRequired($form);
-
-                    if( $($form).is('[data-jquery-validate=true]')) {
-                        $($form).validate();
-                    }
-
-                    if(typeof $.fn.charcounter !== 'undefined') {
-                        $($form).find(':input[maxlength],:input[warnlength]').each(function(){
-                            $(this).charcounter({
-                                ccDebug: false,
-                                placement: 'bottom-right'
-                            });
-                        });
-                    }
-                });
-
-            };
-            */
             var handleDynamicMenu = function() {
                 var url = window.location;
 
@@ -269,36 +169,6 @@
                 $('#sidebar-menu li a').filter(function() {
                     return this.href == url2;
                 }).parent().parent().parent().addClass('active');
-            };
-
-            var generateSlimScroll = function(element) {
-                var elem = $(element),
-                        dataScrollBarColor = elem.attr('data-scrollbar-color'),
-                        dataHeight = $(element).attr('data-height'),
-                        dataMaxHeight = $(element).attr('data-max-height');
-
-                dataHeight = (!dataHeight) ? '' : dataHeight;
-                dataScrollBarColor = (!dataScrollBarColor) ? '' : dataScrollBarColor;
-
-                if(dataMaxHeight) {
-                    $(element).css('max-height',dataMaxHeight);
-                }
-
-                var scrollBarOption = {
-                    color: dataScrollBarColor,
-                    height: dataHeight,
-                    alwaysVisible: true,
-                    size: '4px',
-                    distance: '0px',
-                    position: 'left'
-                };
-
-                if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                    $(element).css('height', dataHeight);
-                    $(element).css('overflow-x','scroll');
-                } else {
-                    $(element).slimScroll(scrollBarOption);
-                }
             };
 
             var handleSidebarMenu = function() {
@@ -382,30 +252,11 @@
                 }
             };
 
-            var detectFormChanges = function() {
-                var $form = $(' #md > #md-content > form'),
-                    origForm = $form.serialize();
-
-                $('form :input').on('change input', function() {
-                    $('.change-message').toggle($form.serialize() !== origForm);
-                });
-            };
-
             $(document).ready(function() {
-                /*
-                setInterval(keepTokenAlive, 1000 * 60 * 15); // every 15 mins
-                $(document).on('mouseenter','.tooltips', function (event) {
-                    $(this).qtip({
-                        overwrite: false, show: { ready: true },
-                        position: { at: 'top center', my: 'bottom center' },
-                        style: { classes: 'qtip-tipsy' }
-                    });
-                });
-                */
+                //setInterval(keepTokenAlive, 1000 * 60 * 15); // every 15 mins
                 handleSidebarMenu();
                 handleDynamicMenu();
                 handleSidebarMinify();
-                //markRequiredFields();
 
                 $('.user-profile').click(function() {
                     $('#md-content').empty();
@@ -420,24 +271,6 @@
 
             });
 
-        </script>
-        <script>
-            //var q = window.asyncJS();
-            /*
-            q.add("{{URL::to('/')}}/js/index-pack2.js");
-            q.whenDone(function(){
-                q.then("{{URL::to('/')}}/js/sham.js");
-                q.whenDone(function() {
-                    // sham.js is ready
-                    setAutoTooltips();
-                    @if($msg!='')
-                    $('.top-right').notify({
-                        message: { text: '{{$msg}}' }, type:'{{$msgAlertClass}}', transition: 'fade', fadeOut: { enabled: true, delay: 8000 }
-                    }).show();
-                    @endif
-                });
-            });
-            */
         </script>
 
         @yield('scripts')
