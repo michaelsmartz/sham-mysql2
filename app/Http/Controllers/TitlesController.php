@@ -128,6 +128,19 @@ class TitlesController extends CustomController
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-    
+
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param Request $request
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            'description' => 'required|string|min:1|max:50'
+        ];
+
+        $this->validate($request, $validateFields);
+    }
     
 }

@@ -6,4 +6,8 @@
         {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
 </div>
 
+<div class="form-group col-xs-12">
+  <input type="hidden" name="is_system_predefined" value="0">
+</div>
+
 </div>
