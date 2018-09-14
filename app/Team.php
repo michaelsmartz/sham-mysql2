@@ -22,6 +22,8 @@ class Team extends Model
                   'time_group_id'
               ];
 
+    public $searchable = ['description'];
+
     public function timeGroup()
     {
         return $this->belongsTo('App\TimeGroup','time_group_id','id');

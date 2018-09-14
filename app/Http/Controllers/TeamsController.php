@@ -5,11 +5,24 @@ namespace App\Http\Controllers;
 use App\Team;
 use App\TimeGroup;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\CustomController;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
 use Exception;
 
-class TeamsController extends Controller
+class TeamsController extends CustomController
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->contextObj = new Team();
+        $this->baseViewPath = 'teams';
+        $this->baseFlash = 'Team details ';
+    }
 
     /**
      * Display a listing of the teams.
@@ -18,21 +31,13 @@ class TeamsController extends Controller
      */
     public function index()
     {
-        $teams = Team::with('timegroup')->paginate(25);
-
-        return view('teams.index', compact('teams'));
+        $teams = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('teams'));
     }
 
-    /**
-     * Show the form for creating a new team.
-     *
-     * @return Illuminate\View\View
-     */
-    public function create()
-    {
-        $timeGroups = TimeGroup::pluck('id','id')->all();
-        
-        return view('teams.create', compact('timeGroups'));
+    public function create() {
+        $time_groups = Timegroup::pluck('description', 'id');
+        return view($this->baseViewPath . '.create',compact('time_groups'));
     }
 
     /**
@@ -44,76 +49,69 @@ class TeamsController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $this->affirm($request);
-            $data = $this->getData($request);
-            
-            Team::create($data);
+       try {
+            $this->validator($request);
 
-            return redirect()->route('teams.team.index')
-                             ->with('success_message', 'Team was successfully added!');
+            $input = array_except($request->all(),array('_token'));
+
+            $this->contextObj->addData($input);
+
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-
-            return back()->withInput()
-                         ->withErrors(['unexpected_error' => 'Unexpected error occurred while trying to process your request!']);
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
+
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**
-     * Display the specified team.
-     *
-     * @param int $id
-     *
-     * @return Illuminate\View\View
+     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Illuminate\View\View
      */
-    public function show($id)
+    public function edit(Request $request)
     {
-        $team = Team::with('timegroup')->findOrFail($id);
+        $data = null;
+        $id = Route::current()->parameter('title');
+        $data = $this->contextObj->findData($id);
 
-        return view('teams.show', compact('team'));
-    }
-
-    /**
-     * Show the form for editing the specified team.
-     *
-     * @param int $id
-     *
-     * @return Illuminate\View\View
-     */
-    public function edit($id)
-    {
-        $team = Team::findOrFail($id);
-        $timeGroups = TimeGroup::pluck('id','id')->all();
-
-        return view('teams.edit', compact('team','timeGroups'));
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
     /**
      * Update the specified team in the storage.
      *
      * @param  int $id
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function update($id, Request $request)
+    public function update(Request $request, $id)
     {
         try {
-            $this->affirm($request);
-            $data = $this->getData($request);
-            
-            $team = Team::findOrFail($id);
-            $team->update($data);
+            $this->validator($request);
 
-            return redirect()->route('teams.team.index')
-                             ->with('success_message', 'Team was successfully updated!');
+            $input = array_except($request->all(),array('_token','_method'));
+
+            $this->contextObj->updateData($id, $input);
+
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
-            return back()->withInput()
-                         ->withErrors(['unexpected_error' => 'Unexpected error occurred while trying to process your request!']);
-        }        
+        return redirect()->route($this->baseViewPath .'.index');       
     }
 
     /**
@@ -123,56 +121,34 @@ class TeamsController extends Controller
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         try {
-            $team = Team::findOrFail($id);
-            $team->delete();
+            $id = Route::current()->parameter('team');
+            $this->contextObj->destroyData($id);
 
-            return redirect()->route('teams.team.index')
-                             ->with('success_message', 'Team was successfully deleted!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
 
         } catch (Exception $exception) {
-
-            return back()->withInput()
-                         ->withErrors(['unexpected_error' => 'Unexpected error occurred while trying to process your request!']);
+            \Session::put('error', 'could not delete '. $this->baseFlash . '!');
         }
+
+        return redirect()->route($this->baseViewPath .'.index');
     }
-    
+
     /**
      * Validate the given request with the defined rules.
      *
-     * @param  Illuminate\Http\Request  $request
-     *
-     * @return boolean
+     * @param Request $request
      */
-    protected function affirm(Request $request)
+    protected function validator(Request $request)
     {
-        $rules = [
+        $validateFields = [
             'description' => 'required|string|min:1|max:50',
-            'time_group_id' => 'nullable',
-     
+            'time_group_id' => 'required|numeric',
         ];
 
-
-        return $this->validate($request, $rules);
+        $this->validate($request, $validateFields);
     }
-
     
-    /**
-     * Get the request's data from the request.
-     *
-     * @param Illuminate\Http\Request\Request $request 
-     * @return array
-     */
-    protected function getData(Request $request)
-    {
-        $data = $request->only(['description','time_group_id']);
-
-        $data['is_active'] = $request->has('is_active');
-
-
-        return $data;
-    }
-
 }

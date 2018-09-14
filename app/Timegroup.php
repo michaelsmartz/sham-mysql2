@@ -24,6 +24,6 @@ class Timegroup extends Model
                   'end'
               ];
 
-
+    protected $table = 'time_groups';
 
 }
