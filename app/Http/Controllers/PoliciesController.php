@@ -92,7 +92,8 @@ class PoliciesController extends CustomController
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
-                'footer' => $view['modalFooter']
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
             ]);
         }
 

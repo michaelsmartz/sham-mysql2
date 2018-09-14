@@ -7,6 +7,8 @@
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
 @endsection
 
+@section('postModalUrl', route('laws.update', $data->id))
+
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">

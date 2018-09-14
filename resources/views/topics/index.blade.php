@@ -28,7 +28,7 @@
                         <tr id="tr{{$topic->id}}" data-id="{{$topic->id}}" data-url="{{url()->current()}}">
                             <td>{{ $topic->header }}</td>
                             <td data-html2canvas-ignore="true">
-                                <a href="#modal-text" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$topic->id}}', event)">
+                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$topic->id}}', event)">
                                     <i class="glyphicon glyphicon-edit text-primary"></i>
                                 </a>
                                 <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$topic->id}}')">

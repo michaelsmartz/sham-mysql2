@@ -15,11 +15,11 @@
     <script>
 
         var oldVal, $mainButton, loadUrl = function (url) {
-            $mainButton = $('.buttons button[type="submit"]');
             $.get(url).done(function (data) {
                 $(".light-modal-heading").empty().html(data.title);
                 $(".light-modal-body").empty().html(data.content);
                 $(".light-modal-footer .buttons").empty().html(data.footer);
+                $("#modalForm").attr('action',data.url);
 
                 $('.multipleSelect').each(function(){
                     $(this).multipleSelect({ filter: true });

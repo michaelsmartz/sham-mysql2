@@ -75,7 +75,8 @@ class TitlesController extends CustomController
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
-                'footer' => $view['modalFooter']
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
             ]);
         }
         return view($this->baseViewPath . '.edit', compact('data'));

@@ -7,6 +7,7 @@ use App\AttachmentHelper;
 use App\Traits\MediaFiles;
 use App\VideoStream;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
@@ -58,6 +59,29 @@ class TopicsController extends CustomController
         \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Illuminate\View\View
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('topic');
+        $data = $this->contextObj->findData($id);
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
     /**
