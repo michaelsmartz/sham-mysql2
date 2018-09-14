@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Skill;
+use App\TaxStatus;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class SkillsController extends CustomController
+class TaxStatusesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -18,24 +18,24 @@ class SkillsController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new Skill();
-        $this->baseViewPath = 'skills';
-        $this->baseFlash = 'Skill details ';
+        $this->contextObj = new TaxStatus();
+        $this->baseViewPath = 'tax_statuses';
+        $this->baseFlash = 'Tax Status details ';
     }
 
     /**
-     * Display a listing of the skills.
+     * Display a listing of the tax statuses.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $skills = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('skills'));
+        $taxStatuses = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('taxStatuses'));
     }
 
     /**
-     * Store a new skill in the storage.
+     * Store a new tax status in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -43,6 +43,7 @@ class SkillsController extends CustomController
      */
     public function store(Request $request)
     {
+
         $this->validator($request);
 
         $input = array_except($request->all(),array('_token'));
@@ -62,7 +63,7 @@ class SkillsController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $id = Route::current()->parameter('skill');
+        $id = Route::current()->parameter('tax_status');
         $data = $this->contextObj->findData($id);
 
         if($request->ajax()) {
@@ -78,7 +79,7 @@ class SkillsController extends CustomController
     }
 
     /**
-     * Update the specified skill in the storage.
+     * Update the specified tax status in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -104,7 +105,7 @@ class SkillsController extends CustomController
     }
 
     /**
-     * Remove the specified skill from the storage.
+     * Remove the specified tax status from the storage.
      *
      * @param  int $id
      *
@@ -113,7 +114,7 @@ class SkillsController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('skill');
+            $id = Route::current()->parameter('tax_status');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -133,8 +134,7 @@ class SkillsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'description' => 'required|string|min:1|max:50',
-            'Level'  => 'nullable|numeric'
+            'Description' => 'required|string|min:5|max:50'
         ];
 
         $this->validate($request, $validateFields);

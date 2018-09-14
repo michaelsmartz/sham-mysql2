@@ -317,7 +317,7 @@
                             <li><a href="{{URL::to('/skills')}}">Skills</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TAX_STATUS]))
-                            <li><a href="{{URL::to('/taxstatuses')}}">Tax Status</a></li>
+                            <li><a href="{{URL::to('/tax_statuses')}}">Tax Status</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TEAM]))
                             <li><a href="{{URL::to('/teams')}}">Team</a></li>

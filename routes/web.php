@@ -70,6 +70,7 @@ Auth::routes();
             Route::resource('marital_statuses', 'MaritalStatusesController');
             Route::resource('skills', 'SkillsController');
             Route::resource('teams', 'TeamsController');
+            Route::resource('tax_statuses', 'TaxStatusesController');
         #endregion
 
         #region E-Learning

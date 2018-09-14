@@ -35,14 +35,14 @@
             "on-update": null
         },
         {
-            "name": "description",
+            "name": "Description",
             "labels": "Description",
             "html-type": "text",
             "css-class": "",
             "options": {},
             "html-value": null,
             "validation": "required|string|min:5|max:50",
-            "is-on-index": false,
+            "is-on-index": true,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "string",

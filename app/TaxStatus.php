@@ -18,9 +18,11 @@ class TaxStatus extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
+                  'Description',
                   'is_system_predefined'
               ];
+
+    public $searchable = ['Description'];
 
     public function employees()
     {
