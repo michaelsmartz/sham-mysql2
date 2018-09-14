@@ -24,6 +24,8 @@ class Topic extends Model
                   'data'
               ];
 
+    public $searchable = ['description'];
+
     public function modules()
     {
         return $this->belongsToMany('App\Module');

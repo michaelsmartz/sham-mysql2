@@ -3,12 +3,13 @@
 namespace App;
 
 
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Skill extends Model
 {
     
-    use SoftDeletes;
+    use SoftDeletes, UsesPredefinedValues;
 
 
 
@@ -19,9 +20,11 @@ class Skill extends Model
      */
     protected $fillable = [
                   'description',
-                  'level',
+                  'Level',
                   'is_system_predefined'
               ];
+
+    public $searchable = ['description'];
 
     public function employees()
     {

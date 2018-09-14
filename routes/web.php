@@ -68,6 +68,7 @@ Auth::routes();
             Route::resource('genders', 'GendersController');
             Route::resource('titles', 'TitlesController');
             Route::resource('marital_statuses', 'MaritalStatusesController');
+            Route::resource('skills', 'SkillsController');
             Route::resource('teams', 'TeamsController');
         #endregion
 
