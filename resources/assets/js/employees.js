@@ -4,7 +4,7 @@ require('sumoselect');
 
 window.Vue = require('vue');
 
-Vue.config.devtools = true;
+Vue.config.devtools = false;
 Vue.config.performance = true;
 
 import "jquery-ui/ui/widgets/datepicker";
@@ -149,8 +149,6 @@ const app = new Vue({
                 ajaxOptions.global = false;
                 ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
             });
-
-            $('.droparea').droparea();
 
         }(jQuery, this);
     },

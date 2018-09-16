@@ -60,19 +60,17 @@
 
 <div class="form-group col-xs-6 {{ $errors->has('expires_on') ? 'has-error' : '' }}">
     <label for="expires_on">Expires On</label>
-        <input class="form-control" name="expires_on" type="text" id="expires_on" value="{{ old('expires_on', isset($law->expires_on) ? $law->expires_on : null) }}" placeholder="Enter expires on">
+        <input class="form-control datepicker" name="expires_on" type="text" id="expires_on" value="{{ old('expires_on', isset($law->expires_on) ? $law->expires_on : null) }}" placeholder="Enter expires on">
         {!! $errors->first('expires_on', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('attachment') ? 'has-error' : '' }}">
-	@component('partials.uploader')
-        @slot('fieldLabel', 'Attach Law Document')
-        @slot('desc', 'Upload documents only')
-        @slot('route', 'laws.store')
-        @slot('acceptedFiles')
-            ['doc','docx','ppt','pptx','pdf']
-        @endslot
-    @endcomponent
+	@include('partials.uploader',[
+        'fieldLabel' => 'Attach Law Document',
+        'desc' => 'Upload documents only',
+        'route' => 'laws.store',
+        'acceptedFiles' => "['doc', 'docx', 'ppt', 'pptx', 'pdf']"
+    ])
 </div>
 
 </div>

@@ -35,7 +35,7 @@ class LawsController extends CustomController
      */
     public function index()
     {
-        $laws = $this->contextObj::filtered()->paginate(10);
+        $laws = $this->contextObj::with(['country','lawCategory'])->filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('laws'));
     }
 

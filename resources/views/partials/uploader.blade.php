@@ -1,8 +1,7 @@
-<div class="fileUploader" id="one">
-    <p class="text-muted">{{ $desc or 'You can upload any related files' }} <br>
-        <small>One file can be max {{ config('attachment.max_size', 10485760)/1000 }} MB</small>
-    </p>
-</div>
+<div class="fileUploader" id="one"></div>
+<p class="text-muted">{{ $desc or 'You can upload any related files' }}. 
+    <small>One file can be max {{ config('attachment.max_size', 10485760)/1000 }} MB</small>
+</p>
 
 @section('post-body')
 <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
@@ -21,7 +20,7 @@
             filenameTest: function(fileName, fileExt, $container) {
                 var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
                 @if(!empty($acceptedFiles && sizeof($acceptedFiles)>0))
-                allowedExts = {{$acceptedFiles}};
+                allowedExts = {!! $acceptedFiles !!};
                 @endif
                 var $info = $('<div class="errorLabel center"></div>');
                 var proceed = true;
@@ -63,7 +62,9 @@
             }
         });
     };
+    $(function(){
+        initializeFileUpload();
+    });
 
-    document.addEventListener("DOMContentLoaded", initializeFileUpload);
 </script>
-@endsection
+@show
