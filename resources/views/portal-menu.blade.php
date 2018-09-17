@@ -290,7 +290,7 @@
                             <li><a href="{{URL::to('/employeeattachmenttypes')}}">Employee Attachment Types</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_EMPLOYEE_STATUS]))
-                            <li><a href="{{URL::to('/employeestatuses')}}">Employee Status</a></li>
+                            <li><a href="{{URL::to('/employee_statuses')}}">Employee Status</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ETHNIC_GROUP]))
                             <li><a href="{{URL::to('/ethnicgroups')}}">Ethnic Group</a></li>

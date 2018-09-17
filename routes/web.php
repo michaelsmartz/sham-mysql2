@@ -77,6 +77,7 @@ Auth::routes();
             Route::resource('divisions', 'DivisionsController');
             Route::resource('document_categories', 'DocumentCategoriesController');
             Route::resource('document_types', 'DocumentTypesController');
+            Route::resource('employee_statuses', 'EmployeeStatusesController');
         #endregion
 
         #region E-Learning
