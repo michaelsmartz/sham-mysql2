@@ -72,6 +72,7 @@ Auth::routes();
             Route::resource('teams', 'TeamsController');
             Route::resource('tax_statuses', 'TaxStatusesController');
             Route::resource('branches', 'BranchesController');
+            Route::resource('countries', 'CountriesController');
         #endregion
 
         #region E-Learning

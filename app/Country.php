@@ -23,6 +23,8 @@ class Country extends Model
                   'is_preferred'
               ];
 
+    public $searchable = ['description'];
+
     public function addresses()
     {
         return $this->hasMany('App\Address','country_id','id');

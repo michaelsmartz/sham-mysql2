@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Branch;
-use App\Company;
+use App\Country;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class BranchesController extends CustomController
+class CountriesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -19,29 +18,47 @@ class BranchesController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new Branch();
-        $this->baseViewPath = 'branches';
-        $this->baseFlash = 'Branch details ';
+        $this->contextObj = new Country();
+        $this->baseViewPath = 'countries';
+        $this->baseFlash = 'Country details ';
     }
 
     /**
-     * Display a listing of the branches.
+     * Display a listing of the countries.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $branches = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('branches'));
-    }
-
-    public function create() {
-        $companies = Company::pluck('name', 'id');
-        return view($this->baseViewPath . '.create',compact('companies'));
+        $countries = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('countries'));
     }
 
     /**
-     * Store a new branch in the storage.
+     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @return Factory|JsonResponse|Response|View
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('country');
+        $data = $this->contextObj->findData($id);
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+        return view($this->baseViewPath . '.edit', compact('data'));
+    }
+
+    /**
+     * Store a new country in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -65,28 +82,8 @@ class BranchesController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
 
-    public function edit(Request $request)
-    {
-        $id = Route::current()->parameter('branch');
-        $data = $this->contextObj->findData($id);
-
-        $companies = Company::pluck('name', 'id');
-
-        if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data', 'companies'))->renderSections();
-            return response()->json([
-                'title' => $view['modalTitle'],
-                'content' => $view['modalContent'],
-                'footer' => $view['modalFooter'],
-                'url' => $view['postModalUrl']
-            ]);
-        }
-
-        return view($this->baseViewPath . '.edit', compact('data', 'companies'));
-    }
-
     /**
-     * Update the specified branch in the storage.
+     * Update the specified country in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -112,7 +109,7 @@ class BranchesController extends CustomController
     }
 
     /**
-     * Remove the specified branch from the storage.
+     * Remove the specified country from the storage.
      *
      * @param  int $id
      *
@@ -121,7 +118,7 @@ class BranchesController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('branch');
+            $id = Route::current()->parameter('country');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -143,8 +140,7 @@ class BranchesController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'description' => 'string|min:0|max:50|nullable',
-            'name' => 'string|min:0|max:50|nullable',
+            'description' => 'string|min:0|max:50|nullable'
         ];
 
         $this->validate($request, $validateFields);
