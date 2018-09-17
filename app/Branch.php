@@ -2,14 +2,13 @@
 
 namespace App;
 
-
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends Model
 {
     
-    use SoftDeletes;
-
+    use SoftDeletes, UsesPredefinedValues;
 
 
     /**
@@ -22,6 +21,8 @@ class Branch extends Model
                   'description',
                   'is_system_predefined'
               ];
+
+    public $searchable = ['description'];
 
     public function company()
     {
