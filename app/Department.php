@@ -3,14 +3,13 @@
 namespace App;
 
 
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Department extends Model
 {
-    
-    use SoftDeletes;
 
-
+    use SoftDeletes, UsesPredefinedValues;
 
     /**
      * Attributes that should be mass-assignable.
@@ -18,9 +17,11 @@ class Department extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
-                  'is_system_predefined'
-              ];
+        'description',
+        'is_system_predefined'
+    ];
+
+    public $searchable = ['description'];
 
     public function employees()
     {
