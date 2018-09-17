@@ -1,6 +1,6 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Create New Law')
-@section('modalTitle', 'Edit Law')
+@section('title', 'Add New Law')
+@section('modalTitle', 'Add New Law')
 
 @section('modalHeader')
     <form method="POST" action="{{ route('laws.store') }}" accept-charset="UTF-8" id="create_law_form" name="create_law_form" class="form-horizontal js_form" enctype="multipart/form-data">

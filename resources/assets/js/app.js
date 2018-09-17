@@ -18,6 +18,15 @@ $.ajaxSetup({
 $('[data-toggle=offcanvas]').click(function() {
     $('.row-offcanvas').toggleClass('active');
 });
+$(function() {
+    $("body").delegate("input.datepicker", "focusin", function () {
+        if ($(this).attr('id')!='DateOfBirth') {
+            $(this).datepicker({ 
+                dateFormat:'yy-mm-dd',changeMonth:true, changeYear:true 
+            }).prop('readonly', 'true');
+        }
+    });
+});
 $.fn.clickToggle = function (f1, f2) {
     return this.each(function () {
         var clicked = false;
@@ -32,14 +41,24 @@ $.fn.clickToggle = function (f1, f2) {
     });
 };
 
-//window.Popper = Popper;
-//window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-disable-line
+window.Popper = Popper;
+window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-disable-line
 //window.Button = require('exports-loader?Button!bootstrap/js/dist/button'); // eslint-disable-line
 //window.Tooltip = require('exports-loader?Tooltip!bootstrap/js/dist/tooltip'); // eslint-disable-line
 //window.Modal = require('exports-loader?Modal!bootstrap/js/dist/modal'); // eslint-disable-line
 //window.Popover = require('exports-loader?Tooltip!bootstrap/js/dist/popover'); // eslint-disable-line
-//window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
+window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
 
 window.asyncJS = global.asyncJS = asyncJS;
 
 //require('bootstrap-confirmation2/bootstrap-confirmation.js');
+
+//const elementReady = require('element-ready');
+/* 
+(async () => {
+    const element = await elementReady('#unicorn');
+ 
+    console.log(element.id);
+    //=> 'unicorn'
+})();
+*/

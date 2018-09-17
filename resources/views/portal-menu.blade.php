@@ -31,7 +31,7 @@
                 <li class="{{ (Request::is('timelines/*') || Request::is('disciplinaryactions/*') || Request::is('rewards/*') || Request::is('timelines') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/lifecyclemanagement">Timeline</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
-                <li class="{{ (Request::is('policies/*') || Request::is('policies') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/laws">Compliance</a></li>
+                <li class="{{ (Request::is('policies/*') || Request::is('policies') || Request::is('laws/*') || Request::is('laws') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/laws">Compliance</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
                 <li class="{{ (Request::is('assetallocations') || Request::is('assets') || Request::is('assetsuppliers') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/assetgroups">Assets Allocation</a></li>

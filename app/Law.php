@@ -10,7 +10,6 @@ class Law extends Model
     use Mediable;
     use SoftDeletes;
 
-
     /**
      * Attributes that should be mass-assignable.
      *

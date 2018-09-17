@@ -1070,31 +1070,31 @@ a.ui-button:active,
 }
 .ui-icon,
 .ui-widget-content .ui-icon {
-	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_444444_256x240.png?d10bc07005bb2d604f4905183690ac04);
+	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_444444_256x240.png?977d105fbdf2af1b6199bd7c792379d1);
 }
 .ui-widget-header .ui-icon {
-	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_444444_256x240.png?d10bc07005bb2d604f4905183690ac04);
+	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_444444_256x240.png?977d105fbdf2af1b6199bd7c792379d1);
 }
 .ui-state-hover .ui-icon,
 .ui-state-focus .ui-icon,
 .ui-button:hover .ui-icon,
 .ui-button:focus .ui-icon {
-	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_555555_256x240.png?00dd0ec0a16a1085e714c7906ff8fb06);
+	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_555555_256x240.png?aae192b9986ce03b6e53e27bf6a5b1ca);
 }
 .ui-state-active .ui-icon,
 .ui-button:active .ui-icon {
-	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_ffffff_256x240.png?ea4ebe072be75fbbea002631916836de);
+	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_ffffff_256x240.png?6d6c9c641e7441632bf8e9c432981366);
 }
 .ui-state-highlight .ui-icon,
 .ui-button .ui-state-highlight.ui-icon {
-	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_777620_256x240.png?4e7e3e142f3939883cd0a7e00cabdaef);
+	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_777620_256x240.png?03f591064b430e8ec3c008475a095753);
 }
 .ui-state-error .ui-icon,
 .ui-state-error-text .ui-icon {
-	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_cc0000_256x240.png?093a819138276b446611d1d2a45b98a2);
+	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_cc0000_256x240.png?6a1b6f7015554a80dde326a2ff803908);
 }
 .ui-button .ui-icon {
-	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_777777_256x240.png?40bf25799e4fec8079c7775083de09df);
+	background-image: url(/images/vendor/jquery-ui-dist/ui-icons_777777_256x240.png?1780f5865b64e1831612d569d2e8f6e3);
 }
 
 /* positioning */
@@ -10461,7 +10461,7 @@ button.close {
 input:required,
 select:required,
 textarea:required {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 483.556 483.556' style='enable-background:new 0 0 483.556 483.556;' xml:space='preserve' width='8px' height='8px'%3E%3Cg%3E%3Ctitle%3ERequired%3C/title%3E%3Cg transform='matrix(1.25 0 0 -1.25 0 45)'%3E%3Cg%3E%3Cg%3E%3Cpath d='M386.844-157.422c0-106.826-86.596-193.422-193.422-193.422S0-264.248,0-157.422 S86.596,36,193.422,36S386.844-50.596,386.844-157.422' data-original='%23DD2E44' class='active-path' fill='%23F26969'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat 97% 50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 483.556 483.556' style='enable-background:new 0 0 483.556 483.556;' xml:space='preserve' width='8px' height='8px'%3E%3Cg pointer-events='all' data-wenk='Required'%3E%3Ctitle%3ERequired%3C/title%3E%3Cg transform='matrix(1.25 0 0 -1.25 0 45)'%3E%3Cg%3E%3Cg%3E%3Cpath d='M386.844-157.422c0-106.826-86.596-193.422-193.422-193.422S0-264.248,0-157.422 S86.596,36,193.422,36S386.844-50.596,386.844-157.422' data-original='%23DD2E44' data-wenk='Required' class='active-path' fill='%23F26969'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat 97% 50%;
   -webkit-transition: all 1s;
   transition: all 1s;
 }

@@ -15,6 +15,7 @@
     <script>
 
         var oldVal, $mainButton, loadUrl = function (url) {
+            $(".light-modal-body").empty().html('Loading...please wait...');
             $.get(url).done(function (data) {
                 $(".light-modal-heading").empty().html(data.title);
                 $(".light-modal-body").empty().html(data.content);

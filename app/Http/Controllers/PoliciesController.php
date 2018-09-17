@@ -32,7 +32,7 @@ class PoliciesController extends CustomController
      */
     public function index()
     {
-        $policies = $this->contextObj::filtered()->paginate(10);
+        $policies = $this->contextObj::with('policyCategory')->filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('policies'));
     }
 

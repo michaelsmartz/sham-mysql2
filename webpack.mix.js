@@ -31,8 +31,8 @@ mix
     plugins: [
       new webpack.ProvidePlugin({
         $: 'jquery',
-        jQuery: 'jquery', 'window.jQuery': 'jquery',
-        Popper: ['popper.js', 'default'],
+        jQuery: 'jquery', 'window.jQuery': 'jquery'/*,
+        Popper: ['popper.js', 'default'],*/
       }),
       new CompressionPlugin({
         asset: '[path].gz[query]',
@@ -58,11 +58,11 @@ mix.sass('resources/assets/sass/dropzone.scss', 'public/css', {
   outputStyle: 'nested'
 });
 
-mix.webpackConfig({
+mix/*.webpackConfig({
     externals:{
         'Popper': 'popper.js'
     }
-}).js('resources/assets/js/tables.js', 'public/js')
+})*/.js('resources/assets/js/tables.js', 'public/js')
 
 mix.minify('public/js/app.js');
 mix.minify('public/js/tables.js');

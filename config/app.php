@@ -162,8 +162,8 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        bnjns\SearchTools\SearchToolsServiceProvider::class,
-        Andrewboy\SearchBox\SearchBoxServiceProvider::class,
+        //bnjns\SearchTools\SearchToolsServiceProvider::class,
+        //Andrewboy\SearchBox\SearchBoxServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -183,7 +183,7 @@ return [
          * Dev Only Providers:
          */
         App\Providers\LocalEnvironmentServiceProvider::class,
-        Arrilot\Widgets\ServiceProvider::class,
+        //Arrilot\Widgets\ServiceProvider::class,
         Clockwork\Support\Laravel\ClockworkServiceProvider::class,
         Plank\Mediable\MediableServiceProvider::class
 
@@ -235,11 +235,11 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Form'      => Collective\Html\FormFacade::class,
-        'Html'      => Collective\Html\HtmlFacade::class,
-        'Widget' => Arrilot\Widgets\Facade::class,
-        'AsyncWidget' => Arrilot\Widgets\AsyncFacade::class,
-        'SearchTools' => \bnjns\SearchTools\Facades\SearchTools::class,
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
+        //'Widget' => Arrilot\Widgets\Facade::class,
+        //'AsyncWidget' => Arrilot\Widgets\AsyncFacade::class,
+        //'SearchTools' => \bnjns\SearchTools\Facades\SearchTools::class,
         'MediaUploader' => Plank\Mediable\MediaUploaderFacade::class
     ],
 

@@ -22,47 +22,18 @@
                         <a class="logotopleft" href="{{URL::to('/')}}"></a>
                     </div>
                     <div class="navbar-collapse collapse" id="top-right-menu">
-                        <ul class="nav navbar-nav navbar-right list-group" style="margin-bottom:0;margin-top:0;overflow:hidden;cursor:pointer;">
-                            <li class="dropdown" id="user-dropdown">
+                        <ul class="nav navbar-nav navbar-right list-group" style="margin-bottom:0;margin-top:3px;cursor:pointer;">
+                            <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" title="User profile & logout">
                                     <i class="fa fa-user fa-fw"></i><i class="fa fa-caret-down"></i>
                                 </a>
-                                <ul class="dropdown-menu dropdown-user" data-max-width="400px" style="top:auto;right:0;position:fixed;transition:all 0.3s;z-index:999999999">
-                                    <li><a href="javascript: void 0;" class="user-profile" ><i class="fa fa-user fa-fw"></i> User Profile</a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="javascript: void 0;" class="user-profile" ><i class="fa fa-user fa-fw"></i> User Profile</a>
                                     </li>
-
-                                    @if( (env('CLOCK_IN',0) == 1 && ($user!= null && !empty($user->EmployeeId))) )
-                                        <li id="clockInMenuLi" class="hide">
-                                            <a id="clockinTrigger" title="Click to show or hide clock in/out buttons">
-                                                <i class="fa fa-clock-o fa-fw"></i> Clock in/out</a>
-                                        </li>
-                                        <div id="popover-content" class="hide">
-                                            <div class="clockinout">
-                                                <div id="main-clockin-container" style="width: 100%;">
-                                                    <a class="btn md-skip btn-success btn-lg" id="clockinBtn" title="click to clock in">
-                                                        <i class="fa fa-sign-in pull-left"></i>
-                                            <span>Clock in<br>
-                                            <small title="last clock-in time"><i>... </i><b id="clockinBtnTime"></b></small>
-                                        </span>
-                                                    </a>
-                                                    <a class="btn md-skip btn-danger btn-lg" id="clockoutBtn" title="click to clock out">
-                                                        <i class="fa fa-sign-out pull-left"></i>
-                                            <span>Clock out<br>
-                                            <small title="last clock-out time"><i>... </i><b id="clockoutBtnTime"></b></small>
-                                        </span>
-                                                    </a>
-                                                </div>
-                                                <div class="clock-in-message" style="text-align:right; position:absolute; bottom:5px; right:15px; font-weight:bold;"></div>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if( ($user!= null && !empty($user->EmployeeId)) )
-                                        <li class="hide"><a href="{{URL::to('/')}}/my-leaves"><i class="fa fa-suitcase" style="width:18px !important"></i> Apply for leave</a>
-                                    @endif
-
                                     <li class="divider"></li>
-                                    <li><a href="{{URL::to('/')}}/auth/logout"><i class="fa fa-sign-out fa-fw" style="width:20px !important"></i>Logout</a>
+                                    <li>
+                                        <a href="{{URL::to('/')}}/auth/logout"><i class="fa fa-sign-out fa-fw" style="width:20px !important"></i>Logout</a>
                                     </li>
                                 </ul>
                             </li>
@@ -151,10 +122,6 @@
                 var url = window.location;
 
                 // to get base url without get parameters
-                if (!window.location.origin){
-                    // For IE
-                    window.location.origin = window.location.protocol + "//" + (window.location.port ? ':' + window.location.port : '');
-                }
                 var url2 = window.location.origin + window.location.pathname;
 
                 var innerMenuLis = $('#sidebar-menu li a[data-menu-href]');

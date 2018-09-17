@@ -58,6 +58,19 @@ class EmployeesController extends CustomController
         return view($this->baseViewPath .'.index', compact('employees'));
     }
 
+    public function create(){
+        list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
+        $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
+        $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
+
+        return view($this->baseViewPath .'.create',
+            compact('_mode','fullPageEdit','data','titles','genders','maritalstatuses',
+                    'countries','languages','ethnicGroups',
+                    'immigrationStatuses','taxstatuses','departments',
+                    'teams','employeeStatuses','jobTitles',
+                    'divisions','branches','skills','disabilities','lineManagers'));        
+    }
+
         /**
      * Show the form for editing the specified resource.
      *
