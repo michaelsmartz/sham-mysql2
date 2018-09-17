@@ -3,14 +3,13 @@
 namespace App;
 
 
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ImmigrationStatus extends Model
 {
     
-    use SoftDeletes;
-
-
+    use SoftDeletes, UsesPredefinedValues;
 
     /**
      * Attributes that should be mass-assignable.
@@ -18,9 +17,11 @@ class ImmigrationStatus extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
+                  'Description',
                   'is_system_predefined'
               ];
+
+    public $searchable = ['Description'];
 
     public function employees()
     {

@@ -79,6 +79,7 @@ Auth::routes();
             Route::resource('document_types', 'DocumentTypesController');
             Route::resource('employee_statuses', 'EmployeeStatusesController');
             Route::resource('ethnic_groups', 'EthnicGroupsController');
+            Route::resource('immigration_statuses', 'ImmigrationStatusesController');
         #endregion
 
         #region E-Learning

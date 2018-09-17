@@ -265,9 +265,6 @@
                         <span>Employees</span>
                     </a>
                     <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_BANK_ACCOUNT_TYPE]))
-                            <li><a href="{{URL::to('/bankaccounttypes')}}">Bank Account Type</a></li>
-                        @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_BRANCH]))
                             <li><a href="{{URL::to('/branches')}}">Branch</a></li>
                         @endif
@@ -299,7 +296,7 @@
                             <li><a href="{{URL::to('/genders')}}">Gender</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_IMMIGRATION_STATUS]))
-                            <li><a href="{{URL::to('/immigrationstatuses')}}">Immigration Status</a></li>
+                            <li><a href="{{URL::to('/immigration_statuses')}}">Immigration Status</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_JOB_TITLE]))
                             <li><a href="{{URL::to('/jobtitles')}}">Job Title</a></li>
