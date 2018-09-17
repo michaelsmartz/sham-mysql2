@@ -281,7 +281,7 @@
                             <li><a href="{{URL::to('/divisions')}}">Division</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DOCUMENT_CATEGORY]))
-                            <li><a href="{{URL::to('/documentcategories')}}">Document Category</a></li>
+                            <li><a href="{{URL::to('/document_categories')}}">Document Category</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DOCUMENT_TYPE]))
                             <li><a href="{{URL::to('/documenttypes')}}">Document Type</a></li>

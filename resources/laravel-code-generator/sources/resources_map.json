@@ -194,5 +194,9 @@
         "model-name": "Team",
         "resource-file": "teams.json",
         "table-name": "teams"
+    },
+    {
+        "model-name": "DocumentCategory",
+        "resource-file": "document_categories.json"
     }
 ]
