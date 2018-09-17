@@ -3,12 +3,13 @@
 namespace App;
 
 
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EthnicGroup extends Model
 {
     
-    use SoftDeletes;
+    use SoftDeletes, UsesPredefinedValues;
 
 
 
@@ -21,6 +22,8 @@ class EthnicGroup extends Model
                   'description',
                   'is_system_predefined'
               ];
+
+    public $searchable = ['description'];
 
     public function employees()
     {

@@ -293,7 +293,7 @@
                             <li><a href="{{URL::to('/employee_statuses')}}">Employee Status</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ETHNIC_GROUP]))
-                            <li><a href="{{URL::to('/ethnicgroups')}}">Ethnic Group</a></li>
+                            <li><a href="{{URL::to('/ethnic_groups')}}">Ethnic Group</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_GENDER]))
                             <li><a href="{{URL::to('/genders')}}">Gender</a></li>
