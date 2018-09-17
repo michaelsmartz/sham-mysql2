@@ -284,7 +284,7 @@
                             <li><a href="{{URL::to('/document_categories')}}">Document Category</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DOCUMENT_TYPE]))
-                            <li><a href="{{URL::to('/documenttypes')}}">Document Type</a></li>
+                            <li><a href="{{URL::to('/document_types')}}">Document Type</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_EMPLOYEE_ATTACHMENT_TYPES]))
                             <li><a href="{{URL::to('/employeeattachmenttypes')}}">Employee Attachment Types</a></li>
