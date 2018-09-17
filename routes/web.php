@@ -74,6 +74,7 @@ Auth::routes();
             Route::resource('branches', 'BranchesController');
             Route::resource('countries', 'CountriesController');
             Route::resource('departments', 'DepartmentsController');
+            Route::resource('divisions', 'DivisionsController');
         #endregion
 
         #region E-Learning

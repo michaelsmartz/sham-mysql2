@@ -18,7 +18,7 @@ class Division extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
+                  'Description',
                   'is_system_predefined'
               ];
 
