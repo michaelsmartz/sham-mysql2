@@ -204,7 +204,8 @@
         "resource-file": "document_types.json"
     },
     {
-        "model-name": "TimePeriod",
-        "resource-file": "time_periods.json"
+        "model-name": "Announcement",
+        "resource-file": "announcements.json",
+        "table-name": "announcements"
     }
 ]

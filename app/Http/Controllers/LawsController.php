@@ -61,16 +61,20 @@ class LawsController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try{
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token'));
 
-        $context = $this->contextObj->addData($input);
+            $context = $this->contextObj->addData($input);
 
-        $this->attach($request, $context->id);
+            $this->attach($request, $context->id);
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
 
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not create '. $this->baseFlash . '!');
+        }
         return redirect()->route($this->baseViewPath .'.index');
     }
 
@@ -115,13 +119,19 @@ class LawsController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try{
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
+            $input = array_except($request->all(),array('_token','_method','attachment'));
 
-        $this->contextObj->updateData($id, $input);
+            $this->contextObj->updateData($id, $input);
+            $this->attach($request, $id);
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not update ' . $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');       
     }

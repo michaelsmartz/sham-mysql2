@@ -33,7 +33,7 @@
         position: relative;
         display: block;
         padding: 15px;
-        color: #9ea6aa;
+        color: darken(#9ea6aa,30%);
         font-size: 14px;
         
         cursor: pointer;
@@ -43,7 +43,7 @@
 
         > .-icon {
             margin-top: 3px;
-            color: #bbb;
+            color: darken(#9ea6aa,30%);
             font-size: 18px;
             font-style: normal;
             font-weight: bold;
@@ -76,7 +76,7 @@
     }
 
     &--active &__heading {
-        color: #687175;
+        color: darken(#687175,30%);
         font-weight:bold;
         > .-icon:before {
             content: "—";

@@ -39,34 +39,8 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ANNOUNCEMENTS]))
                 <li> <a href="{{URL::to('/')}}/announcements">Announcements</a></li>
             @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_SUGGESTIONS]))
-                <li> <a href="{{URL::to('/')}}/suggestions">Suggestions</a></li>
-            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_SURVEYS]))
                 <li class="{{ (Request::is('surveys/*') || Request::is('surveys') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/surveys">Surveys</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_NOTIFICATIONS]))
-                <li> <a href="{{URL::to('/')}}/notifications">Notifications</a></li>
-            @endif
-            {{--
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_WORKFLOWS]))
-                <li> <a href="{{URL::to('/')}}/workflowinstances">Workflows</a></li>
-            @endif
-            --}}
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_CUSTOM_REPORTS]))
-                <li> <a href="{{URL::to('/')}}/custom-reports">Custom Reports</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_TRAVEL_MANAGEMENT]))
-                <li class="{{ (Request::is('travelplans/*') || Request::is('travelplans') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/travelrequests">Travels</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_TEMPORARY_JOBS]))
-                <li> <a href="{{URL::to('/')}}/temporaryjobs">Temporary Jobs</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPANY_DOCUMENTS]))
-                <li> <a href="{{URL::to('/')}}/companydocuments">Company Documents</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_CALENDAR_EVENTS]))
-                <li> <a href="{{URL::to('/')}}/calendarevent">Calendar Events</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_TODOLIST_INSTANCES]))
                 <li> <a href="{{URL::to('/')}}/tasks">To Do List</a></li>
