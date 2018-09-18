@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Timegroup extends Model
 {
     
-    //use SoftDeletes;
+    use SoftDeletes;
 
 
 
@@ -19,10 +19,11 @@ class Timegroup extends Model
      */
     protected $fillable = [
                   'description',
-                  'is_active',
                   'start',
                   'end'
               ];
+
+    public $searchable = ['description'];
 
     protected $table = 'time_groups';
 

@@ -83,6 +83,7 @@ Auth::routes();
             Route::resource('job_titles', 'JobTitlesController');
             Route::resource('languages', 'LanguagesController');
             Route::resource('time_periods', 'TimePeriodsController');
+            Route::resource('time_groups', 'TimeGroupsController');
         #endregion
 
         #region E-Learning
