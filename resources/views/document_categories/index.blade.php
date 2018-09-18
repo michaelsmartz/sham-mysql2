@@ -20,6 +20,7 @@
                     <thead>
                         <tr>
                                                         <th data-sortable="true">Name</th>
+                            <th data-sortable="true">Description</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -28,6 +29,7 @@
                         @foreach($documentCategories as $documentCategory)
                         <tr id="tr{{$documentCategory->id}}">
                                                         <td>{{ $documentCategory->name }}</td>
+                            <td>{{ $documentCategory->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

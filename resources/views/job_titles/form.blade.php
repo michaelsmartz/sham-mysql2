@@ -7,7 +7,7 @@
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('is_manager') ? 'has-error' : '' }}">
-    <label for="is_manager">Is Manager</label>
+    <label for="is_manager">Manager</label>
         <div class="checkbox">
             <label for="is_manager_1">
                 <input id="is_manager_1" class="" name="is_manager" type="hidden" value="0" />

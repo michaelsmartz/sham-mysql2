@@ -19,8 +19,8 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Description</th>
-                            <th data-sortable="true">Is Manager</th>
+                            <th data-sortable="true">Description</th>
+                            <th data-sortable="true">Manager</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>

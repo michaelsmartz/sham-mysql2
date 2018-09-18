@@ -29,7 +29,7 @@
                         @foreach($teams as $team)
                         <tr id="tr{{$team->id}}">
                                                         <td>{{ $team->description }}</td>
-                            <td>{{ optional($team->time_groups)->id }}</td>
+                            <td>{{ optional($team->timeGroup)->name }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

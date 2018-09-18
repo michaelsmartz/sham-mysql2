@@ -36,7 +36,7 @@ class TeamsController extends CustomController
     }
 
     public function create() {
-        $time_groups = Timegroup::pluck('description', 'id');
+        $time_groups = Timegroup::pluck('name', 'id');
         return view($this->baseViewPath . '.create',compact('time_groups'));
     }
 
@@ -72,12 +72,13 @@ class TeamsController extends CustomController
      */
     public function edit(Request $request)
     {
-        $data = null;
-        $id = Route::current()->parameter('title');
+        $id = Route::current()->parameter('team');
         $data = $this->contextObj->findData($id);
 
+        $time_groups = TimeGroup::pluck('name', 'id');
+
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data', 'time_groups'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -85,7 +86,7 @@ class TeamsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data'));
+        return view($this->baseViewPath . '.edit', compact('data', 'time_groups'));
     }
 
     /**
@@ -145,7 +146,7 @@ class TeamsController extends CustomController
     {
         $validateFields = [
             'description' => 'required|string|min:1|max:50',
-            'time_group_id' => 'required|numeric',
+            'name' => 'string|min:0|max:50|nullable'
         ];
 
         $this->validate($request, $validateFields);

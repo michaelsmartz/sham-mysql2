@@ -107,7 +107,7 @@
                     "time_group_id",
                     "id"
                 ],
-                "field": "id"
+                "field": "name"
             },
             "foreign-constraint": {
                 "field": "time_group_id",

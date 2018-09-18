@@ -28,7 +28,7 @@
                     <tbody>
                         @foreach($branches as $branch)
                         <tr id="tr{{$branch->id}}">
-                                                        <td>{{ optional($branch->company)->name }}</td>
+                            <td>{{ optional($branch->company)->name }}</td>
                             <td>{{ $branch->description }}</td>
 
                             <td data-html2canvas-ignore="true">
