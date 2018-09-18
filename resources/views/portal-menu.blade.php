@@ -259,77 +259,7 @@
         </a>
         <ul class="sub-menu">
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_EMPLOYEE_DATABASE]))
-                <li class="has-sub">
-                    <a href="javascript:;">
-                        <b class="caret pull-right"></b>
-                        <span>Employees</span>
-                    </a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_BRANCH]))
-                            <li><a href="{{URL::to('/branches')}}">Branch</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_COUNTRY]))
-                            <li><a href="{{URL::to('/countries')}}">Country</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DEPARTMENT]))
-                            <li><a href="{{URL::to('/departments')}}">Department</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DIVISION]))
-                            <li><a href="{{URL::to('/divisions')}}">Division</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DOCUMENT_CATEGORY]))
-                            <li><a href="{{URL::to('/document_categories')}}">Document Category</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DOCUMENT_TYPE]))
-                            <li><a href="{{URL::to('/document_types')}}">Document Type</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_EMPLOYEE_ATTACHMENT_TYPES]))
-                            <li><a href="{{URL::to('/employeeattachmenttypes')}}">Employee Attachment Types</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_EMPLOYEE_STATUS]))
-                            <li><a href="{{URL::to('/employee_statuses')}}">Employee Status</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ETHNIC_GROUP]))
-                            <li><a href="{{URL::to('/ethnic_groups')}}">Ethnic Group</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_GENDER]))
-                            <li><a href="{{URL::to('/genders')}}">Gender</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_IMMIGRATION_STATUS]))
-                            <li><a href="{{URL::to('/immigration_statuses')}}">Immigration Status</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_JOB_TITLE]))
-                            <li><a href="{{URL::to('/job_titles')}}">Job Title</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LANGUAGE]))
-                            <li><a href="{{URL::to('/languages')}}">Language</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_MARITAL_STATUS]))
-                            <li><a href="{{URL::to('/marital_statuses')}}">Marital Status</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_PRODUCTS]))
-                            <li><a href="{{URL::to('/products')}}">Products </a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SKILLS]))
-                            <li><a href="{{URL::to('/skills')}}">Skills</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TAX_STATUS]))
-                            <li><a href="{{URL::to('/tax_statuses')}}">Tax Status</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TEAM]))
-                            <li><a href="{{URL::to('/teams')}}">Team</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TIME_GROUP]))
-                            <li><a href="{{URL::to('/time_groups')}}">Time Group</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TIMEPERIODS]))
-                            <li><a href="{{URL::to('/time_periods')}}">Time Periods</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TITLE]))
-                            <li><a href="{{URL::to('/titles')}}">Title</a></li>
-                        @endif
-                    </ul>
-                </li>
+                <li class="{{ (Request::is('branches/*') || Request::is('branches') ? 'active' : '') }}"><a href="{{URL::to('/')}}/branches">Employees</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_NOTIFICATIONS]))
                 <li class="has-sub">

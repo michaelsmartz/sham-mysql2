@@ -1,6 +1,28 @@
 @extends('portal-index')
 @section('title','Countries')
 @section('content')
+    <br>
+    <ul class="nav nav-tabs">
+        <li><a href="{{URL::to('/')}}/branches">Branch</a></li>
+        <li class="active"><a href="#">Country</a></li>
+        <li><a href="{{URL::to('/')}}/departments">Department</a></li>
+        <li><a href="{{URL::to('/')}}/divisions">Division</a></li>
+        <li><a href="{{URL::to('/')}}/employeeattachmenttypes">Employee Attachment Types</a></li>
+        <li><a href="{{URL::to('/')}}/employee_statuses">Employee Status</a></li>
+        <li><a href="{{URL::to('/')}}/ethnic_groups">Ethnic Group</a></li>
+        <li><a href="{{URL::to('/')}}/genders">Gender</a></li>
+        <li><a href="{{URL::to('/')}}/immigration_statuses">Immigration Status</a></li>
+        <li><a href="{{URL::to('/')}}/job_titles">Job Title</a></li>
+        <li><a href="{{URL::to('/')}}/languages">Language</a></li>
+        <li><a href="{{URL::to('/')}}/marital_statuses">Marital Status</a></li>
+        <li><a href="{{URL::to('/')}}/products">Products </a></li>
+        <li><a href="{{URL::to('/')}}/skills">Skills</a></li>
+        <li><a href="{{URL::to('/')}}/tax_statuses">Tax Status</a></li>
+        <li><a href="{{URL::to('/')}}/teams">Team</a></li>
+        <li><a href="{{URL::to('/')}}/time_groups">Time Group</a></li>
+        <li><a href="{{URL::to('/')}}/time_periods">Time Periods</a></li>
+        <li><a href="{{URL::to('/')}}/titles">Title</a></li>
+    </ul>
     <div class="flex-wrapper">
         <div id="table-container">
             @if(count($countries) > 0)
