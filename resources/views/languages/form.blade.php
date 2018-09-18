@@ -2,7 +2,7 @@
     
 <div class="form-group col-xs-12 {{ $errors->has('description') ? 'has-error' : '' }}">
     <label for="description">Description</label>
-        <input class="form-control" name="description" type="text" id="description" value="{{ old('description', optional($country)->description) }}" minlength="1" maxlength="50" required="true" placeholder="Enter description">
+        <textarea class="form-control" name="description" cols="50" rows="5" id="description" minlength="1" maxlength="50">{{ old('description', optional($language)->description) }}</textarea>
         {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
 </div>
 
@@ -11,7 +11,7 @@
         <div class="checkbox">
             <label for="is_preferred_1">
                 <input id="is_preferred_1" class="" name="is_preferred" type="hidden" value="0" />
-            	<input id="is_preferred_1" class="" name="is_preferred" type="checkbox" value="1" {{ old('is_preferred', optional($country)->is_preferred) == '1' ? 'checked' : '' }}>
+            	<input id="is_preferred_1" class="" name="is_preferred" type="checkbox" value="1" {{ old('is_preferred', optional($language)->is_preferred) == '1' ? 'checked' : '' }}>
                 Yes
             </label>
         </div>

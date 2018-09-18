@@ -81,6 +81,7 @@ Auth::routes();
             Route::resource('ethnic_groups', 'EthnicGroupsController');
             Route::resource('immigration_statuses', 'ImmigrationStatusesController');
             Route::resource('job_titles', 'JobTitlesController');
+            Route::resource('languages', 'LanguagesController');
         #endregion
 
         #region E-Learning

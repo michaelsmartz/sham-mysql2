@@ -1,9 +1,9 @@
 @extends('portal-index')
-@section('title','Countries')
+@section('title','Languages')
 @section('content')
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($countries) > 0)
+            @if(count($languages) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
@@ -13,8 +13,8 @@
             </div>
             @endif
             <div class="table-responsive">
-            @if(count($countries) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new country</h4>
+            @if(count($languages) == 0)
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new language</h4>
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>
@@ -26,17 +26,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($countries as $country)
-                        <tr id="tr{{$country->id}}">
-                                                        <td>{{ $country->description }}</td>
-                            <td>{{ ($country->is_preferred) ? 'Yes' : 'No' }}</td>
+                        @foreach($languages as $language)
+                        <tr id="tr{{$language->id}}">
+                                                        <td>{{ $language->description }}</td>
+                            <td>{{ ($language->is_preferred) ? 'Yes' : 'No' }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$country->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$language->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$country->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$language->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                 </div>
@@ -46,11 +46,11 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $countries->render() !!}
+                    {!! $languages->render() !!}
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'countries.destroy'])
+            @component('partials.index', ['routeName'=> 'languages.destroy'])
             @endcomponent
         </div>
     </div>

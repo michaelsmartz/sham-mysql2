@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Country;
+use App\Language;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class CountriesController extends CustomController
+class LanguagesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -18,47 +18,24 @@ class CountriesController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new Country();
-        $this->baseViewPath = 'countries';
-        $this->baseFlash = 'Country details ';
+        $this->contextObj = new Language();
+        $this->baseViewPath = 'languages';
+        $this->baseFlash = 'Language details ';
     }
 
     /**
-     * Display a listing of the countries.
+     * Display a listing of the languages.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $countries = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('countries'));
+        $languages = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('languages'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     * @param Request $request
-     * @return Factory|JsonResponse|Response|View
-     */
-    public function edit(Request $request)
-    {
-        $data = null;
-        $id = Route::current()->parameter('country');
-        $data = $this->contextObj->findData($id);
-
-        if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
-            return response()->json([
-                'title' => $view['modalTitle'],
-                'content' => $view['modalContent'],
-                'footer' => $view['modalFooter'],
-                'url' => $view['postModalUrl']
-            ]);
-        }
-        return view($this->baseViewPath . '.edit', compact('data'));
-    }
-
-    /**
-     * Store a new country in the storage.
+     * Store a new language in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -83,7 +60,30 @@ class CountriesController extends CustomController
     }
 
     /**
-     * Update the specified country in the storage.
+     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @return Factory|JsonResponse|Response|View
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('language');
+        $data = $this->contextObj->findData($id);
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+        return view($this->baseViewPath . '.edit', compact('data'));
+    }
+
+    /**
+     * Update the specified language in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -109,7 +109,7 @@ class CountriesController extends CustomController
     }
 
     /**
-     * Remove the specified country from the storage.
+     * Remove the specified language from the storage.
      *
      * @param  int $id
      *
@@ -118,7 +118,7 @@ class CountriesController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('country');
+            $id = Route::current()->parameter('language');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -146,4 +146,5 @@ class CountriesController extends CustomController
 
         $this->validate($request, $validateFields);
     }
+    
 }

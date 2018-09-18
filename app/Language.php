@@ -2,7 +2,6 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Language extends Model
@@ -19,11 +18,9 @@ class Language extends Model
      */
     protected $fillable = [
                   'description',
-                  'is_preferred',
-                  'is_active',
-                  'is_system_predefined'
+                  'is_preferred'
               ];
 
-
+    public $searchable = ['description'];
 
 }
