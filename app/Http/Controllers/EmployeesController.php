@@ -54,7 +54,7 @@ class EmployeesController extends CustomController
     {
         //$employees = $this->contextObj::with('department','jobTitle')->paginate(10);
 
-        $employees = $this->contextObj::filtered()->paginate(10);
+        $employees = $this->contextObj::with('department','jobTitle')->filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('employees'));
     }
 
@@ -90,6 +90,9 @@ class EmployeesController extends CustomController
         $id = Route::current()->parameter('employee');
 
         if(!empty($id)) {
+            // make 2 less queries
+            $this->contextObj->with = [];
+
             $data = $this->contextObj->findData($id);
 
             $data->homeAddress = $data->addresses->where('address_type_id', 1)->first();
@@ -105,7 +108,7 @@ class EmployeesController extends CustomController
             list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
                  $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
                  $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
-
+            /*
             $j = JobTitle::ManagerialJobs()->with(['employees' => function($q){
                 $q->EmployeesLite();
             }])->get();
@@ -119,6 +122,10 @@ class EmployeesController extends CustomController
                     array_push($lineManagers[$item->description], $temp);
                 });
             });
+
+            $o = JobTitle::jobReportingLines();
+            dump($o);
+            */
         }
 
         return view($this->baseViewPath .'.edit',
@@ -360,11 +367,13 @@ class EmployeesController extends CustomController
         $departments = Department::pluck('description','id')->all();
         $teams = Team::pluck('description','id')->all();
         $employeeStatuses = EmployeeStatus::pluck('description','id')->all();
-        $jobTitles = JobTitle::pluck('description','id')->all();
+        //$jobTitles = JobTitle::pluck('description','id')->all();
+        $jobTitles = JobTitle::jobReportingLines();
         $divisions = Division::pluck('description','id')->all();
         $branches = Branch::pluck('description','id')->all();
         $skills = Skill::pluck('description','id')->all();
         $disabilities = DisabilityCategory::with('disabilities')->get();
+        
 
         $results = array($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups, 
                          $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses, 

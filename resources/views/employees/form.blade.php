@@ -251,10 +251,7 @@
                     <label class="col-sm-2 control-label">Reporting Line</label>
 
                     <div class="col-sm-4">
-                        <select id="job_title_id" name="job_title_id" class="form-control field-required" placeholder="Job Title.."></select>
-                    </div>
-                    <div class="col-sm-6">
-                        <select id="line_manager_id" name="line_manager_id" placeholder="Reporting Line.."></select>
+                        {!! Form::select('job_title_id',$jobTitles, old('job_title_id', isset($employee->job_title_id) ? $employee->job_title_id : null), ['placeholder' => 'Job Title..','class' => 'form-control field-required', 'required', 'title'=>'Required']) !!}
                     </div>
                 </div>
                 <div class="form-group">

@@ -202,5 +202,10 @@
     {
         "model-name": "DocumentType",
         "resource-file": "document_types.json"
+    },
+    {
+        "model-name": "Announcement",
+        "resource-file": "announcements.json",
+        "table-name": "announcements"
     }
 ]

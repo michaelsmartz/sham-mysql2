@@ -55,7 +55,7 @@ class Employee extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $with = ['department', 'jobTitle'];
+    //protected $with = ['department', 'jobTitle'];
 
     public $searchable = ['first_name', 'surname'];
 

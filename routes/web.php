@@ -48,6 +48,7 @@ Auth::routes();
             Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
             Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
 
+            Route::resource('announcements', 'AnnouncementsController');
             Route::fileResource('laws');
             Route::fileResource('policies');
             Route::fileResource('topics');
