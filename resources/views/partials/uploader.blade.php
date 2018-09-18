@@ -3,7 +3,9 @@
     <small>One file can be max {{ config('attachment.max_size', 10485760)/1000 }} MB</small>
 </p>
 
+@if(!Request::ajax())
 @section('post-body')
+@endif
 <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script>
@@ -67,4 +69,6 @@
     });
 
 </script>
-@show
+@if(!Request::ajax())
+@endsection
+@endif
