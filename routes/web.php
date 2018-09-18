@@ -80,6 +80,7 @@ Auth::routes();
             Route::resource('employee_statuses', 'EmployeeStatusesController');
             Route::resource('ethnic_groups', 'EthnicGroupsController');
             Route::resource('immigration_statuses', 'ImmigrationStatusesController');
+            Route::resource('job_titles', 'JobTitlesController');
         #endregion
 
         #region E-Learning

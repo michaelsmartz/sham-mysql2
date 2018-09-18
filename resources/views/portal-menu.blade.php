@@ -299,7 +299,7 @@
                             <li><a href="{{URL::to('/immigration_statuses')}}">Immigration Status</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_JOB_TITLE]))
-                            <li><a href="{{URL::to('/jobtitles')}}">Job Title</a></li>
+                            <li><a href="{{URL::to('/job_titles')}}">Job Title</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LANGUAGE]))
                             <li><a href="{{URL::to('/languages')}}">Language</a></li>

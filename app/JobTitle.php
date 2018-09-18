@@ -3,12 +3,13 @@
 namespace App;
 
 
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class JobTitle extends Model
 {
     
-    use SoftDeletes;
+    use SoftDeletes, UsesPredefinedValues;
 
 
 
@@ -22,6 +23,8 @@ class JobTitle extends Model
                   'is_manager',
                   'is_system_predefined'
               ];
+
+    public $searchable = ['description'];
 
     public function scopeManagerialJobs($query)
     {
