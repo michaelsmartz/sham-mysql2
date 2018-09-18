@@ -323,7 +323,7 @@
                             <li><a href="{{URL::to('/timegroups')}}">Time Group</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TIMEPERIODS]))
-                            <li><a href="{{URL::to('/timeperiods')}}">Time Periods</a></li>
+                            <li><a href="{{URL::to('/time_periods')}}">Time Periods</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TITLE]))
                             <li><a href="{{URL::to('/titles')}}">Title</a></li>

@@ -82,6 +82,7 @@ Auth::routes();
             Route::resource('immigration_statuses', 'ImmigrationStatusesController');
             Route::resource('job_titles', 'JobTitlesController');
             Route::resource('languages', 'LanguagesController');
+            Route::resource('time_periods', 'TimePeriodsController');
         #endregion
 
         #region E-Learning

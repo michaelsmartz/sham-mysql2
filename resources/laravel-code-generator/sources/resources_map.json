@@ -202,5 +202,9 @@
     {
         "model-name": "DocumentType",
         "resource-file": "document_types.json"
+    },
+    {
+        "model-name": "TimePeriod",
+        "resource-file": "time_periods.json"
     }
 ]
