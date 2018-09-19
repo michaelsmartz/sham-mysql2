@@ -2,7 +2,7 @@
 @section('title', 'Create New Course')
 @section('content')
     <div class="box box-primary">
-        <form method="POST" action="{{ route('courses.store') }}" accept-charset="UTF-8" id="[% form_id %]" name="[% form_name %]" class="form-horizontal"[% upload_files %]>
+        <form method="POST" action="{{ route('courses.store') }}" accept-charset="UTF-8" id="create_course_form" name="create_course_form" class="form-horizontal">
             {{ csrf_field() }}
             <div class="box-body">
                 <div class="row">
@@ -11,10 +11,9 @@
                         <!-- general form elements -->
                         <div class="col-sm-12">
                             <div class="panel-body">
-                            @include ('courses.form', [
-                                                        'course' => null,
-                                                    ])
-
+                                @include ('courses.form', [
+                                    'course' => null,
+                                ])
                             </div>
                         </div>
                     </div>
@@ -35,10 +34,9 @@
     <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
     <script>
     $(function () {
-        $('select').multipleSelect({
+        $('.multipleSelect').multipleSelect({
             filter: true
         });
     });
     </script>
 @endsection
-

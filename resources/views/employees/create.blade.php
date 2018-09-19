@@ -16,10 +16,12 @@
 @endsection
 
 @section('modalContent')
+    <form method="POST" action="{{ route('employees.store') }}" accept-charset="UTF-8" id="create_employee_form" name="create_employee_form" data-parsley-validate="">
+        {{ csrf_field() }}
         <div class="row">
             <div class="col-sm-12">
                 @include('employees.form', [
-                    'law' => null,
+                    'employee' => null,
                     '_mode' => 'create'
                 ])
             </div>
@@ -29,14 +31,11 @@
             @yield('modalFooter') 
         </div>
         @endif
+    </form>
 @endsection
 
 @section('content')
-    <div class="box box-primary">
-        <div class="box-body">
-                @yield('modalContent') 
-        </div>
-    </div>
+    @yield('modalContent') 
 @endsection
 
 @section('post-body')

@@ -6,6 +6,10 @@ input:required, select:required, textarea:required {
   transition: all 1s;
 }
 
+input.hasDatepicker:required {
+  background-position-x: 95%;
+}
+
 input.parsley-error:required {
   /*animation: pulse-me 3s linear infinite;*/
   -webkit-transition: background .5s ease-out;

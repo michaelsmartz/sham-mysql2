@@ -11,10 +11,10 @@
                         <!-- general form elements -->
                         <div class="col-sm-12">
                             <div class="panel-body">
-                            @include('modules.form', [
-                                        'module' => null,
-                                    ])
-
+                                @include('modules.form', [
+                                    'module' => null,
+                                ])
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -24,8 +24,19 @@
                         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                     </a>
                 </div>
+            </div>
         </form>
     </div>
 @endsection
 
-
+@section('post-body')
+    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
+    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
+    <script>
+    $(function () {
+        $('.multipleSelect').multipleSelect({
+            filter: true
+        });
+    });
+    </script>
+@endsection

@@ -90,7 +90,7 @@ const app = new Vue({
     
                 },
                 messages: {
-                    en: 'File is to big'
+                    en: 'File is too big'
                 }
             })
             .addValidator('filemimetypes', {

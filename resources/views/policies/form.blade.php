@@ -32,4 +32,13 @@
         {!! $errors->first('expires_on', '<p class="help-block">:message</p>') !!}
 </div>
 
+<div class="form-group col-xs-12 {{ $errors->has('attachment') ? 'has-error' : '' }}">
+	@include('partials.uploader',[
+        'fieldLabel' => 'Attach Law Document',
+        'desc' => 'Upload documents only',
+        'route' => 'laws.store',
+        'acceptedFiles' => "['doc', 'docx', 'ppt', 'pptx', 'pdf']"
+    ])
+</div>
+
 </div>

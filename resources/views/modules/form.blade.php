@@ -21,20 +21,9 @@
     <div class="form-group col-xs-12 {{ $errors->has('topics[id]') ? 'has-error' : '' }}">
         <label for="topics[id]">Topics <i class="fa fa-question-circle" data-wenk="Link existing topic(s) to this module" data-wenk-pos="right"></i></label>
         <div class="flex-wrapper">
-            {!! Form::select('topics[id][]', $topics,isset($moduleTopics)?$moduleTopics:null, array('multiple' => 'multiple', 'style' => 'width:100%')) !!}
+            {!! Form::select('topics[id][]', $topics,isset($moduleTopics)?$moduleTopics:null, array('multiple' => 'multiple', 'style' => 'width:100%', 'class'=> 'multipleSelect')) !!}
             {!! $errors->first('topics[id]', '<p class="help-block">:message</p>') !!}
         </div>
     </div>
 </div>
 
-@section('post-body')
-    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
-    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
-    <script>
-    $(function () {
-        $('select').multipleSelect({
-            filter: true
-        });
-    });
-    </script>
-@endsection
