@@ -7,10 +7,9 @@
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('is_preferred') ? 'has-error' : '' }}">
-    <label for="is_preferred">Is Preferred</label>
+    <label for="is_preferred">Preferred</label>
         <div class="checkbox">
             <label for="is_preferred_1">
-                <input id="is_preferred_1" class="" name="is_preferred" type="hidden" value="0" />
             	<input id="is_preferred_1" class="" name="is_preferred" type="checkbox" value="1" {{ old('is_preferred', optional($country)->is_preferred) == '1' ? 'checked' : '' }}>
                 Yes
             </label>

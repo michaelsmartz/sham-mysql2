@@ -42,7 +42,6 @@
                     <thead>
                         <tr>
                                                         <th data-sortable="true">Description</th>
-                            <th data-sortable="true">Level</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -51,7 +50,6 @@
                         @foreach($skills as $skill)
                         <tr id="tr{{$skill->id}}">
                                                         <td>{{ $skill->description }}</td>
-                            <td>{{ $skill->Level }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

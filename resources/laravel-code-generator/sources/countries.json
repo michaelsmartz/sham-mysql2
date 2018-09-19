@@ -109,7 +109,7 @@
         },
         {
             "name": "is_preferred",
-            "labels": "Is Preferred",
+            "labels": "Preferred",
             "html-type": "checkbox",
             "css-class": "",
             "options": {

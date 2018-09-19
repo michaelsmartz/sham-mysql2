@@ -85,6 +85,7 @@ Auth::routes();
             Route::resource('languages', 'LanguagesController');
             Route::resource('time_periods', 'TimePeriodsController');
             Route::resource('time_groups', 'TimeGroupsController');
+            Route::resource('products', 'ProductsController');
         #endregion
 
         #region E-Learning

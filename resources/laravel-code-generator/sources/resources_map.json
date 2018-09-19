@@ -207,5 +207,9 @@
         "model-name": "Announcement",
         "resource-file": "announcements.json",
         "table-name": "announcements"
+    },
+    {
+        "model-name": "Product",
+        "resource-file": "products.json"
     }
 ]

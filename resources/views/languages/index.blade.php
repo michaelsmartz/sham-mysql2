@@ -42,7 +42,7 @@
                     <thead>
                         <tr>
                                                         <th data-sortable="true">Description</th>
-                            <th data-sortable="true">Is Preferred</th>
+                            <th data-sortable="true">Preferred</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
