@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\AssessmentType;
 use Illuminate\Http\Request;
+use App\LearningMaterialType;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class AssessmentTypesController extends CustomController
+class LearningMaterialTypesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -18,24 +18,24 @@ class AssessmentTypesController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new AssessmentType();
-        $this->baseViewPath = 'assessment_types';
-        $this->baseFlash = 'Assessment Type details ';
+        $this->contextObj = new LearningMaterialType();
+        $this->baseViewPath = 'learning_material_types';
+        $this->baseFlash = 'Learning Material Type details ';
     }
 
     /**
-     * Display a listing of the assessment types.
+     * Display a listing of the learning material types.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $assessmentTypes = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('assessmentTypes'));
+        $learningMaterialTypes = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('learningMaterialTypes'));
     }
 
     /**
-     * Store a new assessment type in the storage.
+     * Store a new learning material type in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -67,7 +67,7 @@ class AssessmentTypesController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $id = Route::current()->parameter('assessment_type');
+        $id = Route::current()->parameter('learning_material_type');
         $data = $this->contextObj->findData($id);
 
         if($request->ajax()) {
@@ -83,7 +83,7 @@ class AssessmentTypesController extends CustomController
     }
 
     /**
-     * Update the specified assessment types in the storage.
+     * Update the specified learning material type in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -109,7 +109,7 @@ class AssessmentTypesController extends CustomController
     }
 
     /**
-     * Remove the specified assessment type from the storage.
+     * Remove the specified learning material type from the storage.
      *
      * @param  int $id
      *
@@ -118,7 +118,7 @@ class AssessmentTypesController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('assessment_type');
+            $id = Route::current()->parameter('learning_material_type');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -129,6 +129,7 @@ class AssessmentTypesController extends CustomController
 
         return redirect()->route($this->baseViewPath .'.index');
     }
+
 
     /**
      * Validate the given request with the defined rules.
@@ -145,4 +146,5 @@ class AssessmentTypesController extends CustomController
 
         $this->validate($request, $validateFields);
     }
+    
 }

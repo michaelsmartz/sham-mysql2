@@ -245,7 +245,7 @@
                             <li><a href="{{URL::to('/assessment_types')}}">Module Assessment Type</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LEARNING_MATERIAL_TYPE]))
-                            <li><a href="{{URL::to('/learningmaterialtypes')}}">Learning Material Type</a></li>
+                            <li><a href="{{URL::to('/learning_material_types')}}">Learning Material Type</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TRAINING_DELIVERY_METHOD]))
                             <li><a href="{{URL::to('/trainingdeliverymethods')}}">Training Delivery Method</a></li>

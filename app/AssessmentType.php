@@ -6,7 +6,7 @@ namespace App;
 use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AssessmentTypes extends Model
+class AssessmentType extends Model
 {
     use SoftDeletes, UsesPredefinedValues;
 
@@ -18,10 +18,10 @@ class AssessmentTypes extends Model
     protected $table = 'assessment_types';
 
     /**
-    * The database primary key value.
-    *
-    * @var string
-    */
+     * The database primary key value.
+     *
+     * @var string
+     */
     protected $primaryKey = 'id';
 
     /**
@@ -30,9 +30,9 @@ class AssessmentTypes extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
-                  'is_system_predefined'
-              ];
+        'description',
+        'is_system_predefined'
+    ];
 
     public $searchable = ['description'];
 
@@ -42,14 +42,14 @@ class AssessmentTypes extends Model
      * @var array
      */
     protected $dates = [];
-    
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [];
-    
+
 
 
 

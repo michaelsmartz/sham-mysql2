@@ -219,5 +219,9 @@
     {
         "model-name": "AssessmentTypes",
         "resource-file": "assessment_types.json"
+    },
+    {
+        "model-name": "LearningMaterialType",
+        "resource-file": "learning_material_types.json"
     }
 ]
