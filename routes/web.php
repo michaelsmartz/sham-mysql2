@@ -87,6 +87,7 @@ Auth::routes();
             Route::resource('time_groups', 'TimeGroupsController');
             Route::resource('products', 'ProductsController');
             Route::resource('employee_attachment_types', 'EmployeeAttachmentTypesController');
+            Route::resource('assessment_types', 'AssessmentTypesController');
         #endregion
 
         #region E-Learning

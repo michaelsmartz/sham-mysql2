@@ -215,5 +215,9 @@
     {
         "model-name": "EmployeeAttachmentType",
         "resource-file": "employee_attachment_types.json"
+    },
+    {
+        "model-name": "AssessmentTypes",
+        "resource-file": "assessment_types.json"
     }
 ]

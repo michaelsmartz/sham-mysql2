@@ -218,11 +218,6 @@
                     </ul>
                 </li>
             @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_SURVEYS]))
-                <li class="has-sub">
-                    <a href="javascript:;">Surveys <b class="caret pull-right"></b><span></span></a>
-                </li>
-            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_LIFECYCLE_MANAGEMENT]))
                 <li class="has-sub">
                     <a href="javascript:;">Timeline <b class="caret pull-right"></b><span></span></a>
@@ -247,7 +242,7 @@
                     </a>
                     <ul class="sub-menu">
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ASSESSMENT_TYPE]))
-                            <li><a href="{{URL::to('/assessmenttypes')}}">Module Assessment Type</a></li>
+                            <li><a href="{{URL::to('/assessment_types')}}">Module Assessment Type</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LEARNING_MATERIAL_TYPE]))
                             <li><a href="{{URL::to('/learningmaterialtypes')}}">Learning Material Type</a></li>
