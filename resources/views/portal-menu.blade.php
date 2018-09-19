@@ -194,36 +194,6 @@
     </li>
 @endif
 
-@if (isset($allowedmodules[App\SystemModule::CONST_TIME_ATTENDANCE]))
-    <li id="admin-timeattendance-main-li" class="has-sub">
-        <a href="javascript:;">
-            <b class="caret pull-right"></b>
-            <i class="fa fa-clock-o fa-fw" style="font-size: 125%;"></i>
-            <span>Time & Attendance</span>
-        </a>
-        <ul class="sub-menu">
-            @if (isset($allowedmodules[App\SystemModule::CONST_TIME_ATTENDANCE][App\SystemSubModule::CONST_TIME_SHEETS]))
-                <li class="{{ (Request::is('timesheets/*') || Request::is('timesheets') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/timesheets">Timesheets</a></li>
-            @endif
-        </ul>
-    </li>
-@endif
-
-@if (isset($allowedmodules[App\SystemModule::CONST_PERFORMANCE]))
-    <li id="admin-performance-main-li" class="has-sub">
-        <a href="javascript:;">
-            <b class="caret pull-right"></b>
-            <i class="fa fa-line-chart fa-fw"></i>
-            <span>Performance</span>
-        </a>
-        <ul class="sub-menu">
-            @if (isset($allowedmodules[App\SystemModule::CONST_PERFORMANCE][App\SystemSubModule::CONST_QUESTIONS]))
-                <li class="{{ (Request::is('questionnaires/*') || Request::is('questionnaires') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/questionnaires">Questionnaires</a></li>
-            @endif
-        </ul>
-    </li>
-@endif
-
 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS]))
     <li class="has-sub">
         <a href="javascript:;">
@@ -234,32 +204,6 @@
         <ul class="sub-menu">
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_EMPLOYEE_DATABASE]))
                 <li class="{{ (Request::is('branches/*') || Request::is('branches') ? 'active' : '') }}"><a href="{{URL::to('/')}}/branches">Employees</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_NOTIFICATIONS]))
-                <li class="has-sub">
-                    <a href="javascript:;">
-                        <b class="caret pull-right"></b>
-                        <span>Notifications</span>
-                    </a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_NOTIFICATION_GROUPS]))
-                            <li><a href="{{URL::to('/notificationgroups')}}">Notification Groups</a></li>
-                        @endif
-                    </ul>
-                </li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ANNOUNCEMENTS]))
-                <li class="has-sub">
-                    <a href="javascript:;">
-                        <b class="caret pull-right"></b>
-                        <span>Announcements</span>
-                    </a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ANNOUNCEMENT_STATUS]))
-                            <li><a href="{{URL::to('/announcementstatuses')}}">Announcement Status</a></li>
-                        @endif
-                    </ul>
-                </li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
                 <li class="has-sub">
@@ -274,56 +218,9 @@
                     </ul>
                 </li>
             @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_TRAVEL_MANAGEMENT]))
-                <li class="has-sub">
-                    <a href="javascript:;">Travels
-                        <b class="caret pull-right"></b>
-                        <span></span>
-                    </a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ADVANCE_METHODS]))
-                            <li><a href="{{URL::to('/advancemethods')}}">Advance Methods</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_CURRENCY]))
-                            <li><a href="{{URL::to('/currencies')}}">Currency</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TRAVEL_EXPENSE_CLAIM_STATUSES]))
-                            <li><a href="{{URL::to('/travelexpenseclaimstatuses')}}">Travel Expense Claim Statuses</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TRAVEL_REQUEST_STATUSES]))
-                            <li><a href="{{URL::to('/travelrequeststatuses')}}">Travel Request Statuses</a></li>
-                        @endif
-                    </ul>
-                </li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_WORKFLOWS]))
-                <li class="has-sub">
-                    <a href="javascript:;">Workflows <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TRIGGERS_EVENTS]))
-                            <li><a href="{{URL::to('/triggers')}}">Triggers (events)</a></li>
-                        @endif
-                    </ul>
-                </li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_REQUESTS]))
-                <li class="has-sub">
-                    <a href="javascript:;">Recruitment Requests <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_RECRUITMENT_REQUEST_REASONS]))
-                            <li><a href="{{URL::to('/recruitmentrequestreasons')}}">Recruitment Request Reasons</a></li>
-                        @endif
-                    </ul>
-                </li>
-            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_SURVEYS]))
                 <li class="has-sub">
                     <a href="javascript:;">Surveys <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_RECURRENCE]))
-                            <li><a href="{{URL::to('/recurrences')}}">Recurrence</a></li>
-                        @endif
-                    </ul>
                 </li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_LIFECYCLE_MANAGEMENT]))
@@ -361,38 +258,6 @@
                     </ul>
                 </li>
             @endif
-            {{--
-            <li class="has-sub">
-                <a href="javascript:;">E-learning: Topic attachment <b class="caret pull-right"></b><span></span></a>
-                <ul class="sub-menu">
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LEARNING_MATERIAL_TYPE]))
-                        <li><a href="{{URL::to('/learningmaterialtypes')}}">Learning Material Type</a></li>
-                    @endif
-                </ul>
-            </li>
-            @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_TRAINING_SESSION_MANAGEMENT]))
-                <li class="has-sub">
-                    <a href="javascript:;">E-learning: Training Sessions <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TRAINING_DELIVERY_METHOD]))
-                            <li><a href="{{URL::to('/trainingdeliverymethods')}}">Training Delivery Method</a></li>
-                        @endif
-                    </ul>
-                </li>
-            @endif
-
-            @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_CATEGORY_QUESTIONS]))
-                <li class="has-sub">
-                    <a href="javascript:;">QA: Category Questions <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_CATEGORY_QUESTION_TYPE]))
-                            <li><a href="{{URL::to('/categoryquestiontypes')}}">Category Question Type</a></li>
-                        @endif
-                    </ul>
-                </li>
-            @endif
-            --}}
-
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_EVALUATIONS]))
                 <li class="has-sub">
                     <a href="javascript:;">Quality Assurance <b class="caret pull-right"></b><span></span></a>

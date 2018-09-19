@@ -40,7 +40,7 @@
     <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
     <script>
         $(function () {
-            $('.products').multipleSelect({
+            $('.multipleSelect').multipleSelect({
                 filter: true
             });
         });

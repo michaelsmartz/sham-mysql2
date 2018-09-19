@@ -55,8 +55,7 @@
                             <td>{{ optional($team->timeGroup)->name }}</td>
                             <td>
                             @foreach($team->products as $product)
-                            {{ $loop->first ? '' : ','}}
-                            {{ $product->name }}
+                                    <span class="badge badge-info">{{ $product->name }}</span>
                             @endforeach
                             </td>
 

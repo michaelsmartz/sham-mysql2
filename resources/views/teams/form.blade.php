@@ -23,7 +23,7 @@
     <div class="form-group col-xs-12 {{ $errors->has('products[id]') ? 'has-error' : '' }}">
         <label for="modules[id]">Products </label>
         <div class="flex-wrapper">
-            {!! Form::select('products[id][]', $products, null , array('multiple' => 'multiple', 'style' => 'width:100%', 'class'=> 'products multipleSelect')) !!}
+            {!! Form::select('products[id][]', $products, null , array('multiple' => 'multiple', 'style' => 'width:100%', 'class'=>'multipleSelect')) !!}
             {!! $errors->first('products[id]', '<p class="help-block">:message</p>') !!}
         </div>
     </div>
