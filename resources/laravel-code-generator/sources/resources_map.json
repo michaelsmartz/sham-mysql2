@@ -211,5 +211,9 @@
     {
         "model-name": "Product",
         "resource-file": "products.json"
+    },
+    {
+        "model-name": "EmployeeAttachmentType",
+        "resource-file": "employee_attachment_types.json"
     }
 ]
