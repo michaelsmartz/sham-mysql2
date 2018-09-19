@@ -39,5 +39,9 @@ class Team extends Model
         return $this->hasMany('App\TeamProduct','team_id','id');
     }
 
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 
 }

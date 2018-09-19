@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
 use App\Team;
 use App\TimeGroup;
 use Illuminate\Http\Request;
@@ -32,12 +33,13 @@ class TeamsController extends CustomController
     public function index()
     {
         $teams = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('teams'));
+        return view($this->baseViewPath .'.index', compact('teams', 'products'));
     }
 
     public function create() {
         $time_groups = Timegroup::pluck('name', 'id');
-        return view($this->baseViewPath . '.create',compact('time_groups'));
+        $products = Product::pluck('name', 'id');
+        return view($this->baseViewPath . '.create',compact('time_groups', 'products'));
     }
 
     /**
@@ -52,9 +54,12 @@ class TeamsController extends CustomController
        try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token'));
+            $products = array_get($request->all(),'products.id');
+            $input = array_except($request->all(),array('_token', 'products'));
 
-            $this->contextObj->addData($input);
+            $data = $this->contextObj->addData($input);
+            $data->products()
+               ->sync($products); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -76,9 +81,10 @@ class TeamsController extends CustomController
         $data = $this->contextObj->findData($id);
 
         $time_groups = TimeGroup::pluck('name', 'id');
+        $products = Product::pluck('name', 'id');
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data', 'time_groups'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data', 'time_groups', 'products'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -86,7 +92,7 @@ class TeamsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data', 'time_groups'));
+        return view($this->baseViewPath . '.edit', compact('data', 'time_groups', 'products'));
     }
 
     /**
@@ -102,9 +108,13 @@ class TeamsController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token','_method'));
+            $products = array_get($request->all(),'products.id');
+            $input = array_except($request->all(),array('_token','_method', 'products'));
 
             $this->contextObj->updateData($id, $input);
+            $data = Team::find($id);
+            $data->products()
+                ->sync($products); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 

@@ -41,8 +41,9 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Description</th>
+                            <th data-sortable="true">Description</th>
                             <th data-sortable="true">Time Group</th>
+                            <th data-sortable="true">Products</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -50,8 +51,14 @@
                     <tbody>
                         @foreach($teams as $team)
                         <tr id="tr{{$team->id}}">
-                                                        <td>{{ $team->description }}</td>
+                            <td>{{ $team->description }}</td>
                             <td>{{ optional($team->timeGroup)->name }}</td>
+                            <td>
+                            @foreach($team->products as $product)
+                            {{ $loop->first ? '' : ','}}
+                            {{ $product->name }}
+                            @endforeach
+                            </td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

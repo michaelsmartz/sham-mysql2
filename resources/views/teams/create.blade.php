@@ -34,3 +34,15 @@
         </div>
     </div>
 @endsection
+
+@section('post-body')
+    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
+    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
+    <script>
+        $(function () {
+            $('.products').multipleSelect({
+                filter: true
+            });
+        });
+    </script>
+@endsection

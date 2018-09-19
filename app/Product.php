@@ -49,8 +49,11 @@ class Product extends Model
      * @var array
      */
     protected $casts = [];
-    
 
 
+    public function Teams()
+    {
+        return $this->belongsToMany(Team::class);
+    }
 
 }
