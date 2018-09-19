@@ -89,6 +89,7 @@ Auth::routes();
             Route::resource('employee_attachment_types', 'EmployeeAttachmentTypesController');
             Route::resource('assessment_types', 'AssessmentTypesController');
             Route::resource('learning_material_types', 'LearningMaterialTypesController');
+            Route::resource('training_delivery_methods', 'TrainingDeliveryMethodsController');
         #endregion
 
         #region E-Learning

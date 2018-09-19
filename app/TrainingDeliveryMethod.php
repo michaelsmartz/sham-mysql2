@@ -3,13 +3,13 @@
 namespace App;
 
 
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TrainingDeliveryMethod extends Model
 {
     
-    use SoftDeletes;
-
+    use SoftDeletes, UsesPredefinedValues;
 
 
     /**
@@ -22,6 +22,6 @@ class TrainingDeliveryMethod extends Model
                   'is_system_predefined'
               ];
 
-
+    public $searchable = ['description'];
 
 }

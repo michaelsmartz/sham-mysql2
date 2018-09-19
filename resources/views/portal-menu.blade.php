@@ -234,24 +234,8 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
                 <li class="{{ (Request::is('policy_categories/*') || Request::is('policy_categories') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/law_categories">Compliance</a></li>
             @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING]))
-                <li class="has-sub">
-                    <a href="javascript:;">
-                        <b class="caret pull-right"></b>
-                        <span>E-learning</span>
-                    </a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ASSESSMENT_TYPE]))
-                            <li><a href="{{URL::to('/assessment_types')}}">Module Assessment Type</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LEARNING_MATERIAL_TYPE]))
-                            <li><a href="{{URL::to('/learning_material_types')}}">Learning Material Type</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_TRAINING_DELIVERY_METHOD]))
-                            <li><a href="{{URL::to('/trainingdeliverymethods')}}">Training Delivery Method</a></li>
-                        @endif
-                    </ul>
-                </li>
+            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
+                <li> <a href="{{URL::to('/')}}/assessment_types">E-learning</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_EVALUATIONS]))
                 <li class="has-sub">
