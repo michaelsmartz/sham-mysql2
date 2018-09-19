@@ -4,17 +4,17 @@
 
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary pull-right" type="submit">Update</button>
+    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
 @endsection
 
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
             @include ('modules.form', [
-                        'module' => $data,
-                        ])
+                'module' => $data,
+            ])
         </div>
-    </div>        
+    </div>
 @endsection
 
 @section('content')

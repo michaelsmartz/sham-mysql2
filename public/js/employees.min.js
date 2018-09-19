@@ -12442,7 +12442,7 @@ var app = new Vue({
                     return file.length === 1 && file[0].size <= maxBytes;
                 },
                 messages: {
-                    en: 'File is to big'
+                    en: 'File is too big'
                 }
             }).addValidator('filemimetypes', {
                 requirementType: 'string',

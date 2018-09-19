@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class JobTitle extends Model
 {
     
-    use SoftDeletes, UsesPredefinedValues;
-
-
+    use SoftDeletes;
 
     /**
      * Attributes that should be mass-assignable.
