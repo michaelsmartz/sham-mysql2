@@ -37,7 +37,7 @@ mix
       new CompressionPlugin({
         asset: '[path].gz[query]',
         algorithm: 'gzip',
-        test: /\.js$|\.css$|\.html$|\.svg$/,
+        test: /\.html$|\.svg$/,
         threshold: 10240,
         minRatio: 0.8,
       }),

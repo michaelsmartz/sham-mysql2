@@ -8,6 +8,10 @@ textarea:required {
   transition: all 1s;
 }
 
+input.hasDatepicker:required {
+  background-position-x: 95%;
+}
+
 input.parsley-error:required {
   /*animation: pulse-me 3s linear infinite;*/
   -webkit-transition: background .5s ease-out;
@@ -127,13 +131,16 @@ textarea.parsley-error {
 }
 
 .accordion__expander {
-  padding: 15px;
+  padding: 15px 15px 40px 15px;
   /*color: #8b9597;*/
+  /*& > .form-group:last-child {
+            padding-bottom: 30px;
+        }*/
 }
 
 .accordion__expander > .form-group {
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 15px;
   clear: left;
 }
 
