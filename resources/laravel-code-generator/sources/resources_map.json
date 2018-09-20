@@ -227,5 +227,9 @@
     {
         "model-name": "ProductCategory",
         "resource-file": "product_categories.json"
+    },
+    {
+        "model-name": "CategoryQuestionType",
+        "resource-file": "category_question_types.json"
     }
 ]

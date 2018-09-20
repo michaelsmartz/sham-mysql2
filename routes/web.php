@@ -91,6 +91,7 @@ Auth::routes();
             Route::resource('learning_material_types', 'LearningMaterialTypesController');
             Route::resource('training_delivery_methods', 'TrainingDeliveryMethodsController');
             Route::resource('product_categories', 'ProductCategoriesController');
+            Route::resource('category_question_types', 'CategoryQuestionTypesController');
         #endregion
 
         #region E-Learning

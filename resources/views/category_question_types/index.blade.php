@@ -1,14 +1,14 @@
 @extends('portal-index')
-@section('title','Product Categories')
+@section('title','Category Question Types')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
-        <li ><a href="{{URL::to('/')}}/category_question_types">Category Question Type</a></li>
-        <li class="active"><a href="#">Product Categories</a></li>
+        <li class="active"><a href="#">Category Question Type</a></li>
+        <li ><a href="{{URL::to('/')}}/product_categories">Product Categories</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($productCategories) > 0)
+            @if(count($categoryQuestionTypes) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
@@ -18,8 +18,8 @@
             </div>
             @endif
             <div class="table-responsive">
-            @if(count($productCategories) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new product category</h4>
+            @if(count($categoryQuestionTypes) == 0)
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new category question type</h4>
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>
@@ -30,16 +30,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($productCategories as $productCategory)
-                        <tr id="tr{{$productCategory->id}}">
-                                                        <td>{{ $productCategory->description }}</td>
+                        @foreach($categoryQuestionTypes as $categoryQuestionType)
+                        <tr id="tr{{$categoryQuestionType->id}}">
+                                                        <td>{{ $categoryQuestionType->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$productCategory->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$categoryQuestionType->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$productCategory->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$categoryQuestionType->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                 </div>
@@ -49,11 +49,11 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $productCategories->render() !!}
+                    {!! $categoryQuestionTypes->render() !!}
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'product_categories.destroy'])
+            @component('partials.index', ['routeName'=> 'category_question_types.destroy'])
             @endcomponent
         </div>
     </div>

@@ -234,21 +234,11 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
                 <li class="{{ (Request::is('policy_categories/*') || Request::is('policy_categories') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/law_categories">Compliance</a></li>
             @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
+            @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING]))
                 <li> <a href="{{URL::to('/')}}/assessment_types">E-learning</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_EVALUATIONS]))
-                <li class="has-sub">
-                    <a href="javascript:;">Quality Assurance <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_CATEGORY_QUESTION_TYPE]))
-                            <li><a href="{{URL::to('/categoryquestiontypes')}}">Category Question Type</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_PRODUCT_CATEGORIES]))
-                            <li><a href="{{URL::to('/product_categories')}}">Product Categories</a></li>
-                        @endif
-                    </ul>
-                </li>
+                <li> <a href="{{URL::to('/')}}/category_question_types">Quality Assurance</a></li>
             @endif
 
             <li class="has-sub">
