@@ -94,6 +94,7 @@ Auth::routes();
             Route::resource('category_question_types', 'CategoryQuestionTypesController');
             Route::resource('companies', 'CompaniesController');
             Route::resource('report_templates', 'ReportTemplatesController');
+            Route::resource('sham_user_profiles', 'ShamUserProfilesController');
         #endregion
 
         #region E-Learning

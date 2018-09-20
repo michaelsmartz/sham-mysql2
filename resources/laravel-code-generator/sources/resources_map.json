@@ -235,5 +235,9 @@
     {
         "model-name": "ReportTemplate",
         "resource-file": "report_templates.json"
+    },
+    {
+        "model-name": "ShamUserProfile",
+        "resource-file": "sham_user_profiles.json"
     }
 ]

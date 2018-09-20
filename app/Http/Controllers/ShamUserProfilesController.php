@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Skill;
+use App\ShamUserProfile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class SkillsController extends CustomController
+class ShamUserProfilesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -18,24 +18,24 @@ class SkillsController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new Skill();
-        $this->baseViewPath = 'skills';
-        $this->baseFlash = 'Skill details ';
+        $this->contextObj = new ShamUserProfile();
+        $this->baseViewPath = 'sham_user_profiles';
+        $this->baseFlash = 'Sham User Profile details ';
     }
 
     /**
-     * Display a listing of the skills.
+     * Display a listing of the sham user profiles.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $skills = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('skills'));
+        $shamUserProfiles = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('shamUserProfiles'));
     }
 
     /**
-     * Store a new skill in the storage.
+     * Store a new sham user profile in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -43,13 +43,18 @@ class SkillsController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+            $this->contextObj->addData($input);
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
@@ -62,7 +67,7 @@ class SkillsController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $id = Route::current()->parameter('skill');
+        $id = Route::current()->parameter('sham_user_profile');
         $data = $this->contextObj->findData($id);
 
         if($request->ajax()) {
@@ -78,7 +83,7 @@ class SkillsController extends CustomController
     }
 
     /**
-     * Update the specified skill in the storage.
+     * Update the specified sham user profile in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -97,14 +102,14 @@ class SkillsController extends CustomController
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
-            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
         return redirect()->route($this->baseViewPath .'.index');       
     }
 
     /**
-     * Remove the specified skill from the storage.
+     * Remove the specified sham user profile from the storage.
      *
      * @param  int $id
      *
@@ -113,7 +118,7 @@ class SkillsController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('skill');
+            $id = Route::current()->parameter('sham_user_profile');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -133,10 +138,10 @@ class SkillsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
+            'name' => 'required|string|min:1|max:50',
             'description' => 'required|string|min:1|max:50'
         ];
 
         $this->validate($request, $validateFields);
     }
-    
 }
