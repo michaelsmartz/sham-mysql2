@@ -247,20 +247,8 @@
                     @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_COMPANY]))
                         <li><a href="{{URL::to('/companies')}}">Company</a></li>
                     @endif
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_IMPORT]))
-                        <li><a href="{{URL::to('/imports')}}">Import</a></li>
-                    @endif
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LEAVE_TYPES]))
-                        <li><a href="{{URL::to('/leavetypes')}}">Leave Type</a></li>
-                    @endif
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_LINK_TYPES]))
-                        <li><a href="{{URL::to('/linktypes')}}">Link Types</a></li>
-                    @endif
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_PUBLIC_HOLIDAYS]))
-                        <li><a href="{{URL::to('/publicholidays')}}">Public Holidays</a></li>
-                    @endif
                     @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_REPORT_TEMPLATES]))
-                        <li><a href="{{URL::to('/reporttemplates')}}">Report Templates</a></li>
+                        <li><a href="{{URL::to('/report_templates')}}">Report Templates</a></li>
                     @endif
                     @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
                         <li class="{{ (Request::is('systemsubmodules') || Request::is('shamusers') || Request::is('shampermissions') || Request::is('shamuserprofiles') ? 'active' : '') }}"><a data-menu-href="{{URL::to('/')}}/systemsubmodules {{URL::to('/')}}/shamusers {{URL::to('/')}}/shampermissions {{URL::to('/')}}/shamuserprofiles"

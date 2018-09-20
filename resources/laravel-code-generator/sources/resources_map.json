@@ -231,5 +231,9 @@
     {
         "model-name": "Company",
         "resource-file": "companies.json"
+    },
+    {
+        "model-name": "ReportTemplate",
+        "resource-file": "report_templates.json"
     }
 ]

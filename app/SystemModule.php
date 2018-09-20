@@ -26,8 +26,7 @@ class SystemModule extends Model
 
     protected $casts = [
         'id' => 'integer',
-        'description' => 'string',
-        'is_active' => 'boolean',
+        'description' => 'string'
     ];
 
     protected $guarded = [
@@ -35,8 +34,7 @@ class SystemModule extends Model
     ];
 
     protected $fillable = [
-        'description',
-        'is_active',
+        'description'
     ];
 
     /**

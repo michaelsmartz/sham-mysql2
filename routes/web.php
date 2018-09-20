@@ -93,6 +93,7 @@ Auth::routes();
             Route::resource('product_categories', 'ProductCategoriesController');
             Route::resource('category_question_types', 'CategoryQuestionTypesController');
             Route::resource('companies', 'CompaniesController');
+            Route::resource('report_templates', 'ReportTemplatesController');
         #endregion
 
         #region E-Learning
