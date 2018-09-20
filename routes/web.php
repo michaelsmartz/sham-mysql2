@@ -95,6 +95,7 @@ Auth::routes();
             Route::resource('companies', 'CompaniesController');
             Route::resource('report_templates', 'ReportTemplatesController');
             Route::resource('sham_user_profiles', 'ShamUserProfilesController');
+            Route::resource('sham_users', 'ShamUsersController');
         #endregion
 
         #region E-Learning

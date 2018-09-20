@@ -239,5 +239,9 @@
     {
         "model-name": "ShamUserProfile",
         "resource-file": "sham_user_profiles.json"
+    },
+    {
+        "model-name": "ShamUser",
+        "resource-file": "sham_users.json"
     }
 ]
