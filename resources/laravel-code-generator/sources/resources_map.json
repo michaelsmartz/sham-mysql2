@@ -40,10 +40,6 @@
         "resource-file": "addresses.json"
     },
     {
-        "model-name": "Company",
-        "resource-file": "companies.json"
-    },
-    {
         "model-name": "Zoom",
         "resource-file": "zooms.json"
     },
@@ -231,5 +227,9 @@
     {
         "model-name": "CategoryQuestionType",
         "resource-file": "category_question_types.json"
+    },
+    {
+        "model-name": "Company",
+        "resource-file": "companies.json"
     }
 ]

@@ -2,11 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
 {
-    
+    use SoftDeletes;
 
     /**
      * The database table used by the model.
@@ -30,6 +30,8 @@ class Company extends Model
     protected $fillable = [
         'name'
     ];
+
+    public $searchable = ['name'];
 
     /**
      * The attributes that should be mutated to dates.
