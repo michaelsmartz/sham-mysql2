@@ -245,7 +245,7 @@
                             <li><a href="{{URL::to('/categoryquestiontypes')}}">Category Question Type</a></li>
                         @endif
                         @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_PRODUCT_CATEGORIES]))
-                            <li><a href="{{URL::to('/productcategorys')}}">Product Categories</a></li>
+                            <li><a href="{{URL::to('/product_categories')}}">Product Categories</a></li>
                         @endif
                     </ul>
                 </li>

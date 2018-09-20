@@ -223,5 +223,9 @@
     {
         "model-name": "LearningMaterialType",
         "resource-file": "learning_material_types.json"
+    },
+    {
+        "model-name": "ProductCategory",
+        "resource-file": "product_categories.json"
     }
 ]

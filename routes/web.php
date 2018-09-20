@@ -90,6 +90,7 @@ Auth::routes();
             Route::resource('assessment_types', 'AssessmentTypesController');
             Route::resource('learning_material_types', 'LearningMaterialTypesController');
             Route::resource('training_delivery_methods', 'TrainingDeliveryMethodsController');
+            Route::resource('product_categories', 'ProductCategoriesController');
         #endregion
 
         #region E-Learning
