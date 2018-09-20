@@ -1,0 +1,80 @@
+UPDATE `tax_statuses` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `tax_statuses` DROP `Active`;
+
+UPDATE `bankaccounttypes` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `bankaccounttypes` DROP `Active`;
+
+UPDATE `teams` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `teams` DROP `is_active`;
+
+UPDATE `policy_categories` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `policy_categories` DROP `is_active`;
+
+UPDATE `branches` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `branches` DROP `Active`;
+
+UPDATE `divisions` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `divisions` DROP `Active`;
+
+UPDATE `companies` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `companies` DROP `Active`;
+
+UPDATE `countries` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `countries` DROP `is_active`;
+
+UPDATE `document_categories` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `document_categories` DROP `is_active`;
+
+UPDATE `document_types` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `document_types` DROP `is_active`;
+
+UPDATE `employee_statuses` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `employee_statuses` DROP `is_active`;
+
+UPDATE `ethnic_groups` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `ethnic_groups` DROP `Active`;
+
+UPDATE `immigration_statuses` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `immigration_statuses` DROP `Active`;
+
+UPDATE `job_titles` SET `deleted_at`= now() WHERE `Active` = 0;
+ALTER TABLE `job_titles` DROP `Active`;
+
+UPDATE `languages` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `languages` DROP `is_active`;
+
+UPDATE `time_periods` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `time_periods` DROP `is_active`;
+
+UPDATE `time_groups` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `time_groups` DROP `is_active`;
+
+UPDATE `products` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `products` DROP `is_active`;
+
+UPDATE `employee_attachment_types` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `employee_attachment_types` DROP `is_active`;
+
+UPDATE `assessment_types` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `assessment_types` DROP `is_active`;
+
+UPDATE `learning_material_types` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `learning_material_types` DROP `is_active`;
+
+UPDATE `training_delivery_methods` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `training_delivery_methods` DROP `is_active`;
+
+UPDATE `product_categories` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `product_categories` DROP `is_active`;
+
+UPDATE `category_question_types` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `category_question_types` DROP `is_active`;
+
+UPDATE `system_modules` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `system_modules` DROP `is_active`;
+
+UPDATE `report_templates` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `report_templates` DROP `is_active`;
+
+UPDATE `sham_user_profiles` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `sham_user_profiles` DROP `is_active`;
