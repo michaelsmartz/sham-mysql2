@@ -6,8 +6,9 @@ use BenSampo\Enum\Enum;
 
 final class AnnouncementType extends Enum
 {
-    const Disabled = 0;
+    
     const Enabled = 1;
+    const Disabled = 2;
 
     /**
      * Get the description for an enum value

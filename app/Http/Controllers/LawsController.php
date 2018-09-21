@@ -62,6 +62,7 @@ class LawsController extends CustomController
     public function store(Request $request)
     {
         try{
+            $this->storePreviousUrl($request);
             $this->validator($request);
 
             $input = array_except($request->all(),array('_token'));
@@ -75,7 +76,9 @@ class LawsController extends CustomController
         } catch(Exception $exception) {
             \Session::put('error', 'Could not create '. $this->baseFlash . '!');
         }
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->route($this->baseViewPath .'.index', ['page' => $request->get('page', 1)]);
+
+        //return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**
@@ -120,6 +123,8 @@ class LawsController extends CustomController
     public function update(Request $request, $id)
     {
         try{
+            $this->storePreviousUrl($request);
+
             $this->validator($request);
 
             $input = array_except($request->all(),array('_token','_method','attachment'));
@@ -133,7 +138,7 @@ class LawsController extends CustomController
             \Session::put('error', 'Could not update ' . $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return redirect()->back();
     }
 
     /**
@@ -147,6 +152,8 @@ class LawsController extends CustomController
     {
 
         try{
+            $this->storePreviousUrl($request);
+
             $id = Route::current()->parameter('law');
             $this->contextObj->destroyData($id);
 
@@ -156,7 +163,7 @@ class LawsController extends CustomController
             \Session::put('error', 'Could not delete ' .$this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->back();
     }
 
     /**

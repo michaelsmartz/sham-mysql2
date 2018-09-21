@@ -16,6 +16,10 @@ class CustomController extends Controller
     public $baseFlash;
     public $baseViewPath;
 
+    public function storePreviousUrl($request) {
+        $request->session()->put('url.intended',url()->previous());
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -47,6 +51,11 @@ class CustomController extends Controller
             ]);
         }
         return view($this->baseViewPath . '.edit', compact('data'));
+    }
+
+    public function redirectTo(Request $request)
+    {
+        return redirect($request->session()->get('url.intended'));
     }
 
 }

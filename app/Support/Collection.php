@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Collection extends BaseCollection
 {

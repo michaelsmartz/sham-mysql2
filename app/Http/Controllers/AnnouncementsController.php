@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Announcement;
-use App\AnnouncementStatus;
+use App\Enums\AnnouncementType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+//use App\Support\Collection;
 use Exception;
 
 class AnnouncementsController extends CustomController
@@ -29,10 +30,23 @@ class AnnouncementsController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $announcements = $this->contextObj->getData(['announcement_status_id' => 'desc', 'end_date' => 'asc']);
+        //$data = $this->contextObj->getData(['announcement_status_id' => 'asc', 'end_date' => 'asc']);
+        $announcements = $this->contextObj->getData(['announcement_status_id' => 'asc', 'end_date' => 'asc']);
         return view($this->baseViewPath .'.index', compact('announcements'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $announcementStatuses = AnnouncementType::ddList();
+
+        return view($this->baseViewPath . '.create', compact('data','announcementStatuses'));
     }
 
     /**
@@ -54,10 +68,41 @@ class AnnouncementsController extends CustomController
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
+
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request)
+    {
+        $data = $announcementStatuses = null;
+        $id = Route::current()->parameter('announcement');
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+            $announcementStatuses = AnnouncementType::ddList();
+        }
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data','announcementStatuses'))
+                    ->renderSections();
+
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.edit', compact('data','announcementStatuses'));
     }
 
     /**
@@ -80,10 +125,11 @@ class AnnouncementsController extends CustomController
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return redirect()->back(); //route($this->baseViewPath .'.index');       
     }
 
     /**
@@ -105,8 +151,28 @@ class AnnouncementsController extends CustomController
             \Session::put('error', 'could not delete '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->back(); //route($this->baseViewPath .'.index');
     }
     
-    
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param  Request $request
+     *
+     * @return boolean
+     */
+    protected function validator(Request $request)
+    {
+
+        $validateFields = [
+            'title' => 'required|string|min:1|max:50',
+            'description' => 'required|string|min:1|max:256',
+            'start_date' => 'required|string|min:0|max:4294967295',
+            'end_date' => 'required|string|min:0',
+            'announcement_status_id' => 'required|string|min:1|max:1'
+        ];
+
+        $this->validate($request, $validateFields);
+    }
+
 }

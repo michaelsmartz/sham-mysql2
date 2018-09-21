@@ -10,6 +10,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Schema;
+use App\Support\Collection;
 
 trait HasBaseModel
 {
@@ -19,7 +20,6 @@ trait HasBaseModel
     {
         $obj = $this->newQuery();
         return $obj->ofSort($sortColumns)->paginate(10);
-        //return static::orderBy('id', 'asc')->paginate(10);
     }
 
     public function AddData($input)

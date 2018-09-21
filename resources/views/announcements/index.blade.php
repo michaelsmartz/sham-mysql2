@@ -31,7 +31,7 @@
                     <tbody>
                         @foreach($announcements as $announcement)
                         <tr id="tr{{$announcement->id}}">
-                                                        <td>{{ $announcement->title }}</td>
+                            <td>{{ $announcement->title }}</td>
                             <td>{{ $announcement->description }}</td>
                             <td>{{ $announcement->start_date }}</td>
                             <td>{{ $announcement->end_date }}</td>
@@ -52,7 +52,7 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $announcements->render() !!}
+                    {!! $announcements->appends(request()->query())->links() !!}
                 </nav>
             @endif
             </div>

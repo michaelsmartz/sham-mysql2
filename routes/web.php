@@ -54,7 +54,8 @@ Auth::routes();
             Route::fileResource('topics');
             Route::fileResource('employees');
             //Route::fileResource('assessments');
-
+            Route::resource('organisationcharts', 'OrganisationChartsController', [ 'only' => ['index']]);
+            
             Route::resource('assets', 'AssetsController');
             Route::resource('assetgroups', 'AssetGroupsController');
             Route::resource('assetsuppliers', 'AssetSuppliersController');

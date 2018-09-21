@@ -14592,7 +14592,8 @@ $(function () {
     $("body").delegate("input.datepicker", "focusin", function () {
         if ($(this).attr('id') != 'DateOfBirth') {
             $(this).datepicker({
-                dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true
+                dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true,
+                minDate: $(this).data('minDate') || null
             }).prop('readonly', 'true');
         }
     });
