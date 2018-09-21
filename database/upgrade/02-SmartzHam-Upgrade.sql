@@ -279,7 +279,7 @@ CHANGE COLUMN `warranty_expiry_date` `warranty_expiry_date` DATE NOT NULL ;
 
 #--01 Alter assetsuppliers  --Ok
 ALTER TABLE `assetsuppliers` 
-CHANGE COLUMN `emailaddress` `email_address` VARCHAR(512) NULL ;
+CHANGE COLUMN `emailaddress` `email_address` VARCHAR(100) NULL ;
 
 #--01 Alter assetgroups --Ok
 ALTER TABLE `assetgroups` 

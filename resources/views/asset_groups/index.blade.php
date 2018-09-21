@@ -1,10 +1,11 @@
 @extends('portal-index')
 @section('title','Asset Groups')
+@section('subtitle','Allocate and manage your assets per groups, suppliers or employees')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
-        <li  class="active"><a href="{{URL::to('/')}}/assetgroups">Asset Groups</a></li>
-        <li><a href="{{URL::to('/')}}/assetsuppliers">Suppliers</a></li>
+        <li  class="active"><a href="{{URL::to('/')}}/asset_groups">Asset Groups</a></li>
+        <li><a href="{{URL::to('/')}}/asset_suppliers">Suppliers</a></li>
         <li><a href="{{URL::to('/')}}/assets">Asset List</a></li>
         <li><a href="{{URL::to('/')}}/assetallocations">Asset Allocation</a></li>
     </ul>
@@ -26,9 +27,8 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Name</th>
+                            <th data-sortable="true">Name</th>
                             <th data-sortable="true">Description</th>
-
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
@@ -40,10 +40,10 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#modal-text" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$assetGroup->id}}', event)">
+                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editForm('{{$assetGroup->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </button>
-                                    <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$assetGroup->id}}')">
+                                    </a>
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$assetGroup->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                 </div>
@@ -57,7 +57,7 @@
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'assetgroups.destroy'])
+            @component('partials.index', ['routeName'=> 'asset_groups.destroy'])
             @endcomponent
         </div>
     </div>

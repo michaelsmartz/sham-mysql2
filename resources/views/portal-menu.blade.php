@@ -34,7 +34,7 @@
                 <li class="{{ (Request::is('policies/*') || Request::is('policies') || Request::is('laws/*') || Request::is('laws') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/laws">Compliance</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
-                <li class="{{ (Request::is('assetallocations') || Request::is('assets') || Request::is('assetsuppliers') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/assetgroups">Assets Allocation</a></li>
+                <li class="{{ (Request::is('assetallocations') || Request::is('assets') || Request::is('asset_suppliers') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/asset_groups">Assets Allocation</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ANNOUNCEMENTS]))
                 <li> <a href="{{URL::to('/')}}/announcements">Announcements</a></li>

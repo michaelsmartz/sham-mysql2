@@ -3,6 +3,8 @@
 namespace [% namespace %];
 
 [% use_command_placeholder %]
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;

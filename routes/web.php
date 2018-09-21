@@ -57,8 +57,8 @@ Auth::routes();
             Route::resource('organisationcharts', 'OrganisationChartsController', [ 'only' => ['index']]);
             
             Route::resource('assets', 'AssetsController');
-            Route::resource('assetgroups', 'AssetGroupsController');
-            Route::resource('assetsuppliers', 'AssetSuppliersController');
+            Route::resource('asset_groups', 'AssetGroupsController');
+            Route::resource('asset_suppliers', 'AssetSuppliersController');
         #endregion
 
         #region Configuration parameters routes
