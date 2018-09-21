@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\AssetGroup;
 use Illuminate\Http\Request;
-use App\Http\Controllers\CustomController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
+use Exception;
 
 class AssetGroupsController extends CustomController
 {
@@ -41,15 +43,49 @@ class AssetGroupsController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try{
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+            $this->contextObj->addData($input);
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('asset_group');
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+        }
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))
+                    ->renderSections();
+
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
     /**
@@ -62,30 +98,39 @@ class AssetGroupsController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try{
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
+            $input = array_except($request->all(),array('_token','_method'));
 
-        $this->contextObj->updateData($id, $input);
+            $this->contextObj->updateData($id, $input);
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not update ' . $this->baseFlash . '!');
+        }
+
+        return redirect()->back();       
     }
 
     /**
      * Remove the specified asset group from the storage.
      *
-     * @param  int $id
+     * @param  Request $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $this->contextObj->destroyData($id);
+        try{
+            $id = Route::current()->parameter('asset_group');
+            $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
-
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not delete ' .$this->baseFlash . '!');
+        }
         return redirect()->route($this->baseViewPath .'.index');
     }
         
@@ -99,12 +144,9 @@ class AssetGroupsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-                    'name' => 'string|min:1|max:255|nullable',
-            'description' => 'string|min:1|max:1000|nullable',
-            'is_active' => 'boolean|nullable',
-     
-        ];
-        
+            'name' => 'string|min:1|max:50|required',
+            'description' => 'string|min:1|max:100|required'     
+        ];        
 
         $this->validate($request, $validateFields);
     }

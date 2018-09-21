@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\AssetSupplier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
+use Exception;
 
 class AssetSuppliersController extends CustomController
 {
@@ -15,6 +17,7 @@ class AssetSuppliersController extends CustomController
         $this->baseViewPath = 'asset_suppliers';
         $this->baseFlash = 'Asset Supplier details ';
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,15 +44,50 @@ class AssetSuppliersController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try{
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+            $this->contextObj->addData($input);
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch(Exception $exception) {
+
+            \Session::put('error', 'Could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('asset_supplier');
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+        }
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data'))
+                    ->renderSections();
+
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
     /**
@@ -61,15 +99,20 @@ class AssetSuppliersController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try{
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
+            $input = array_except($request->all(),array('_token','_method'));
 
-        $this->contextObj->updateData($id, $input);
+            $this->contextObj->updateData($id, $input);
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
-        return redirect()->route($this->baseViewPath .'.index');
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not update ' . $this->baseFlash . '!');
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -78,11 +121,17 @@ class AssetSuppliersController extends CustomController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        $this->contextObj->destroyData($id);
+    public function destroy(Request $request)
+    {        
+        try{
+            $id = Route::current()->parameter('asset_supplier');
+            $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+
+        } catch(Exception $exception) {
+            \Session::put('error', 'Could not delete ' .$this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
@@ -90,7 +139,13 @@ class AssetSuppliersController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'fieldname' => 'required|max:45'
+            'name' => 'required|string|min:1|max:100',
+            'address1' => 'required|string|min:1|max:100',
+            'address2' => 'required|string|min:1|max:100',
+            'address3' => 'nullable|string|min:1|max:100',
+            'address4' => 'nullable|string|min:1|max:100',
+            'telephone' => 'required|string|min:1|max:20',
+            'email_address' => 'nullable|string|min:1|max:100'
         ];
 
         $this->validate($request, $validateFields);
