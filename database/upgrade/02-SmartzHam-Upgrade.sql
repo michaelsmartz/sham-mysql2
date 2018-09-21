@@ -2050,3 +2050,7 @@ ALTER TABLE `system_modules` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_
 ALTER TABLE `system_modules` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE `system_modules` ADD `deleted_at` DATETIME NULL;
 
+ALTER TABLE `asset_conditions` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `asset_conditions` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `asset_conditions` ADD `deleted_at` DATETIME NULL;
+ALTER TABLE `asset_conditions` ADD `is_system_predefined` TINYINT(1) NOT NULL DEFAULT '0' AFTER `deleted_at`;

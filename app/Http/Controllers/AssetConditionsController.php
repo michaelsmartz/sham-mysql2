@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\ShamUserProfile;
+use App\AssetCondition;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class ShamUserProfilesController extends CustomController
+class AssetConditionsController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -18,24 +18,24 @@ class ShamUserProfilesController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new ShamUserProfile();
-        $this->baseViewPath = 'sham_user_profiles';
-        $this->baseFlash = 'Sham User Profile details ';
+        $this->contextObj = new AssetCondition();
+        $this->baseViewPath = 'asset_conditions';
+        $this->baseFlash = 'Asset Condition details ';
     }
 
     /**
-     * Display a listing of the sham user profiles.
+     * Display a listing of the asset conditions.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $shamUserProfiles = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('shamUserProfiles'));
+        $assetConditions = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('assetConditions'));
     }
 
     /**
-     * Store a new sham user profile in the storage.
+     * Store a new asset condition in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -67,7 +67,7 @@ class ShamUserProfilesController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $id = Route::current()->parameter('sham_user_profile');
+        $id = Route::current()->parameter('asset_condition');
         $data = $this->contextObj->findData($id);
 
         if($request->ajax()) {
@@ -83,7 +83,7 @@ class ShamUserProfilesController extends CustomController
     }
 
     /**
-     * Update the specified sham user profile in the storage.
+     * Update the specified asset condition in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -109,7 +109,7 @@ class ShamUserProfilesController extends CustomController
     }
 
     /**
-     * Remove the specified sham user profile from the storage.
+     * Remove the specified asset condition from the storage.
      *
      * @param  int $id
      *
@@ -118,7 +118,7 @@ class ShamUserProfilesController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('sham_user_profile');
+            $id = Route::current()->parameter('asset_condition');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -130,18 +130,21 @@ class ShamUserProfilesController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
 
+
     /**
      * Validate the given request with the defined rules.
      *
-     * @param Request $request
+     * @param  Request $request
+     *
+     * @return boolean
      */
     protected function validator(Request $request)
     {
         $validateFields = [
-            'name' => 'required|string|min:1|max:50',
-            'description' => 'required|string|min:1|max:100'
+            'description' => 'required|string|min:0|max:100',
         ];
 
         $this->validate($request, $validateFields);
     }
+    
 }

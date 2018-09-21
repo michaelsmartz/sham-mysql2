@@ -205,6 +205,9 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_EMPLOYEE_DATABASE]))
                 <li class="{{ (Request::is('branches/*') || Request::is('branches') ? 'active' : '') }}"><a href="{{URL::to('/')}}/branches">Employees</a></li>
             @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
+                <li> <a href="{{URL::to('/')}}/asset_conditions">Assets Allocation</a></li>
+            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_LIFECYCLE_MANAGEMENT]))
                 <li> <a href="{{URL::to('/')}}/violations">Timeline</a></li>
             @endif
