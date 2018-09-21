@@ -1,6 +1,11 @@
 @extends('portal-index')
 @section('title','Companies')
 @section('content')
+    <br>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">Company</a></li>
+        <li><a href="{{URL::to('/')}}/report_templates">Report Templates</a></li>
+    </ul>
     <div class="flex-wrapper">
         <div id="table-container">
             @if(count($companies) > 0)
@@ -19,7 +24,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">name</th>
+                            <th data-sortable="true">name</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>

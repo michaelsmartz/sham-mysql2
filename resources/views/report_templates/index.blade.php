@@ -1,6 +1,11 @@
 @extends('portal-index')
 @section('title','Report Templates')
 @section('content')
+    <br>
+    <ul class="nav nav-tabs">
+        <li><a href="{{URL::to('/')}}/companies">Company</a></li>
+        <li class="active"><a href="#">Report Templates</a></li>
+    </ul>
     <div class="flex-wrapper">
         <div id="table-container">
             @if(count($reportTemplates) > 0)

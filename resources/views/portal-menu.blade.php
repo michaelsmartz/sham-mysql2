@@ -240,22 +240,10 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_EVALUATIONS]))
                 <li> <a href="{{URL::to('/')}}/category_question_types">Quality Assurance</a></li>
             @endif
-
-            <li class="has-sub">
-                <a href="javascript:;">Others <b class="caret pull-right"></b><span></span></a>
-                <ul class="sub-menu">
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_COMPANY]))
-                        <li><a href="{{URL::to('/companies')}}">Company</a></li>
-                    @endif
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_REPORT_TEMPLATES]))
-                        <li><a href="{{URL::to('/report_templates')}}">Report Templates</a></li>
-                    @endif
-                    @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
-                        <li class="{{ (Request::is('systemsubmodules') || Request::is('shamusers') || Request::is('shampermissions') || Request::is('shamuserprofiles') ? 'active' : '') }}"><a data-menu-href="{{URL::to('/')}}/systemsubmodules {{URL::to('/')}}/shamusers {{URL::to('/')}}/shampermissions {{URL::to('/')}}/shamuserprofiles"
-                               href="{{URL::to('/systemmodules')}}">System Configuration</a></li>
-                    @endif
-                </ul>
-            </li>
+                @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
+                <li> <a href="{{URL::to('/')}}/sham_users">System Configuration</a></li>
+            @endif
+                <li> <a href="{{URL::to('/')}}/companies">Others</a></li>
         </ul>
     </li>
 @endif

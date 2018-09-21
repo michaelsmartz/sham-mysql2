@@ -1,6 +1,11 @@
 @extends('portal-index')
 @section('title','Sham User Profiles')
 @section('content')
+    <br>
+    <ul class="nav nav-tabs">
+        <li><a href="{{URL::to('/')}}/sham_users">Users</a></li>
+        <li class="active"><a href="#">User Profiles</a></li>
+    </ul>
     <div class="flex-wrapper">
         <div id="table-container">
             @if(count($shamUserProfiles) > 0)
