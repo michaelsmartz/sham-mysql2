@@ -81,3 +81,6 @@ ALTER TABLE `sham_user_profiles` DROP `is_active`;
 
 UPDATE `asset_conditions` SET `deleted_at`= now() WHERE `is_active` = 0;
 ALTER TABLE `asset_conditions` DROP `is_active`;
+
+UPDATE `violations` SET `deleted_at`= now() WHERE `ia_active` = 0;
+ALTER TABLE `violations` DROP `ia_active`;

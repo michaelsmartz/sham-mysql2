@@ -98,6 +98,7 @@ Auth::routes();
             Route::resource('sham_user_profiles', 'ShamUserProfilesController');
             Route::resource('sham_users', 'ShamUsersController');
             Route::resource('asset_conditions', 'AssetConditionsController');
+            Route::resource('violations', 'ViolationsController');
         #endregion
 
         #region E-Learning

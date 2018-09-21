@@ -243,5 +243,9 @@
     {
         "model-name": "AssetCondition",
         "resource-file": "asset_conditions.json"
+    },
+    {
+        "model-name": "Violation",
+        "resource-file": "violations.json"
     }
 ]
