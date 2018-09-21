@@ -126,5 +126,3 @@ class ShamUserProfile extends Model
     protected static $subModuleId = SystemSubModule::CONST_SYSTEM_CONFIGURATION;
 }
 ?>
-
-}
