@@ -41,7 +41,8 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Start Time</th>
+                                                        <th data-sortable="true">Description</th>
+                            <th data-sortable="true">Start Time</th>
                             <th data-sortable="true">End Time</th>
                             <th data-sortable="true">Time Period Type</th>
 
@@ -51,7 +52,8 @@
                     <tbody>
                         @foreach($timePeriods as $timePeriod)
                         <tr id="tr{{$timePeriod->id}}">
-                                                        <td>{{ $timePeriod->start_time }}</td>
+                                                        <td>{{ $timePeriod->description }}</td>
+                            <td>{{ $timePeriod->start_time }}</td>
                             <td>{{ $timePeriod->end_time }}</td>
                             <td>{{ $timePeriod->time_period_type }}</td>
 
