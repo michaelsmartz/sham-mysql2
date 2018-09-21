@@ -205,31 +205,8 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_EMPLOYEE_DATABASE]))
                 <li class="{{ (Request::is('branches/*') || Request::is('branches') ? 'active' : '') }}"><a href="{{URL::to('/')}}/branches">Employees</a></li>
             @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
-                <li class="has-sub">
-                    <a href="javascript:;">
-                        <b class="caret pull-right"></b>
-                        <span>Assets Allocation</span>
-                    </a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_ASSET_CONDITION]))
-                            <li><a href="{{URL::to('/assetconditions')}}">Asset Condition</a></li>
-                        @endif
-                    </ul>
-                </li>
-            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_LIFECYCLE_MANAGEMENT]))
-                <li class="has-sub">
-                    <a href="javascript:;">Timeline <b class="caret pull-right"></b><span></span></a>
-                    <ul class="sub-menu">
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_DISCIPLINARYDECISIONS]))
-                            <li><a href="{{URL::to('/disciplinarydecisions')}}">Disciplinary Decisions</a></li>
-                        @endif
-                        @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_VIOLATION]))
-                            <li><a href="{{URL::to('/violations')}}">Violation</a></li>
-                        @endif
-                    </ul>
-                </li>
+                <li> <a href="{{URL::to('/')}}/violations">Timeline</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
                 <li class="{{ (Request::is('policy_categories/*') || Request::is('policy_categories') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/law_categories">Compliance</a></li>
