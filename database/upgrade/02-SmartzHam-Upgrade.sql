@@ -38,16 +38,16 @@ CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ;
 
 #--01 Alter addresses -- Ok
 ALTER TABLE `addresses` 
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP(),
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`;
 
 /*----Error 01 Users table not exist
 #--01 Alter users
 ALTER TABLE `users` 
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `RememberToken`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `RememberToken`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`;
 
 ALTER TABLE `users` 
 CHANGE COLUMN `RememberToken` `remember_token` VARCHAR(100) NULL DEFAULT NULL ;
@@ -55,9 +55,9 @@ CHANGE COLUMN `RememberToken` `remember_token` VARCHAR(100) NULL DEFAULT NULL ;
 ALTER TABLE `users` 
 CHANGE COLUMN `email` `email` VARCHAR(512) NULL DEFAULT NULL AFTER `Id`,
 CHANGE COLUMN `password` `password` VARCHAR(100) NULL DEFAULT NULL AFTER `email`,
-CHANGE COLUMN `created_at` `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `ShamUserProfileId`,
-CHANGE COLUMN `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-CHANGE COLUMN `deleted_at` `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `ShamUserProfileId`,
+CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`;
 ----*/
 			
 #--01 Alter employees -- Ok
@@ -1053,9 +1053,9 @@ CHANGE COLUMN `Name` `name` VARCHAR(1024) NOT NULL ,
 CHANGE COLUMN `Description` `description` VARCHAR(1024) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
 CHANGE COLUMN `PassmarkPercentage` `passmark_percentage` DOUBLE NULL DEFAULT NULL ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `passmark_percentage`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `passmark_percentage`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 #--02 Alter AssessmentCategories --Ok
 ALTER TABLE `assessmentcategories` 
@@ -1066,9 +1066,9 @@ CHANGE COLUMN `ELearningModule` `eLearning_module` VARCHAR(100) NOT NULL ,
 CHANGE COLUMN `Threshold` `threshold` INT(11) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
 CHANGE COLUMN `PassmarkPercentage` `passmark_percentage` DOUBLE NULL DEFAULT NULL ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `passmark_percentage`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `passmark_percentage`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 ALTER TABLE `assessmentcategories` 
 RENAME TO  `assessment_categories` ;
@@ -1109,9 +1109,9 @@ CHANGE COLUMN `Description` `description` VARCHAR(1024) NULL DEFAULT NULL ,
 CHANGE COLUMN `Points` `points` INT(11) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
 CHANGE COLUMN `ZeroMark` `is_zeromark` TINYINT(1) NULL DEFAULT NULL ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_zeromark`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_zeromark`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
   
 ALTER TABLE `categoryquestions` 
 RENAME TO  `category_questions` ;
@@ -1129,9 +1129,9 @@ CHANGE COLUMN `CategoryQuestionId` `categoryquestion_id` INT(11) NOT NULL ,
 CHANGE COLUMN `ChoiceText` `choicetext` LONGTEXT NOT NULL ,
 CHANGE COLUMN `Points` `points` INT(11) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
   
 ALTER TABLE `categoryquestionchoices` 
 RENAME TO  `category_question_choices` ;
@@ -1141,9 +1141,9 @@ ALTER TABLE `categoryquestiontypes`
 CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
 CHANGE COLUMN `Description` `description` VARCHAR(100) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 ALTER TABLE `categoryquestiontypes` 
 RENAME TO  `category_question_types` ;
@@ -1153,9 +1153,9 @@ ALTER TABLE `productcategories`
 CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
 CHANGE COLUMN `Description` `description` VARCHAR(256) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '0' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 ALTER TABLE `productcategories` 
 RENAME TO  `product_categories` ;
@@ -1165,9 +1165,9 @@ ALTER TABLE `evaluationstatuses`
 CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
 CHANGE COLUMN `Description` `description` VARCHAR(100) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 ALTER TABLE `evaluationstatuses` 
 RENAME TO  `evaluation_statuses` ;
@@ -1189,9 +1189,9 @@ CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
 CHANGE COLUMN `AssessmentCategoryId` `assessmentcategory_id` INT(11) NOT NULL ,
 CHANGE COLUMN `CategoryQuestionId` `categoryquestion_id` INT(11) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 ALTER TABLE `assessmentcategory_categoryquestion` 
 RENAME TO  `assessment_category_category_question` ;
@@ -1234,9 +1234,9 @@ CHANGE COLUMN `CreatedByEmployeeId` `createdbyemployee_id` INT(11) NULL DEFAULT 
 CHANGE COLUMN `OriginalFileName` `originalfilename` VARCHAR(256) NULL DEFAULT NULL ,
 CHANGE COLUMN `UseContent` `is_usecontent` TINYINT(1) NULL DEFAULT NULL ,
 CHANGE COLUMN `UrlPath` `urlpath` VARCHAR(256) NULL DEFAULT NULL ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `urlpath`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `urlpath`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 #--11 ALter 'EvaluationAssessors' table --Ok  
 ALTER TABLE `evaluationassessors` 
@@ -1258,9 +1258,9 @@ CHANGE COLUMN `StartTime` `starttime` DATETIME(6) NULL DEFAULT NULL ,
 CHANGE COLUMN `EndTime` `endtime` DATETIME(6) NULL DEFAULT NULL ,
 CHANGE COLUMN `Duration` `duration` INT(11) NULL DEFAULT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 ALTER TABLE `evaluationassessors` 
 RENAME TO  `evaluation_assessors` ;
@@ -1291,9 +1291,9 @@ CHANGE COLUMN `CategoryQuestionId` `categoryquestion_id` INT(11) NOT NULL ,
 CHANGE COLUMN `Content` `content` LONGTEXT NOT NULL ,
 CHANGE COLUMN `Points` `points` INT(11) NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
   
 ALTER TABLE `evaluationresults` 
 RENAME TO  `evaluation_results` ;
@@ -1447,9 +1447,9 @@ CHANGE COLUMN `Title` `title` VARCHAR(50) NOT NULL ,
 CHANGE COLUMN `Description` `description` VARCHAR(100) NOT NULL ,
 CHANGE COLUMN `Data` `sata` LONGTEXT NOT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
 
 #---- historydepartments
 ALTER TABLE `historydepartments` 
@@ -1916,7 +1916,7 @@ CHANGE COLUMN `PushNotify` `push_notify` TINYINT(1) NOT NULL DEFAULT '1' ,
 CHANGE COLUMN `SilenceStart` `silence_start` TIME(6) NULL DEFAULT NULL ,
 CHANGE COLUMN `SilenceEnd` `silence_end` TIME(6) NULL DEFAULT NULL ,
 CHANGE COLUMN `EmployeeId` `employee_id` INT(11) NULL DEFAULT NULL ,
-CHANGE COLUMN `DateCreated` `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+CHANGE COLUMN `DateCreated` `date_created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
 CHANGE COLUMN `RememberToken` `remember_token` VARCHAR(100) NULL DEFAULT NULL ,
 ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `remember_token`,
@@ -1973,22 +1973,22 @@ RENAME TO  `shamuserprofile_shampermission` ;
 
 #--- asset_groups
 ALTER TABLE `asset_groups` 
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`;
 
 #---- assets
 ALTER TABLE `assets` 
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`;
 
 #---Added on 20-09-2018
 
 ALTER TABLE `laws` 
-ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
-ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
-ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`;
 
 ALTER TABLE `announcement_statuses` 
 ADD COLUMN `is_system_predefined` TINYINT(1) NOT NULL DEFAULT 1 AFTER `description`;
