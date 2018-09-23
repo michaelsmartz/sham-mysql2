@@ -36,7 +36,7 @@
         },
         {
             "name": "name",
-            "labels": "name",
+            "labels": "Name",
             "html-type": "text",
             "css-class": "",
             "options": {},

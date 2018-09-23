@@ -41,7 +41,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">name</th>
+                            <th data-sortable="true">Name</th>
                             <th data-sortable="true">Start</th>
                             <th data-sortable="true">End</th>
 

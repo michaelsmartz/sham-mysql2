@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Assessment Types')
+@section('title','E-learning')
 @section('content')
     <br>
     <ul class="nav nav-tabs">

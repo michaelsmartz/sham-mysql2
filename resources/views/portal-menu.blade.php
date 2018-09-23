@@ -215,10 +215,20 @@
                 <li class="{{ (Request::is('policy_categories/*') || Request::is('policy_categories') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/law_categories">Compliance</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING]))
-                <li> <a href="{{URL::to('/')}}/assessment_types">E-learning</a></li>
+                <li class="{{ (Request::is('learning_material_types/*') ||
+                               Request::is('learning_material_types') ||
+                               Request::is('training_delivery_methods/*') ||
+                               Request::is('training_delivery_methods')
+                               ? 'active' : '')
+                           }}"
+                >
+                    <a href="{{URL::to('/')}}/assessment_types">E-learning</a>
+                </li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_EVALUATIONS]))
-                <li> <a href="{{URL::to('/')}}/category_question_types">Quality Assurance</a></li>
+                <li>
+                    <a href="{{URL::to('/')}}/category_question_types">Quality Assurance</a>
+                </li>
             @endif
                 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
                 <li> <a href="{{URL::to('/')}}/sham_users">System Configuration</a></li>
