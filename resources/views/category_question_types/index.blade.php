@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Category Question Types')
+@section('title','Quality Assurance')
 @section('content')
     <br>
     <ul class="nav nav-tabs">

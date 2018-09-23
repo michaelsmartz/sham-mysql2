@@ -226,7 +226,11 @@
                 </li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_EVALUATIONS]))
-                <li>
+                <li class="{{ (Request::is('product_categories/*') ||
+                               Request::is('product_categories')
+                               ? 'active' : '')
+                           }}"
+                >
                     <a href="{{URL::to('/')}}/category_question_types">Quality Assurance</a>
                 </li>
             @endif
