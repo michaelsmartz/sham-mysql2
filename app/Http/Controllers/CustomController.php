@@ -12,13 +12,22 @@ use Illuminate\Http\Request;
 
 class CustomController extends Controller
 {
-    public $contextObj;
-    public $baseFlash;
-    public $baseViewPath;
+    protected $contextObj;
+    protected $baseFlash;
+    protected $baseViewPath;
+    protected $request;
+    protected $id = false;
 
-    public function storePreviousUrl($request) {
-        $request->session()->put('url.intended',url()->previous());
-    }
+    // child class properties
+	protected $model = ''; // e.g. 'App\Product'
+	protected $fields = [];
+	protected $intermediaries = []; // e.g. ['tags' => ['save' => false, 'destroy' => true]]
+	protected $objectLang = ''; // e.g. 'product'
+	protected $redirectAfter = [
+		'store' => '', // e.g. 'products.show'
+		'update' => '',
+		'destroy' => '',
+	];
 
     /**
      * Show the form for creating a new resource.
@@ -51,11 +60,6 @@ class CustomController extends Controller
             ]);
         }
         return view($this->baseViewPath . '.edit', compact('data'));
-    }
-
-    public function redirectTo(Request $request)
-    {
-        return redirect($request->session()->get('url.intended'));
     }
 
 }

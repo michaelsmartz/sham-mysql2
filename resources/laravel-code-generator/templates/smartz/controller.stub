@@ -82,7 +82,7 @@ class [% controller_name %] [% controller_extends %]
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return redirect()->back();
     }
 
     /**
@@ -104,7 +104,7 @@ class [% controller_name %] [% controller_extends %]
             \Session::put('error', 'could not delete '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->back();
     }
     [% affirm_method %]
     [% upload_method %]

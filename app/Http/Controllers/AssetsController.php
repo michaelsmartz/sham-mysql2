@@ -8,7 +8,10 @@ use App\AssetSupplier;
 use App\AssetCondition;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
+use Exception;
 
 class AssetsController extends CustomController
 {
@@ -20,7 +23,7 @@ class AssetsController extends CustomController
     public function __construct()
     {
         $this->contextObj = new Asset();
-        $this->baseViewPath = 'asset';
+        $this->baseViewPath = 'assets';
         $this->baseFlash = 'Asset details ';
     }
 
@@ -36,6 +39,20 @@ class AssetsController extends CustomController
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $assetGroups = AssetGroup::pluck('name','id')->all();
+        $assetSuppliers = AssetSupplier::pluck('description','id')->all();
+        $assetConditions = AssetCondition::pluck('description','id')->all();
+
+        return view($this->baseViewPath . '.create', compact('data','assetGroups','assetSuppliers','assetConditions'));
+    }
+
+    /**
      * Store a new asset in the storage.
      *
      * @param Illuminate\Http\Request $request
@@ -44,15 +61,52 @@ class AssetsController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token'));
 
-        $this->contextObj->addData($input);
+            $this->contextObj->addData($input);
 
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request)
+    {
+        $data = $assetGroups = $assetSuppliers = $assetConditions = null;
+        $id = Route::current()->parameter('asset');
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+            $assetGroups = AssetGroup::pluck('name','id')->all();
+            $assetSuppliers = AssetSupplier::pluck('description','id')->all();
+            $assetConditions = AssetCondition::pluck('description','id')->all();
+        }
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data','assetGroups','assetSuppliers','assetConditions'))
+                    ->renderSections();
+
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.edit', compact('data','assetGroups','assetSuppliers','assetConditions'));
     }
 
     /**
@@ -65,13 +119,18 @@ class AssetsController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
+            $input = array_except($request->all(),array('_token','_method'));
 
-        $this->contextObj->updateData($id, $input);
+            $this->contextObj->updateData($id, $input);
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');       
     }
@@ -83,42 +142,20 @@ class AssetsController extends CustomController
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $this->contextObj->destroyData($id);
+        try {
+            $id = Route::current()->parameter('asset');
+            $this->contextObj->destroyData($id);
 
-        \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not delete '. $this->baseFlash . '!');
+        }
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-        
-    /**
-     * Validate the given request with the defined rules.
-     *
-     * @param  Request $request
-     *
-     * @return boolean
-     */
-    protected function validator(Request $request)
-    {
-        $validateFields = [
-            'name' => 'required|string|min:1|max:100',
-            'asset_group_id' => 'required',
-            'asset_supplier_id' => 'required',
-            'tag' => 'required|string|min:1|max:50',
-            'serial_no' => 'required|string|min:1|max:20',
-            'purchase_price' => 'required|numeric|min:-1.0E+15|max:1.0E+15',
-            'po_number' => 'required|numeric|string|min:1|max:20',
-            'warranty_expiry_date' => 'required|date_format:j/n/Y',
-            'asset_condition_id' => 'required',
-            'comments' => 'required|string|min:1|max:256',
-            'is_available' => 'boolean|nullable',
-     
-        ];
-        
-
-        $this->validate($request, $validateFields);
-    }
-
+    
     
 }

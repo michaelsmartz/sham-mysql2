@@ -129,7 +129,7 @@ class PoliciesController extends CustomController
             \Session::put('error', 'Could not update ' . $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return redirect()->back();
     }
 
     /**
@@ -151,7 +151,7 @@ class PoliciesController extends CustomController
             \Session::put('error', 'Could not delete ' .$this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->back();
     }
         
     /**
@@ -164,7 +164,7 @@ class PoliciesController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-                    'title' => 'required|string|min:1|max:100',
+            'title' => 'required|string|min:1|max:100',
             'content' => 'required|string|min:1|max:4294967295',
             'policy_category_id' => 'nullable',
             'expires_on' => 'nullable|string|min:0',

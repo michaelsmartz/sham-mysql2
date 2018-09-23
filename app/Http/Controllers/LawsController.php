@@ -36,6 +36,11 @@ class LawsController extends CustomController
     public function index()
     {
         $laws = $this->contextObj::with(['country','lawCategory'])->filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($laws->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('laws'));
     }
 
@@ -62,7 +67,7 @@ class LawsController extends CustomController
     public function store(Request $request)
     {
         try{
-            $this->storePreviousUrl($request);
+
             $this->validator($request);
 
             $input = array_except($request->all(),array('_token'));
@@ -187,7 +192,5 @@ class LawsController extends CustomController
 
         $this->validate($request, $validateFields);
     }
-
-
     
 }
