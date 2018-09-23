@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Sham Users')
+@section('title','System Configuration')
 @section('content')
     <br>
     <ul class="nav nav-tabs">

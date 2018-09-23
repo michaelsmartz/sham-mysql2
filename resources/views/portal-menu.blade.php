@@ -203,7 +203,45 @@
         </a>
         <ul class="sub-menu">
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_EMPLOYEE_DATABASE]))
-                <li class="{{ (Request::is('branches/*') || Request::is('branches') ? 'active' : '') }}"><a href="{{URL::to('/')}}/branches">Employees</a></li>
+                <li class="{{ (Request::is('countries/*') ||
+                               Request::is('countries') ||
+                               Request::is('departments/*') ||
+                               Request::is('departments') ||
+                               Request::is('divisions/*') ||
+                               Request::is('divisions') ||
+                               Request::is('employee_attachment_types/*') ||
+                               Request::is('employee_attachment_types') ||
+                               Request::is('employee_statuses/*') ||
+                               Request::is('employee_statuses') ||
+                               Request::is('ethnic_groups/*') ||
+                               Request::is('ethnic_groups') ||
+                               Request::is('genders/*') ||
+                               Request::is('genders') ||
+                               Request::is('immigration_statuses/*') ||
+                               Request::is('immigration_statuses') ||
+                               Request::is('job_titles/*') ||
+                               Request::is('job_titles') ||
+                               Request::is('languages/*') ||
+                               Request::is('languages') ||
+                               Request::is('marital_statuses/*') ||
+                               Request::is('marital_statuses') ||
+                               Request::is('skills/*') ||
+                               Request::is('skills') ||
+                               Request::is('tax_statuses/*') ||
+                               Request::is('tax_statuses') ||
+                               Request::is('teams/*') ||
+                               Request::is('teams') ||
+                               Request::is('time_groups/*') ||
+                               Request::is('time_groups') ||
+                               Request::is('time_periods/*') ||
+                               Request::is('time_periods') ||
+                               Request::is('titles/*') ||
+                               Request::is('titles')
+                               ? 'active' : '')
+                           }}"
+                >
+                    <a href="{{URL::to('/')}}/branches">Employees</a>
+                </li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
                 <li> <a href="{{URL::to('/')}}/asset_conditions">Assets Allocation</a></li>
@@ -235,7 +273,11 @@
                 </li>
             @endif
                 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
-                <li> <a href="{{URL::to('/')}}/sham_users">System Configuration</a></li>
+                <li class="{{ (Request::is('sham_user_profiles/*') ||
+                               Request::is('sham_user_profiles')
+                               ? 'active' : '')
+                           }}"
+                > <a href="{{URL::to('/')}}/sham_users">System Configuration</a></li>
             @endif
                 <li class="{{ (Request::is('report_templates/*') ||
                                Request::is('report_templates')

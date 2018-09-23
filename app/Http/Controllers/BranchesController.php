@@ -143,8 +143,7 @@ class BranchesController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'description' => 'string|min:0|max:50|nullable',
-            'name' => 'string|min:0|max:50|nullable',
+            'description' => 'required|string|min:0|max:50'
         ];
 
         $this->validate($request, $validateFields);
