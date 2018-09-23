@@ -84,3 +84,12 @@ ALTER TABLE `asset_conditions` DROP `is_active`;
 
 UPDATE `violations` SET `deleted_at`= now() WHERE `ia_active` = 0;
 ALTER TABLE `violations` DROP `ia_active`;
+
+UPDATE `genders` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `genders` DROP `is_active`;
+
+UPDATE `maritalstatuses` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `maritalstatuses` DROP `is_active`;
+
+UPDATE `titles` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `titles` DROP `is_active`;

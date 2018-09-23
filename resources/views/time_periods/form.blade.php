@@ -2,19 +2,19 @@
     
 <div class="form-group col-xs-12 {{ $errors->has('description') ? 'has-error' : '' }}">
     <label for="description">Description</label>
-        <input class="form-control" name="description" type="text" id="description" value="{{ old('description', optional($timePeriod)->description) }}" minlength="1" maxlength="50" placeholder="Enter description">
+        <input class="form-control" name="description" type="text" id="description" value="{{ old('description', optional($timePeriod)->description) }}" minlength="1" maxlength="50" required="true" placeholder="Enter description">
         {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('start_time') ? 'has-error' : '' }}">
     <label for="start_time">Start Time</label>
-        <input class="form-control" name="start_time" type="text" id="start_time" value="{{ old('start_time', optional($timePeriod)->start_time) }}" minlength="1" placeholder="Enter start time">
+        <input class="form-control" name="start_time" type="text" id="start_time" value="{{ old('start_time', optional($timePeriod)->start_time) }}" minlength="1" required="true" placeholder="Enter start time">
         {!! $errors->first('start_time', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('end_time') ? 'has-error' : '' }}">
     <label for="end_time">End Time</label>
-        <input class="form-control" name="end_time" type="text" id="end_time" value="{{ old('end_time', optional($timePeriod)->end_time) }}" minlength="1" placeholder="Enter end time">
+        <input class="form-control" name="end_time" type="text" id="end_time" value="{{ old('end_time', optional($timePeriod)->end_time) }}" minlength="1" required="true" placeholder="Enter end time">
         {!! $errors->first('end_time', '<p class="help-block">:message</p>') !!}
 </div>
 

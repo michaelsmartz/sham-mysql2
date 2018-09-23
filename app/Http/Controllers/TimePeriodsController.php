@@ -138,7 +138,9 @@ class TimePeriodsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'description' => 'required|string|min:1|max:100'
+            'description' => 'required|string|min:1|max:100',
+            'start_time' => 'required|string|min:1',
+            'end_time' => 'required|string|min:1',
         ];
 
         $this->validate($request, $validateFields);

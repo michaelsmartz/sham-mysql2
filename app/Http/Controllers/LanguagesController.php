@@ -140,7 +140,7 @@ class LanguagesController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'description' => 'string|min:0|max:50|nullable',
+            'description' => 'required|string|min:0|max:50',
             'is_preferred' => 'nullable|boolean',
         ];
 
