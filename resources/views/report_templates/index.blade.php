@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Report Templates')
+@section('title','Others')
 @section('content')
     <br>
     <ul class="nav nav-tabs">

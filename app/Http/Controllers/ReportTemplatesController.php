@@ -146,7 +146,7 @@ class ReportTemplatesController extends CustomController
     {
         $validateFields = [
             'source' => 'required|string|min:0|max:200',
-            'title' => 'required|string|min:0|max:100',
+            'title' => 'nullable|string|min:0|max:100',
             'system_module_id' => 'nullable'
         ];
 

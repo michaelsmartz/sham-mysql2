@@ -237,7 +237,11 @@
                 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
                 <li> <a href="{{URL::to('/')}}/sham_users">System Configuration</a></li>
             @endif
-                <li> <a href="{{URL::to('/')}}/companies">Others</a></li>
+                <li class="{{ (Request::is('report_templates/*') ||
+                               Request::is('report_templates')
+                               ? 'active' : '')
+                           }}"
+                > <a href="{{URL::to('/')}}/companies">Others</a></li>
         </ul>
     </li>
 @endif
