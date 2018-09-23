@@ -145,9 +145,9 @@ class ShamUsersController extends CustomController
     {
         $validateFields = [
             'username' => 'required|string|min:1|max:100',
-            'password' => 'required|string|min:1|max:100',
-            'email_address' => 'required|string|min:1|max:512',
-            'cell_number' => 'required|string|min:1|max:20',
+            'password' => 'nullable|string|min:1|max:100',
+            'email_address' => 'nullable|string|min:1|max:512',
+            'cell_number' => 'nullable|string|min:1|max:20',
             'silence_start' => 'nullable',
             'silence_end' => 'nullable',
         ];

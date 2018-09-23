@@ -2,7 +2,7 @@
     
 <div class="form-group col-xs-12 {{ $errors->has('username') ? 'has-error' : '' }}">
     <label for="username">Username</label>
-        <input class="form-control" name="username" type="text" id="username" value="{{ old('username', optional($shamUser)->username) }}" minlength="1" placeholder="Enter username">
+        <input class="form-control" name="username" type="text" id="username" value="{{ old('username', optional($shamUser)->username) }}" minlength="1" maxlength="100" required="true" placeholder="Enter username">
         {!! $errors->first('username', '<p class="help-block">:message</p>') !!}
 </div>
 
@@ -40,7 +40,7 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('employee_id') ? 'has-error' : '' }}">
     <label for="employee_id">Employee</label>
-        <select class="form-control" id="employee_id" name="employee_id" required="true">
+        <select class="form-control" id="employee_id" name="employee_id">
         	    <option value="" style="display: none;" {{ old('employee_id', optional($shamUser)->employee_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select Employee</option>
         	@foreach ($employee_ids as $key => $employee_id)
 			    <option value="{{ $key }}" {{ old('employee_id', optional($shamUser)->employee_id) == $key ? 'selected' : '' }}>
