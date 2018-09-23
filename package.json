@@ -48,6 +48,7 @@
     "jquery": "^2.2.4",
     "jquery-asAccordion": "^0.2.2",
     "jquery-ui": "^1.12.1",
+    "jquery-ui-timepicker-addon": "^1.6.3",
     "jspdf": "^1.4.1",
     "jspdf-autotable": "^2.3.4",
     "light-modal": "^1.1.0",

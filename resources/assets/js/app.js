@@ -7,6 +7,7 @@ import droppable from 'jquery-ui/ui/widgets/droppable';
 import resizable from 'jquery-ui/ui/widgets/resizable';
 import sortable from 'jquery-ui/ui/widgets/sortable';
 import datepicker from 'jquery-ui/ui/widgets/datepicker';
+import timepicker from 'jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon';
 
 window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
 $.ajaxSetup({
@@ -26,6 +27,14 @@ $(function() {
                 minDate: $(this).data('minDate') || null
             }).prop('readonly', 'true');
         }
+    });
+
+    $("body").delegate("input.timepicker", "focusin", function () {
+        $(this).timepicker({
+            hourGrid: 3,
+            minuteGrid: 10,
+            timeInput: false,
+        }).prop('readonly', 'true');
     });
 });
 $.fn.clickToggle = function (f1, f2) {
