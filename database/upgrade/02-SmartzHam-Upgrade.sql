@@ -2150,6 +2150,7 @@ CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
 CHANGE COLUMN `CourseId` `course_id` INT(11) NOT NULL ,
 CHANGE COLUMN `ModuleId` `module_id` INT(11) NOT NULL ;
 
+#---- Asset suppliers
 ALTER TABLE `shamdev`.`assetsuppliers`
 ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
 ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
@@ -2165,3 +2166,9 @@ CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ;
 ALTER TABLE `shamdev`.`assetsuppliers`
 RENAME TO  `shamdev`.`asset_suppliers` ;
 
+#---- category_questions
+ALTER TABLE `shamdev`.`category_questions`
+DROP FOREIGN KEY `FK_CategoryQuestions_CategoryQuestionTypes`;
+
+ALTER TABLE `shamdev`.`category_questions`
+CHANGE COLUMN `categoryquestiontype_Id` `category_question_type_id` INT(11) NOT NULL ;

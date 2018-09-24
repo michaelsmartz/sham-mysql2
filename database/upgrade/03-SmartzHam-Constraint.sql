@@ -934,3 +934,12 @@ ADD CONSTRAINT `FK_CourseModules_Module`
   REFERENCES `shamdev`.`modules` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+
+#---- category_questions
+ALTER TABLE `shamdev`.`category_questions`
+ADD CONSTRAINT `FK_CategoryQuestions_CategoryQuestionTypes`
+  FOREIGN KEY (`category_question_type_id`)
+  REFERENCES `shamdev`.`category_question_types` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
