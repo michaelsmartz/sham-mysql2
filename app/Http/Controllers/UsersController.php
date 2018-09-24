@@ -40,7 +40,7 @@ class UsersController extends CustomController
 
     public function create() {
         $sham_user_profile_ids = ShamUserProfile::pluck('name', 'id');
-        $employee_ids = Employee::pluck('name', 'id');
+        $employee_ids = Employee::pluck('first_name, surname as full_name', 'id');
         return view($this->baseViewPath . '.create',compact('sham_user_profile_ids','employee_ids'));
     }
 
