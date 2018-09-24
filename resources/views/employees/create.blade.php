@@ -1,25 +1,7 @@
 @extends(Request::ajax()?'blank':'portal-index')
 @section('title', 'Add New Employee')
-@section('modalTitle', 'Add New Employee')
 
-@php
-    dump($errors);
-@endphp
-
-@section('modalHeader')
-    <form method="POST" action="{{ route('employees.store') }}" accept-charset="UTF-8" id="create_employee_form" name="create_employee_form" class="form-horizontal">
-        {{ csrf_field() }}
-@endsection
-
-@section('modalFooter')
-    <input class="btn btn-primary pull-right" type="submit" value="Add">
-    <a href="{{ route('employees.index') }}" class="btn btn-default pull-right" title="Show all Employees">
-        <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-    </a>
-</form>
-@endsection
-
-@section('modalContent')
+@section('content')
     <form method="POST" action="{{ route('employees.store') }}" accept-charset="UTF-8" id="create_employee_form" name="create_employee_form" data-parsley-validate="">
         {{ csrf_field() }}
         <div class="row">
@@ -30,16 +12,13 @@
                 ])
             </div>
         </div>
-        @if(!Request::ajax())
         <div class="box-footer">
-            @yield('modalFooter') 
+            <input class="btn btn-primary pull-right" type="submit" value="Add">
+            <a href="{{ route('employees.index') }}" class="btn btn-default pull-right" title="Show all Employees">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+            </a>
         </div>
-        @endif
     </form>
-@endsection
-
-@section('content')
-    @yield('modalContent') 
 @endsection
 
 @section('post-body')
