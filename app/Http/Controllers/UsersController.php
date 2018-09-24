@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
@@ -56,9 +57,13 @@ class UsersController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token'));
+            $password = ['password' => bcrypt($request->get('password'))];
 
-            $this->contextObj->addData($input);
+            $input = array_except($request->all(),array('_token','password'));
+
+            $newInput = array_merge($input, $password);
+
+            $this->contextObj->addData($newInput);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -108,9 +113,13 @@ class UsersController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token','_method'));
+            $password = ['password' => bcrypt($request->get('password'))];
 
-            $this->contextObj->updateData($id, $input);
+            $input = array_except($request->all(),array('_token','_method', 'password'));
+
+            $newInput = array_merge($input, $password);
+
+            $this->contextObj->updateData($id, $newInput);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
