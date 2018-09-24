@@ -60,15 +60,3 @@ window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-d
 window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
 
 window.asyncJS = global.asyncJS = asyncJS;
-
-//require('bootstrap-confirmation2/bootstrap-confirmation.js');
-
-//const elementReady = require('element-ready');
-/* 
-(async () => {
-    const element = await elementReady('#unicorn');
- 
-    console.log(element.id);
-    //=> 'unicorn'
-})();
-*/

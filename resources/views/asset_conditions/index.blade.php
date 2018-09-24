@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Asset Conditions')
+@section('title','Asset Allocation')
 @section('content')
     <div class="flex-wrapper">
         <div id="table-container">

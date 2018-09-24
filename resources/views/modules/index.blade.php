@@ -29,13 +29,13 @@
                     <tbody>
                         @foreach($modules as $module)
                         <tr id="tr{{$module->id}}">
-                                                        <td>{{ $module->description }}</td>
+                            <td>{{ $module->description }}</td>
                             <td>{{ $module->overview }}</td>
                             <td>{{ $module->objectives }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#modal-text" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$module->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$module->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
                                     <button type="submit" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$module->id}}')">

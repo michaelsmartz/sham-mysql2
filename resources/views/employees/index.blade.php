@@ -1,5 +1,6 @@
 @extends('portal-index')
 @section('title','Employees')
+@section('subtitle','Add, edit and remove employees of your company')
 @section('content')
     <div class="flex-wrapper">
         <div id="table-container">

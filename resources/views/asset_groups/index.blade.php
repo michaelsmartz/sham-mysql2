@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Asset Groups')
+@section('title','Asset Allocation')
 @section('subtitle','Allocate and manage your assets per groups, suppliers or employees')
 @section('content')
     <br>
