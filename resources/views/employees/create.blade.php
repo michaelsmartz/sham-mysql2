@@ -2,6 +2,10 @@
 @section('title', 'Add New Employee')
 @section('modalTitle', 'Add New Employee')
 
+@php
+    dump($errors);
+@endphp
+
 @section('modalHeader')
     <form method="POST" action="{{ route('employees.store') }}" accept-charset="UTF-8" id="create_employee_form" name="create_employee_form" class="form-horizontal">
         {{ csrf_field() }}

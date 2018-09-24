@@ -12408,6 +12408,7 @@ var app = new Vue({
             $("#birth_date,#TerminationDate,#JoinedDate").datepicker({
                 dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true
             });
+            $("#birth_date").datepicker("option", "yearRange", "-65:-18");
 
             $(':input[data-mirror]').each(function () {
                 $(this).mirror($(this).data('mirror'));
