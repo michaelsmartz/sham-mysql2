@@ -6,8 +6,8 @@ use BenSampo\Enum\Enum;
 
 final class TimePeriodType extends Enum
 {
-    const Shift = 0;
-    const Break = 1;
+    const Shift = 1;
+    const Break = 2;
 
     /**
      * Get the description for an enum value
