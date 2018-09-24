@@ -9,7 +9,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         @include('users.form', [
-                            'user' => null,
+                            'data' => null,
                         ])
                     </div>
                 </div>
