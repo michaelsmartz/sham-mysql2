@@ -83,8 +83,10 @@ class TimePeriodsController extends CustomController
         $id = Route::current()->parameter('time_period');
         $data = $this->contextObj->findData($id);
 
+        $timePeriods= TimePeriodType::ddList();
+
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data', 'timePeriods'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -92,7 +94,7 @@ class TimePeriodsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data'));
+        return view($this->baseViewPath . '.edit', compact('data', 'timePeriods'));
     }
 
     /**
