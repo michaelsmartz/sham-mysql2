@@ -37,7 +37,7 @@ class TeamsController extends CustomController
     }
 
     public function create() {
-        $time_groups = Timegroup::pluck('name', 'id');
+        $time_groups = TimeGroup::pluck('name', 'id');
         $products = Product::pluck('name', 'id');
         return view($this->baseViewPath . '.create',compact('time_groups', 'products'));
     }

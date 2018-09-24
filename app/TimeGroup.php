@@ -5,7 +5,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Timegroup extends Model
+class TimeGroup extends Model
 {
     
     use SoftDeletes;
@@ -18,12 +18,12 @@ class Timegroup extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
+                  'name',
                   'start',
                   'end'
               ];
 
-    public $searchable = ['description'];
+    public $searchable = ['name'];
 
     protected $table = 'time_groups';
 
