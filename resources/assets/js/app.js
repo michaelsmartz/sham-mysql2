@@ -8,6 +8,7 @@ import resizable from 'jquery-ui/ui/widgets/resizable';
 import sortable from 'jquery-ui/ui/widgets/sortable';
 import datepicker from 'jquery-ui/ui/widgets/datepicker';
 import timepicker from 'jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon';
+import sliderAccess from 'jquery-ui/ui/widgets/slider';
 
 window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
 $.ajaxSetup({
