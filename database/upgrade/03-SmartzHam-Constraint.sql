@@ -921,3 +921,16 @@ DROP INDEX `FK_Announcements_AnnouncementStatuses`;
 ALTER TABLE `announcements`
 CHANGE COLUMN `announcement_status_id` `announcement_status_id` ENUM('1', '2') NOT NULL DEFAULT '1' COMMENT '1 - Enabled, 2 - Disabled' ;
 
+#---- Added on 24/09/2018
+
+ALTER TABLE `shamdev`.`course_module`
+ADD CONSTRAINT `FK_CourseModules_Course`
+  FOREIGN KEY (`course_id`)
+  REFERENCES `shamdev`.`courses` (`Id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `FK_CourseModules_Module`
+  FOREIGN KEY (`module_id`)
+  REFERENCES `shamdev`.`modules` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;

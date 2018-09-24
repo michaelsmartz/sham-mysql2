@@ -2135,4 +2135,30 @@ CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 ALTER TABLE `shamdev`.`laws`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
-CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
+CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
+
+#---- Added on 24/09/2018
+ALTER TABLE `shamdev`.`course_module`
+DROP FOREIGN KEY `FK_CourseModules_Course`,
+DROP FOREIGN KEY `FK_CourseModules_Module`;
+
+ALTER TABLE `shamdev`.`course_module`
+CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
+CHANGE COLUMN `CourseId` `course_id` INT(11) NOT NULL ,
+CHANGE COLUMN `ModuleId` `module_id` INT(11) NOT NULL ;
+
+ALTER TABLE `shamdev`.`assetsuppliers`
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`,
+CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
+CHANGE COLUMN `Name` `name` VARCHAR(100) NOT NULL ,
+CHANGE COLUMN `Address1` `address1` VARCHAR(100) NULL DEFAULT NULL ,
+CHANGE COLUMN `Address2` `address2` VARCHAR(100) NULL DEFAULT NULL ,
+CHANGE COLUMN `Address3` `address3` VARCHAR(100) NULL DEFAULT NULL ,
+CHANGE COLUMN `Telephone` `telephone` VARCHAR(20) NULL DEFAULT NULL ,
+CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ;
+
+ALTER TABLE `shamdev`.`assetsuppliers`
+RENAME TO  `shamdev`.`asset_suppliers` ;
+
