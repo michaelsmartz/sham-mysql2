@@ -277,7 +277,7 @@
                                Request::is('sham_user_profiles')
                                ? 'active' : '')
                            }}"
-                > <a href="{{URL::to('/')}}/sham_users">System Configuration</a></li>
+                > <a href="{{URL::to('/')}}/users">System Configuration</a></li>
             @endif
                 <li class="{{ (Request::is('report_templates/*') ||
                                Request::is('report_templates')

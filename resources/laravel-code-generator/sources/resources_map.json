@@ -247,5 +247,9 @@
     {
         "model-name": "Violation",
         "resource-file": "violations.json"
+    },
+    {
+        "model-name": "User",
+        "resource-file": "users.json"
     }
 ]

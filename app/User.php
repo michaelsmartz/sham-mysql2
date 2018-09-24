@@ -2,15 +2,18 @@
 
 namespace App;
 
+use App\Traits\HasBaseModel;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use App\Events\UserAmended;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Jedrzej\Searchable\SearchableTrait;
+use San4io\EloquentFilter\Traits\Filterable;
 
 class User extends Authenticatable
 {
-    use SoftDeletes, Notifiable;
+    use SoftDeletes, Notifiable, HasBaseModel, SearchableTrait, Filterable;
 
     protected $dispatchesEvents = [
         'saved' => UserAmended::class,
@@ -24,8 +27,17 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','sham_user_profile_id'
+        'username',
+        'email',
+        'password',
+        'cell_number',
+        'sham_user_profile_id',
+        'silence_start',
+        'silence_end'
     ];
+
+
+    public $searchable = ['username', 'email_address'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -60,4 +72,11 @@ class User extends Authenticatable
 		return $retVal;
 
     }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class,'id','employee_id');
+    }
+
+
 }

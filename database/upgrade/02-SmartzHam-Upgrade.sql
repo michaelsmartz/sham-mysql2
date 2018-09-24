@@ -2136,3 +2136,5 @@ ALTER TABLE `shamdev`.`laws`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
+
+ALTER TABLE `users` CHANGE `Username` `username` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
