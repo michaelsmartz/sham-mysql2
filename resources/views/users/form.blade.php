@@ -37,7 +37,7 @@
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('sham_user_profile_id') ? 'has-error' : '' }}">
-    <label for="sham_user_profile_id">Sham User Profile</label>
+    <label for="sham_user_profile_id">User Profile</label>
         <select class="form-control" id="sham_user_profile_id" name="sham_user_profile_id" required="true">
         	    <option value="" style="display: none;" {{ old('sham_user_profile_id', optional($user)->sham_user_profile_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select Sham User Profile</option>
         	@foreach ($sham_user_profile_ids as $key => $sham_user_profile_id)

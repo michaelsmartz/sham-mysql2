@@ -340,7 +340,7 @@
                 "type": "belongsTo",
                 "params": [
                     "App\\ShamUserProfile",
-                    "ShamUserProfileId",
+                    "sham_user_profile_id",
                     "id"
                 ],
                 "field": "name"

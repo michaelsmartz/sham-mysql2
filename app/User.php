@@ -32,6 +32,7 @@ class User extends Authenticatable
         'password',
         'cell_number',
         'sham_user_profile_id',
+        'employee_id',
         'silence_start',
         'silence_end'
     ];
@@ -51,9 +52,8 @@ class User extends Authenticatable
     
     public function shamUserProfile()
     {
-        return $this->hasOne(ShamUserProfile::class, 'id', 'sham_user_profile_id');
+        return $this->hasOne('App\ShamUserProfile', 'id', 'sham_user_profile_id');
     }
-    
 
     public function getAuthorisedModules()
     {
@@ -75,7 +75,7 @@ class User extends Authenticatable
 
     public function employee()
     {
-        return $this->hasOne(Employee::class,'id','employee_id');
+        return $this->hasOne('App\Employee','id','employee_id');
     }
 
 

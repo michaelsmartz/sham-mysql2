@@ -1,11 +1,6 @@
 @extends('portal-index')
-@section('title','System Configuration')
+@section('title','Users')
 @section('content')
-    <br>
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#">Users</a></li>
-        <li><a href="{{URL::to('/')}}/sham_user_profiles">User Profiles</a></li>
-    </ul>
     <div class="flex-wrapper">
         <div id="table-container">
             @if(count($users) > 0)
