@@ -10,6 +10,7 @@
                     <div class="col-sm-12">
                         @include('time_groups.form', [
                             'timeGroup' => null,
+                            '_mode'=>'create'
                         ])
                     </div>
                 </div>

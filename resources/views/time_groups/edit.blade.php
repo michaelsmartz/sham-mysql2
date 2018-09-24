@@ -14,6 +14,7 @@
         <div class="col-sm-12">
             @include ('time_groups.form', [
                 'timeGroup' => $data,
+                '_mode'=>'edit'
             ])
         </div>
     </div>

@@ -41,9 +41,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                            <th data-sortable="true">Name</th>
-                            <th data-sortable="true">Start</th>
-                            <th data-sortable="true">End</th>
+                            <th data-sortable="true">Description</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -51,9 +49,7 @@
                     <tbody>
                         @foreach($timeGroups as $timeGroup)
                         <tr id="tr{{$timeGroup->id}}">
-                                                        <td>{{ $timeGroup->name }}</td>
-                            <td>{{ $timeGroup->start }}</td>
-                            <td>{{ $timeGroup->end }}</td>
+                            <td>{{ $timeGroup->name }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
