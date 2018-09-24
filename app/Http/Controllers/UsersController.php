@@ -77,11 +77,10 @@ class UsersController extends CustomController
     /**
      * Show the form for editing the specified resource.
      * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|Response|\Illuminate\View\View
      */
     public function edit(Request $request)
     {
-        $data = null;
         $id = Route::current()->parameter('user');
         $data = $this->contextObj->findData($id);
 

@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-sm-12">
             @include ('users.form', [
-                'user' => $data,
+                'data' => $data,
             ])
         </div>
     </div>
