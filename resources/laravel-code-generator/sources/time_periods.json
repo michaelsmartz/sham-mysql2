@@ -41,7 +41,7 @@
             "css-class": "",
             "options": {},
             "html-value": null,
-            "validation": "string|min:1|max:50",
+            "validation": "required|string|min:1|max:50",
             "is-on-index": true,
             "is-on-show": true,
             "is-on-form": true,
@@ -144,24 +144,23 @@
             "html-type": "select",
             "css-class": "",
             "options": {
-                "Shift": "Shift",
-                "Break": "Break"
+                "Shift": "1",
+                "Break": "2"
             },
             "html-value": null,
-            "validation": "",
+            "validation": "required",
             "is-on-index": true,
             "is-on-show": true,
             "is-on-form": true,
             "data-type": "enum",
             "data-type-params": [
-                "Shift",
-                "Break"
+                1
             ],
-            "data-value": null,
+            "data-value": 1,
             "is-index": false,
             "is-unique": false,
             "is-primary": false,
-            "comment": null,
+            "comment": "1 - Shift,2 - Break",
             "is-nullable": true,
             "is-header": false,
             "is-unsigned": false,

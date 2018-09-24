@@ -41,7 +41,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Description</th>
+                            <th data-sortable="true">Description</th>
                             <th data-sortable="true">Start Time</th>
                             <th data-sortable="true">End Time</th>
                             <th data-sortable="true">Time Period Type</th>
@@ -55,7 +55,7 @@
                                                         <td>{{ $timePeriod->description }}</td>
                             <td>{{ $timePeriod->start_time }}</td>
                             <td>{{ $timePeriod->end_time }}</td>
-                            <td>{{ $timePeriod->time_period_type }}</td>
+                            <td>{{ App\Enums\TimePeriodType::getDescription($timePeriod->time_period_type) }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

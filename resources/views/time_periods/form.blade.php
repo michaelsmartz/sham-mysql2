@@ -20,10 +20,9 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('time_period_type') ? 'has-error' : '' }}">
     <label for="time_period_type">Time Period Type</label>
-        <select class="form-control" id="time_period_type" name="time_period_type">
+        <select class="form-control" id="time_period_type" name="time_period_type" required="true">
         	    <option value="" style="display: none;" {{ old('time_period_type', optional($timePeriod)->time_period_type ?: '') == '' ? 'selected' : '' }} disabled selected>Select time period type</option>
-        	@foreach (['Shift' => 'Shift',
-'Break' => 'Break'] as $key => $text)
+        	@foreach ($timePeriods as $key => $text)
 			    <option value="{{ $key }}" {{ old('time_period_type', optional($timePeriod)->time_period_type) == $key ? 'selected' : '' }}>
 			    	{{ $text }}
 			    </option>

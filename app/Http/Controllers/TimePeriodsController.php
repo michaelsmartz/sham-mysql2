@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TimePeriodType;
 use App\TimePeriod;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -32,6 +33,18 @@ class TimePeriodsController extends CustomController
     {
         $timePeriods = $this->contextObj::filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('timePeriods'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $timePeriods= TimePeriodType::ddList();
+
+        return view($this->baseViewPath . '.create', compact('data','timePeriods'));
     }
 
     /**
@@ -141,6 +154,7 @@ class TimePeriodsController extends CustomController
             'description' => 'required|string|min:1|max:100',
             'start_time' => 'required|string|min:1',
             'end_time' => 'required|string|min:1',
+            'time_period_type' => 'required|string|min:1|max:1'
         ];
 
         $this->validate($request, $validateFields);
