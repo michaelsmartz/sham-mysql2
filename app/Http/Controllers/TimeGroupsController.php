@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DayType;
 use App\TimeGroup;
+use App\TimePeriod;
+use DateTime;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -70,8 +73,23 @@ class TimeGroupsController extends CustomController
         $id = Route::current()->parameter('time_group');
         $data = $this->contextObj->findData($id);
 
+        $shifts = $this->getTimePeriod(1);
+        $breaks = $this->getTimePeriod(2);
+        $days = DayType::getKeys();
+        $days_number = DayType::getValues();
+
+        $dayId = array_fill_keys($days_number, false);
+
+        //dd($shifts);
+        //dd($breaks);
+
+        $tgDays = $data->days()->pluck('name','day_id');
+
+        //dd($days);
+        //dd($tgDays);
+
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -79,7 +97,37 @@ class TimeGroupsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data'));
+        return view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days'));
+    }
+
+    /**
+     * getTimePeriod for breaks and shifts
+     * @param $timePeriodType
+     * @return array
+     */
+    private function getTimePeriod($timePeriodType){
+        $tempStartTime = $tempEndTime = '';
+        $timePeriod = [];
+
+        $times = TimePeriod::where('time_period_type', $timePeriodType)->get(['end_time','start_time']);
+
+        if (!empty($times)) {
+            foreach ($times as $time) {
+
+                if ($time->start_time != null) {
+                    $intervalStart = new DateTime($time->start_time);
+                    $tempStartTime = $intervalStart->format('G:i');
+                }
+
+                if ($time->end_time != null) {
+                    $intervalEnd = new DateTime($time->end_time);
+                    $tempEndTime = $intervalEnd->format('G:i');
+                }
+                $timePeriod[] = $tempStartTime . '-' . $tempEndTime;
+            }
+        }
+
+        return $timePeriod;
     }
 
     /**

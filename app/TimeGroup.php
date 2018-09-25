@@ -27,4 +27,13 @@ class TimeGroup extends Model
 
     protected $table = 'time_groups';
 
+    public function timePeriods()
+    {
+        return $this->belongsToMany('App\TimePeriod','day_time_group_time_period');
+    }
+
+    public function days()
+    {
+        return $this->belongsToMany('App\Day','day_time_group_time_period');
+    }
 }

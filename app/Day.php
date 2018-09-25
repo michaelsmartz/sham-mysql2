@@ -2,10 +2,9 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TimePeriod extends Model
+class Day extends Model
 {
     use SoftDeletes;
 
@@ -14,7 +13,7 @@ class TimePeriod extends Model
      *
      * @var string
      */
-    protected $table = 'time_periods';
+    protected $table = 'days';
 
     /**
     * The database primary key value.
@@ -29,13 +28,9 @@ class TimePeriod extends Model
      * @var array
      */
     protected $fillable = [
-                  'description',
-                  'start_time',
-                  'end_time',
-                  'time_period_type'
+                  'name',
+                  'day_number'
               ];
-
-    public $searchable = ['description'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -50,10 +45,8 @@ class TimePeriod extends Model
      * @var array
      */
     protected $casts = [];
+    
 
-    public function timeGroups()
-    {
-        return $this->belongsToMany('App\TimeGroup','day_time_group_time_period');
-    }
+
 
 }

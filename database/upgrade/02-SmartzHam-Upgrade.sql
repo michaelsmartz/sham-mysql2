@@ -2172,3 +2172,5 @@ DROP FOREIGN KEY `FK_CategoryQuestions_CategoryQuestionTypes`;
 
 ALTER TABLE `shamdev`.`category_questions`
 CHANGE COLUMN `categoryquestiontype_Id` `category_question_type_id` INT(11) NOT NULL ;
+
+RENAME TABLE `shamdev`.`time_group_day_time_period` TO `shamdev`.`day_time_group_time_period`;
