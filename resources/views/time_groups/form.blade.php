@@ -19,7 +19,7 @@
                 <div class="input-group select2-bootstrap-prepend" style="margin-top:5px;margin-bottom: 5px;">
                 <span class="input-group-addon">
                     {!! Form::hidden('days[1]', 'false') !!}
-                    {!! Form::checkbox('days[1]','true',((isset($days[1]))||Request::has('days[1]')),($_mode=='view')?['disabled']:['id'=>'days1']) !!}
+                    {!! Form::checkbox('days[1]','true',((isset($tgDays[1]))||Request::has('days[1]')),($_mode=='view')?['disabled']:['id'=>'days1']) !!}
                     <strong class="w100">Monday</strong>
                 </span>
                     {{ Form::select('TimeShiftId[1]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days1',
@@ -37,7 +37,7 @@
                 <div class="input-group" style="margin-top:5px;margin-bottom: 5px;">
                 <span class="input-group-addon">
                     {!! Form::hidden('days[2]', 'false') !!}
-                    {!! Form::checkbox('days[2]','true',((isset($days[2]))||Request::has('days[2]')),($_mode=='view')?['disabled']:['id'=>'days2']) !!}
+                    {!! Form::checkbox('days[2]','true',((isset($tgDays[2]))||Request::has('days[2]')),($_mode=='view')?['disabled']:['id'=>'days2']) !!}
                     <strong class="w100">Tuesday</strong>
                 </span>
                     {{ Form::select('TimeShiftId[2]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days2',
@@ -55,7 +55,7 @@
                 <div class="input-group" style="margin-top:5px;margin-bottom: 5px;">
                 <span class="input-group-addon">
                     {!! Form::hidden('days[3]', 'false') !!}
-                    {!! Form::checkbox('days[3]','true',((isset($days[3]))||Request::has('days[3]')),($_mode=='view')?['disabled']:['id'=>'days3']) !!}
+                    {!! Form::checkbox('days[3]','true',((isset($tgDays[3]))||Request::has('days[3]')),($_mode=='view')?['disabled']:['id'=>'days3']) !!}
                     <strong class="w100">Wednesday</strong>
                 </span>
                     {{ Form::select('TimeShiftId[3]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days3',
@@ -73,7 +73,7 @@
                 <div class="input-group" style="margin-top:5px;margin-bottom: 5px;">
                 <span class="input-group-addon">
                     {!! Form::hidden('days[4]', 'false') !!}
-                    {!! Form::checkbox('days[4]','true',((isset($days[4]))||Request::has('days[4]')),($_mode=='view')?['disabled']:['id'=>'days4']) !!}
+                    {!! Form::checkbox('days[4]','true',((isset($tgDays[4]))||Request::has('days[4]')),($_mode=='view')?['disabled']:['id'=>'days4']) !!}
                     <strong class="w100">Thursday</strong>
                 </span>
                     {{ Form::select('TimeShiftId[4]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days4',
@@ -91,7 +91,7 @@
                 <div class="input-group" style="margin-top:5px;margin-bottom: 5px;">
                 <span class="input-group-addon">
                     {!! Form::hidden('days[5]', 'false') !!}
-                    {!! Form::checkbox('days[5]','true',((isset($days[5]))||Request::has('days[5]')),($_mode=='view')?['disabled']:['id'=>'days5']) !!}
+                    {!! Form::checkbox('days[5]','true',((isset($tgDays[5]))||Request::has('days[5]')),($_mode=='view')?['disabled']:['id'=>'days5']) !!}
                     <strong class="w100">Friday</strong>
                 </span>
                     {{ Form::select('TimeShiftId[5]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days5',
@@ -109,7 +109,7 @@
                 <div class="input-group" style="margin-top:5px;margin-bottom: 5px;">
                 <span class="input-group-addon">
                     {!! Form::hidden('days[6]', 'false') !!}
-                    {!! Form::checkbox('days[6]','true',((isset($days[6]))||Request::has('days[6]')),($_mode=='view')?['disabled']:['id'=>'days6']) !!}
+                    {!! Form::checkbox('days[6]','true',((isset($tgDays[6]))||Request::has('days[6]')),($_mode=='view')?['disabled']:['id'=>'days6']) !!}
                     <strong class="w100">Saturday</strong>
                 </span>
                     {{ Form::select('TimeShiftId[6]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days6',
@@ -127,7 +127,7 @@
                 <div class="input-group" style="margin-top:5px;margin-bottom: 5px;">
                 <span class="input-group-addon">
                     {!! Form::hidden('days[7]', 'false') !!}
-                    {!! Form::checkbox('days[7]','true',((isset($days[7]))||Request::has('days[7]')),($_mode=='view')?['disabled']:['id'=>'days7']) !!}
+                    {!! Form::checkbox('days[7]','true',((isset($tgDays[7]))||Request::has('days[7]')),($_mode=='view')?['disabled']:['id'=>'days7']) !!}
                     <strong class="w100">Sunday</strong>
                 </span>
                     {{ Form::select('TimeShiftId[7]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days7',
