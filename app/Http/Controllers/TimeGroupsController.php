@@ -76,20 +76,21 @@ class TimeGroupsController extends CustomController
         $shifts = $this->getTimePeriod(1);
         $breaks = $this->getTimePeriod(2);
         $days = DayType::getKeys();
-        $days_number = DayType::getValues();
-
-        $dayId = array_fill_keys($days_number, false);
 
         //dd($shifts);
         //dd($breaks);
 
         $tgDays = $data->days()->pluck('name','day_id');
 
+        $breakId = $this->contextObj->timePeriods()->where('time_period_type', 2)->pluck('time_group_id','time_period_id');
+
+        //dd($breakId);
+
         //dd($days);
         //dd($tgDays);
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days','tgDays','breakId'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -97,7 +98,7 @@ class TimeGroupsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days'));
+        return view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days','tgDays','breakId'));
     }
 
     /**
@@ -109,7 +110,8 @@ class TimeGroupsController extends CustomController
         $tempStartTime = $tempEndTime = '';
         $timePeriod = [];
 
-        $times = TimePeriod::where('time_period_type', $timePeriodType)->get(['end_time','start_time']);
+        $times = TimePeriod::where('time_period_type', $timePeriodType)->get(['end_time','start_time','description']);
+        $count=0;
 
         if (!empty($times)) {
             foreach ($times as $time) {
@@ -123,7 +125,14 @@ class TimeGroupsController extends CustomController
                     $intervalEnd = new DateTime($time->end_time);
                     $tempEndTime = $intervalEnd->format('G:i');
                 }
-                $timePeriod[] = $tempStartTime . '-' . $tempEndTime;
+
+                if($timePeriodType == 2){
+                    $timePeriod[$count]['title'] = $time->description;
+                    $timePeriod[$count]['text'] = $tempStartTime . '-' . $tempEndTime;
+                }else{
+                    $timePeriod[] = $tempStartTime . '-' . $tempEndTime;
+                }
+                $count++;
             }
         }
 
