@@ -193,9 +193,124 @@
             width: 60vw;!important;
         }
 
+        input.parsley-success,
+        select.parsley-success,
+        textarea.parsley-success {
+            color: #468847;
+            background-color: #DFF0D8;
+            border: 1px solid #D6E9C6;
+        }
+
+        input.parsley-error,
+        select.parsley-error,
+        textarea.parsley-error {
+            color: #B94A48 !important;
+            background-color: #F2DEDE !important;
+            border: 1px solid #EED3D7 !important;
+        }
+        /*
+        .parsley-error,
+        .parsley-success {
+            color: #333 !important;
+        }
+        .parsley-error {
+            background: #ffdedd !important;
+            border-color: #ff5b57 !important;
+        }
+        .parsley-success {
+            background: #cceeee !important;
+            border-color: #00acac !important;
+        }
+        */
+
+        .parsley-error > input[type="radio"] {
+            border-radius: 100%;
+            border: 1px solid #b4b4b4;
+            display: inline-block;
+            background-color: #3197EE;
+            box-shadow: inset 0 0 0 4px #f4f4f4;
+        }
+
+        .parsley-error:focus,
+        .parsley-success:focus {
+            color: #333 !important;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        select.parsley-error + .selectize-control > .selectize-input > input {
+            color: #B94A48 !important;
+        }
+
+        .parsley-errors-list {
+            margin: 3px 0 3px;
+            padding: 3px 0;
+            list-style-type: none;
+            font-size: 1em;
+            line-height: 1em;
+            opacity: 0;
+            color: #B94A48;
+
+            transition: all .3s ease-in;
+            -o-transition: all .3s ease-in;
+            -moz-transition: all .3s ease-in;
+            -webkit-transition: all .3s ease-in;
+        }
+
+        .parsley-errors-list.filled {
+            opacity: 1;
+        }
+
+        .parsley-errors-list li {
+            padding-left: 3px;
+            font-weight: bold;
+
+            opacity:0;  /* make things invisible upon start */
+            -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+            -moz-animation:fadeIn ease-in 1;
+            animation:fadeIn ease-in 1;
+
+            -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+            -moz-animation-fill-mode:forwards;
+            animation-fill-mode:forwards;
+
+            -webkit-animation-duration:1s;
+            -moz-animation-duration:1s;
+            animation-duration:1s;
+        }
+
+        /* make keyframes that tell the start state and the end state of our object */
+        @-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
     </style>
 
     <script>
+        var FormStuff = {
+            init: function() {
+                this.applyConditionalRequired();
+                this.bindUIActions();
+            },
+            bindUIActions: function() {
+                $("input[type='radio'], input[type='checkbox']").on("change", this.applyConditionalRequired);
+            },
+            applyConditionalRequired: function() {
+                $(".require-if-active").each(function() {
+                    var el = $(this);
+                    if ($(el.data("require-pair")).is(":checked")) {
+                        el.prop("required", true);
+                        el.prop("data-parsley-required", true);
+                    } else {
+                        el.prop("required", false);
+                        el.prop("data-parsley-required", false);
+                    }
+                });
+            }
+        };
+
+        FormStuff.init();
+
         $(document).ready(function() {
             var $select = $('.js-select2');
 
