@@ -7,13 +7,10 @@
 </div>
 
 @if($_mode=='edit')
-    <div class="days-holder">
-
+    {{--<div class="days-holder">--}}
             <div class="col-xs-12">
                 {!! Form::label('',' Time shift and break(s) per day:') !!}
             </div>
-
-
 
             <div class="col-xs-12">
                 <div class="input-group select2-bootstrap-prepend" style="margin-top:5px;margin-bottom: 5px;">
@@ -140,59 +137,85 @@
                 </div>
                 <div id="day7-error-container"></div>
             </div>
-        </div>
-
+        {{--</div>--}}
 @endif
 
 </div>
 
+@if(!Request::ajax())
 @section('post-body')
-<script>
-    var FormStuff = {
-        init: function() {
-            this.applyConditionalRequired();
-            this.bindUIActions();
-        },
-        bindUIActions: function() {
-            $("input[type='radio'], input[type='checkbox']").on("change", this.applyConditionalRequired);
-        },
-        applyConditionalRequired: function() {
-            $(".require-if-active").each(function() {
-                var el = $(this);
-                if ($(el.data("require-pair")).is(":checked")) {
-                    el.prop("required", true);
-                    el.prop("data-parsley-required", true);
-                } else {
-                    el.prop("required", false);
-                    el.prop("data-parsley-required", false);
-                }
-            });
+@endif
+    <link href="{{URL::to('/')}}/plugins/select2-4.0.3/css/select2.min.css" rel="stylesheet">
+    <link href="{{URL::to('/')}}/plugins/select2-4.0.3/css/select2-bootstrap.min.css" rel="stylesheet">
+    <script src="{{URL::to('/')}}/plugins/select2-4.0.3/js/select2.js"></script>
+
+    <style>
+        .js-select2 {
+            display: inline-block;
+            overflow: auto;
+            float:right;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
         }
-    };
 
-    FormStuff.init();
+        .select2-container {
+            min-width: 78% !important;
+            max-width: 78% !important;
+        }
+        .select2-container--bootstrap .select2-search__field::-moz-placeholder {
+            color: #555;
+            opacity: 1;
+        }
 
-    $(document).ready(function() {
-        var $select = $('.js-select2');
+        /* truncate tags with ellipsis */
+        .select2-selection__choice {
+            width: 105px !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 90%;
+        }
+        .select2-selection__rendered{
+            word-wrap: break-word !important;
+            text-overflow: inherit !important;
+            white-space: normal !important;
+        }
 
-        $select.select2({
-            theme: "bootstrap",
-            tokenSeparators: [',', ' '],
-            createSearchChoice: false,
-            minimumResultsForSearch: Infinity, // hide search
-            createTag: function(params) {
-                return undefined;
-            }
-        }); // initialize Select2 and any events
+        .w100 {
+            text-indent: 5px;
+            text-align: left;
+            display: inline-block;
+            width: 85px !important;
+            max-width: 85px !important;
+        }
 
-        setTimeout(function() {
-            $('.js-select2').each(function(index,element){
-                $(element).val($(element).data('selected')).trigger('change');
-            });
-        }, 500);
+        .light-modal-content.large-content {
+            width: 60vw;!important;
+        }
 
-    });
+    </style>
 
-</script>
+    <script>
+        $(document).ready(function() {
+            var $select = $('.js-select2');
 
-@endSection()
+            $select.select2({
+                theme: "bootstrap",
+                tokenSeparators: [',', ' '],
+                createSearchChoice: false,
+                minimumResultsForSearch: Infinity, // hide search
+                createTag: function(params) {
+                    return undefined;
+                }
+            }); // initialize Select2 and any events
+
+            setTimeout(function() {
+                $('.js-select2').each(function(index,element){
+                    $(element).val($(element).data('selected')).trigger('change');
+                });
+            }, 500);
+        });
+    </script>
+@if(!Request::ajax())
+@endsection
+@endif

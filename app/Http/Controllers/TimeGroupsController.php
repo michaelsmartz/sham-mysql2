@@ -70,6 +70,7 @@ class TimeGroupsController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
+        $tgDays = [];
         $id = Route::current()->parameter('time_group');
         $data = $this->contextObj->findData($id);
 
@@ -77,17 +78,11 @@ class TimeGroupsController extends CustomController
         $breaks = $this->getTimePeriod(2);
         $days = DayType::getKeys();
 
-        //dd($shifts);
-        //dd($breaks);
+        if(!is_null($data))
+            $tgDays = $data->days()->pluck('name','day_id');
 
-        $tgDays = $data->days()->pluck('name','day_id');
 
         $breakId = $this->contextObj->timePeriods()->where('time_period_type', 2)->pluck('time_group_id','time_period_id');
-
-        //dd($breakId);
-
-        //dd($days);
-        //dd($tgDays);
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days','tgDays','breakId'))->renderSections();
@@ -110,8 +105,7 @@ class TimeGroupsController extends CustomController
         $tempStartTime = $tempEndTime = '';
         $timePeriod = [];
 
-        $times = TimePeriod::where('time_period_type', $timePeriodType)->get(['end_time','start_time','description']);
-        $count=0;
+        $times = TimePeriod::where('time_period_type', $timePeriodType)->get(['id','end_time','start_time','description']);
 
         if (!empty($times)) {
             foreach ($times as $time) {
@@ -127,12 +121,11 @@ class TimeGroupsController extends CustomController
                 }
 
                 if($timePeriodType == 2){
-                    $timePeriod[$count]['title'] = $time->description;
-                    $timePeriod[$count]['text'] = $tempStartTime . '-' . $tempEndTime;
+                    $timePeriod[$time->id]['title'] = $time->description;
+                    $timePeriod[$time->id]['text'] = $tempStartTime . '-' . $tempEndTime;
                 }else{
-                    $timePeriod[] = $tempStartTime . '-' . $tempEndTime;
+                    $timePeriod[$time->id] = $tempStartTime . '-' . $tempEndTime;
                 }
-                $count++;
             }
         }
 
@@ -152,9 +145,46 @@ class TimeGroupsController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token','_method'));
+            $input = array_except($request->all(),array('_token',
+                                                        '_method',
+                                                        'days',
+                                                        'TimeShiftId',
+                                                        'breakId'));
 
             $this->contextObj->updateData($id, $input);
+
+            $days = array_get($request->all(), 'days');
+            $timeShiftIds = array_get($request->all(), 'TimeShiftId');
+            $breakIds = array_get($request->all(), 'breakId');
+
+            $timeShiftIds = array_filter($timeShiftIds);
+
+            $data = TimeGroup::find($id);
+
+            $time_group_pivot = [];
+
+            if(!empty($days) && !empty($timeShiftIds) && !empty($breakIds)) {
+                foreach ($days as $day => $value) {
+                    if ($value == "true") {
+                        $time_group_pivot[] = [
+                            'time_group_id' => $id,
+                            'day_id' => $day,
+                            'time_period_id' => $timeShiftIds[$day],
+                        ];
+
+                        foreach ($breakIds[$day] as $breakId) {
+                            $time_group_pivot[] = [
+                                'time_group_id' => $id,
+                                'day_id' => $day,
+                                'time_period_id' => $breakId
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $data->days()->sync([]);
+            $data->days()->sync($time_group_pivot);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -162,7 +192,7 @@ class TimeGroupsController extends CustomController
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**
