@@ -99,7 +99,7 @@ class TimeGroupsController extends CustomController
 
             if(!empty($tgDaysShifts)){
                 foreach ($tgDaysShifts as $tgDaysShift)
-                    $tgShifts[$tgDaysShift] = $data->timePeriods()->where('time_period_type', 1)->pluck('time_period_id')->all();
+                    $tgShifts[$tgDaysShift] = $data->timePeriods()->where('time_period_type', 1)->pluck('time_period_id')->first();
             }
         }
 
@@ -169,8 +169,8 @@ class TimeGroupsController extends CustomController
             $input = array_except($request->all(),array('_token',
                                                         '_method',
                                                         'days',
-                                                        'TimeShiftId',
-                                                        'breakId'));
+                                                        'tgShifts',
+                                                        'tgBreaks'));
 
             $this->contextObj->updateData($id, $input);
 
