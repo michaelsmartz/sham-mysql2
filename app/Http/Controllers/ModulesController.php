@@ -52,7 +52,7 @@ class ModulesController extends CustomController
         try {
             $this->validator($request);
 
-            $topics = array_get($request->all(),'topics.id');
+            $topics = array_get($request->all(),'topics');
             $input = array_except($request->all(),array('_token', 'topics'));
 
             $data = $this->contextObj->addData($input);
@@ -73,7 +73,7 @@ class ModulesController extends CustomController
         $id = Route::current()->parameter('module');
         $data = $this->contextObj->findData($id);
 
-        $moduleTopics = $data->topics->pluck('id');
+        $moduleTopics = $data->topics()->orderBy('module_topic.id','asc')->pluck('header','module_topic.topic_id');
         $topics = Topic::pluck('header', 'id');
 
         if($request->ajax()) {
@@ -101,7 +101,7 @@ class ModulesController extends CustomController
         try {
             $this->validator($request);
 
-            $topics = array_get($request->all(),'topics.id');
+            $topics = array_get($request->all(),'topics');
             $input = array_except($request->all(),array('_token','_method', 'topics'));
 
             $this->contextObj->updateData($id, $input);

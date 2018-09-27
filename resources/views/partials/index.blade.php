@@ -14,6 +14,8 @@
     <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
     <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
     <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
+
+    <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
     <script>
 
         var oldVal, $mainButton, loadUrl = function (url) {
@@ -25,7 +27,18 @@
                 $("#modalForm").attr('action',data.url);
 
                 $('.multipleSelect').each(function(){
-                    $(this).multipleSelect({ filter: true });
+                    $(this).multiselect({
+                        submitAllLeft:false,
+                        sort: false,
+                        keepRenderingSort: false,
+                        search: {
+                            left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                            right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                        },
+                        fireSearch: function(value) {
+                            return value.length > 3;
+                        }
+                    });
                 });
             });
         };

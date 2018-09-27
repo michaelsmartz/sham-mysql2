@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
+use Exception;
 use View;
 
 class TopicsController extends CustomController
@@ -72,15 +73,6 @@ class TopicsController extends CustomController
         $id = Route::current()->parameter('topic');
         $data = $this->contextObj->findData($id);
 
-        if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
-            return response()->json([
-                'title' => $view['modalTitle'],
-                'content' => $view['modalContent'],
-                'footer' => $view['modalFooter'],
-                'url' => $view['postModalUrl']
-            ]);
-        }
         return view($this->baseViewPath . '.edit', compact('data'));
     }
 
@@ -94,15 +86,10 @@ class TopicsController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
 
-        $input = array_except($request->all(),array('_token','_method'));
-
-        $this->contextObj->updateData($id, $input);
-
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
-
-        return redirect()->route($this->baseViewPath .'.index');       
+        $input = array_except($request->all(),array('_token', '_method'));
+        
+        return saveTopic($id, $input);
     }
 
     /**
@@ -219,6 +206,25 @@ class TopicsController extends CustomController
         }
 
         return $result;
+    }
+
+    private function saveTopic($id, $input)
+    {
+        try {
+            if ($id == 0) {
+                $context = $this->contextObj->addData($input);
+            } else {
+                $res = $this->contextObj->updateData($id, $input);
+                $data = $this->contextObj->findData($id);
+            }
+        } catch (Exception $exception) {
+
+            return response()->json(['response' => 'KO'],500);
+
+        }
+
+        return response()->json(['response' => $this->contextObj->id]);
+
     }
 
     

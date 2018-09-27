@@ -2,7 +2,7 @@ $parsley-success-color: #468847;
 $parsley-error-color:  #B94A48;
 
 input:required, select:required, textarea:required {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 483.556 483.556' style='enable-background:new 0 0 483.556 483.556;' xml:space='preserve' width='8px' height='8px'%3E%3Cg pointer-events='all' data-wenk='Required'%3E%3Ctitle%3ERequired%3C/title%3E%3Cg transform='matrix(1.25 0 0 -1.25 0 45)'%3E%3Cg%3E%3Cg%3E%3Cpath d='M386.844-157.422c0-106.826-86.596-193.422-193.422-193.422S0-264.248,0-157.422 S86.596,36,193.422,36S386.844-50.596,386.844-157.422' data-original='%23DD2E44' data-wenk='Required' class='active-path' fill='%23F26969'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat 97% 50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 483.556 483.556' style='enable-background:new 0 0 483.556 483.556;' xml:space='preserve' width='8px' height='8px'%3E%3Cg pointer-events='all' data-wenk='Required'%3E%3Ctitle%3ERequired%3C/title%3E%3Cg transform='matrix(1.25 0 0 -1.25 0 45)'%3E%3Cg%3E%3Cg%3E%3Cpath d='M386.844-157.422c0-106.826-86.596-193.422-193.422-193.422S0-264.248,0-157.422 S86.596,36,193.422,36S386.844-50.596,386.844-157.422' data-original='%23DD2E44' data-wenk='Required' class='active-path' fill='%23F26969'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat calc(100% - 20px) 50%;
   transition: all 1s;
 }
 

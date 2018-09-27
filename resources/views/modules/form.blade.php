@@ -18,11 +18,24 @@
             {!! $errors->first('objectives', '<p class="help-block">:message</p>') !!}
     </div>
 
-    <div class="form-group col-xs-12 {{ $errors->has('topics[id]') ? 'has-error' : '' }}">
-        <label for="topics[id]">Topics <i class="fa fa-question-circle" data-wenk="Link existing topic(s) to this module" data-wenk-pos="right"></i></label>
+    <div class="form-group col-xs-12 {{ $errors->has('topics[]') ? 'has-error' : '' }}">
+        <label for="topics[]">Topics <i class="fa fa-question-circle" data-wenk="Link existing topic(s) to this module" data-wenk-pos="right"></i></label>
+    </div>
+    <div class="col-xs-12">
         <div class="flex-wrapper">
-            {!! Form::select('topics[id][]', $topics,isset($moduleTopics)?$moduleTopics:null, array('multiple' => 'multiple', 'style' => 'width:100%', 'class'=> 'multipleSelect')) !!}
-            {!! $errors->first('topics[id]', '<p class="help-block">:message</p>') !!}
+            <div class="col-xs-5">
+                {!! Form::select('from[]', $topics, null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control multipleSelect', 'id'=>'multiselect')) !!}
+            </div>
+            <div class="col-xs-2">
+                <button type="button" id="multiselect_rightAll" class="btn btn-block"><i class="glyphicon glyphicon-forward"></i></button>
+                <button type="button" id="multiselect_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                <button type="button" id="multiselect_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                <button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
+            </div>
+            <div class="col-xs-5">
+                {!! Form::select('topics[]', isset($moduleTopics)?$moduleTopics:[], null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control', 'id'=>'multiselect_to')) !!}
+            </div>
+            {!! $errors->first('topics[]', '<p class="help-block">:message</p>') !!}
         </div>
     </div>
 </div>

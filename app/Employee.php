@@ -376,9 +376,9 @@ class Employee extends Model
         return $this->hasMany('App\Timeline','EmployeeId','id');
     }
 
-    public function trainingsessionparticipant()
+    public function trainingSessions()
     {
-        return $this->hasOne('App\Trainingsessionparticipant','EmployeeId','id');
+        return $this->belongsToMany(TrainingSession::class);
     }
 
 }
