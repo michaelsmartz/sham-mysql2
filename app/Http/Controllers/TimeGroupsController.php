@@ -77,15 +77,36 @@ class TimeGroupsController extends CustomController
         $shifts = $this->getTimePeriod(1);
         $breaks = $this->getTimePeriod(2);
         $days = DayType::getKeys();
+        $day_numbers = DayType::getValues();
 
-        if(!is_null($data))
-            $tgDays = $data->days()->pluck('name','day_id');
+        $DayId = array_fill_keys($day_numbers, false);
 
+        // actual is TimePeriod Id where TimePeriodType = 1 (i.e a shift)
+        $tgShifts = array_fill_keys($day_numbers, 0);
+
+        // actual is TimePeriod Id where TimePeriodType = 2 (i.e a break)
+        $tgBreaks =  array_fill_keys($day_numbers, array());
+
+        if(!is_null($data)) {
+            $tgDays = $data->days()->pluck('name', 'day_id');
+            $tgDaysShifts = $data->timePeriods()->where('time_period_type', 1)->pluck('day_id');
+            $tgDaysBreaks = $data->timePeriods()->where('time_period_type', 2)->pluck('day_id');
+
+            if(!empty($tgDaysBreaks)){
+                foreach ($tgDaysBreaks as $tgDaysBreak)
+                    $tgBreaks[$tgDaysBreak] = $data->timePeriods()->where('time_period_type', 2)->pluck('time_period_id')->all();
+            }
+
+            if(!empty($tgDaysShifts)){
+                foreach ($tgDaysShifts as $tgDaysShift)
+                    $tgShifts[$tgDaysShift] = $data->timePeriods()->where('time_period_type', 1)->pluck('time_period_id')->all();
+            }
+        }
 
         $breakId = $this->contextObj->timePeriods()->where('time_period_type', 2)->pluck('time_group_id','time_period_id');
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days','tgDays','breakId'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days','tgDays','tgShifts','tgBreaks','breakId'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -93,7 +114,7 @@ class TimeGroupsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days','tgDays','breakId'));
+        return view($this->baseViewPath . '.edit', compact('data','shifts','breaks','days','tgDays','tgShifts','tgBreaks','breakId'));
     }
 
     /**
@@ -154,8 +175,8 @@ class TimeGroupsController extends CustomController
             $this->contextObj->updateData($id, $input);
 
             $days = array_get($request->all(), 'days');
-            $timeShiftIds = array_get($request->all(), 'TimeShiftId');
-            $breakIds = array_get($request->all(), 'breakId');
+            $timeShiftIds = array_get($request->all(), 'tgShifts');
+            $breakIds = array_get($request->all(), 'tgBreaks');
 
             $timeShiftIds = array_filter($timeShiftIds);
 

@@ -19,9 +19,9 @@
                     {!! Form::checkbox('days[1]','true',((isset($tgDays[1]))||Request::has('days[1]')),($_mode=='view')?['disabled']:['id'=>'days1']) !!}
                     <strong class="w100">Monday</strong>
                 </span>
-                    {{ Form::select('TimeShiftId[1]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days1',
+                    {{ Form::select('tgShifts[1]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days1',
                     'data-parsley-errors-container'=>'#day1-error-container', 'data-parsley-required-message'=>'Monday time shift is required']) }}
-                    <select name="breakId[1][]" id="breakId1" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
+                    <select name="tgBreaks[1][]" id="tgBreaks1" data-selected="[{{implode(',', $tgBreaks[1])}}]" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
                         @foreach($breaks as $k=>$v)
                             <option title="{{$v['title']}}" value="{{$k}}">{{$v['text']}}
                         @endforeach
@@ -37,9 +37,9 @@
                     {!! Form::checkbox('days[2]','true',((isset($tgDays[2]))||Request::has('days[2]')),($_mode=='view')?['disabled']:['id'=>'days2']) !!}
                     <strong class="w100">Tuesday</strong>
                 </span>
-                    {{ Form::select('TimeShiftId[2]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days2',
+                    {{ Form::select('tgShifts[2]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days2',
                     'data-parsley-errors-container'=>'#day2-error-container', 'data-parsley-required-message'=>'Tuesday time shift is required']) }}
-                    <select name="breakId[2][]" id="breakId2" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
+                    <select name="tgBreaks[2][]" id="tgBreaks2" data-selected="[{{implode(',', $tgBreaks[2])}}]" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
                         @foreach($breaks as $k=>$v)
                             <option title="{{$v['title']}}" value="{{$k}}">{{$v['text']}}
                         @endforeach
@@ -55,9 +55,9 @@
                     {!! Form::checkbox('days[3]','true',((isset($tgDays[3]))||Request::has('days[3]')),($_mode=='view')?['disabled']:['id'=>'days3']) !!}
                     <strong class="w100">Wednesday</strong>
                 </span>
-                    {{ Form::select('TimeShiftId[3]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days3',
+                    {{ Form::select('tgShifts[3]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days3',
                     'data-parsley-errors-container'=>'#day3-error-container', 'data-parsley-required-message'=>'Wednesday time shift is required']) }}
-                    <select name="breakId[3][]" id="breakId3" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
+                    <select name="tgBreaks[3][]" id="tgBreaks3" data-selected="[{{implode(',', $tgBreaks[3])}}]" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
                         @foreach($breaks as $k=>$v)
                             <option title="{{$v['title']}}" value="{{$k}}">{{$v['text']}}
                         @endforeach
@@ -73,9 +73,9 @@
                     {!! Form::checkbox('days[4]','true',((isset($tgDays[4]))||Request::has('days[4]')),($_mode=='view')?['disabled']:['id'=>'days4']) !!}
                     <strong class="w100">Thursday</strong>
                 </span>
-                    {{ Form::select('TimeShiftId[4]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days4',
+                    {{ Form::select('tgShifts[4]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days4',
                     'data-parsley-errors-container'=>'#day4-error-container', 'data-parsley-required-message'=>'Thursday time shift is required']) }}
-                    <select name="breakId[4][]" id="breakId4" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
+                    <select name="tgBreaks[4][]" id="tgBreaks4" data-selected="[{{implode(',', $tgBreaks[4])}}]" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
                         @foreach($breaks as $k=>$v)
                             <option title="{{$v['title']}}" value="{{$k}}">{{$v['text']}}
                         @endforeach
@@ -91,9 +91,9 @@
                     {!! Form::checkbox('days[5]','true',((isset($tgDays[5]))||Request::has('days[5]')),($_mode=='view')?['disabled']:['id'=>'days5']) !!}
                     <strong class="w100">Friday</strong>
                 </span>
-                    {{ Form::select('TimeShiftId[5]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days5',
+                    {{ Form::select('tgShifts[5]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days5',
                     'data-parsley-errors-container'=>'#day5-error-container', 'data-parsley-required-message'=>'Friday time shift is required']) }}
-                    <select name="breakId[5][]" id="breakId5" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
+                    <select name="tgBreaks[5][]" id="tgBreaks5" data-selected="[{{implode(',', $tgBreaks[5])}}]" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
                         @foreach($breaks as $k=>$v)
                             <option title="{{$v['title']}}" value="{{$k}}">{{$v['text']}}
                         @endforeach
@@ -109,9 +109,9 @@
                     {!! Form::checkbox('days[6]','true',((isset($tgDays[6]))||Request::has('days[6]')),($_mode=='view')?['disabled']:['id'=>'days6']) !!}
                     <strong class="w100">Saturday</strong>
                 </span>
-                    {{ Form::select('TimeShiftId[6]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days6',
+                    {{ Form::select('tgShifts[6]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days6',
                     'data-parsley-errors-container'=>'#day6-error-container', 'data-parsley-required-message'=>'Saturday time shift is required']) }}
-                    <select name="breakId[6][]" id="breakId6" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
+                    <select name="tgBreaks[6][]" id="tgBreaks6" data-selected="[{{implode(',', $tgBreaks[6])}}]" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
                         @foreach($breaks as $k=>$v)
                             <option title="{{$v['title']}}" value="{{$k}}">{{$v['text']}}
                         @endforeach
@@ -127,9 +127,9 @@
                     {!! Form::checkbox('days[7]','true',((isset($tgDays[7]))||Request::has('days[7]')),($_mode=='view')?['disabled']:['id'=>'days7']) !!}
                     <strong class="w100">Sunday</strong>
                 </span>
-                    {{ Form::select('TimeShiftId[7]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days7',
+                    {{ Form::select('tgShifts[7]', $shifts, null, ['class'=>'form-control bg-whitesmoke require-if-active', 'autocomplete'=>'off', 'placeholder'=>'Select time shift', 'style'=>'width:auto', 'data-require-pair'=>'#days7',
                     'data-parsley-errors-container'=>'#day7-error-container', 'data-parsley-required-message'=>'Sunday time shift is required']) }}
-                    <select name="breakId[7][]" id="breakId7" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
+                    <select name="tgBreaks[7][]" id="tgBreaks7" data-selected="[{{implode(',', $tgBreaks[7])}}]" class="js-select2" multiple="multiple" data-tags="true" data-placeholder="Select break(s)" data-allow-clear="true">
                         @foreach($breaks as $k=>$v)
                             <option title="{{$v['title']}}" value="{{$k}}">{{$v['text']}}
                         @endforeach
