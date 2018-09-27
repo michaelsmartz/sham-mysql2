@@ -193,6 +193,16 @@
             width: 65vw;!important;
         }
 
+        .select-in-modal+.select2-container {
+            width: 100% !important;
+            padding: 0;
+            z-index:10000;
+        }
+
+        .select2-container--open {
+            z-index:10000;
+        }
+
         input.parsley-success,
         select.parsley-success,
         textarea.parsley-success {
