@@ -1,4 +1,4 @@
-<section class="modal--show" id="modal-text" tabindex="-1" role="dialog" 
+<section class="modal--show" id="modal-text" role="dialog"
          aria-labelledby="modal-label" aria-hidden="true">
     <div class="modal-inner">
         <header id="modal-label"><h2>@yield('modalHeader')</h2></header>

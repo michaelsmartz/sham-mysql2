@@ -79,8 +79,6 @@ class TimeGroupsController extends CustomController
         $days = DayType::getKeys();
         $day_numbers = DayType::getValues();
 
-        $DayId = array_fill_keys($day_numbers, false);
-
         // actual is TimePeriod Id where TimePeriodType = 1 (i.e a shift)
         $tgShifts = array_fill_keys($day_numbers, 0);
 
@@ -89,17 +87,17 @@ class TimeGroupsController extends CustomController
 
         if(!is_null($data)) {
             $tgDays = $data->days()->pluck('name', 'day_id');
-            $tgDaysShifts = $data->timePeriods()->where('time_period_type', 1)->pluck('day_id');
-            $tgDaysBreaks = $data->timePeriods()->where('time_period_type', 2)->pluck('day_id');
+            $tpDaysShifts = $data->timePeriods()->where('time_period_type',1)->get(['time_period_id','day_id'])->all();
+            $tpDaysBreaks = $data->timePeriods()->where('time_period_type', 2)->get(['time_period_id','day_id'])->all();
 
-            if(!empty($tgDaysBreaks)){
-                foreach ($tgDaysBreaks as $tgDaysBreak)
-                    $tgBreaks[$tgDaysBreak] = $data->timePeriods()->where('time_period_type', 2)->pluck('time_period_id')->all();
+            if(!empty($tpDaysBreaks)){
+                foreach ($tpDaysBreaks as $tpDaysBreak)
+                    $tgBreaks[$tpDaysBreak->day_id][] = $tpDaysBreak->time_period_id;
             }
 
-            if(!empty($tgDaysShifts)){
-                foreach ($tgDaysShifts as $tgDaysShift)
-                    $tgShifts[$tgDaysShift] = $data->timePeriods()->where('time_period_type', 1)->pluck('time_period_id')->first();
+            if(!empty($tpDaysShifts)){
+                foreach ($tpDaysShifts as $tpDaysShift)
+                    $tgShifts[$tpDaysShift->day_id] = $tpDaysShift->time_period_id;
             }
         }
 

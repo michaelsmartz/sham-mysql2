@@ -203,6 +203,11 @@
             z-index:10000;
         }
 
+        .light-modal-content {
+            line-height: 0.4;!important;
+            overflow: hidden;
+        }
+
         input.parsley-success,
         select.parsley-success,
         textarea.parsley-success {
@@ -339,6 +344,12 @@
                     $(element).val($(element).data('selected')).trigger('change');
                 });
             }, 500);
+
+            $('select.select2:not(.normal)').each(function () {
+                $(this).select2({
+                    dropdownParent: $(this).parent().parent()
+                });
+            });
         });
     </script>
 @if(!Request::ajax())
