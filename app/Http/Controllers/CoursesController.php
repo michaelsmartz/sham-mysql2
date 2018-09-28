@@ -52,7 +52,8 @@ class CoursesController extends CustomController
         try {
             $this->validator($request);
 
-            $modules = array_get($request->all(),'modules.id');
+            $modules = array_get($request->all(),'modules');
+
             $input = array_except($request->all(),array('_token', 'modules'));
             
             $data = $this->contextObj->addData($input);
@@ -74,7 +75,7 @@ class CoursesController extends CustomController
         $id = Route::current()->parameter('course');
         $data = $this->contextObj->findData($id);
 
-        $courseModules = $data->modules->pluck('id');
+        $courseModules = $data->modules()->orderBy('course_module.id','asc')->pluck('description', 'course_module.module_id');
         $modules = Module::pluck('description', 'id');
 
         if($request->ajax()) {
@@ -103,7 +104,7 @@ class CoursesController extends CustomController
         try {
             $this->validator($request);
             
-            $modules = array_get($request->all(),'modules.id');
+            $modules = array_get($request->all(),'modules');
             $input = array_except($request->all(),array('_token','_method','modules'));
 
             $this->contextObj->updateData($id, $input);

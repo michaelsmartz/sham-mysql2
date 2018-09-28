@@ -179,13 +179,13 @@
                 <li class="{{ (Request::is('topics/*') || Request::is('topics') || Request::is('topic/*') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/topics">Topics</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_MODULE_ASSESSMENT]))
-                <li class="{{ (Request::is('moduleassessments/*') || Request::is('moduleassessments') ? 'active' : '') }}" > <a href="{{URL::to('/')}}/moduleassessments">Module Assessments</a></li>
-                @endif
-                @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_TRAINING_VENUE_MANAGEMENT]))
-                        <!-- <li> <a href="{{URL::to('/')}}/buildings">Training Venue Management</a></li> -->
+                <li class="{{ (Request::is('module_assessments/*') || Request::is('module_assessments') ? 'active' : '') }}" > <a href="{{URL::to('/')}}/module_assessments">Module Assessments</a></li>
+            @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_TRAINING_VENUE_MANAGEMENT]))
+                <!-- <li> <a href="{{URL::to('/')}}/buildings">Training Venue Management</a></li> -->
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_TRAINING_SESSION_MANAGEMENT]))
-                <li> <a href="{{URL::to('/')}}/trainingsessions">Training Sessions</a></li>
+                <li class="{{ (Request::is('training_sessions/*') || Request::is('training_sessions') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/training_sessions">Training Sessions</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_TRAINING_REPORTS]))
                 <li> <a href="{{URL::to('/')}}/trainingreports">Training Reports</a></li>

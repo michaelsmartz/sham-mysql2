@@ -30,13 +30,23 @@
 @endsection
 
 @section('post-body')
-    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
-    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
+    <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
     <script>
-    $(function () {
-        $('.multipleSelect').multipleSelect({
-            filter: true
+        $(function () {
+            $('.multipleSelect').each(function(){
+                $(this).multiselect({
+                    submitAllLeft:false,
+                    sort: false,
+                    keepRenderingSort: false,
+                    search: {
+                        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                        right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                    },
+                    fireSearch: function(value) {
+                        return value.length > 3;
+                    }
+                });
+            });
         });
-    });
     </script>
 @endsection

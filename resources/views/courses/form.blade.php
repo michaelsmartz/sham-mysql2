@@ -34,11 +34,24 @@
             {!! $errors->first('objectives', '<p class="help-block">:message</p>') !!}
     </div>
 
-    <div class="form-group col-xs-12 {{ $errors->has('modules[id]') ? 'has-error' : '' }}">
-        <label for="modules[id]">Modules <i class="fa fa-question-circle" data-wenk="Link existing module(s) to this course" data-wenk-pos="right"></i></label>
+    <div class="form-group col-xs-12 {{ $errors->has('modules[]') ? 'has-error' : '' }}">
+        <label for="from[]">Modules <i class="fa fa-question-circle" data-wenk="Link existing module(s) to this course" data-wenk-pos="right"></i></label>
+    </div>
+    <div class="col-xs-12">
         <div class="flex-wrapper">
-            {!! Form::select('modules[id][]', $modules,isset($courseModules)?$courseModules:null, array('multiple' => 'multiple', 'style' => 'width:100%', 'class'=> 'multipleSelect')) !!}
-            {!! $errors->first('modules[id]', '<p class="help-block">:message</p>') !!}
+            <div class="col-xs-5">
+                {!! Form::select('from[]', $modules, null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control multipleSelect', 'id'=>'multiselect')) !!}
+            </div>
+            <div class="col-xs-2">
+                <button type="button" id="multiselect_rightAll" class="btn btn-block"><i class="glyphicon glyphicon-forward"></i></button>
+                <button type="button" id="multiselect_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                <button type="button" id="multiselect_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                <button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
+            </div>
+            <div class="col-xs-5">
+                {!! Form::select('modules[]', isset($courseModules)?$courseModules:[],null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control', 'id'=>'multiselect_to')) !!}
+            </div>
+            {!! $errors->first('modules[]', '<p class="help-block">:message</p>') !!}
         </div>
     </div>
 </div>

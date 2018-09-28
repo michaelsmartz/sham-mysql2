@@ -109,6 +109,9 @@ Auth::routes();
             Route::get('topics/embed/{file}', 'TopicsController@embedMedia');
             Route::get('topics/snippets', 'TopicsController@getSnippets');
             Route::resource('topics', 'TopicsController' );
+
+            Route::resource('module_assessments', 'ModuleAssessmentsController' );
+            Route::resource('training_sessions', 'CourseTrainingSessionsController' );
         #endregion
   
     });

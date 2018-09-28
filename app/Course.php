@@ -42,7 +42,8 @@ class Course extends Model
     public function employees()
     {
         return $this->belongsToMany('App\Employee')
-                ->select(['first_name', 'surname'])
+                ->withPivot(['courseparticipantstatus_id'])
+                ->select(['employee_id','courseparticipantstatus_id','first_name', 'surname'])
                 ->wherePivot('is_active', '=', 1);
     }
 

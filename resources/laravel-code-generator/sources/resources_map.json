@@ -48,10 +48,6 @@
         "resource-file": "disciplinary_actions.json"
     },
     {
-        "model-name": "CourseTrainingSession",
-        "resource-file": "course_training_sessions.json"
-    },
-    {
         "model-name": "TrainingDeliveryMethod",
         "resource-file": "training_delivery_methods.json"
     },
@@ -255,5 +251,20 @@
     {
         "model-name": "Day",
         "resource-file": "days.json"
+    },
+    {
+        "model-name": "CourseTrainingSession",
+        "resource-file": "course_training_sessions.json",
+        "table-name": "course_training_sessions"
+    },
+    {
+        "model-name": "TrainingSessionParticipant",
+        "resource-file": "training_session_participants.json",
+        "table-name": "training_session_participants"
+    },
+    {
+        "model-name": "ModuleAssessment",
+        "resource-file": "module_assessments.json",
+        "table-name": "module_assessments"
     }
 ]
