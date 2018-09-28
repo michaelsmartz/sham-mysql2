@@ -67,6 +67,13 @@
             }
         }
 
+        function matrixForm(id, event) {
+            if (id) {
+                $mainButton = $('.buttons button[type="submit"]');
+                loadUrl('{{url()->current()}}/'+id+'/matrix');
+            }
+        }
+
         function editFullPage(id, event){
             event.preventDefault();
             window.location = '{{url()->current()}}/'+id+'/edit';

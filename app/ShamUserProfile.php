@@ -25,6 +25,7 @@ class ShamUserProfile extends Model
      * where key is the Field Name and Value is a field description
      * @return array
      */
+
     public static function getSearcheableFields()
     {
         return array(
@@ -32,6 +33,7 @@ class ShamUserProfile extends Model
             'description'=>' Description',
         );
     }
+
     /**
      * Get an array of fields for the listing table in format key=>value
      * where key is the Field Name and Value is a field description
@@ -44,11 +46,13 @@ class ShamUserProfile extends Model
             'description'=>' Description'
         );
     }
-//Mutators and Accessors
+
+    //Mutators and Accessors
     public function setActiveAttribute($value)
     {
         $this->attributes['Active'] = $value ?: null;
     }
+
     //Custom function to retrieve list for combo box
     public static function getComboList(){
         $arr = self::getList(['Name'], "" , "", "");
@@ -59,6 +63,7 @@ class ShamUserProfile extends Model
         }
         return $ret;
     }
+
     /**
      * @param $Id - Id of the record for which we need the description
      * @return string description of the field associated to the Id
@@ -69,6 +74,7 @@ class ShamUserProfile extends Model
         if ($item!=null) return $item->Name;
         else return "";
     }
+
     /**
      * Get an array of fields allowed in the Model
      * @return array
@@ -77,19 +83,25 @@ class ShamUserProfile extends Model
     {
         return $this->fillable;
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function shamPermissions()
     {
-        return $this->belongsToMany('App\ShamPermission','shamuserprofile_shampermission');
+        return $this->belongsToMany('App\ShamPermission','sham_permission_sham_user_profile_system_sub_module')
+            ->withPivot('system_sub_module_id');
     }
+
     public function systemSubModules()
     {
-        return $this->belongsToMany('App\SystemSubModule','shamuserprofile_shampermission')
+        return $this->belongsToMany('App\SystemSubModule','sham_permission_sham_user_profile_system_sub_module')
+            ->withPivot('sham_permission_id')
             ->where('is_active','=',1);
     }
+
     public function systemModules()
     {
         return $this->hasManyThrough(

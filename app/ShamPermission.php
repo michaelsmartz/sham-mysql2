@@ -91,12 +91,12 @@ class ShamPermission extends Model
     }
 
     public function shamUserProfiles() {
-        return $this->belongsToMany('App\ShamUserProfile');
+        return $this->belongsToMany('App\ShamUserProfile', 'sham_permission_sham_user_profile_system_sub_module');
     }
 
     //TODO: TO BE REVIEWED WHEN IMPLEMENTING SERVICE
 	protected static $subModuleId = SystemSubModule::CONST_SYSTEM_CONFIGURATION;
     protected static $api = "ShamPermissions";
-    protected $table = 'shampermissions';
+    protected $table = 'sham_permissions';
 }
 ?>

@@ -96,6 +96,7 @@ Auth::routes();
             Route::resource('companies', 'CompaniesController');
             Route::resource('report_templates', 'ReportTemplatesController');
             Route::resource('sham_user_profiles', 'ShamUserProfilesController');
+            Route::any('sham_user_profiles/{Id}/matrix', 'ShamUserProfilesController@matrix')->name('sham_user_profiles.matrix');
             Route::resource('sham_users', 'ShamUsersController');
             Route::resource('users', 'UsersController');
             Route::resource('asset_conditions', 'AssetConditionsController');

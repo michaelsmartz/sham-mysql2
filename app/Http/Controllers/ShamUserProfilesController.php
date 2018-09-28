@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\ShamPermission;
 use App\ShamUserProfile;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -128,6 +130,80 @@ class ShamUserProfilesController extends CustomController
         }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Gets and Sets the permission matrix for user profiles
+     * @param Request $request
+     * @param $Id
+     * @return mixed
+     */
+    public function matrix(Request $request, $Id)
+    {
+        $profile = ShamUserProfile::find($Id);
+
+        if (!is_null($profile)) {
+
+            $permissionsUserProfilesArray = [];
+            $permissions = [];
+            $permissionMatrix = [];
+
+            $permissionsUserProfiles = $profile->shamPermissions()->get(['sham_user_profile_id','sham_permission_id','system_sub_module_id'])->all();
+
+            if (!is_null($permissionsUserProfiles)) {
+                foreach ($permissionsUserProfiles as $permissionsUserProfile) {
+                    $permissionsUserProfilesArray[] = [
+                        "Id" => $permissionsUserProfile->sham_user_profile_id,
+                        "ShamPermissionId" => $permissionsUserProfile->sham_permission_id,
+                        "SystemSubModuleId" => $permissionsUserProfile->system_sub_module_id
+                    ];
+                }
+            }
+
+            //Get all SubModules
+            $submodules = SystemSubModule::pluck('description','id')->all();
+
+            //Get all Permissions
+            $shamPermissions = ShamPermission::get(['id','name','description'])->all();
+
+            if (!is_null($shamPermissions)) {
+                foreach ($shamPermissions as $permission) {
+                    $permissions[] = [
+                        "Id" => $permission->id,
+                        "Name" => $permission->name,
+                        "Description" => $permission->description
+                    ];
+                }
+            }
+
+            //Build Matrix
+            foreach ($submodules as $submoduleKey=>$submoduleVal){
+                foreach ($permissions as $permissionKey=>$permissionVal){
+                    $permissionMatrix[$submoduleKey][$permissionKey] = 0;
+                }
+            }
+
+            //Update Matrix
+            if (!is_null($permissionsUserProfiles)) {
+                foreach ($permissionsUserProfiles as $permissionsUserProfile) {
+                        $permissionMatrix
+                        [$permissionsUserProfile->system_sub_module_id]
+                        [$permissionsUserProfile->sham_permission_id] = $permissionsUserProfile->sham_user_profile_id;
+                        unset($permissionMatrix[$permissionsUserProfile->system_sub_module_id][0]);
+                }
+            }
+
+            if ($request->ajax()) {
+                $view = view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'))->renderSections();
+                return response()->json([
+                    'title' => $view['modalTitle'],
+                    'content' => $view['modalContent'],
+                    'footer' => $view['modalFooter'],
+                    'url' => $view['postModalUrl']
+                ]);
+            }
+            return view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'));
+        }
     }
 
     /**

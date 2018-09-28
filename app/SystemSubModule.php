@@ -225,7 +225,7 @@ class SystemSubModule extends Model
 	}
 	
     public function shamPermissions() {
-        return $this->belongsToMany(ShamPermission::class, 'shamuserprofile_shampermission', 'sham_permission_id');
+        return $this->belongsToMany(ShamPermission::class, 'sham_permission_sham_user_profile_system_sub_module', 'sham_permission_id');
 	}
 	
     //TODO: TO BE REVIEWED WHEN IMPLEMENTING SERVICE
