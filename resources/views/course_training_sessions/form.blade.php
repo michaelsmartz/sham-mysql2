@@ -37,7 +37,7 @@
         <div class="form-group col-xs-12 {{ $errors->has('participants') ? 'has-error' : '' }}">
             <label for="employees[]">Participants</label>
             <div class="flex-wrapper">
-                {!! Form::select('employees[]', $participants,isset($employees)?$employees:null, array('name'=>'employees[]', 'multiple' => 'multiple', 'style' => 'width:100%', 'class'=> '', optional($courseTrainingSession)->is_final == '1' ? "disabled=disabled" : "required=>true" )) !!}
+                {!! Form::select('employees[]', $employees,isset($participants)?$participants:null, array('name'=>'employees[]', 'multiple' => 'multiple', 'style' => 'width:100%', 'class'=> '', optional($courseTrainingSession)->is_final == '1' ? "disabled=disabled" : "required=>true" )) !!}
                 {!! $errors->first('employees[]', '<p class="help-block">:message</p>') !!}
             </div>
         </div>

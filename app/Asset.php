@@ -48,7 +48,8 @@ class Asset extends Model
 
     public function assetEmployees()
     {
-        return $this->belongsToMany('App\Employee');
+        return $this->belongsToMany('App\Employee')
+                    ->select(['employee_id','date_in', 'date_out','comment']);
     }
 
 

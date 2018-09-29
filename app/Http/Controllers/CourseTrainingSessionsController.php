@@ -45,9 +45,9 @@ class CourseTrainingSessionsController extends CustomController
      */
     public function create()
     {
-        list($courses, $participants) = $this->createEditCommon();
+        list($courses, $employees) = $this->createEditCommon();
 
-        return view($this->baseViewPath . '.create', compact('courses','participants'));
+        return view($this->baseViewPath . '.create', compact('courses','employees'));
     }
 
     /**
@@ -66,8 +66,8 @@ class CourseTrainingSessionsController extends CustomController
             $input = array_except($request->all(), array('_token','employees'));
 
             $this->contextObj->addData($input);
-            $data->employees()
-            ->sync($employees); //sync what has been selected
+            // sync employee<--->training_session
+            $data->employees()->sync($employees); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -90,8 +90,14 @@ class CourseTrainingSessionsController extends CustomController
         $id = Route::current()->parameter('training_session');
         if(!empty($id)) {
             $data = $this->contextObj->findData($id);
-            $employees = $data->employees->pluck('id');
-            list($courses, $participants) = $this->createEditCommon();
+            list($courses, $temp) = $this->createEditCommon($data->is_final);
+            if($data->is_final == TRUE){
+                $employees = $data->employees->pluck('full_name','id');
+                $participants = [];
+            } else {
+                $participants = $data->employees->pluck('id');
+                $employees = $temp;
+            }
         }
 
         if($request->ajax()) {
@@ -130,39 +136,15 @@ class CourseTrainingSessionsController extends CustomController
 
             // no syncing if the previous save had already finalised the participants
             if($data->is_final != 1){
+                // sync employee<--->training_session
                 $data->employees()->sync($employees); //sync what has been selected
-                
-                if($request->is_final == TRUE){
-                    // user is finalising the participants, enrol them and add progress
-                    $course = Course::find($request->course_id);
-                    $tempCourseEmployees = $course->employees;
-                    
-                    $previousEnrolled = $sessionEmployees = [];
-                    foreach($tempCourseEmployees as $item){
-                        $previousEnrolled[$item->employee_id] = [
-                            'courseparticipantstatus_id' => $item->courseparticipantstatus_id,
-                            'course_id' => $course->id,
-                            'employee_id' => $item->employee_id
-                        ];
-                    }
 
-                    foreach($employees as $v) {
-                        $sessionEmployees[$v] = [
-                            'courseparticipantstatus_id' => 1,
-                            'course_id' => $course->id,
-                            'employee_id' => $v
-                        ];
-                    }
-                    $finalEmployees = array_merge($previousEnrolled, $sessionEmployees);
-                    // enrol selected employees and preserve previously enrolled employees
-                    $course->employees()->sync($finalEmployees);
-                }
+                $this->enrolAndSetProgressEmployees($data, $employees, $request);
             }
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
-
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
@@ -200,9 +182,9 @@ class CourseTrainingSessionsController extends CustomController
                             where employees.id not in (select employee_id from course_employee where course_id in (".$courseIds.")) and 
                                   employees.deleted_at is null 
                             order by full_name");
-        $participants = collect($temp)->pluck('full_name','id')->all();
+        $employees = collect($temp)->pluck('full_name','id')->all();
 
-        return array($courses, $participants);
+        return array($courses, $employees);
     }
 
         /**
@@ -222,5 +204,66 @@ class CourseTrainingSessionsController extends CustomController
         ];
         
         $this->validate($request, $validateFields);
+    }
+
+    protected function enrolAndSetProgressEmployees($data, $employees, $request){
+        try{
+            if($request->is_final == TRUE){
+                // user is finalising the participants, enrol them and add progress
+                $course = Course::find($request->course_id);
+                $tempCourseEmployees = $course->employees;
+                
+                $previousEnrolled = $sessionEmployees = $courseProgress = [];
+                foreach($tempCourseEmployees as $item){
+                    $previousEnrolled[$item->employee_id] = [
+                        'courseparticipantstatus_id' => $item->courseparticipantstatus_id,
+                        'course_id' => $course->id,
+                        'employee_id' => $item->employee_id
+                    ];
+                }
+    
+                foreach($employees as $v) {
+                    $sessionEmployees[$v] = [
+                        'courseparticipantstatus_id' => 1,
+                        'course_id' => $course->id,
+                        'employee_id' => $v
+                    ];
+                }
+                $finalEmployees = array_merge($previousEnrolled, $sessionEmployees);
+    
+                // sync course<--->employee
+                // enrol selected employees and preserve previously enrolled employees
+                $course->employees()->sync($finalEmployees);
+    
+                //prepare to add the course progress
+                $cmt = Course::with('modules.topics')->find($request->course_id);
+                if(sizeof($cmt)>0){
+                    $preCourseProgress = [];
+                    foreach($cmt->modules as $module){
+                        foreach($module->topics as $topic){
+                            $preCourseProgress[] = [
+                                'course_id' => $request->course_id,
+                                'module_id' => $module->id,
+                                'topic_id' => $topic->id
+                            ];
+                        }
+                    }
+    
+                    $courseProgressToSync = [];
+                    foreach($employees as $e){
+                        foreach($preCourseProgress as $k => &$v){
+                            $v['employee_id'] = $e;
+                            $courseProgressToSync[] = $v;
+                        }
+                    }
+                }
+    
+                //sync course_progress for the final training session participants
+                $course->employeeProgress()->sync($courseProgressToSync);
+            }
+    
+        } catch (Exception $exception) {
+            dump($exception); die;
+        }
     }
 }

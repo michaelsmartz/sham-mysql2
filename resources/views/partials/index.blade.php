@@ -20,11 +20,13 @@
 
         var oldVal, $mainButton, loadUrl = function (url) {
             $(".light-modal-body").empty().html('Loading...please wait...');
-            $.get(url).done(function (data) {
+            $.get(url).done(function(data) {
                 $(".light-modal-heading").empty().html(data.title);
                 $(".light-modal-body").empty().html(data.content);
                 $(".light-modal-footer .buttons").empty().html(data.footer);
                 $("#modalForm").attr('action',data.url);
+
+                cleanUrlHash();
 
                 $('.multipleSelect').each(function(){
                     $(this).multiselect({
@@ -40,6 +42,8 @@
                         }
                     });
                 });
+            }).fail(function() {
+                alerty.alert("An error has occurred. Please try again!");
             });
         };
 
@@ -47,12 +51,9 @@
             window.location = '{{url()->current()}}/create';
         });
 
-        function statusModalToggle(status) {
-            if (status == "success"){
-                $('#md').modal('toggle');
-            } else {
-                $('#mde').modal('toggle');
-            }
+        function cleanUrlHash() {
+            history.replaceState(null, "", window.location.pathname);
+            return window.location.hash.replace(/^#/, '');
         }
 
         function editForm(id, event) {

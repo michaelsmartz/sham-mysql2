@@ -7,7 +7,7 @@
         <li><a href="{{URL::to('/')}}/asset_groups">Asset Groups</a></li>
         <li><a href="{{URL::to('/')}}/asset_suppliers">Suppliers</a></li>
         <li class="active"><a href="{{URL::to('/')}}/assets">Asset List</a></li>
-        <li><a href="{{URL::to('/')}}/assetallocations">Asset Allocation</a></li>
+        <li><a href="{{URL::to('/')}}/asset_allocations">Asset Allocation</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">

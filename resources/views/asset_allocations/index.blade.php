@@ -5,13 +5,13 @@
     <br>
     <ul class="nav nav-tabs">
         <li><a href="{{URL::to('/')}}/asset_groups">Asset Groups</a></li>
-        <li class="active"><a href="{{URL::to('/')}}/asset_suppliers">Suppliers</a></li>
+        <li><a href="{{URL::to('/')}}/asset_suppliers">Suppliers</a></li>
         <li><a href="{{URL::to('/')}}/assets">Asset List</a></li>
-        <li><a href="{{URL::to('/')}}/asset_allocations">Asset Allocation</a></li>
+        <li class="active"><a href="{{URL::to('/')}}/asset_allocations">Asset Allocation</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($assetSuppliers) > 0)
+            @if(count($assetEmployees) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
@@ -21,35 +21,35 @@
             </div>
             @endif
             <div class="table-responsive">
-            @if(count($assetSuppliers) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new asset supplier</h4>
+            @if(count($assetEmployees) == 0)
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new asset employee</h4>
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                            <th data-sortable="true">Name</th>
-                            <th data-sortable="true">Telephone</th>
-                            <th data-sortable="true">Email Address</th>
-                            <th data-sortable="true">Comments</th>
+                            <th data-sortable="true">Asset</th>
+                            <th data-sortable="true">Tag</th>
+                            <th data-sortable="true">Employee</th>
+                            <th data-sortable="true">Date Out</th>
+                            <th data-sortable="true">Date In</th>
+
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($assetSuppliers as $assetSupplier)
-                        <tr id="tr{{$assetSupplier->id}}">
-                            <td>{{ $assetSupplier->name }}</td>
-                            <td>{{ $assetSupplier->telephone }}</td>
-                            <td>{{ $assetSupplier->email_address }}</td>
-                            <td>{{ $assetSupplier->comments }}</td>
+                        @foreach($assetEmployees as $assetEmployee)
+                        <tr id="tr{{$assetEmployee->id}}">
+                            <td>{{ optional($assetEmployee->asset)->name }}</td>
+                            <td><span class="badge badge-info">{{ optional($assetEmployee->asset)->tag }}</span></td>
+                            <td>{{ optional($assetEmployee->employee)->full_name }}</td>
+                            <td>{{ $assetEmployee->date_out }}</td>
+                            <td>{{ $assetEmployee->date_in }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$assetSupplier->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$assetEmployee->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$assetSupplier->id}}')">
-                                        <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -57,11 +57,11 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $assetSuppliers->render() !!}
+                    {!! $assetEmployees->render() !!}
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'asset_suppliers.destroy'])
+            @component('partials.index', ['routeName'=> 'asset_allocations.destroy'])
             @endcomponent
         </div>
     </div>

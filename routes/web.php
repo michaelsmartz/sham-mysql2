@@ -59,6 +59,7 @@ Auth::routes();
             Route::resource('assets', 'AssetsController');
             Route::resource('asset_groups', 'AssetGroupsController');
             Route::resource('asset_suppliers', 'AssetSuppliersController');
+            Route::resource('asset_allocations', 'AssetAllocationsController');
         #endregion
 
         #region Configuration parameters routes

@@ -47,6 +47,12 @@ class Course extends Model
                 ->wherePivot('is_active', '=', 1);
     }
 
+    public function employeeProgress()
+    {
+        return $this->belongsToMany('App\Employee', 'course_progress')
+                    ->select(['employee_id','module_id','topic_id','is_completed','completed_at']);
+    }
+
     public function trainingSessions()
     {
         return $this->hasMany(CourseTrainingSession::class);

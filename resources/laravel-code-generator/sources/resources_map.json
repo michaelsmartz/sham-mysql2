@@ -266,5 +266,10 @@
         "model-name": "ModuleAssessment",
         "resource-file": "module_assessments.json",
         "table-name": "module_assessments"
+    },
+    {
+        "model-name": "AssetEmployee",
+        "resource-file": "asset_employees.json",
+        "table-name": "asset_employee"
     }
 ]

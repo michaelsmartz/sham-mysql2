@@ -54,7 +54,7 @@ class CoursesController extends CustomController
 
             $modules = array_get($request->all(),'modules');
 
-            $input = array_except($request->all(),array('_token', 'modules'));
+            $input = array_except($request->all(),array('_token', 'q',  'modules'));
             
             $data = $this->contextObj->addData($input);
             $data->modules()
@@ -105,7 +105,7 @@ class CoursesController extends CustomController
             $this->validator($request);
             
             $modules = array_get($request->all(),'modules');
-            $input = array_except($request->all(),array('_token','_method','modules'));
+            $input = array_except($request->all(),array('_token','_method', 'q', 'modules'));
 
             $this->contextObj->updateData($id, $input);
             $data = Course::find($id);

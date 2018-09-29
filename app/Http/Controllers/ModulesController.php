@@ -53,7 +53,7 @@ class ModulesController extends CustomController
             $this->validator($request);
 
             $topics = array_get($request->all(),'topics');
-            $input = array_except($request->all(),array('_token', 'topics'));
+            $input = array_except($request->all(),array('_token', 'q', 'topics'));
 
             $data = $this->contextObj->addData($input);
             $data->topics()
@@ -81,7 +81,8 @@ class ModulesController extends CustomController
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
-                'footer' => $view['modalFooter']
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
             ]);
         }
 
@@ -102,7 +103,7 @@ class ModulesController extends CustomController
             $this->validator($request);
 
             $topics = array_get($request->all(),'topics');
-            $input = array_except($request->all(),array('_token','_method', 'topics'));
+            $input = array_except($request->all(),array('_token','_method', 'q', 'topics'));
 
             $this->contextObj->updateData($id, $input);
             $data = Module::find($id);
@@ -112,7 +113,7 @@ class ModulesController extends CustomController
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
-            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
         return redirect()->route($this->baseViewPath .'.index');
