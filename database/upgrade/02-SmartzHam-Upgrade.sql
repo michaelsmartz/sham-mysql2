@@ -2137,9 +2137,6 @@ CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP 
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `users` CHANGE `Username` `username` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
-
 #---- Added on 24/09/2018
 ALTER TABLE `course_module`
 DROP FOREIGN KEY `FK_CourseModules_Course`,
@@ -2167,8 +2164,8 @@ ALTER TABLE `assetsuppliers`
 RENAME TO  `asset_suppliers` ;
 
 #---- category_questions
-ALTER TABLE `category_questions`
-DROP FOREIGN KEY `FK_CategoryQuestions_CategoryQuestionTypes`;
+#--ALTER TABLE `category_questions`
+#--DROP FOREIGN KEY `FK_CategoryQuestions_CategoryQuestionTypes`;
 
 ALTER TABLE `category_questions`
 CHANGE COLUMN `categoryquestiontype_Id` `category_question_type_id` INT(11) NOT NULL ;
@@ -2191,8 +2188,8 @@ RENAME TO  `employee_training_session`;
 
 #---- Added on 30/09/2018
 
-ALTER TABLE `category_question_choices`
-DROP FOREIGN KEY `FK_CategoryQuestionChoices_CategoryQuestions2`;
+#--ALTER TABLE `category_question_choices`
+#--DROP FOREIGN KEY `FK_CategoryQuestionChoices_CategoryQuestions2`;
 
 ALTER TABLE `category_question_choices`
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ,
@@ -2224,3 +2221,9 @@ CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL ;
 
 ALTER TABLE `email_addresses`
 CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `email_address_type_id`;
+
+UPDATE `sham_permissions` SET `Alias` = 'List' WHERE `sham_permissions`.`id` = 1;
+UPDATE `sham_permissions` SET `Alias` = 'Read' WHERE `sham_permissions`.`id` = 2;
+UPDATE `sham_permissions` SET `Alias` = 'Write' WHERE `sham_permissions`.`id` = 3;
+UPDATE `sham_permissions` SET `Alias` = 'Delete' WHERE `sham_permissions`.`id` = 4;
+UPDATE `sham_permissions` SET `Alias` = 'Create' WHERE `sham_permissions`.`id` = 5

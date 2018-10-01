@@ -139,5 +139,7 @@ alter table `mediables` add index `mediables_tag_index`(`tag`);
 alter table `mediables` add index `mediables_order_index`(`order`);
 alter table `mediables` add constraint `mediables_media_id_foreign` foreign key (`media_id`) references `media` (`id`) on delete cascade;
 
+ALTER TABLE `users` CHANGE `Username` `username` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
 
 RENAME TABLE `employee_disability` TO `disability_employee`;
