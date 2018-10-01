@@ -943,3 +943,11 @@ ADD CONSTRAINT `FK_CategoryQuestions_CategoryQuestionTypes`
   REFERENCES `shamdev`.`category_question_types` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+  #---- Added on 30/09/2018
+ALTER TABLE `category_question_choices`
+ADD CONSTRAINT `FK_CategoryQuestionChoices_CategoryQuestions2`
+FOREIGN KEY (`category_question_id`)
+REFERENCES `category_questions` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;

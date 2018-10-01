@@ -2137,7 +2137,7 @@ CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP 
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `users` CHANGE `Username` `username` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ALTER TABLE `users` CHANGE `Username` `username` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
 
 #---- Added on 24/09/2018
@@ -2176,3 +2176,24 @@ CHANGE COLUMN `categoryquestiontype_Id` `category_question_type_id` INT(11) NOT 
 RENAME TABLE `shamdev`.`time_group_day_time_period` TO `shamdev`.`day_time_group_time_period`;
 
 RENAME TABLE `shamdev`.`shamuserprofile_shampermission` TO `shamdev`.`sham_permission_sham_user_profile_system_sub_module`;
+
+#---- Added on 2018-09-25
+#---- Law Categories
+ALTER TABLE `shamdev`.`lawcategories`
+RENAME TO  `shamdev`.`law_categories` ;
+
+ALTER TABLE `shamdev`.`course_training_sessions`
+RENAME TO  `shamdev`.`training_sessions` ;
+
+ALTER TABLE `shamdev`.`training_session_participants`
+RENAME TO  `shamdev`.`employee_training_session` ;
+
+
+#---- Added on 30/09/2018
+
+ALTER TABLE `category_question_choices`
+DROP FOREIGN KEY `FK_CategoryQuestionChoices_CategoryQuestions2`;
+
+ALTER TABLE `category_question_choices`
+CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ,
+CHANGE COLUMN `choicetext` `choice_text` LONGTEXT NOT NULL ;

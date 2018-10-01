@@ -271,5 +271,15 @@
         "model-name": "AssetEmployee",
         "resource-file": "asset_employees.json",
         "table-name": "asset_employee"
+    },
+    {
+        "model-name": "Category_Questions",
+        "resource-file": "category__questions.json",
+        "table-name": "category__questions"
+    },
+    {
+        "model-name": "CategoryQuestion",
+        "resource-file": "category_questions.json",
+        "table-name": "category_questions"
     }
 ]
