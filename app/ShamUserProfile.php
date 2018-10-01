@@ -106,7 +106,7 @@ class ShamUserProfile extends Model
     {
         return $this->hasManyThrough(
             'App\SystemSubModule',
-            'shamuserprofile_shampermission',
+            'sham_permission_sham_user_profile_system_sub_module',
             'sham_user_profile_id',
             'system_sub_module_id',
             'id',
@@ -116,8 +116,8 @@ class ShamUserProfile extends Model
     public function listMatrix()
     {
         $temp = $this->
-        join('shamuserprofile_shampermission', 'sham_user_profiles.id', '=', 'shamuserprofile_shampermission.sham_user_profile_id')
-            ->join('system_sub_modules', 'shamuserprofile_shampermission.system_sub_module_id', '=', 'system_sub_modules.id')
+        join('sham_permission_sham_user_profile_system_sub_module', 'sham_user_profiles.id', '=', 'sham_permission_sham_user_profile_system_sub_module.sham_user_profile_id')
+            ->join('system_sub_modules', 'sham_permission_sham_user_profile_system_sub_module.system_sub_module_id', '=', 'system_sub_modules.id')
             ->join('system_modules', 'system_sub_modules.system_module_id', '=', 'system_modules.id')
             ->select(['system_module_id','system_sub_module_id','sham_permission_id'])
             ->where('sham_user_profile_id', '=', $this->id)
