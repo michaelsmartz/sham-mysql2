@@ -166,13 +166,16 @@ class ShamUserProfilesController extends CustomController
             //Get all Permissions
             $shamPermissions = ShamPermission::get(['id','name','description'])->all();
 
+            $count = 1;
             if (!is_null($shamPermissions)) {
                 foreach ($shamPermissions as $permission) {
-                    $permissions[] = [
+                    $permissions[$count] = [
                         "Id" => $permission->id,
                         "Name" => $permission->name,
                         "Description" => $permission->description
                     ];
+
+                    $count++;
                 }
             }
 
@@ -189,7 +192,6 @@ class ShamUserProfilesController extends CustomController
                         $permissionMatrix
                         [$permissionsUserProfile->system_sub_module_id]
                         [$permissionsUserProfile->sham_permission_id] = $permissionsUserProfile->sham_user_profile_id;
-                        unset($permissionMatrix[$permissionsUserProfile->system_sub_module_id][0]);
                 }
             }
 
