@@ -146,20 +146,18 @@ class ShamUserProfilesController extends CustomController
 
             if ($request->isMethod('post')) {
                 $sham_user_profile_pivot = [];
-                //dd($request->Permission);
                 foreach ($request->Permission as $system_sub_module_id => $permissions) {
-                    foreach ($permissions as $permission) {
+                    foreach ($permissions as $permission_id => $permission) {
+
                         if($permission != 0) {
                             $sham_user_profile_pivot[] = [
                                 'sham_user_profile_id' => $Id,
-                                'sham_permission_id' => $permission,
+                                'sham_permission_id' => $permission_id,
                                 'system_sub_module_id' => $system_sub_module_id,
                             ];
                         }
                     }
                 }
-
-                //dd($sham_user_profile_pivot);
 
                 $profile->shamPermissions()->sync([]);
                 $profile->shamPermissions()->sync($sham_user_profile_pivot);
