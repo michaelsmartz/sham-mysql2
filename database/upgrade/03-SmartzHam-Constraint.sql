@@ -30,7 +30,7 @@ ADD CONSTRAINT `FK_Teams_TimeGroups`
 
 
 #---- TimeGroupDays/time_group_day_time_period 
-ALTER TABLE `time_group_day_time_period` 
+ALTER TABLE `day_time_group_time_period` 
 ADD CONSTRAINT `FK_TimeGroupDays_Days`
   FOREIGN KEY (`day_id`)
   REFERENCES `days` (`id`)
@@ -98,7 +98,7 @@ ADD CONSTRAINT `FK_Laws_Countries`
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_Laws_LawCategories`
   FOREIGN KEY (`law_category_id`)
-  REFERENCES `lawcategories` (`Id`)
+  REFERENCES `law_categories` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
   
@@ -125,7 +125,7 @@ ADD CONSTRAINT `FK_Assets_AssetGroups`
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_Assets_Suppliers`
   FOREIGN KEY (`asset_supplier_id`)
-  REFERENCES `assetsuppliers` (`id`)
+  REFERENCES `asset_suppliers` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
   
@@ -338,7 +338,7 @@ ADD CONSTRAINT `FK_TopicAttachments_Topics`
   ON UPDATE NO ACTION;
 
 #---- trainingsessions
-ALTER TABLE `course_training_sessions` 
+ALTER TABLE `training_sessions` 
 ADD CONSTRAINT `FK_TrainingSessions_Courses1`
   FOREIGN KEY (`course_id`)
   REFERENCES `courses` (`id`)
@@ -480,7 +480,7 @@ ADD CONSTRAINT `FK_AssessmentsAssessmentCategories_Assessments`
  
 ALTER TABLE `category_questions` 
 ADD CONSTRAINT `FK_CategoryQuestions_CategoryQuestionTypes`
-  FOREIGN KEY (`categoryquestiontype_Id`)
+  FOREIGN KEY (`category_question_type_id`)
   REFERENCES `category_question_types` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
@@ -488,7 +488,7 @@ ADD CONSTRAINT `FK_CategoryQuestions_CategoryQuestionTypes`
 #---- categoryquestionchoices/category_question_choices 
   ALTER TABLE `category_question_choices` 
 ADD CONSTRAINT `FK_CategoryQuestionChoices_CategoryQuestions2`
-  FOREIGN KEY (`categoryquestion_id`)
+  FOREIGN KEY (`category_question_id`)
   REFERENCES `category_questions` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
@@ -853,7 +853,7 @@ ADD CONSTRAINT `FK_Timelines_TimelineEventTypes`
   ON UPDATE NO ACTION;
   
   #---- trainingsessionparticipants
-  ALTER TABLE `training_session_participants` 
+  ALTER TABLE `employee_training_session` 
 ADD CONSTRAINT `FK_TrainingSessionParticipants_Employees`
   FOREIGN KEY (`employee_id`)
   REFERENCES `employees` (`id`)
@@ -861,7 +861,7 @@ ADD CONSTRAINT `FK_TrainingSessionParticipants_Employees`
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_TrainingSessionParticipants_TrainingSessions`
   FOREIGN KEY (`training_session_id`)
-  REFERENCES `course_training_sessions` (`id`)
+  REFERENCES `training_sessions` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
   
@@ -887,7 +887,7 @@ ADD CONSTRAINT `FK_TelephoneNumbers_TelephoneNumberTypes`
   ON UPDATE NO ACTION;
   
   #----shamuserprofile_shampermission
-  ALTER TABLE `shamuserprofile_shampermission` 
+  ALTER TABLE `sham_permission_sham_user_profile_system_sub_module` 
 ADD CONSTRAINT `FK_ShamUserProfilesSubModulePermissions_ShamPermissions`
   FOREIGN KEY (`sham_permission_id`)
   REFERENCES `sham_permissions` (`id`)
@@ -936,18 +936,14 @@ ADD CONSTRAINT `FK_CourseModules_Module`
   ON UPDATE NO ACTION;
 
 
-#---- category_questions
-ALTER TABLE `category_questions`
-ADD CONSTRAINT `FK_CategoryQuestions_CategoryQuestionTypes`
-  FOREIGN KEY (`category_question_type_id`)
-  REFERENCES `category_question_types` (`id`)
+  ALTER TABLE `email_addresses`
+ADD CONSTRAINT `FK_EmailAddresses_EmailAddressTypes`
+FOREIGN KEY (`email_address_type_id`)
+REFERENCES `email_address_types` (`id`)
   ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
-
-  #---- Added on 30/09/2018
-ALTER TABLE `category_question_choices`
-ADD CONSTRAINT `FK_CategoryQuestionChoices_CategoryQuestions2`
-FOREIGN KEY (`category_question_id`)
-REFERENCES `category_questions` (`id`)
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `FK_EmailAddresses_Employees`
+FOREIGN KEY (`employee_id`)
+REFERENCES `employees` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
