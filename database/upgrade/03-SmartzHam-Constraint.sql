@@ -952,14 +952,14 @@ REFERENCES `category_questions` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
-  ALTER TABLE `shamdev`.`email_addresses`
+  ALTER TABLE `email_addresses`
 ADD CONSTRAINT `FK_EmailAddresses_EmailAddressTypes`
 FOREIGN KEY (`email_address_type_id`)
-REFERENCES `shamdev`.`email_address_types` (`id`)
+REFERENCES `email_address_types` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_EmailAddresses_Employees`
 FOREIGN KEY (`employee_id`)
-REFERENCES `shamdev`.`employees` (`id`)
+REFERENCES `employees` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;

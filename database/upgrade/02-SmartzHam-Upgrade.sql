@@ -2208,11 +2208,11 @@ CHANGE COLUMN `date_in` `date_in` DATE NULL DEFAULT NULL AFTER `date_out`;
 ALTER TABLE `telephone_numbers`
 CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `telephone_number_type_id`;
 
-ALTER TABLE `shamdev`.`email_addresses`
+ALTER TABLE `email_addresses`
 DROP FOREIGN KEY `FK_EmailAddresses_EmailAddressTypes`,
 DROP FOREIGN KEY `FK_EmailAddresses_Employees`;
 
-ALTER TABLE `shamdev`.`email_addresses`
+ALTER TABLE `email_addresses`
 ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
 ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
 ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`,
