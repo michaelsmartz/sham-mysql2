@@ -65,18 +65,18 @@
     }
 
     &__expander {
-        padding: 15px 15px 40px 15px;
+        padding: 15px 15px 65px 15px;
         /*color: #8b9597;*/
 
         & > .form-group {
-            padding-top: 10px;
-            padding-bottom: 15px;
+            padding-top: 12px;
+            padding-bottom: 20px;
             clear:left;
         }
 
-        /*& > .form-group:last-child {
+        & > .form-group:last-child {
             padding-bottom: 30px;
-        }*/
+        }
     }
 
     &--active &__heading {

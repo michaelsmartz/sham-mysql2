@@ -10525,7 +10525,7 @@ textarea.parsley-error {
   padding: 0;
   list-style-type: none;
   font-size: 0.9em;
-  line-height: 1.2em;
+  line-height: 1em;
   opacity: 0;
   transition: all .3s ease-in;
   -o-transition: all .3s ease-in;

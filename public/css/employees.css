@@ -57,7 +57,7 @@ textarea.parsley-error {
   padding: 0;
   list-style-type: none;
   font-size: 0.9em;
-  line-height: 1.2em;
+  line-height: 1em;
   opacity: 0;
   transition: all .3s ease-in;
   -o-transition: all .3s ease-in;
@@ -131,17 +131,18 @@ textarea.parsley-error {
 }
 
 .accordion__expander {
-  padding: 15px 15px 40px 15px;
+  padding: 15px 15px 65px 15px;
   /*color: #8b9597;*/
-  /*& > .form-group:last-child {
-            padding-bottom: 30px;
-        }*/
 }
 
 .accordion__expander > .form-group {
-  padding-top: 10px;
-  padding-bottom: 15px;
+  padding-top: 12px;
+  padding-bottom: 20px;
   clear: left;
+}
+
+.accordion__expander > .form-group:last-child {
+  padding-bottom: 30px;
 }
 
 .accordion--active .accordion__heading {

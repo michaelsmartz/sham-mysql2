@@ -1,3 +1,6 @@
+@php
+    if(sizeof($errors->bag) > 0){ dump($errors);}
+@endphp
 @extends('portal-index')
 @section('title','Employees')
 @section('subtitle','Add, edit and remove employees of your company')

@@ -21,9 +21,11 @@
             duplicatesWarning: true,
             filenameTest: function(fileName, fileExt, $container) {
                 var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
+                
                 @if(!empty($acceptedFiles && sizeof($acceptedFiles)>0))
                 allowedExts = {!! $acceptedFiles !!};
                 @endif
+
                 var $info = $('<div class="errorLabel center"></div>');
                 var proceed = true;
                 // length check
@@ -70,5 +72,5 @@
 
 </script>
 @if(!Request::ajax())
-@endsection
+@append
 @endif

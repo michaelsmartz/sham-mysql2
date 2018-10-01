@@ -11,7 +11,10 @@
     <div class="row">
         <div class="col-sm-12">
             @include ('employees.form', [
-                'employee' => $data
+                'employee' => $data,
+                'fieldLabel' => 'Attach Files',
+                'desc' => 'Upload documents only',
+                'acceptedFiles' => $acceptedFiles
             ])
         </div>
     </div>
@@ -19,10 +22,8 @@
 
 @section('post-body')
 <link href="{{URL::to('/')}}/css/post-bootstrap-admin-reset.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
-<link rel="stylesheet" type="text/css" href="{{URL::to('/')}}/plugins/droparea/droparea.css" media="screen" >
-<script type="text/javascript" src="{{URL::to('/')}}/plugins/droparea/droparea.min.js"></script>
 <link href="{{URL::to('/')}}/css/employees.min.css" rel="stylesheet">
-
+<link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
 <style>
 
     .SumoSelect>.optWrapper { z-index: 1000; }
@@ -103,6 +104,70 @@
     }
 </style>
 <script src="{{URL::to('/')}}/js/employees.js"></script>
+<script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
+<script>
+    var initializeFileUpload = function() {
+        $('#one').fileUploader({
+            useFileIcons: true,
+            fileMaxSize: 1.7,
+            totalMaxSize: 5,
+            useLoadingBars: false,
+            linkButtonContent: '',
+            deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
+            resultPrefix: "attachment",
+            duplicatesWarning: true,
+            filenameTest: function(fileName, fileExt, $container) {
+                var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
+                
+                @if(!empty($acceptedFiles && sizeof($acceptedFiles)>0))
+                allowedExts = {!! $acceptedFiles !!};
+                @endif
+
+                var $info = $('<div class="errorLabel center"></div>');
+                var proceed = true;
+                // length check
+                if (fileName.length > 120) {
+                    $info.html('Name too long...');
+                    proceed = false;
+                }
+                // replace not allowed characters
+                fileName = fileName.replace(" ", "-");
+                // extension check
+                if (allowedExts.indexOf(fileExt) < 0) {
+                    $info.html('Extension not allowed...');
+                    proceed = false;
+                }
+                // show an error message, but only if there is no other error message already there
+                if (!proceed && $container.children('.errorLabel').length < 1) {
+                    $container.append($info);
+                    setTimeout(function() {
+                        $info.animate({opacity: 0}, 300, function() {
+                            $(this).remove();
+                        });
+                    }, 5000);
+                }
+                if (!proceed) {
+                    return false;
+                }
+                return fileName;
+            },
+            langs: {
+                'en': {
+                    intro_msg: "{{$fieldLabel or 'Add attachments...' }}",
+                    dropZone_msg: '<span><strong>Drop</strong>&nbsp;your files here or <strong>click</strong>&nbsp;in this area</span>',
+                    maxSizeExceeded_msg: 'File too large',
+                    totalMaxSizeExceeded_msg: 'Total size exceeded',
+                    duplicated_msg: 'File duplicated (skipped)',
+                    name_placeHolder: 'name',
+                }
+            }
+        });
+    };
+    $(function(){
+        initializeFileUpload();
+    });
+
+</script>
 @endsection
 
 @section('content')

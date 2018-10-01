@@ -18,13 +18,9 @@ class Employee extends Model
      * @var array
      */
     protected $fillable = [
-                  'title_id',
-                  'initials',
-                  'first_name',
-                  'surname',
-                  'known_as',
-                  'birth_date',
-                  'marital_status_id',
+                  'title_id', 'initials', 
+                  'first_name', 'surname', 'known_as',
+                  'birth_date', 'marital_status_id',
                   'id_number',
                   'passport_country_id',
                   'nationality',
@@ -84,17 +80,9 @@ class Employee extends Model
               ->whereNull('deleted_at');
     }
 
-    /**
-     * Get full name
-     * @return string
-    */
-    /*public function getFullNameAttribute(){
-        return $this->first_name . ' ' . $this->surname;
-    }*/
-
     public function disabilities()
     {
-        return $this->hasMany('App\Disability','disability_id','id');
+        return $this->belongsToMany(Disability::class);
     }
 
     public function title()
@@ -178,18 +166,6 @@ class Employee extends Model
         ->whereIn('address_type_id', [1,2]);
     }
 
-    /*
-    public function homeAddress(){
-        return $this->hasOne('App\Address','employee_id','id')
-                    ->where('address_type_id', '=', 1);
-    }
-
-    public function postalAddress(){
-        return $this->hasOne('App\Address','employee_id','id')
-                    ->where('address_type_id', '=', 2);
-    }
-    */
-
     public function assetallocation()
     {
         return $this->hasOne('App\Assetallocation','employee_id','id');
@@ -231,28 +207,14 @@ class Employee extends Model
                     ->whereIn('email_address_type_id', [1,2]);
     }
 
-    /*
-    public function privateEmail()
-    {
-        return $this->hasOne('App\EmailAddress','employee_id','id')
-                    ->where('email_address_type_id', '=', 1);
-    }
-
-    public function workEmail()
-    {
-        return $this->hasOne('App\EmailAddress','employee_id','id')
-                    ->where('email_address_type_id', '=', 2);
-    }
-    */
-
     public function employeeAttachment()
     {
         return $this->hasOne('App\EmployeeAttachment','employee_id','id');
     }
 
-    public function employeeSkills()
+    public function skills()
     {
-        return $this->hasMany('App\EmployeeSkill','employee_id','id');
+        return $this->belongsToMany(Skill::class);
     }
 
     public function evaluationassessors()

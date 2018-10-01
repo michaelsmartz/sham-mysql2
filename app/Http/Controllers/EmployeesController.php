@@ -8,10 +8,12 @@ use App\Branch;
 use App\Gender;
 use App\Country;
 use App\Employee;
+use App\EmailAddress;
 use App\DisabilityCategory;
 use App\Division;
 use App\Language;
 use App\JobTitle;
+use App\TelephoneNumber;
 use App\TimeGroup;
 use App\Taxstatus;
 use App\Department;
@@ -29,6 +31,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Redirect;
 
 class EmployeesController extends CustomController
 {
@@ -62,13 +65,15 @@ class EmployeesController extends CustomController
         list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
         $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
         $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
-
+        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
+        $this->contextObj->employee_code = $this->increment('A000');
+        $employee = $this->contextObj;
         return view($this->baseViewPath .'.create',
             compact('_mode','fullPageEdit','data','titles','genders','maritalstatuses',
                     'countries','languages','ethnicGroups',
                     'immigrationStatuses','taxstatuses','departments',
                     'teams','employeeStatuses','jobTitles',
-                    'divisions','branches','skills','disabilities','lineManagers'));        
+                    'divisions','branches','skills','disabilities','lineManagers','employee','acceptedFiles'));        
     }
 
         /**
@@ -86,6 +91,7 @@ class EmployeesController extends CustomController
         $_mode = 'edit';
         $fullPageEdit = true;
         $lineManagers = array();
+        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
 
         $id = Route::current()->parameter('employee');
 
@@ -94,6 +100,8 @@ class EmployeesController extends CustomController
             $this->contextObj->with = [];
 
             $data = $this->contextObj->findData($id);
+
+            $data->load(['skills','disabilities']);
 
             $data->homeAddress = $data->addresses->where('address_type_id', 1)->first();
             $data->postalAddress = $data->addresses->where('address_type_id', 2)->first();
@@ -104,6 +112,8 @@ class EmployeesController extends CustomController
             $data->homePhone = $data->phones->where('telephone_number_type_id', 1)->first();
             $data->mobilePhone = $data->phones->where('telephone_number_type_id', 2)->first();
             $data->workPhone = $data->phones->where('telephone_number_type_id', 3)->first();
+            
+            $qualifications = $data->qualifications;
 
             list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
                  $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
@@ -128,12 +138,16 @@ class EmployeesController extends CustomController
             */
         }
 
+        $employeeSkills = $data->skills->pluck('id');
+        $employeeDisabilities = $data->disabilities->pluck('id');
+
         return view($this->baseViewPath .'.edit',
             compact('_mode','fullPageEdit','data','titles','genders','maritalstatuses',
                     'countries','languages','ethnicGroups',
                     'immigrationStatuses','taxstatuses','departments',
                     'teams','employeeStatuses','jobTitles',
-                    'divisions','branches','skills','disabilities','lineManagers'));
+                    'divisions','branches','skills','disabilities','lineManagers',
+                    'employeeSkills','employeeDisabilities','qualifications','acceptedFiles'));
     }
 
     /**
@@ -145,16 +159,18 @@ class EmployeesController extends CustomController
      */
     public function store(Request $request)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
 
-        $input = array_except($request->all(),array('_token'));
+            $this->saveEmployee($request);
 
-        $context = $this->contextObj->addData($input);
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
 
-        $this->attach($request, $context->id);
-
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
-
+        } catch (Exception $exception) {
+            dd($exception);
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+        }
+        //die;
         return redirect()->route($this->baseViewPath .'.index');
     }
 
@@ -168,15 +184,19 @@ class EmployeesController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        $this->validator($request);
+        try {
+            $this->validator($request);
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
 
-        $input = array_except($request->all(),array('_token','_method'));
+            $this->saveEmployee($request, $id);
 
-        $this->contextObj->updateData($id, $input);
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
-        \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
+        }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return Redirect::to($redirectsTo);
     }
 
     /**
@@ -345,12 +365,9 @@ class EmployeesController extends CustomController
             'division_id' => 'nullable',
             'branch_id' => 'nullable',
             'picture' => 'nullable|file|string|min:0|max:4294967295',
-            'line_manager_id' => 'nullable|numeric|min:0|max:4294967295',
-            'leave_balance_at_start' => 'nullable|numeric|min:-2147483648|max:2147483647',
-     
+            'line_manager_id' => 'nullable|numeric|min:0|max:4294967295'
         ];
         
-
         $this->validate($request, $validateFields);
     }
 
@@ -367,13 +384,12 @@ class EmployeesController extends CustomController
         $departments = Department::pluck('description','id')->all();
         $teams = Team::pluck('description','id')->all();
         $employeeStatuses = EmployeeStatus::pluck('description','id')->all();
-        //$jobTitles = JobTitle::pluck('description','id')->all();
         $jobTitles = JobTitle::jobReportingLines();
+
         $divisions = Division::pluck('description','id')->all();
         $branches = Branch::pluck('description','id')->all();
         $skills = Skill::pluck('description','id')->all();
         $disabilities = DisabilityCategory::with('disabilities')->get();
-        
 
         $results = array($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups, 
                          $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses, 
@@ -381,5 +397,80 @@ class EmployeesController extends CustomController
         );
 
         return $results;
+    }
+
+    protected function increment($string) { 
+        return preg_replace_callback('/^([^0-9]*)([0-9]+)([^0-9]*)$/', array($this, "subfunc"), $string); 
+    }
+
+    protected function subfunc($m) { 
+        return $m[1].str_pad($m[2]+1, strlen($m[2]), '0', STR_PAD_LEFT).$m[3]; 
+    }
+
+    protected function saveEmployee($request, $id = null) {
+
+        $otherFields = ['redirectsTo','homeAddress','postalAddress','homePhone','mobilePhone','workPhone','privateEmail','workEmail','skills','disabilities','qualifications'];
+        foreach($otherFields as $field){
+            ${$field} = array_get($request->all(), $field);
+        }
+        
+        if ($id == null) { // Create
+            $input = array_except($request->all(), $otherFields);
+            $data = $this->contextObj->addData($input);
+        } else { // Update
+            $excludeFields = array_merge($otherFields,['_token','_method']);
+            $input = array_except($request->all(), $excludeFields);
+
+            $this->contextObj->updateData($id, $input);
+            $data = Employee::find($id);
+        }
+
+        $this->attach($request, $data->id);
+
+        if(empty($homePhone['tel_number'] || 
+           empty($mobilePhone['tel_number']) || 
+           empty($workPhone['tel_number']))) {
+            TelephoneNumber::where('employee_id', '=', $data->id)->delete();
+        }
+        $data->phones()
+             ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>1], 
+                                $homePhone);
+        $data->phones()
+             ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>2], 
+                                $mobilePhone);
+
+        $data->phones()
+             ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>3], 
+                                $workPhone);
+
+        if(!isset($privateEmail['email_address']) || !isset($workEmail['email_address'])) {
+            EmailAddress::where('employee_id', '=', $data->id)->delete();
+        }
+        if(!empty($privateEmail['email_address'])) {
+            $data->emails()
+                 ->updateOrCreate(['employee_id'=>$data->id, 'email_address_type_id'=>1],
+                                  $privateEmail);
+        }
+        if(!empty($workEmail['email_address'])) {
+            $data->emails()
+                 ->updateOrCreate(['employee_id'=>$data->id, 'email_address_type_id'=>2],
+                                  $workEmail);
+        }
+
+        $data->addresses()
+             ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>1],
+                                $homeAddress);
+        $data->addresses()
+             ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>2],
+                                $postalAddress);
+
+        foreach($qualifications as $qual){
+            $data->qualifications()
+                 ->updateOrCreate(['employee_id'=>$data->id], $qual);
+        }
+
+        $data->skills()->sync($skills);
+        $data->disabilities()->sync($disabilities);
+        
     }
 }

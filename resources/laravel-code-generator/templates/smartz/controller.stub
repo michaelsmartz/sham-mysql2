@@ -6,6 +6,7 @@ namespace [% namespace %];
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class [% controller_name %] [% controller_extends %]
@@ -70,8 +71,10 @@ class [% controller_name %] [% controller_extends %]
     {
         try {
             $this->validator($request);
-
-            $input = array_except($request->all(),array('_token','_method'));
+            
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+            
+            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
 
@@ -81,7 +84,7 @@ class [% controller_name %] [% controller_extends %]
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**

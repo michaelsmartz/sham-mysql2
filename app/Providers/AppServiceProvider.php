@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         Form::macro(
-            'groupSelect', 
+            'groupRelationSelect', 
             function ($name, $collection, $relation, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
             {
         
@@ -59,6 +59,19 @@ class AppServiceProvider extends ServiceProvider
                         $groups[$model->$groupName][$rel->$optValue] = $rel->$optName;
                     }
                     
+                }
+
+                return Form::select($name, $groups, $selected, $attributes);
+            }
+        );
+
+        Form::macro(
+            'groupSelect', 
+            function ($name, $collection, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
+            {
+                $groups = [];
+                foreach ($collection as $model) {
+                    $groups[$model->$groupName][$model->$optValue] = $model->$optName;
                 }
 
                 return Form::select($name, $groups, $selected, $attributes);
