@@ -29,6 +29,7 @@
 @section('content')
     <form method="POST" action="{{ route('sham_user_profiles.matrix', $profile->id) }}" id="sham_user_profile_matrix_form" name="sham_user_profile_matrix_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
+        <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">
             <div class="box-body">
                 @yield('modalContent')

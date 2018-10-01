@@ -6,7 +6,7 @@
         <tr class="filters">
             <th></th>
             @foreach($permissions as $permissionKey=>$permissionValue)
-                <th title="{{$permissionValue['Description']}}">{{$permissionValue['Name']}}</th>
+                <th title="{{$permissionValue['Description']}}">{{$permissionValue['Alias']}}</th>
             @endforeach
         </tr>
         </thead>

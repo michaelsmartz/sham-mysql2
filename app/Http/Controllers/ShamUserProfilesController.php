@@ -143,8 +143,7 @@ class ShamUserProfilesController extends CustomController
         $profile = ShamUserProfile::find($Id);
 
         if (!is_null($profile)) {
-
-            if ($request->isMethod('post')) {
+            if ($request->isMethod('patch')) {
                 $sham_user_profile_pivot = [];
                 foreach ($request->Permission as $system_sub_module_id => $permissions) {
                     foreach ($permissions as $permission_id => $permission) {
@@ -161,6 +160,7 @@ class ShamUserProfilesController extends CustomController
 
                 $profile->shamPermissions()->sync([]);
                 $profile->shamPermissions()->sync($sham_user_profile_pivot);
+                \Session::put('success','Permission Matrix updated Successfully!!');
                 return redirect()->route($this->baseViewPath .'.index');
             }else {
 
@@ -184,14 +184,14 @@ class ShamUserProfilesController extends CustomController
                 $submodules = SystemSubModule::pluck('description', 'id')->all();
 
                 //Get all Permissions
-                $shamPermissions = ShamPermission::get(['id', 'name', 'description'])->all();
+                $shamPermissions = ShamPermission::get(['id', 'alias', 'description'])->all();
 
                 $count = 1;
                 if (!is_null($shamPermissions)) {
                     foreach ($shamPermissions as $permission) {
                         $permissions[$count] = [
                             "Id" => $permission->id,
-                            "Name" => $permission->name,
+                            "Alias" => $permission->alias,
                             "Description" => $permission->description
                         ];
 
@@ -224,8 +224,8 @@ class ShamUserProfilesController extends CustomController
                         'url' => $view['postModalUrl']
                     ]);
                 }
-                return view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'));
             }
+            return view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'));
         }
 
     }
