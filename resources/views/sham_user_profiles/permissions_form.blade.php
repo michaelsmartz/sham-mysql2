@@ -1,6 +1,6 @@
 <div class="row">
-    <button id="selectall" type="button" class="btn btn-default bg-grey b-r4" >Select All</button>
-    <button id="unselectall" type="button" class="btn btn-default bg-grey b-r4" >Unselect All</button>
+    <button id="selectall" type="button" class="btn btn-primary" >Select All</button>
+    <button id="unselectall" type="button" class="btn btn-primary" >Unselect All</button>
     <table class="table table-striped">
         <thead>
         <tr class="filters">
@@ -16,7 +16,9 @@
                 <tr >
                     <th>{!! $submodules[$permissionMatrixKey] !!}</th>
                     @foreach($permissionMatrixValue as $key=>$value)
-                        <td> {!! Form::checkbox('Permission['.$permissionMatrixKey.']['.$key.']',$value,($value!=0))!!}</td>
+                        <td>
+                            {!! Form::checkbox('Permission['.$permissionMatrixKey.']['.$key.']',$value,($value!=0),array('class'=>'permissionCheckBox'))!!}
+                        </td>
                     @endforeach
                 </tr>
             @endif
@@ -37,10 +39,22 @@
 <script>
     //select all checkboxes
     $("#selectall").click(function(){  //"select all" click
-        $(':checkbox').prop('checked',true);
+        $(':checkbox').prop('checked','checked');
+        $(':checkbox').val(1);
     });
     $("#unselectall").click(function(){  //"select all" click
-        $(':checkbox').prop('checked',false);
+        $(':checkbox').removeAttr('checked');
+        $(':checkbox').val(0);
+    });
+
+    $(".permissionCheckBox").click(function(){
+        if($(this).is(':checked')){
+            this.setAttribute('checked','checked');
+            $(this).val(1);
+        }else{
+            $(this).removeAttr('checked');
+            $(this).val(0);
+        }
     });
 </script>
 

@@ -144,68 +144,92 @@ class ShamUserProfilesController extends CustomController
 
         if (!is_null($profile)) {
 
-            $permissionsUserProfilesArray = [];
-            $permissions = [];
-            $permissionMatrix = [];
-
-            $permissionsUserProfiles = $profile->shamPermissions()->get(['sham_user_profile_id','sham_permission_id','system_sub_module_id'])->all();
-
-            if (!is_null($permissionsUserProfiles)) {
-                foreach ($permissionsUserProfiles as $permissionsUserProfile) {
-                    $permissionsUserProfilesArray[] = [
-                        "Id" => $permissionsUserProfile->sham_user_profile_id,
-                        "ShamPermissionId" => $permissionsUserProfile->sham_permission_id,
-                        "SystemSubModuleId" => $permissionsUserProfile->system_sub_module_id
-                    ];
+            if ($request->isMethod('post')) {
+                $sham_user_profile_pivot = [];
+                //dd($request->Permission);
+                foreach ($request->Permission as $system_sub_module_id => $permissions) {
+                    foreach ($permissions as $permission) {
+                        if($permission != 0) {
+                            $sham_user_profile_pivot[] = [
+                                'sham_user_profile_id' => $Id,
+                                'sham_permission_id' => $permission,
+                                'system_sub_module_id' => $system_sub_module_id,
+                            ];
+                        }
+                    }
                 }
-            }
 
-            //Get all SubModules
-            $submodules = SystemSubModule::pluck('description','id')->all();
+                //dd($sham_user_profile_pivot);
 
-            //Get all Permissions
-            $shamPermissions = ShamPermission::get(['id','name','description'])->all();
+                $profile->shamPermissions()->sync([]);
+                $profile->shamPermissions()->sync($sham_user_profile_pivot);
+                return redirect()->route($this->baseViewPath .'.index');
+            }else {
 
-            $count = 1;
-            if (!is_null($shamPermissions)) {
-                foreach ($shamPermissions as $permission) {
-                    $permissions[$count] = [
-                        "Id" => $permission->id,
-                        "Name" => $permission->name,
-                        "Description" => $permission->description
-                    ];
+                $permissionsUserProfilesArray = [];
+                $permissions = [];
+                $permissionMatrix = [];
 
-                    $count++;
+                $permissionsUserProfiles = $profile->shamPermissions()->get(['sham_user_profile_id', 'sham_permission_id', 'system_sub_module_id'])->all();
+
+                if (!is_null($permissionsUserProfiles)) {
+                    foreach ($permissionsUserProfiles as $permissionsUserProfile) {
+                        $permissionsUserProfilesArray[] = [
+                            "Id" => $permissionsUserProfile->sham_user_profile_id,
+                            "ShamPermissionId" => $permissionsUserProfile->sham_permission_id,
+                            "SystemSubModuleId" => $permissionsUserProfile->system_sub_module_id
+                        ];
+                    }
                 }
-            }
 
-            //Build Matrix
-            foreach ($submodules as $submoduleKey=>$submoduleVal){
-                foreach ($permissions as $permissionKey=>$permissionVal){
-                    $permissionMatrix[$submoduleKey][$permissionKey] = 0;
+                //Get all SubModules
+                $submodules = SystemSubModule::pluck('description', 'id')->all();
+
+                //Get all Permissions
+                $shamPermissions = ShamPermission::get(['id', 'name', 'description'])->all();
+
+                $count = 1;
+                if (!is_null($shamPermissions)) {
+                    foreach ($shamPermissions as $permission) {
+                        $permissions[$count] = [
+                            "Id" => $permission->id,
+                            "Name" => $permission->name,
+                            "Description" => $permission->description
+                        ];
+
+                        $count++;
+                    }
                 }
-            }
 
-            //Update Matrix
-            if (!is_null($permissionsUserProfiles)) {
-                foreach ($permissionsUserProfiles as $permissionsUserProfile) {
+                //Build Matrix
+                foreach ($submodules as $submoduleKey => $submoduleVal) {
+                    foreach ($permissions as $permissionKey => $permissionVal) {
+                        $permissionMatrix[$submoduleKey][$permissionKey] = 0;
+                    }
+                }
+
+                //Update Matrix
+                if (!is_null($permissionsUserProfiles)) {
+                    foreach ($permissionsUserProfiles as $permissionsUserProfile) {
                         $permissionMatrix
                         [$permissionsUserProfile->system_sub_module_id]
                         [$permissionsUserProfile->sham_permission_id] = $permissionsUserProfile->sham_user_profile_id;
+                    }
                 }
-            }
 
-            if ($request->ajax()) {
-                $view = view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'))->renderSections();
-                return response()->json([
-                    'title' => $view['modalTitle'],
-                    'content' => $view['modalContent'],
-                    'footer' => $view['modalFooter'],
-                    'url' => $view['postModalUrl']
-                ]);
+                if ($request->ajax()) {
+                    $view = view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'))->renderSections();
+                    return response()->json([
+                        'title' => $view['modalTitle'],
+                        'content' => $view['modalContent'],
+                        'footer' => $view['modalFooter'],
+                        'url' => $view['postModalUrl']
+                    ]);
+                }
+                return view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'));
             }
-            return view($this->baseViewPath . '.permissions', compact('profile', 'submodules', 'permissions', 'permissionMatrix'));
         }
+
     }
 
     /**
