@@ -115,6 +115,11 @@ Auth::routes();
             Route::resource('module_assessments', 'ModuleAssessmentsController' );
             Route::resource('training_sessions', 'CourseTrainingSessionsController' );
         #endregion
+
+        #region Quality
+            Route::resource('assessments', 'AssessmentsController' );
+            Route::resource('category_questions', 'CategoryQuestionsController' );
+        #endregion
   
     });
 #endregion

@@ -281,5 +281,10 @@
         "model-name": "CategoryQuestion",
         "resource-file": "category_questions.json",
         "table-name": "category_questions"
+    },
+    {
+        "model-name": "CategoryQuestionChoice",
+        "resource-file": "category_question_choices.json",
+        "table-name": "category_question_choices"
     }
 ]
