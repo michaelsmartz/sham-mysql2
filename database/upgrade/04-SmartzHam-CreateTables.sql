@@ -138,3 +138,6 @@ alter table `mediables` add index `mediables_mediable_id_mediable_type_index`(`m
 alter table `mediables` add index `mediables_tag_index`(`tag`);
 alter table `mediables` add index `mediables_order_index`(`order`);
 alter table `mediables` add constraint `mediables_media_id_foreign` foreign key (`media_id`) references `media` (`id`) on delete cascade;
+
+
+RENAME TABLE `employee_disability` TO `disability_employee`;

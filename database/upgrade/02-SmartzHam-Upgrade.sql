@@ -2183,10 +2183,10 @@ ALTER TABLE `lawcategories`
 RENAME TO  `law_categories` ;
 
 ALTER TABLE `course_training_sessions`
-RENAME TO  `training_sessions` ;
+RENAME TO  `training_sessions`;
 
 ALTER TABLE `training_session_participants`
-RENAME TO  `employee_training_session` ;
+RENAME TO  `employee_training_session`;
 
 
 #---- Added on 30/09/2018
@@ -2197,3 +2197,30 @@ DROP FOREIGN KEY `FK_CategoryQuestionChoices_CategoryQuestions2`;
 ALTER TABLE `category_question_choices`
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ,
 CHANGE COLUMN `choicetext` `choice_text` LONGTEXT NOT NULL ;
+
+ALTER TABLE `asset_employee`
+ALTER `date_out` DROP DEFAULT;
+
+ALTER TABLE `asset_employee`
+CHANGE COLUMN `date_out` `date_out` DATE NOT NULL AFTER `employee_id`,
+CHANGE COLUMN `date_in` `date_in` DATE NULL DEFAULT NULL AFTER `date_out`;
+
+ALTER TABLE `telephone_numbers`
+CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `telephone_number_type_id`;
+
+ALTER TABLE `shamdev`.`email_addresses`
+DROP FOREIGN KEY `FK_EmailAddresses_EmailAddressTypes`,
+DROP FOREIGN KEY `FK_EmailAddresses_Employees`;
+
+ALTER TABLE `shamdev`.`email_addresses`
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`,
+CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
+CHANGE COLUMN `EmployeeId` `employee_id` INT(11) NOT NULL ,
+CHANGE COLUMN `EmailAddress` `email_address` VARCHAR(512) NOT NULL ,
+CHANGE COLUMN `EmailAddressTypeId` `email_address_type_id` INT(11) NOT NULL ,
+CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL ;
+
+ALTER TABLE `email_addresses`
+CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `email_address_type_id`;
