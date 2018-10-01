@@ -2057,82 +2057,82 @@ ALTER TABLE `asset_conditions` ADD `is_system_predefined` TINYINT(1) NOT NULL DE
 
 #--- Added on 22/09/2018
 
-ALTER TABLE `shamdev`.`addresses`
+ALTER TABLE `addresses`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`assessments`
+ALTER TABLE `assessments`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`assessment_categories`
+ALTER TABLE `assessment_categories`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`category_questions`
+ALTER TABLE `category_questions`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`category_question_choices`
+ALTER TABLE `category_question_choices`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`category_question_types`
+ALTER TABLE `category_question_types`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`product_categories`
+ALTER TABLE `product_categories`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`evaluation_statuses`
+ALTER TABLE `evaluation_statuses`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`assessment_category_category_question`
+ALTER TABLE `assessment_category_category_question`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`evaluations`
+ALTER TABLE `evaluations`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`evaluation_assessors`
+ALTER TABLE `evaluation_assessors`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`evaluation_results`
+ALTER TABLE `evaluation_results`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`forms`
+ALTER TABLE `forms`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`asset_groups`
+ALTER TABLE `asset_groups`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`assets`
+ALTER TABLE `assets`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
 
-ALTER TABLE `shamdev`.`laws`
+ALTER TABLE `laws`
 CHANGE COLUMN `created_at` `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `updated_at` `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL ;
@@ -2141,17 +2141,17 @@ ALTER TABLE `users` CHANGE `Username` `username` VARCHAR(100) CHARACTER SET lati
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
 
 #---- Added on 24/09/2018
-ALTER TABLE `shamdev`.`course_module`
+ALTER TABLE `course_module`
 DROP FOREIGN KEY `FK_CourseModules_Course`,
 DROP FOREIGN KEY `FK_CourseModules_Module`;
 
-ALTER TABLE `shamdev`.`course_module`
+ALTER TABLE `course_module`
 CHANGE COLUMN `Id` `id` INT(11) NOT NULL AUTO_INCREMENT ,
 CHANGE COLUMN `CourseId` `course_id` INT(11) NOT NULL ,
 CHANGE COLUMN `ModuleId` `module_id` INT(11) NOT NULL ;
 
 #---- Asset suppliers
-ALTER TABLE `shamdev`.`assetsuppliers`
+ALTER TABLE `assetsuppliers`
 ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
 ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
 ADD COLUMN `deleted_at` DATETIME NULL DEFAULT NULL AFTER `updated_at`,
@@ -2163,30 +2163,30 @@ CHANGE COLUMN `Address3` `address3` VARCHAR(100) NULL DEFAULT NULL ,
 CHANGE COLUMN `Telephone` `telephone` VARCHAR(20) NULL DEFAULT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ;
 
-ALTER TABLE `shamdev`.`assetsuppliers`
-RENAME TO  `shamdev`.`asset_suppliers` ;
+ALTER TABLE `assetsuppliers`
+RENAME TO  `asset_suppliers` ;
 
 #---- category_questions
-ALTER TABLE `shamdev`.`category_questions`
+ALTER TABLE `category_questions`
 DROP FOREIGN KEY `FK_CategoryQuestions_CategoryQuestionTypes`;
 
-ALTER TABLE `shamdev`.`category_questions`
+ALTER TABLE `category_questions`
 CHANGE COLUMN `categoryquestiontype_Id` `category_question_type_id` INT(11) NOT NULL ;
 
-RENAME TABLE `shamdev`.`time_group_day_time_period` TO `shamdev`.`day_time_group_time_period`;
+RENAME TABLE `time_group_day_time_period` TO `day_time_group_time_period`;
 
-RENAME TABLE `shamdev`.`shamuserprofile_shampermission` TO `shamdev`.`sham_permission_sham_user_profile_system_sub_module`;
+RENAME TABLE `shamuserprofile_shampermission` TO `sham_permission_sham_user_profile_system_sub_module`;
 
 #---- Added on 2018-09-25
 #---- Law Categories
-ALTER TABLE `shamdev`.`lawcategories`
-RENAME TO  `shamdev`.`law_categories` ;
+ALTER TABLE `lawcategories`
+RENAME TO  `law_categories` ;
 
-ALTER TABLE `shamdev`.`course_training_sessions`
-RENAME TO  `shamdev`.`training_sessions` ;
+ALTER TABLE `course_training_sessions`
+RENAME TO  `training_sessions` ;
 
-ALTER TABLE `shamdev`.`training_session_participants`
-RENAME TO  `shamdev`.`employee_training_session` ;
+ALTER TABLE `training_session_participants`
+RENAME TO  `employee_training_session` ;
 
 
 #---- Added on 30/09/2018

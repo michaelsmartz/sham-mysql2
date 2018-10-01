@@ -923,24 +923,24 @@ CHANGE COLUMN `announcement_status_id` `announcement_status_id` ENUM('1', '2') N
 
 #---- Added on 24/09/2018
 
-ALTER TABLE `shamdev`.`course_module`
+ALTER TABLE `course_module`
 ADD CONSTRAINT `FK_CourseModules_Course`
   FOREIGN KEY (`course_id`)
-  REFERENCES `shamdev`.`courses` (`Id`)
+  REFERENCES `courses` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_CourseModules_Module`
   FOREIGN KEY (`module_id`)
-  REFERENCES `shamdev`.`modules` (`id`)
+  REFERENCES `modules` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
 
 #---- category_questions
-ALTER TABLE `shamdev`.`category_questions`
+ALTER TABLE `category_questions`
 ADD CONSTRAINT `FK_CategoryQuestions_CategoryQuestionTypes`
   FOREIGN KEY (`category_question_type_id`)
-  REFERENCES `shamdev`.`category_question_types` (`id`)
+  REFERENCES `category_question_types` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
