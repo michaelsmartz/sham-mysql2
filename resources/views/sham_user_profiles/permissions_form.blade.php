@@ -1,31 +1,29 @@
-<div class="row">
-    <button id="selectall" type="button" class="btn btn-primary" >Select All</button>
-    <button id="unselectall" type="button" class="btn btn-primary" >Unselect All</button>
-    <table class="table table-striped">
-        <thead>
-        <tr class="filters">
-            <th></th>
-            @foreach($permissions as $permissionKey=>$permissionValue)
-                <th title="{{$permissionValue['Description']}}">{{$permissionValue['Alias']}}</th>
-            @endforeach
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($permissionMatrix as  $permissionMatrixKey=>$permissionMatrixValue)
-            @if (isset($submodules[$permissionMatrixKey]))
-                <tr >
-                    <th>{!! $submodules[$permissionMatrixKey] !!}</th>
-                    @foreach($permissionMatrixValue as $key=>$value)
-                        <td>
-                            {!! Form::checkbox('Permission['.$permissionMatrixKey.']['.$key.']',$value,($value!=0),array('class'=>'permissionCheckBox'))!!}
-                        </td>
-                    @endforeach
-                </tr>
-            @endif
+<button id="selectall" type="button" class="btn btn-primary" >Select All</button>
+<button id="unselectall" type="button" class="btn btn-primary" >Unselect All</button>
+<table class="table table-striped">
+    <thead>
+    <tr class="filters">
+        <th></th>
+        @foreach($permissions as $permissionKey=>$permissionValue)
+            <th title="{{$permissionValue['Description']}}">{{$permissionValue['Alias']}}</th>
         @endforeach
-        </tbody>
-    </table>
-</div>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach($permissionMatrix as  $permissionMatrixKey=>$permissionMatrixValue)
+        @if (isset($submodules[$permissionMatrixKey]))
+            <tr >
+                <th>{!! $submodules[$permissionMatrixKey] !!}</th>
+                @foreach($permissionMatrixValue as $key=>$value)
+                    <td>
+                        {!! Form::checkbox('Permission['.$permissionMatrixKey.']['.$key.']',$value,($value!=0),array('class'=>'permissionCheckBox'))!!}
+                    </td>
+                @endforeach
+            </tr>
+        @endif
+    @endforeach
+    </tbody>
+</table>
 
 @if(!Request::ajax())
 @section('post-body')
