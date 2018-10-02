@@ -39,7 +39,7 @@ class CategoryQuestion extends Model
 
     public function categoryQuestionChoices()
     {
-        return $this->hasMany('App\CategoryQuestionChoice','categoryquestion_id','id');
+        return $this->hasMany('App\CategoryQuestionChoice','category_question_id','id');
     }
 
     public function evaluationResults()

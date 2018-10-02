@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\CategoryQuestion;
 use Illuminate\Http\Request;
 use App\CategoryQuestionType;
+use App\CategoryQuestionChoice;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class CategoryQuestionsController extends CustomController
@@ -56,26 +58,60 @@ class CategoryQuestionsController extends CustomController
      */
     public function store(Request $request)
     {
-
-        dump(Input::all());die;
-
+        //dump(Input::all());die;
         try {
             //$this->validator($request);
 
             $input = array_except($request->all(),array('_token'));
 
-            $this->contextObj->addData($input);
+            $data = $this->contextObj->addData($input);
+
+            if (Input::has('Choices'))
+            {
+                $choices = Input::get('Choices');
+
+                foreach($choices as $choice)
+                {
+                    //dump($choice['Choice']);die;
+                    if ( !empty($choice['Choice']))
+                    {
+                        $categoryquestionchoice = new CategoryQuestionChoice();
+                        $categoryquestionchoice->category_question_id = $data->id;
+                        $categoryquestionchoice->choice_text = $choice['Choice'];
+                        $categoryquestionchoice->points = $choice['Point'];
+                        $data->categoryQuestionChoices()->save($categoryquestionchoice);
+                    }
+                }
+            }
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-            dump($exception->getMessage());
-            die;
+            //dump($exception->getMessage());die;
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
         return redirect()->route($this->baseViewPath .'.index');
 
+    }
+
+    public function edit(Request $request)
+    {
+
+        $data = null;
+        $_mode = 'edit';
+        $fullPageEdit = true;
+        $id = Route::current()->parameter('category_question');
+
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+        }
+        $categoryQuestionTypes = CategoryQuestionType::pluck('description','id')->all();
+
+        $categoryquestionchoices = CategoryQuestionChoice::where('category_question_id',$id)->get();
+
+        return view($this->baseViewPath .'.edit',
+            compact('_mode','fullPageEdit','data','categoryQuestionTypes','categoryquestionchoices'));
     }
 
     /**
@@ -89,19 +125,49 @@ class CategoryQuestionsController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            //$this->validator($request);
 
             $input = array_except($request->all(),array('_token','_method'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+
+            $this->contextObj->findData($id)->categoryQuestionChoices()->delete();
+            $data = $this->contextObj->findData($id);
+
+            if (Input::has('Choices'))
+            {
+                $choices = Input::get('Choices');
+
+                foreach($choices as $choice)
+                {
+                    //dump($choice['Choice']);die;
+                    if ( !empty($choice['Choice']))
+                    {
+                        $categoryquestionchoice = new CategoryQuestionChoice();
+                        $categoryquestionchoice->category_question_id = $data->id;
+                        $categoryquestionchoice->choice_text = $choice['Choice'];
+                        $categoryquestionchoice->points = $choice['Point'];
+                        $data->categoryQuestionChoices()->save($categoryquestionchoice);
+                    }
+                }
+
+                unset($input['Choices']);
+            }
+
+
+            unset($input['Id1']);
+            unset($input['Choice']);
+            unset($input['ChoicePoint']);
 
             $this->contextObj->updateData($id, $input);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            dump($exception->getMessage());die;
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**
