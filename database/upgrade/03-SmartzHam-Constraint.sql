@@ -947,3 +947,10 @@ FOREIGN KEY (`employee_id`)
 REFERENCES `employees` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+ALTER TABLE `shamdev`.`employees`
+ADD CONSTRAINT `FK_Employees_JobTitles`
+  FOREIGN KEY (`job_title_id`)
+  REFERENCES `shamdev`.`job_titles` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
