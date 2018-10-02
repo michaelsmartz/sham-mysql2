@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Form;
 use App\Survey;
 use App\SurveyResponse;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
@@ -34,7 +35,7 @@ class SurveysController extends CustomController
      */
     public function index()
     {
-        $surveys = $this->contextObj::filtered()->paginate(10);
+        $surveys = $this->contextObj::with('users.employee')->filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('surveys'));
     }
 

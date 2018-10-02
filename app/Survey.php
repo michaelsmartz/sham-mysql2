@@ -35,6 +35,8 @@ class Survey extends Model
                   'final'
               ];
 
+    public $searchable = ['title'];
+
     /**
      * The attributes that should be mutated to dates.
      *

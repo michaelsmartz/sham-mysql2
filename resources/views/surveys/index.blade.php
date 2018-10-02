@@ -20,9 +20,10 @@
                     <thead>
                         <tr>
                             <th data-sortable="true">Title</th>
+                            <th data-sortable="true">Status</th>
+                            <th data-sortable="true">Author</th>
                             <th data-sortable="true">Start Date</th>
                             <th data-sortable="true">End Date</th>
-                            <th data-sortable="true">Author</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -31,9 +32,10 @@
                         @foreach($surveys as $survey)
                         <tr id="tr{{$survey->id}}">
                             <td>{{ $survey->title }}</td>
+                            <td>{{ App\Enums\SurveyStatusType::getDescription($survey->survey_status_id) }}</td>
+                            <td>{{ (isset($survey->users->employee->surname) && isset($survey->users->employee->first_name)) ? $survey->users->employee->surname." ".$survey->users->employee->first_name : '' }}</td>
                             <td>{{ $survey->date_start }}</td>
                             <td>{{ $survey->EndDate }}</td>
-                            <td>{{ optional($survey->users)->name }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
