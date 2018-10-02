@@ -2,14 +2,15 @@
 @section('title', 'Edit Topic')
 
 @section('content')
-    <form method="POST" action="{{ route('topics.update', $data->id) }}" id="topic_form" name="topic_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('topics.update', $data->id) }}" id="topic_form" name="topic_form" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="row">
             <div class="col-sm-10">
                 @include ('topics.form', [
                     'topic' => $data,
-                    'fullPageEdit' => 'true'
+                    'fullPageEdit' => 'true',
+                    'acceptedFiles' => $acceptedFiles
                 ])
             </div>
         </div>

@@ -137,7 +137,7 @@ class AssetAllocationsController extends CustomController
      */
     protected function validator(Request $request)
     {
-        dd($this->contextObj);
+
         $validateFields = [
             'asset_id' => 'required',
             'employee_id' => 'required',

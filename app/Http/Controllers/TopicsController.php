@@ -70,10 +70,11 @@ class TopicsController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
+        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
         $id = Route::current()->parameter('topic');
         $data = $this->contextObj->findData($id);
 
-        return view($this->baseViewPath . '.edit', compact('data'));
+        return view($this->baseViewPath . '.edit', compact('data', 'acceptedFiles'));
     }
 
     /**
@@ -89,7 +90,7 @@ class TopicsController extends CustomController
 
         $input = array_except($request->all(),array('_token', '_method'));
         
-        return saveTopic($id, $input);
+        return $this->saveTopic($id, $input);
     }
 
     /**
@@ -211,20 +212,36 @@ class TopicsController extends CustomController
     private function saveTopic($id, $input)
     {
         try {
+
+            $snippetsLength = $input['snippetsLength'];
+            $hasAttachments = isset($input['attachment']) && sizeof($input['attachment'])>0;
+            $temp = array_except($input, ['snippetsLength','attachment','model']);
+
             if ($id == 0) {
-                $context = $this->contextObj->addData($input);
+                $context = $this->contextObj->addData($temp);
             } else {
-                $res = $this->contextObj->updateData($id, $input);
-                $data = $this->contextObj->findData($id);
+                $temp['id'] = $id;
+                $res = $this->contextObj->updateData($id, $temp);
+                $context = $this->contextObj->findData($id);
             }
+            if($hasAttachments){
+                $request = app('request');
+                $this->attach($request, $context->id);
+            }
+
         } catch (Exception $exception) {
-
-            return response()->json(['response' => 'KO'],500);
-
+            dump($exception);
+            return response()->json(['response' => 'KO'], 500);
         }
 
-        return response()->json(['response' => $this->contextObj->id]);
+        return response()->json(['response' => $context->id]);
 
+    }
+
+    protected function createRequest($method, $content, $uri = '/test',$server = ['CONTENT_TYPE' => 'application/json'],
+        $parameters = [], $cookies = [], $files = []) {
+        $request = new Request;
+        return $request->createFromBase(\Symfony\Component\HttpFoundation\Request::create($uri, $method, $parameters, $cookies, $files, $server, $content));
     }
 
     

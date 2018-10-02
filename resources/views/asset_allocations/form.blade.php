@@ -2,6 +2,9 @@
     
 <div class="form-group col-xs-12 {{ $errors->has('asset_id') ? 'has-error' : '' }}">
     <label for="asset_id">Asset</label>
+        @if(isset($assetEmployee->asset_id))
+        <input type="hidden" name="asset_id" value="{{$assetEmployee->asset_id}}">
+        @endif
         <select class="form-control" id="asset_id" name="asset_id" {!! optional($assetEmployee)->asset_id != '' ? 'disabled="disabled"' : 'required="true"' !!}>
         	    <option value="" style="display: none;" {{ old('asset_id', optional($assetEmployee)->asset_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select asset</option>
         	@foreach ($assets as $key => $asset)
@@ -16,6 +19,9 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('employee_id') ? 'has-error' : '' }}">
     <label for="employee_id">Employee</label>
+        @if(isset($assetEmployee->employee_id))
+        <input type="hidden" name="employee_id" value="{{$assetEmployee->employee_id}}">
+        @endif
         <select class="form-control" id="employee_id" name="employee_id" {!! optional($assetEmployee)->employee_id != '' ? 'disabled="disabled"' : 'required="true"' !!}>
         	    <option value="" style="display: none;" {{ old('employee_id', optional($assetEmployee)->employee_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select employee</option>
         	@foreach ($employees as $key => $employee)

@@ -1,9 +1,17 @@
 <div class="row">
-    {!! Form::hidden('topicId',$topic->id, ['id'=>'topicId', 'name'=>'topicId']) !!}
+    {!! Form::hidden('id',$topic->id, ['id'=>'topicId', 'name'=>'id']) !!}
+    {!! Form::hidden('model', 'Topic') !!}
     <div class="form-group col-xs-11 {{ $errors->has('header') ? 'has-error' : '' }}">
         <label for="header">Topic Heading</label>
             <input class="form-control" name="header" type="text" id="heading" value="{{ old('header', optional($topic)->header) }}" minlength="1" maxlength="299" required="true" placeholder="Enter header">
             {!! $errors->first('header', '<p class="help-block">:message</p>') !!}
+    </div>
+
+    <div class="form-group col-xs-11 {{ $errors->has('attachment') ? 'has-error' : '' }}">
+        <div class="fileUploader" id="one"></div>
+        <p class="text-muted">{{ $desc or 'You can upload any related files' }}. 
+            <small>One file can be max {{ config('attachment.max_size', 10485760)/1000 }} MB</small>
+        </p>
     </div>
 
     <div class="form-group col-xs-11 {{ $errors->has('data') ? 'has-error' : '' }}">
@@ -17,17 +25,17 @@
 </div>
 
 @section('post-body')
-
+<link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/keditor/1.1.4/css/keditor-1.1.4.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/keditor/1.1.4/css/keditor-components-1.1.4.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
+<script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script src="{{URL::to('/')}}/plugins/ckeditor/4.7.3/ckeditor.js"></script>
 <script src="{{URL::to('/')}}/plugins/ckeditor/4.7.3//adapters/jquery.js"></script>
 <script src="{{URL::to('/')}}/plugins/keditor/1.1.4/js/keditor-1.1.4.js">
     // modified renderSnippets function to render user images within container
 </script>
 <script src="{{URL::to('/')}}/plugins/keditor/1.1.4/js/keditor-components-1.1.4.js"></script>
-<script src="{{URL::to('/')}}/plugins/fine-uploader/fine-uploader.js"></script>
 <style>
     #keditor-sidebar {
         position: fixed;
@@ -82,6 +90,70 @@
 </style>
 <script>
     $(function() {
+
+        var initializeFileUpload = function() {
+            $('#one').fileUploader({
+                useFileIcons: true,
+                fileMaxSize: 1.7,
+                totalMaxSize: 5,
+                useLoadingBars: false,
+                linkButtonContent: '',
+                deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
+                resultPrefix: "attachment",
+                duplicatesWarning: true,
+                langs: {
+                    "en": {
+                        intro_msg: "Add attchments..."
+                        }
+                },
+                filenameTest: function(fileName, fileExt, $container) {
+                    var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
+                    
+                    @if(!empty($acceptedFiles && sizeof($acceptedFiles)>0))
+                    allowedExts = {!! $acceptedFiles !!};
+                    @endif
+
+                    var $info = $('<div class="errorLabel center"></div>');
+                    var proceed = true;
+                    // length check
+                    if (fileName.length > 120) {
+                        $info.html('Name too long...');
+                        proceed = false;
+                    }
+                    // replace not allowed characters
+                    fileName = fileName.replace(" ", "-");
+                    // extension check
+                    if (allowedExts.indexOf(fileExt) < 0) {
+                        $info.html('Extension not allowed...');
+                        proceed = false;
+                    }
+                    // show an error message, but only if there is no other error message already there
+                    if (!proceed && $container.children('.errorLabel').length < 1) {
+                        $container.append($info);
+                        setTimeout(function() {
+                            $info.animate({opacity: 0}, 300, function() {
+                                $(this).remove();
+                            });
+                        }, 5000);
+                    }
+                    if (!proceed) {
+                        return false;
+                    }
+                    return fileName;
+                },
+                langs: {
+                    'en': {
+                        intro_msg: "{{$fieldLabel or 'Add attachments...' }}",
+                        dropZone_msg: '<span><strong>Drop</strong>&nbsp;your files here or <strong>click</strong>&nbsp;in this area</span>',
+                        maxSizeExceeded_msg: 'File too large',
+                        totalMaxSizeExceeded_msg: 'Total size exceeded',
+                        duplicated_msg: 'File duplicated (skipped)',
+                        name_placeHolder: 'name',
+                    }
+                }
+            });
+        };
+
         $.keditor.DEFAULTS.snippetsTooltipEnabled = false;
         $.keditor.DEFAULTS.tabTooltipEnabled = false;
         $.keditor.DEFAULTS.tabContainersTitle = '';
@@ -98,11 +170,16 @@
         $.keditor.DEFAULTS.btnDeleteContainerText = '<i class="fa fa-times" title="Remove"></i>';
         $.keditor.DEFAULTS.btnDeleteComponentText = '<i class="fa fa-times" title="Remove"></i>';
         // {{URL::to('/')}}/keditor/snippets/default/snippets.blade.php
+        
+        initializeFileUpload();
+
         $('#content-area').keditor({
             snippetsUrl: "{{URL::to('topics/snippets')}}",
             contentAreasSelector: '#contentHolder'
         });
         //$('#Header').charcounter({placement: 'bottom-d'});
+
+
 
         $('#btnSave').click(function(){
             saveHandler(true, $(this));
@@ -126,25 +203,33 @@
         var id = $('#topicId').val();
         var content = $('#content-area').keditor('getContent');
         var header = $('#heading').val();
+        var snippetsLength = $('.keditor-snippets-inner > .keditor-snippet').length;
 
-        console.log(id,header,content);
+        var form = document.getElementById("topic_form");
+        var fd = new FormData($('#topic_form')[0]);
+        fd.append('id', id);
+        fd.append('snippetsLength', snippetsLength);
+        fd.append('data', content);
 
         var request = $.ajax({
             url: $('#topic_form').attr('action'),
             type: "POST",
             async: asychronousSave,
+            processData: false, contentType: false,
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            data: {
+            data: fd /*{
                 '_method' : 'PATCH', 'id': id, 'header': header, 'data': content
-            }
+            }*/
         });
         request.done(function (msg) {
             $('#topicId').val(msg.response);
+            $('#one').html('').data('fileUploader','');
+            $('#one').fileUploader();
         });
         request.fail(function (jqXHR, textStatus) {
-
+            console.log('fail');
         });
 
         request.always(function() {
