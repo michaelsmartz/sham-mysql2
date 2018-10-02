@@ -58,13 +58,13 @@
     <div class="form-group choicegroup">
         <div class="row">
             <div class="col-xs-1 hide">
-                {!! Form::text('Choices['.$key.'][Id1]',$categoryquestionchoice->Id,['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
+                {!! Form::text('Choices['.$key.'][Id1]',$categoryquestionchoice->id,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
             </div>
             <div class="col-xs-5">
-                {!! Form::text('Choices['.$key.'][Choice]',$categoryquestionchoice->ChoiceText,['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
+                {!! Form::text('Choices['.$key.'][Choice]',$categoryquestionchoice->choice_text,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
             </div>
             <div class="col-xs-2">
-                {!! Form::text('Choices['.$key.'][Point]',$categoryquestionchoice->Points,['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+                {!! Form::text('Choices['.$key.'][Point]',$categoryquestionchoice->points,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
             </div>
             <div class="col-xs-1">
                 <button type="button" class="btn btn-default addQualButton"><i class="fa fa-plus"></i></button>
@@ -82,13 +82,13 @@
     </div>
     <div class="row">
         <div class="col-xs-1 hide">
-            {!! Form::text('Choices[0][Id1]',(Request::has('Ids[0][Id1]')?Request::input('Ids[0][Id1]'):null),['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
+            {!! Form::text('Choices[0][Id1]',(Request::has('Ids[0][Id1]')?Request::input('Ids[0][Id1]'):null),['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
         </div>
         <div class="col-xs-5">
-            {!! Form::text('Choices[0][Choice]',(Request::has('Choices[0][Choice]')?Request::input('Choices[0][Choice]'):null),['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
+            {!! Form::text('Choices[0][Choice]',(Request::has('Choices[0][Choice]')?Request::input('Choices[0][Choice]'):null),['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
         </div>
         <div class="col-xs-2">
-            {!! Form::text('Choices[0][Point]',(Request::has('Choices[0][point]')?Request::input('Choices[0]Point'):null),['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+            {!! Form::text('Choices[0][Point]',(Request::has('Choices[0][point]')?Request::input('Choices[0]Point'):null),['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
         </div>
         <div class="col-xs-1">
             <button type="button" class="btn btn-default addQualButton"><i class="fa fa-plus"></i></button>
@@ -102,13 +102,13 @@
 <div class="form-group hide choicegroup" id="qualificationTemplate">
     <div class="row">
         <div class="col-xs-1 hide">
-            {!! Form::text('Id1',null,['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+            {!! Form::text('Id1',null,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
         </div>
         <div class="col-xs-5">
-            {!! Form::text('Choice',null,['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
+            {!! Form::text('Choice',null,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
         </div>
         <div class="col-xs-2">
-            {!! Form::text('ChoicePoint',null,['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+            {!! Form::text('ChoicePoint',null,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
         </div>
         <div class="col-xs-1">
             <button type="button" class="btn btn-default removeQualButton"><i class="fa fa-minus"></i></button>

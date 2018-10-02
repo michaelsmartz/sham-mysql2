@@ -143,7 +143,7 @@
                 <li><a href="{{URL::to('/')}}/assessmentcategories">Assessment Categories</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_CATEGORY_QUESTIONS]))
-                <li><a href="{{URL::to('/')}}/categoryquestions">Category Questions</a></li>
+                <li><a href="{{URL::to('/')}}/category_questions">Category Questions</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE][App\SystemSubModule::CONST_EVALUATIONS]))
                 <li><a href="{{URL::to('/')}}/evaluations">Evaluations</a></li>
