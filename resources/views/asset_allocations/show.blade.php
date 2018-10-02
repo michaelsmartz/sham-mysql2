@@ -1,7 +1,7 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'View Asset Employee')
+@section('title', 'View Asset Allocation')
 
-@section('modalTitle', 'View Asset Employee')
+@section('modalTitle', 'View Asset Allocation')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
 @endsection

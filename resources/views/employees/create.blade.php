@@ -2,7 +2,7 @@
 @section('title', 'Add New Employee')
 
 @section('content')
-    <form method="POST" action="{{ route('employees.store') }}" accept-charset="UTF-8" id="create_employee_form" name="create_employee_form" data-parsley-validate="">
+    <form method="POST" action="{{ route('employees.store') }}" accept-charset="UTF-8" id="create_employee_form" name="create_employee_form" data-parsley-validate="" enctype="multipart/form-data">
         {{ csrf_field() }}
         <div class="row">
             <div class="col-sm-12">

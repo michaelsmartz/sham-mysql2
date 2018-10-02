@@ -286,5 +286,10 @@
         "model-name": "CategoryQuestionChoice",
         "resource-file": "category_question_choices.json",
         "table-name": "category_question_choices"
+    },
+    {
+        "model-name": "SysConfigValue",
+        "resource-file": "sys_config_values.json",
+        "table-name": "sys_config_values"
     }
 ]
