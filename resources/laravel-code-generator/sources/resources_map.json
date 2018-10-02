@@ -298,5 +298,10 @@
     {
         "model-name": "Form",
         "resource-file": "forms.json"
+    },
+    {
+        "model-name": "SysConfigValue",
+        "resource-file": "sys_config_values.json",
+        "table-name": "sys_config_values"
     }
 ]

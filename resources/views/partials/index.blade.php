@@ -43,7 +43,7 @@
                     });
                 });
             }).fail(function() {
-                alerty.alert("An error has occurred. Please try again!");
+                alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
             });
         };
 

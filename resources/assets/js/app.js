@@ -17,6 +17,15 @@ $.ajaxSetup({
     }
 });
 
+function specialTitleCaseFormat() {
+    //var s = "mcdonald mack macdonald macleod elizabeth mchenry-phipps ramlall";
+    var s = $(this).val();
+    s = s.replace(/\b(m(a)?c)?(\w)(?=\w)/ig, function($1, $2, $3, $4) {
+        return ($2) ? "M" + ($3 || "") + "c" + $4.toUpperCase() : $4.toUpperCase();
+    });
+    $(this).val(s);
+}
+
 $('[data-toggle=offcanvas]').click(function() {
     $('.row-offcanvas').toggleClass('active');
 });
@@ -37,6 +46,8 @@ $(function() {
             timeInput: false,
         }).prop('readonly', 'true');
     });
+
+    $("body").delegate("input.fix-case", "change keyup input", specialTitleCaseFormat);
 });
 $.fn.clickToggle = function (f1, f2) {
     return this.each(function () {

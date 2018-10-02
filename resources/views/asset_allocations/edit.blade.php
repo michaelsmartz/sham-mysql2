@@ -1,7 +1,7 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Edit Asset Employee')
+@section('title', 'Edit Asset Allocation')
 
-@section('modalTitle', 'Edit Asset Employee')
+@section('modalTitle', 'Edit Asset Allocation')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
@@ -12,7 +12,7 @@
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            @include ('asset_employees.form', [
+            @include ('asset_allocations.form', [
                 'assetEmployee' => $data,
             ])
         </div>

@@ -171,7 +171,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('employees.update', $data->id) }}" id="edit_employee_form" name="edit_employee_form" data-parsley-validate="" accept-charset="UTF-8" ,
+    <form method="POST" action="{{ route('employees.update', $data->id) }}" id="edit_employee_form" name="edit_employee_form" data-parsley-validate="" accept-charset="UTF-8"  enctype="multipart/form-data" 
                 data-quals = '[{"Title":"1", "Description":"abcde", "Institution":"Testing", "StudentNumber":"A001","DateObtained":"2015-01-01" }]'>
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">

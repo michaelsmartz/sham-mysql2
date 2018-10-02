@@ -182,6 +182,7 @@ return [
         /*
          * Dev Only Providers:
          */
+        App\Providers\SysConfigServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
         //Arrilot\Widgets\ServiceProvider::class,
         Clockwork\Support\Laravel\ClockworkServiceProvider::class,

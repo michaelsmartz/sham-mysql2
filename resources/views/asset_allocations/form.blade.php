@@ -16,7 +16,7 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('employee_id') ? 'has-error' : '' }}">
     <label for="employee_id">Employee</label>
-        <select class="form-control" id="employee_id" name="employee_id" required="true">
+        <select class="form-control" id="employee_id" name="employee_id" {!! optional($assetEmployee)->employee_id != '' ? 'disabled="disabled"' : 'required="true"' !!}>
         	    <option value="" style="display: none;" {{ old('employee_id', optional($assetEmployee)->employee_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select employee</option>
         	@foreach ($employees as $key => $employee)
 			    <option value="{{ $key }}" {{ old('employee_id', optional($assetEmployee)->employee_id) == $key ? 'selected' : '' }}>

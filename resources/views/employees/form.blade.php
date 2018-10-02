@@ -1,5 +1,5 @@
 @php
-    if(sizeof($errors->bag) > 0){ dump($errors);}
+    if(sizeof($errors) > 0){ dump($errors);}
 @endphp
 {!! Form::hidden('redirectsTo', URL::previous()) !!}
 <div class="position-center" id="accordion-app">
@@ -11,11 +11,11 @@
                     <div class="col-xs-2">
                         <div class="avatar-upload">
                             <div class="avatar-edit">
-                                <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
+                                <input type='file' name="profile_pic" id="imageUpload" accept=".png, .jpg, .jpeg" />
                                 <label for="imageUpload" title="change profile image"></label>
                             </div>
                             <div class="avatar-preview">
-                                <div id="imagePreview" style="background-image: url({{URL::to('/')}}/img/avatar.png);">
+                                <div id="imagePreview" style="background-image: url({{$employee->picture}});">
                                 </div>
                             </div>
                         </div>
@@ -40,17 +40,17 @@
                     <label class="col-xs-2 control-label"></label>
                     <div class="col-sm-3">
                         <span class="field">
-                            {!! Form::text('first_name', old('first_name', isset($employee->first_name) ? $employee->first_name : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'First Name', 'required', 'title'=>'Required','id'=>'first_name', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
+                            {!! Form::text('first_name', old('first_name', isset($employee->first_name) ? $employee->first_name : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'First Name', 'required', 'title'=>'Required','id'=>'first_name', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
                             <label for="first_name">First Name</label>
                         </span>
                         {!! $errors->first('first_name', '<p class="help-block">:message</p>') !!}
                     </div>
                     <div class="col-sm-3">
-                        {!! Form::text('known_as', old('known_as', isset($employee->known_as) ? $employee->known_as : null), ['class'=>'form-control title-case', 'autocomplete'=>'off', 'placeholder'=>'Second/Other names', 'pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50']) !!}
+                        {!! Form::text('known_as', old('known_as', isset($employee->known_as) ? $employee->known_as : null), ['class'=>'form-control fix-case title-case', 'autocomplete'=>'off', 'placeholder'=>'Second/Other names', 'pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50']) !!}
                     </div>
                     <div class="col-sm-4">
                     <span class="field">
-                        {!! Form::text('surname', old('surname', isset($employee->surname) ? $employee->surname : null), ['class'=>'form-control title-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Surname', 'required', 'title'=>'Required','id'=>'surname', 'pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50']) !!}
+                        {!! Form::text('surname', old('surname', isset($employee->surname) ? $employee->surname : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Surname', 'required', 'title'=>'Required','id'=>'surname', 'pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50']) !!}
                         <label for="surname">Surname</label>
                     </span>
                     </div>
@@ -226,7 +226,7 @@
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Next Of Kin</label>
                     <div class="col-sm-5">
-                        {!! Form::text('spouse_full_name', old('spouse_full_name', isset($employee->spouse_full_name) ? $employee->spouse_full_name : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Full Name', 'maxlength' => '50']) !!}
+                        {!! Form::text('spouse_full_name', old('spouse_full_name', isset($employee->spouse_full_name) ? $employee->spouse_full_name : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Full Name', 'maxlength' => '50']) !!}
                     </div>
                 </div>
             </div>
@@ -361,23 +361,23 @@
                         </div>
                         <div class="col-md-1">
                             <input v-model="qual.reference" type="text"
-                                   name="qualifications[reference][]" class="form-control">
+                                   name="qualifications[][reference]" class="form-control">
                         </div>
                         <div class="col-md-3">
                             <input v-model="qual.description" type="text"
-                                   name="qualifications[description][]" class="form-control">
+                                   name="qualifications[][description]" class="form-control">
                         </div>
                         <div class="col-md-3">
                             <input v-model="qual.institution" type="text"
-                                   name="qualifications[institution][]" class="form-control">
+                                   name="qualifications[][institution]" class="form-control">
                         </div>
                         <div class="col-sm-2">
                             <input v-model="qual.student_no" type="text"
-                                   name="qualifications[student_no][]" class="form-control">
+                                   name="qualifications[][student_no]" class="form-control">
                         </div>
                         <div class="col-sm-2">
                             <DatePicker v-model="qual.obtained_on" class="form-control"
-                                    name="qualifications[obtained_on][]" :dateFormat="yy-mm-dd" :change-month="true" :change-year="true"></DatePicker>
+                                    name="qualifications[][obtained_on]" :dateFormat="yy-mm-dd" :change-month="true" :change-year="true"></DatePicker>
                         </div>
                     </div>
                 </div>

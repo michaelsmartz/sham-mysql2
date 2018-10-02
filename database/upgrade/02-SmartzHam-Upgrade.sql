@@ -2227,3 +2227,12 @@ UPDATE `sham_permissions` SET `Alias` = 'Read' WHERE `sham_permissions`.`id` = 2
 UPDATE `sham_permissions` SET `Alias` = 'Write' WHERE `sham_permissions`.`id` = 3;
 UPDATE `sham_permissions` SET `Alias` = 'Delete' WHERE `sham_permissions`.`id` = 4;
 UPDATE `sham_permissions` SET `Alias` = 'Create' WHERE `sham_permissions`.`id` = 5
+
+# Above Code reviewed on 2018-10-01
+
+#-- Added on 2018-10-01
+ALTER TABLE `shamdev`.`employees`
+DROP FOREIGN KEY `FK_Employees_JobTitles`;
+
+ALTER TABLE `shamdev`.`employees`
+CHANGE COLUMN `jobtitle_id` `job_title_id` INT(11) NULL DEFAULT NULL ;

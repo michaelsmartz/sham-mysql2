@@ -66,8 +66,15 @@ class EmployeesController extends CustomController
         $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
         $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
         $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
-        $this->contextObj->employee_code = $this->increment('A000');
+
+        $employeeCode = setting('LATEST_SFE_CODE');
+        $this->contextObj->employee_code = $this->increment($employeeCode);
+        
+        if(!isset($this->contextObj->picture)){
+            $this->contextObj->picture = asset('/img/avatar.png');
+        }
         $employee = $this->contextObj;
+
         return view($this->baseViewPath .'.create',
             compact('_mode','fullPageEdit','data','titles','genders','maritalstatuses',
                     'countries','languages','ethnicGroups',
@@ -101,6 +108,9 @@ class EmployeesController extends CustomController
 
             $data = $this->contextObj->findData($id);
 
+            if(!isset($data->picture)){
+                $data->picture = asset('/img/avatar.png');
+            }
             $data->load(['skills','disabilities']);
 
             $data->homeAddress = $data->addresses->where('address_type_id', 1)->first();
@@ -170,7 +180,7 @@ class EmployeesController extends CustomController
             dd($exception);
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
-        //die;
+
         return redirect()->route($this->baseViewPath .'.index');
     }
 
@@ -185,6 +195,7 @@ class EmployeesController extends CustomController
     public function update(Request $request, $id)
     {
         try {
+
             $this->validator($request);
             $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
 
@@ -364,7 +375,7 @@ class EmployeesController extends CustomController
             'job_title_id' => 'nullable',
             'division_id' => 'nullable',
             'branch_id' => 'nullable',
-            'picture' => 'nullable|file|string|min:0|max:4294967295',
+            'picture' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
             'line_manager_id' => 'nullable|numeric|min:0|max:4294967295'
         ];
         
@@ -409,18 +420,24 @@ class EmployeesController extends CustomController
 
     protected function saveEmployee($request, $id = null) {
 
-        $otherFields = ['redirectsTo','homeAddress','postalAddress','homePhone','mobilePhone','workPhone','privateEmail','workEmail','skills','disabilities','qualifications'];
+        $otherFields = ['redirectsTo','picture','profile_pic','homeAddress','postalAddress','homePhone','mobilePhone','workPhone','privateEmail','workEmail','skills','disabilities','qualifications'];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
         }
-        
+
+        if ($request->hasFile('profile_pic')) {
+            $image = $request->file('profile_pic');
+            $contents = 'data:' . $image->getMimeType() .';base64,' .base64_encode(file_get_contents($image->getRealPath()));
+        }
+
         if ($id == null) { // Create
             $input = array_except($request->all(), $otherFields);
+            $input['picture'] = $contents;
             $data = $this->contextObj->addData($input);
         } else { // Update
             $excludeFields = array_merge($otherFields,['_token','_method']);
             $input = array_except($request->all(), $excludeFields);
-
+            $input['picture'] = $contents;
             $this->contextObj->updateData($id, $input);
             $data = Employee::find($id);
         }
