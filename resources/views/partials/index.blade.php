@@ -75,6 +75,13 @@
             }
         }
 
+        function generateResult(id, event) {
+            event.preventDefault();
+            if (id) {
+                window.location = '{{url()->current()}}/'+id+'/results';
+            }
+        }
+
         function editFullPage(id, event){
             event.preventDefault();
             window.location = '{{url()->current()}}/'+id+'/edit';

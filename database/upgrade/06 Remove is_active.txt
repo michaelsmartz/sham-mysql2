@@ -93,3 +93,9 @@ ALTER TABLE `maritalstatuses` DROP `is_active`;
 
 UPDATE `titles` SET `deleted_at`= now() WHERE `is_active` = 0;
 ALTER TABLE `titles` DROP `is_active`;
+
+UPDATE `surveys` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `surveys` DROP `is_active`;
+
+UPDATE `forms` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `forms` DROP `is_active`;

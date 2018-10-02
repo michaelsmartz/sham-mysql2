@@ -286,5 +286,17 @@
         "model-name": "CategoryQuestionChoice",
         "resource-file": "category_question_choices.json",
         "table-name": "category_question_choices"
+    },
+    {
+        "model-name": "Survey",
+        "resource-file": "surveys.json"
+    },
+    {
+        "model-name": "SurveyResponse",
+        "resource-file": "survey_responses.json"
+    },
+    {
+        "model-name": "Form",
+        "resource-file": "forms.json"
     }
 ]

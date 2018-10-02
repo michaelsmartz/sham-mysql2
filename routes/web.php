@@ -60,6 +60,10 @@ Auth::routes();
             Route::resource('asset_groups', 'AssetGroupsController');
             Route::resource('asset_suppliers', 'AssetSuppliersController');
             Route::resource('asset_allocations', 'AssetAllocationsController');
+
+            Route::resource('surveys', 'SurveysController' );
+            Route::any('surveys/{Id}/results', 'SurveysController@results' );
+
         #endregion
 
         #region Configuration parameters routes
