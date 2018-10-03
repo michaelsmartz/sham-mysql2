@@ -59,6 +59,11 @@ class Survey extends Model
         return $this->belongsTo('App\User','author_sham_user_id','id');
     }
 
+    public function forms()
+    {
+        return $this->belongsTo('App\Form','form_id','id');
+    }
+
     /**
      * Set the date_start.
      *

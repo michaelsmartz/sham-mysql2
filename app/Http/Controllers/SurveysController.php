@@ -49,7 +49,20 @@ class SurveysController extends CustomController
     public function store(Request $request)
     {
         try {
-            $this->validator($request);
+            //dd($request);
+            //$this->validator($request);
+
+            $formData = array_get($request->all(),'FormData');
+            $title = array_get($request->all(),'title');
+
+            //dd(['sata'=>$formData,'title'=>$title]);
+
+            $input = array_except($request->all(),array('_token', 'form_textarea1135',  'FormData'));
+
+            $data = $this->contextObj->addData($input);
+
+            $data->forms()
+                ->sync(['sata'=>$formData,'title'=>$title]); //sync what has been selected
 
             $input = array_except($request->all(),array('_token'));
 

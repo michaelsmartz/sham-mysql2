@@ -1,5 +1,7 @@
 @extends('portal-index')
 @section('title','Surveys')
+@section('subtitle', 'Address surveys to all or specific employees')
+
 @section('content')
     <div class="flex-wrapper">
         <div id="table-container">
