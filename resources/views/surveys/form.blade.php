@@ -1,71 +1,52 @@
+<?php
+//This form is reusable using blade include directive
+//Some options are available to customize the output:
+//By default the usage is for New record
+//However, if the following variables are defined, then the  output is changed:
+//  $_mode -> 'create','edit','view'
+
+if (!isset($_mode)) $_mode='create';
+?>
+
 <div class="row">
+
     <div class="form-group col-xs-12 {{ $errors->has('title') ? 'has-error' : '' }}">
-        <label for="title">Title</label>
-            <input class="form-control" name="title" type="text" id="title" value="{{ old('title', optional($survey)->title) }}" minlength="1" maxlength="100" required="true" placeholder="Enter title">
-            {!! $errors->first('title', '<p class="help-block">:message</p>') !!}
+        {!! Form::label('title',' Title',['class'=>'control-label required','aria-required'=>'true']) !!}
+        {!! Form::text('title',(Request::has('title')?Request::input('title'):null),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke field-required', 'autocomplete'=>'off', 'minlength'=>"1", 'maxlength'=>"100", "required"=>"true", 'placeholder'=>'Enter title']) !!}
+        {!! $errors->first('title', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="form-group col-xs-6 {{ $errors->has('date_start') ? 'has-error' : '' }}">
-        <label for="date_start">Start</label>
-            <input class="form-control" name="date_start" type="text" id="date_start" value="{{ old('date_start', optional($survey)->date_start) }}" minlength="1" required="true" placeholder="Enter start date">
-            {!! $errors->first('date_start', '<p class="help-block">:message</p>') !!}
+        {!! Form::label('date_start',' Start',['class'=>'control-label required','aria-required'=>'true']) !!}
+        {!! Form::text('date_start',(Request::has('date_start')?Request::input('date_start'):null),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter start date']) !!}
+        {!! $errors->first('date_start', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="form-group col-xs-6 {{ $errors->has('EndDate') ? 'has-error' : '' }}">
-        <label for="EndDate">End</label>
-            <input class="form-control" name="EndDate" type="text" id="EndDate" value="{{ old('EndDate', optional($survey)->EndDate) }}" minlength="1" required="true" placeholder="Enter end date">
-            {!! $errors->first('EndDate', '<p class="help-block">:message</p>') !!}
-    </div>
-
-    <div class="form-group col-xs-6 {{ $errors->has('notification_recurrence_id') ? 'has-error' : '' }}">
-        <label for="notification_recurrence_id">Recurrence</label>
-        <select class="form-control" id="notification_recurrence_id" name="notification_recurrence_id" required="true">
-            <option value="" style="display: none;" {{ old('notification_recurrence_id', optional($survey)->notification_recurrence_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select recurrence</option>
-            @foreach ($notificationRecurrences as $key => $notificationRecurrence)
-                <option value="{{ $key }}" {{ old('notification_recurrence_id', optional($survey)->notification_recurrence_id) == $key ? 'selected' : '' }}>
-                    {{ $notificationRecurrence }}
-                </option>
-            @endforeach
-        </select>
-
-        {!! $errors->first('announcement_status_id', '<p class="help-block">:message</p>') !!}
-    </div>
-
-    <div class="form-group col-xs-6 {{ $errors->has('notification_group_id') ? 'has-error' : '' }}">
-        <label for="notification_group_id">Notification Group</label>
-        <select class="form-control" id="notification_group_id" name="notification_group_id" required="true">
-            <option value="" style="display: none;" {{ old('notification_recurrence_id', optional($survey)->notification_group_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select notification group</option>
-            @foreach ($notificationGroups as $key => $notificationGroup)
-                <option value="{{ $key }}" {{ old('notification_group_id', optional($survey)->notification_group_id) == $key ? 'selected' : '' }}>
-                    {{ $notificationGroup }}
-                </option>
-            @endforeach
-        </select>
-
-        {!! $errors->first('announcement_status_id', '<p class="help-block">:message</p>') !!}
+        {!! Form::label('EndDate',' End',['class'=>'control-label required','aria-required'=>'true']) !!}
+        {!! Form::text('EndDate',(Request::has('EndDate')?Request::input('EndDate'):null),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter end date']) !!}
+        {!! $errors->first('EndDate', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="col-xs-12">
         <div class="well">
             <div class="form-group">
                 {!! Form::label('Final',' Final: ') !!}
-                {!! Form::checkbox('final','true',((isset($survey) && ($survey->final=='true'))||Request::has('final'))?['disabled']:null) !!}
+                {!! Form::checkbox('final','true',((isset($survey) && ($survey->final=='true'))||Request::has('final')),($_mode=='show')?['disabled']:null) !!}
                 @if((!isset($survey) || $survey->final!='true'))
                     <br>
                     <span class="text-warning">(*) You will not be able to edit the survey furthermore</span>
                 @endif
-
             </div>
         </div>
     </div>
 
-    <div class="col-xs-12">
-        <div class="form-group">
-        </div>
+    <div class="form-group col-xs-12">
+        <?php if ($_mode!='show'): ?>
         {!! Form::label('FormData','Form builder:') !!}
         <div id="formBuilder"></div>
+        <?php endif; ?>
         {!! Form::hidden('FormData',(Request::has('FormData')?Request::input('FormData'):null),['id'=>'FormData']) !!}
-
     </div>
 </div>
 
@@ -75,7 +56,9 @@
 
 <script src="{{URL::to('/')}}/plugins/alloy-3.0.1/aui/aui-min.js"></script>
 <link href="{{URL::to('/')}}/css/jQuery-ui-bootstrap/jquery.ui.theme.css" rel="stylesheet">
+<?php if ($_mode!='show'): ?>
 <script src="{{URL::to('/')}}/js/aui-formbuilder-base.js"></script>
+<?php endif; ?>
 
 <script>
     var q = asyncJS();

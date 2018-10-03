@@ -10,6 +10,7 @@
                     <div class="col-sm-12">
                         @include('surveys.form', [
                             'survey' => null,
+                            '_mode'=>'create'
                         ])
                     </div>
                 </div>

@@ -93,6 +93,31 @@ class SurveysController extends CustomController
     }
 
     /**
+     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Illuminate\View\View
+     */
+    public function edit(Request $request)
+    {
+        $data = null;
+        $id = Route::current()->parameter('survey');
+        $data = $this->contextObj->findData($id);
+
+        $form = ($data->form_id != "")?Form::find($data->form_id):null;
+        if ($form !=null) $data->FormData = $form->sata;//Handle the Form Data
+
+        if ($data->final == true)
+        {
+            // show the view and pass the data to it
+            return view($this->baseViewPath . '.show', compact('data', 'form'));
+        }
+        else {
+            // show the view and pass the data to it
+            return view($this->baseViewPath . '.edit', compact('data'));
+        }
+    }
+
+    /**
      * Update the specified survey in the storage.
      *
      * @param  int $id

@@ -14,14 +14,10 @@
         <div class="col-sm-12">
             @include ('surveys.form', [
                 'survey' => $data,
+                 '_mode'=>'edit'
             ])
         </div>
     </div>
-    @if(!Request::ajax())
-    <div class="box-footer">
-        @yield('modalFooter') 
-    </div>
-    @endif
 @endsection
 
 @section('content')

@@ -41,9 +41,9 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$survey->id}}', event)">
+                                    <button type="button" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$survey->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </a>
+                                    </button>
                                     <button type="button" class="b-n b-n-r bg-transparent item-results" data-wenk="Results" onclick="generateResult('{{$survey->id}}', event)">
                                         <i class="glyphicon glyphicon-th-list text-primary"></i>
                                     </button>
@@ -61,7 +61,7 @@
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'surveys.destroy'])
+            @component('partials.index', ['routeName'=> 'surveys.destroy', 'fullPageEdit'=>true])
             @endcomponent
         </div>
     </div>

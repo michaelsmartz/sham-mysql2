@@ -131,5 +131,188 @@ class Form extends Model
 
     }
 
+    public function getFormHTML() {
+
+        if (!isset ($this->Data)) return "";
+        $array = json_decode($this->Data,TRUE);
+        return self::NodesToHTML($array);
+
+    }
+
+    /**
+     * set of nodes making up the form
+     * @param $nodes
+     * @return string
+     */
+    private function NodesToHTML($nodes)
+    {
+        $html = "";
+
+        foreach ($nodes as $node)
+        {
+            $closingtag="";
+
+            if (array_key_exists('type',$node))
+            {
+                switch($node['type'])
+                {
+                    case "fieldset":
+                    case "form_fieldset":
+                        $html .= "<fieldset id=\"".(array_key_exists('name',$node)?$node['name']:"")."\" >";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= "<legend>" . $node['label'] . "</legend>";
+                        }
+                        $closingtag = "</fieldset>";
+                        break;
+
+                    case 'checkbox':
+                    case 'form_checkbox':
+                        $html.="<div class=\"form-group \">";
+                        $html.= "<input id=\"".(array_key_exists('name',$node)?$node['name']:"")."\" name=\"".(array_key_exists('name',$node)?$node['name']:"")."\" type=\"checkbox\"".(array_key_exists('predefinedValue',$node)?" value=\"".$node['predefinedValue']."\"":"").">";
+
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'textarea':
+                    case 'form_textarea':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<textarea id=\"".(array_key_exists('name',$node)?$node['name']:"")."\" class=\"form-control\" name=\"".(array_key_exists('name',$node)?$node['name']:"")."\">".(array_key_exists('predefinedValue',$node)?$node['predefinedValue']:"")."</textarea>";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'text':
+                    case 'form_text':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<input id=\"".(array_key_exists('name',$node)?$node['name']:"")."\" class=\"form-control\"  name=\"".(array_key_exists('name',$node)?$node['name']:"")."\" type=\"text\"".(array_key_exists('predefinedValue',$node)?" value=\"".$node['predefinedValue']."\"":""). (array_key_exists('required',$node)?"data-required='true'":"") .">";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'button':
+                    case 'form_button':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<button id=\"".(array_key_exists('name',$node)?$node['name']:"")."\" class=\"btn btn-default btn-outline btn-sm\" type=\"".(array_key_exists('buttonType',$node)?$node['buttonType']:"")."\" name=\"".(array_key_exists('name',$node)?$node['name']:"")."\">".(array_key_exists('predefinedValue',$node)?$node['predefinedValue']:"")."</button>";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'fileupload':
+                    case 'form_fileupload':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<input id=\"".(array_key_exists('name',$node)?$node['name']:"")."\" name=\"".(array_key_exists('name',$node)?$node['name']:"")."\" type=\"file\"".(array_key_exists('predefinedValue',$node)?" value=\"".$node['predefinedValue']."\"":"").">";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'select':
+                    case 'form_select':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<select id=\"".(array_key_exists('name',$node)?$node['name']:"")."\" class=\"form-control\" name=\"".(array_key_exists('name',$node)?$node['name']:"")."\">";
+
+                        if (array_key_exists('options',$node))
+                        {
+                            foreach ($node['options']  as $subnode)
+                            {
+                                $html.= "<option value=\"".(array_key_exists('value',$subnode)?$subnode['value']:"")."\" id=\"\">".(array_key_exists('label',$subnode)?$subnode['label']:"")."</option>";
+                            }
+                        }
+                        $html.= " </select>";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'radio':
+                    case 'form_radio':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        if (array_key_exists('options',$node))
+                        {
+                            $cnt =1;
+                            foreach ($node['options']  as $subnode)
+                            {
+                                $html.= "<input id=\"".(array_key_exists('name',$node)?$node['name']:"").$cnt++."\" name=\"".(array_key_exists('name',$node)?$node['name']:"")."\" type=\"radio\" value=\"".(array_key_exists('value',$subnode)?$subnode['value']:"")."\"> ".(array_key_exists('label',$subnode)?$subnode['label']:"")."<br/>";
+                            }
+                        }
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'multiple-choice':
+                    case 'form_multiplechoice':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        if (array_key_exists('options',$node))
+                        {
+                            $cnt =1;
+                            foreach ($node['options']  as $subnode)
+                            {
+                                $html.= "<input id=\"".(array_key_exists('name',$node)?$node['name']:"").$cnt++."\" name=\"".(array_key_exists('name',$node)?$node['name'].'[]':"")."\" type=\"checkbox\" value=\"".(array_key_exists('value',$subnode)?$subnode['value']:"")."\"> ".(array_key_exists('label',$subnode)?$subnode['label']:"")."<br/>";
+                            }
+                        }
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'paragraph':
+                    case 'form_paragraph':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<p id=\"".(array_key_exists('name',$node)?$node['name']:"")."\"  name=\"".(array_key_exists('name',$node)?$node['name']:"")."\">".(array_key_exists('label',$node)?$node['label']:"")."</p>";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'separator':
+                    case 'form_separator':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<div id=\"".(array_key_exists('name',$node)?$node['name']:"")."\"  name=\"".(array_key_exists('name',$node)?$node['name']:"")."\" class=\"separator\" >"."</div>";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    case 'image':
+                    case 'form_image':
+                        $html.="<div class=\"form-group \">";
+                        if (array_key_exists('showLabel',$node) && $node['showLabel'] ) {
+                            if (array_key_exists('label', $node)) $html .= " <label".(array_key_exists('name',$node)?" for=\"".$node['name']."\"":"").">" . $node['label'] . "</label><br/>";
+                        }
+                        $html.= "<img id=\"".(array_key_exists('name',$node)?$node['name']:"")."\"  name=\"".(array_key_exists('name',$node)?$node['name']:"")."\" src==\"".(array_key_exists('predefinedValue',$node)?" value=\"".$node['predefinedValue']."\"":"")."\" />";
+                        $html.= " </div>";
+                        $closingtag = "";
+                        break;
+                    default:
+
+                        break;
+                }
+                if (array_key_exists('children',$node))
+                {
+                    $html .= self::NodesToHTML($node['children']);
+                }
+                $html .= $closingtag;
+            }
+        }
+        return $html;
+
+    }
+
 
 }
