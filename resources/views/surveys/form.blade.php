@@ -5,16 +5,44 @@
             {!! $errors->first('title', '<p class="help-block">:message</p>') !!}
     </div>
 
-    <div class="form-group col-xs-12 {{ $errors->has('date_start') ? 'has-error' : '' }}">
-        <label for="date_start">Start Date</label>
+    <div class="form-group col-xs-6 {{ $errors->has('date_start') ? 'has-error' : '' }}">
+        <label for="date_start">Start</label>
             <input class="form-control" name="date_start" type="text" id="date_start" value="{{ old('date_start', optional($survey)->date_start) }}" minlength="1" required="true" placeholder="Enter start date">
             {!! $errors->first('date_start', '<p class="help-block">:message</p>') !!}
     </div>
 
-    <div class="form-group col-xs-12 {{ $errors->has('EndDate') ? 'has-error' : '' }}">
-        <label for="EndDate">End Date</label>
+    <div class="form-group col-xs-6 {{ $errors->has('EndDate') ? 'has-error' : '' }}">
+        <label for="EndDate">End</label>
             <input class="form-control" name="EndDate" type="text" id="EndDate" value="{{ old('EndDate', optional($survey)->EndDate) }}" minlength="1" required="true" placeholder="Enter end date">
             {!! $errors->first('EndDate', '<p class="help-block">:message</p>') !!}
+    </div>
+
+    <div class="form-group col-xs-6 {{ $errors->has('notification_recurrence_id') ? 'has-error' : '' }}">
+        <label for="notification_recurrence_id">Recurrence</label>
+        <select class="form-control" id="notification_recurrence_id" name="notification_recurrence_id" required="true">
+            <option value="" style="display: none;" {{ old('notification_recurrence_id', optional($survey)->notification_recurrence_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select recurrence</option>
+            @foreach ($notificationRecurrences as $key => $notificationRecurrence)
+                <option value="{{ $key }}" {{ old('notification_recurrence_id', optional($survey)->notification_recurrence_id) == $key ? 'selected' : '' }}>
+                    {{ $notificationRecurrence }}
+                </option>
+            @endforeach
+        </select>
+
+        {!! $errors->first('announcement_status_id', '<p class="help-block">:message</p>') !!}
+    </div>
+
+    <div class="form-group col-xs-6 {{ $errors->has('notification_group_id') ? 'has-error' : '' }}">
+        <label for="notification_group_id">Notification Group</label>
+        <select class="form-control" id="notification_group_id" name="notification_group_id" required="true">
+            <option value="" style="display: none;" {{ old('notification_recurrence_id', optional($survey)->notification_group_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select notification group</option>
+            @foreach ($notificationGroups as $key => $notificationGroup)
+                <option value="{{ $key }}" {{ old('notification_group_id', optional($survey)->notification_group_id) == $key ? 'selected' : '' }}>
+                    {{ $notificationGroup }}
+                </option>
+            @endforeach
+        </select>
+
+        {!! $errors->first('announcement_status_id', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="col-xs-12">

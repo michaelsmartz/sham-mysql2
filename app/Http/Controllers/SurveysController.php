@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationGroupType;
+use App\Enums\NotificationRecurrenceType;
 use App\Form;
 use App\Survey;
 use App\SurveyResponse;
@@ -40,6 +42,19 @@ class SurveysController extends CustomController
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $notificationRecurrences = NotificationRecurrenceType::ddList();
+        $notificationGroups = NotificationGroupType::ddList();
+
+        return view($this->baseViewPath . '.create', compact('data','notificationRecurrences','notificationGroups'));
+    }
+
+    /**
      * Store a new survey in the storage.
      *
      * @param Illuminate\Http\Request $request
@@ -49,7 +64,7 @@ class SurveysController extends CustomController
     public function store(Request $request)
     {
         try {
-            //dd($request);
+            dd($request);
             //$this->validator($request);
 
             $formData = array_get($request->all(),'FormData');
