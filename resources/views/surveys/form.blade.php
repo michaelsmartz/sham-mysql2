@@ -38,8 +38,8 @@ if (!isset($_mode)) $_mode='create';
         <div class="well">
             <div class="form-group">
                 {!! Form::label('Final',' Final: ') !!}
-                {!! Form::checkbox('final','true',((isset($survey) && ($survey->final==true))||Request::has('final')),($_mode=='show')?['disabled']:null) !!}
-                @if((!isset($survey) || $survey->final!=true))
+                {!! Form::checkbox('final',1,((isset($survey) && ($survey->final==1))||Request::has('final')),($_mode=='show')?['disabled']:null) !!}
+                @if((!isset($survey) || $survey->final!=1))
                     <br>
                     <span class="text-warning">(*) You will not be able to edit the survey furthermore</span>
                 @endif
@@ -161,6 +161,12 @@ if (!isset($_mode)) $_mode='create';
     }
 
 </script>
+
+<style>
+    .property-builder-canvas{
+        z-index: 0!important;
+    }
+</style>
 
 @if(!Request::ajax())
 @endsection

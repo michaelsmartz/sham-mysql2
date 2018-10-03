@@ -2236,3 +2236,7 @@ DROP FOREIGN KEY `FK_Employees_JobTitles`;
 
 ALTER TABLE `shamdev`.`employees`
 CHANGE COLUMN `jobtitle_id` `job_title_id` INT(11) NULL DEFAULT NULL ;
+
+ALTER TABLE `surveys` CHANGE `notification_recurrence_id` `notification_recurrence_id` INT(11) NULL, CHANGE `notification_group_id` `notification_group_id` INT(11) NULL, CHANGE `form_id` `form_id` INT(11) NULL;
+
+ALTER TABLE `forms` CHANGE `description` `description` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL;

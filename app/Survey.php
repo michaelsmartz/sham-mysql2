@@ -30,8 +30,11 @@ class Survey extends Model
                   'title',
                   'date_start',
                   'EndDate',
-                  'final'
-              ];
+                  'final',
+                  'form_id',
+                  'author_sham_user_id',
+                  'survey_status_id'
+    ];
 
     public $searchable = ['title'];
 

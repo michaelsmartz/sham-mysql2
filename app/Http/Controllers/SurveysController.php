@@ -64,22 +64,31 @@ class SurveysController extends CustomController
     public function store(Request $request)
     {
         try {
-            dd($request);
-            //$this->validator($request);
+            $this->validator($request);
+            $filtered = [];
 
-            $formData = array_get($request->all(),'FormData');
-            $title = array_get($request->all(),'title');
+            //insert in form first to get last inserted id
+            $form = new Form;
+            $form->title = array_get($request->all(),'title');
+            $form->sata = array_get($request->all(),'FormData');
 
-            //dd(['sata'=>$formData,'title'=>$title]);
+            $form->save();
 
-            $input = array_except($request->all(),array('_token', 'form_textarea1135',  'FormData'));
+            //filter all array keys starting with form
+            foreach ($request->all() as $key => $value) {
+                if (strpos($key, 'form') !== 0) {
+                    $filtered[$key] = $value;
+                }
+            }
 
-            $data = $this->contextObj->addData($input);
+            $input = array_except($filtered,array('_token', 'redirects_to', 'FormData'));
 
-            $data->forms()
-                ->sync(['sata'=>$formData,'title'=>$title]); //sync what has been selected
-
-            $input = array_except($request->all(),array('_token'));
+            //Handle the Author
+            $input['author_sham_user_id'] = \Auth::user()->id;
+            //Handle the Status
+            $input['survey_status_id'] = 1;
+            //use last inserted id obtained from insert in table Form
+            $input['form_id'] = $form->id;
 
             $this->contextObj->addData($input);
 
@@ -152,7 +161,7 @@ class SurveysController extends CustomController
 
             $data = $this->contextObj->updateData($id, $input);
 
-            //dd($data);
+            dd($data);
 
             //$data->forms()->sync(['sata'=>$formData, 'title'=>$title]);
 
