@@ -106,8 +106,6 @@ class SurveysController extends CustomController
         $form = ($data->form_id != "")?Form::find($data->form_id):null;
         if ($form !=null) $data->FormData = $form->sata;//Handle the Form Data
 
-        //dd($data);
-
         if ($data->final == true)
         {
             // show the view and pass the data to it
@@ -131,12 +129,32 @@ class SurveysController extends CustomController
     {
         try {
             $this->validator($request);
-            
-            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            
-            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
+            $filtered = [];
 
-            $this->contextObj->updateData($id, $input);
+            //filter all array keys starting with form
+            foreach ($request->all() as $key => $value) {
+                if (strpos($key, 'form') !== 0) {
+                    $filtered[$key] = $value;
+                }
+            }
+
+            $redirectsTo = $request->get('redirects_to', route($this->baseViewPath .'.index'));
+
+            $formData = array_get($request->all(),'FormData');
+            $title = array_get($request->all(),'title');
+
+            $input = array_except($filtered ,array('_token','_method','redirects_to', 'FormData'));
+            //dd($input);
+
+            if(!array_key_exists('final', $input))  $input['final'] = false;
+
+            //dd($input);
+
+            $data = $this->contextObj->updateData($id, $input);
+
+            //dd($data);
+
+            //$data->forms()->sync(['sata'=>$formData, 'title'=>$title]);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -212,6 +230,22 @@ class SurveysController extends CustomController
 
         return redirect()->back();
     }
-    
+
+
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param Request $request
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            'title' => 'required|string|min:1|max:50',
+            'date_start' => 'required|string|min:1',
+            'EndDate' => 'required|string|min:1'
+        ];
+
+        $this->validate($request, $validateFields);
+    }
     
 }

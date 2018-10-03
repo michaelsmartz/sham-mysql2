@@ -30,8 +30,6 @@ class Survey extends Model
                   'title',
                   'date_start',
                   'EndDate',
-                  'author_sham_user_id',
-                  'form_id',
                   'final'
               ];
 
