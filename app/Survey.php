@@ -3,9 +3,11 @@
 namespace App;
 
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Survey extends Model
 {
-    
+    use SoftDeletes;
 
     /**
      * The database table used by the model.
