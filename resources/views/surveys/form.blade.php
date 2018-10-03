@@ -8,23 +8,29 @@
 if (!isset($_mode)) $_mode='create';
 ?>
 
-<div class="row">
+@if (isset($survey) && ($survey->final == true))
+    <h3>This survey form is final and cannot be edited furthermore</h3>
+@endif
+@if($_mode != 'show')
+    {{ Form::hidden('redirects_to', URL::previous()) }}
+@endif
 
+<div class="row">
     <div class="form-group col-xs-12 {{ $errors->has('title') ? 'has-error' : '' }}">
         {!! Form::label('title',' Title',['class'=>'control-label required','aria-required'=>'true']) !!}
-        {!! Form::text('title',(Request::has('title')?Request::input('title'):null),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke field-required', 'autocomplete'=>'off', 'minlength'=>"1", 'maxlength'=>"100", "required"=>"true", 'placeholder'=>'Enter title']) !!}
+        {!! Form::text('title',old('title', optional($survey)->title),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke field-required', 'autocomplete'=>'off', 'minlength'=>"1", 'maxlength'=>"100", "required"=>"true", 'placeholder'=>'Enter title']) !!}
         {!! $errors->first('title', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="form-group col-xs-6 {{ $errors->has('date_start') ? 'has-error' : '' }}">
         {!! Form::label('date_start',' Start',['class'=>'control-label required','aria-required'=>'true']) !!}
-        {!! Form::text('date_start',(Request::has('date_start')?Request::input('date_start'):null),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter start date']) !!}
+        {!! Form::text('date_start',old('title', optional($survey)->date_start),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter start date']) !!}
         {!! $errors->first('date_start', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="form-group col-xs-6 {{ $errors->has('EndDate') ? 'has-error' : '' }}">
         {!! Form::label('EndDate',' End',['class'=>'control-label required','aria-required'=>'true']) !!}
-        {!! Form::text('EndDate',(Request::has('EndDate')?Request::input('EndDate'):null),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter end date']) !!}
+        {!! Form::text('EndDate',old('title', optional($survey)->EndDate),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter end date']) !!}
         {!! $errors->first('EndDate', '<p class="help-block">:message</p>') !!}
     </div>
 
@@ -32,8 +38,8 @@ if (!isset($_mode)) $_mode='create';
         <div class="well">
             <div class="form-group">
                 {!! Form::label('Final',' Final: ') !!}
-                {!! Form::checkbox('final','true',((isset($survey) && ($survey->final=='true'))||Request::has('final')),($_mode=='show')?['disabled']:null) !!}
-                @if((!isset($survey) || $survey->final!='true'))
+                {!! Form::checkbox('final','true',((isset($survey) && ($survey->final==true))||Request::has('final')),($_mode=='show')?['disabled']:null) !!}
+                @if((!isset($survey) || $survey->final!=true))
                     <br>
                     <span class="text-warning">(*) You will not be able to edit the survey furthermore</span>
                 @endif
@@ -46,7 +52,7 @@ if (!isset($_mode)) $_mode='create';
         {!! Form::label('FormData','Form builder:') !!}
         <div id="formBuilder"></div>
         <?php endif; ?>
-        {!! Form::hidden('FormData',(Request::has('FormData')?Request::input('FormData'):null),['id'=>'FormData']) !!}
+        {!! Form::hidden('FormData',old('FormData', optional($survey)->FormData),['id'=>'FormData']) !!}
     </div>
 </div>
 

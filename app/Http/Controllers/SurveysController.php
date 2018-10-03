@@ -106,6 +106,8 @@ class SurveysController extends CustomController
         $form = ($data->form_id != "")?Form::find($data->form_id):null;
         if ($form !=null) $data->FormData = $form->sata;//Handle the Form Data
 
+        //dd($data);
+
         if ($data->final == true)
         {
             // show the view and pass the data to it

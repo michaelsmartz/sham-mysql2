@@ -132,9 +132,8 @@ class Form extends Model
     }
 
     public function getFormHTML() {
-
-        if (!isset ($this->Data)) return "";
-        $array = json_decode($this->Data,TRUE);
+        if (!isset ($this->sata)) return "";
+        $array = json_decode($this->sata,TRUE);
         return self::NodesToHTML($array);
 
     }
