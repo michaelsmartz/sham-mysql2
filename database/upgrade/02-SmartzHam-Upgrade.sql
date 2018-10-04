@@ -2236,3 +2236,7 @@ DROP FOREIGN KEY `FK_Employees_JobTitles`;
 
 ALTER TABLE `shamdev`.`employees`
 CHANGE COLUMN `jobtitle_id` `job_title_id` INT(11) NULL DEFAULT NULL ;
+
+ALTER TABLE `assessment_categories`
+CHANGE COLUMN `eLearning_module` `eLearning_module` VARCHAR(100) NULL ,
+CHANGE COLUMN `threshold` `threshold` INT(11) NULL ;
