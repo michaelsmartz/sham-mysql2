@@ -20,10 +20,10 @@ class AssessmentCategory extends Model
     protected $fillable = [
                   'name',
                   'description',
-                  'eLearning_module',
-                  'threshold',
                   'passmark_percentage'
               ];
+
+    public $searchable = [];
 
     public function assessmentCategoryCategoryQuestions()
     {

@@ -46,7 +46,7 @@ class AssessmentCategoriesController extends CustomController
     public function store(Request $request)
     {
         try {
-            $this->validator($request);
+            //$this->validator($request);
 
             $input = array_except($request->all(),array('_token'));
 
@@ -55,10 +55,30 @@ class AssessmentCategoriesController extends CustomController
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
+            //dump($exception->getMessage());die;
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    public function edit(Request $request)
+    {
+
+        $data = null;
+        $_mode = 'edit';
+        $fullPageEdit = true;
+        $id = Route::current()->parameter('assessment_category');
+
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+        }
+        //$categoryQuestionTypes = CategoryQuestionType::pluck('description','id')->all();
+
+        ///$categoryquestionchoices = CategoryQuestionChoice::where('category_question_id',$id)->get();
+
+        return view($this->baseViewPath .'.edit',
+            compact('_mode','fullPageEdit','data'));
     }
 
     /**
