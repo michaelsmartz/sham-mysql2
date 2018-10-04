@@ -105,7 +105,7 @@
             "on-update": null
         },
         {
-            "name": "EndDate",
+            "name": "date_end",
             "labels": "End Date",
             "html-type": "text",
             "css-class": "",

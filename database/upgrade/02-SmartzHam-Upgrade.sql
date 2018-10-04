@@ -2244,3 +2244,5 @@ ALTER TABLE `forms` CHANGE `description` `description` VARCHAR(100) CHARACTER SE
 ALTER TABLE `assessment_categories`
 CHANGE COLUMN `eLearning_module` `eLearning_module` VARCHAR(100) NULL ,
 CHANGE COLUMN `threshold` `threshold` INT(11) NULL ;
+
+ALTER TABLE `surveys` CHANGE `date_start` `date_start` DATE NOT NULL, CHANGE `EndDate` `date_end` DATE NOT NULL;

@@ -249,7 +249,7 @@ class SurveysController extends CustomController
         $validateFields = [
             'title' => 'required|string|min:1|max:50',
             'date_start' => 'required|string|min:1',
-            'EndDate' => 'required|string|min:1'
+            'date_end' => 'required|string|min:1'
         ];
 
         $this->validate($request, $validateFields);

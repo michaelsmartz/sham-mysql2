@@ -17,10 +17,12 @@
                 </div>
             </div>
             <div class="box-footer">
-                <a href="{{ route('surveys.index') }}" class="btn btn-primary" title="Show all Surveys">
-                    Cancel
-                </a>
-                <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+                <div class="pull-right">
+                    <a href="{{ route('surveys.index') }}" class="btn btn-primary" title="Show all Surveys">
+                        Cancel
+                    </a>
+                    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+                </div>
             </div>
         </div>
     </form>

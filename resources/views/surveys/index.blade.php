@@ -35,9 +35,9 @@
                         <tr id="tr{{$survey->id}}">
                             <td>{{ $survey->title }}</td>
                             <td>{{ App\Enums\SurveyStatusType::getDescription($survey->survey_status_id) }}</td>
-                            <td>{{ (isset($survey->users->employee->surname) && isset($survey->users->employee->first_name)) ? $survey->users->employee->surname." ".$survey->users->employee->first_name : '' }}</td>
+                            <td>{{ (isset($survey->users->employee->full_name)) ? $survey->users->employee->full_name : '' }}</td>
                             <td>{{ $survey->date_start }}</td>
-                            <td>{{ $survey->EndDate }}</td>
+                            <td>{{ $survey->date_end }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

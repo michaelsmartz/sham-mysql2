@@ -28,10 +28,10 @@ if (!isset($_mode)) $_mode='create';
         {!! $errors->first('date_start', '<p class="help-block">:message</p>') !!}
     </div>
 
-    <div class="form-group col-xs-6 {{ $errors->has('EndDate') ? 'has-error' : '' }}">
-        {!! Form::label('EndDate',' End',['class'=>'control-label required','aria-required'=>'true']) !!}
-        {!! Form::text('EndDate',old('title', optional($survey)->EndDate),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter end date']) !!}
-        {!! $errors->first('EndDate', '<p class="help-block">:message</p>') !!}
+    <div class="form-group col-xs-6 {{ $errors->has('date_end') ? 'has-error' : '' }}">
+        {!! Form::label('date_end',' End',['class'=>'control-label required','aria-required'=>'true']) !!}
+        {!! Form::text('date_end',old('title', optional($survey)->date_end),($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control datepicker bg-whitesmoke field-required', 'autocomplete'=>'off', "minlength"=>"1", "required"=>"true", 'placeholder'=>' Enter end date']) !!}
+        {!! $errors->first('date_end', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="col-xs-12">
@@ -89,7 +89,7 @@ if (!isset($_mode)) $_mode='create';
                     .on( "change", function() {
                         to.datepicker( "option", "minDate", getDate( this ) );
                     }),
-                to = $( "#EndDate" ).datepicker({
+                to = $( "#date_end" ).datepicker({
                     dateFormat:'yy-mm-dd',
                     changeMonth: true,
                     changeYear:true,
@@ -121,10 +121,10 @@ if (!isset($_mode)) $_mode='create';
             }
         });
 
-        $('#EndDate').on("change", function() {
+        $('#date_end').on("change", function() {
             if($(this).val()){
                 $(this).closest('div').removeClass('has-error');
-                $('#EndDate-error').remove();
+                $('#date_end-error').remove();
             }
         });
     });

@@ -31,7 +31,7 @@ class Survey extends Model
     protected $fillable = [
                   'title',
                   'date_start',
-                  'EndDate',
+                  'date_end',
                   'final',
                   'form_id',
                   'author_sham_user_id',
