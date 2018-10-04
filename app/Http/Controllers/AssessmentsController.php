@@ -3,12 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Assessment;
+use App\AssessmentCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Exception;
+use Illuminate\Support\Facades\Route;
 
 class AssessmentsController extends CustomController
 {
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->contextObj = new Assessment();
+        $this->baseViewPath = 'assessments';
+        $this->baseFlash = 'Assessment details ';
+    }
 
     /**
      * Display a listing of the assessments.
@@ -29,9 +43,11 @@ class AssessmentsController extends CustomController
      */
     public function create()
     {
-        
-        
-        return view('assessments.create');
+        /*  $modules = Module::pluck('description', 'id');
+        return view($this->baseViewPath . '.create',compact('modules'));*/
+
+        $assessmentcategories = AssessmentCategory::pluck('description', 'id');
+        return view('assessments.create',compact('assessmentcategories'));
     }
 
     /**
@@ -71,6 +87,24 @@ class AssessmentsController extends CustomController
         $assessment = Assessment::findOrFail($id);
 
         return view('assessments.show', compact('assessment'));
+    }
+
+    public function edit(Request $request)
+    {
+
+        $data = null;
+        $_mode = 'edit';
+        $fullPageEdit = true;
+        $id = Route::current()->parameter('assessment');
+        //dump($id);die;
+
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+        }
+        $assessmentcategories = AssessmentCategory::pluck('description', 'id');
+
+        return view($this->baseViewPath .'.edit',
+            compact('_mode','fullPageEdit','data','assessmentcategories'));
     }
 
     /**
