@@ -36,8 +36,11 @@ Auth::routes();
             Route::get('getQALastFiveDaysData', 'HomeController@getQALastFiveDaysData')->name('getQALastFiveDaysData');
             Route::get('getQAEvaluationScoresData', 'HomeController@getQAEvaluationScoresData')->name('getQAEvaluationScoresData');
             Route::get('getTotalAssessmentData', 'HomeController@getTotalAssessmentData')->name('getTotalAssessmentData');
-            
         #endregion
+
+        #region MyPortal
+            Route::resource('selfservice-portal', 'SSPController');
+        #endRegion
 
         #region Central HR
             Route::resource('employees', 'EmployeesController');

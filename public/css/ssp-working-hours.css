@@ -1,0 +1,69 @@
+main#timesheet-main-container {
+    max-width: 375px;
+}
+
+.working-hours-header {
+    background-color: #000000;
+}
+
+.working-hours-header + .main-body {
+    padding: 0 15px 0 15px;
+    background: #222;
+}
+
+.working-hours-header + .main-body > section {
+    background-color: inherit;
+}
+
+.working-hours-header + .default-body {
+    padding: 0 15px 0 15px;
+    background-color: white;
+}
+
+.working-hours {
+    background: #222;
+    padding: 10px 30px;
+    width: 100%;
+}
+
+.working-hours .list{
+    color: #FFF;
+    padding-left: 5px;
+    border-left: 4px solid #ffac0c;
+}
+
+.working-hours .title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.working-hours .sub-title {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.working-hours .current-working-hours{
+    color: #FFF;
+    line-height: 30px;
+}
+
+.working-hours .current-working-hours > li {
+    border-bottom: 2px solid #333;
+}
+
+.working-hours .current-working-hours > ul > li {
+    border-bottom: 1px solid #333;
+    font-size: 1.2rem;
+}
+
+.working-hours li:last-child {
+    border-bottom: none;
+}
+
+.working-hours ul > li:last-child {
+    border-bottom: none;
+}
+
+.working-hours .current-working-hours li.today {
+    color: #ffac0c;
+}
