@@ -954,3 +954,10 @@ ADD CONSTRAINT `FK_Employees_JobTitles`
   REFERENCES `shamdev`.`job_titles` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+  ALTER TABLE `shamdev`.`assessments_assessment_category`
+ADD CONSTRAINT `FK_AssessmentsAssessmentCategories_AssessmentCategories`
+  FOREIGN KEY (`assessment_category_id`)
+  REFERENCES `shamdev`.`assessment_categories` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;

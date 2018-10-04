@@ -2246,3 +2246,9 @@ CHANGE COLUMN `eLearning_module` `eLearning_module` VARCHAR(100) NULL ,
 CHANGE COLUMN `threshold` `threshold` INT(11) NULL ;
 
 ALTER TABLE `surveys` CHANGE `date_start` `date_start` DATE NOT NULL, CHANGE `EndDate` `date_end` DATE NOT NULL;
+
+ALTER TABLE `shamdev`.`assessments_assessment_category`
+DROP FOREIGN KEY `FK_AssessmentsAssessmentCategories_AssessmentCategories`;
+
+ALTER TABLE `shamdev`.`assessments_assessment_category`
+CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ;
