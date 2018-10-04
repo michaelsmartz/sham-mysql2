@@ -149,18 +149,19 @@ class SurveysController extends CustomController
 
             $redirectsTo = $request->get('redirects_to', route($this->baseViewPath .'.index'));
 
-            $formData = array_get($request->all(),'FormData');
-            $title = array_get($request->all(),'title');
-
-            $form = ['title'=>$title, 'sata'=>$formData];
-
             $input = array_except($filtered ,array('_token','_method','redirects_to', 'FormData'));
 
             if(!array_key_exists('final', $input))  $input['final'] = false;
 
             $this->contextObj->updateData($id, $input);
             $survey = Survey::find($id);
-            $survey->forms()->sync($form);
+
+            $form = Form::find($survey->form_id);
+
+            $form->title = array_get($request->all(),'title');
+            $form->sata = array_get($request->all(),'FormData');
+
+            $form->save();
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
