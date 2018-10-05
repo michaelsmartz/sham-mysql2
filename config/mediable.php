@@ -107,14 +107,16 @@ return [
                 'audio/ogg',
                 'audio/mpeg',
                 'audio/mp3',
-                'audio/mpeg',
-                'audio/wav'
+                'mpga',
+                'audio/wav',
+                'audio/x-wav'
             ],
             'extensions' => [
                 'aac',
                 'ogg',
                 'oga',
                 'mp3',
+                'mpga',
                 'wav',
             ]
         ],

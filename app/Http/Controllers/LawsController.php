@@ -128,7 +128,6 @@ class LawsController extends CustomController
     public function update(Request $request, $id)
     {
         try{
-            $this->storePreviousUrl($request);
 
             $this->validator($request);
 
@@ -157,7 +156,6 @@ class LawsController extends CustomController
     {
 
         try{
-            $this->storePreviousUrl($request);
 
             $id = Route::current()->parameter('law');
             $this->contextObj->destroyData($id);

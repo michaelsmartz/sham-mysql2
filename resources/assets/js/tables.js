@@ -2,8 +2,8 @@ import * as jsPDF from 'jspdf';
 
 require("bootstrap-table");
 require("tableexport.jquery.plugin");
-window.jsPDF = global.jsPDF = jsPDF;
-require("jspdf-autotable");
+//window.jsPDF = global.jsPDF = jsPDF;
+//require("jspdf-autotable");
 require("bootstrap-table/src/extensions/export/bootstrap-table-export");
 
 +function ($) {
@@ -22,10 +22,10 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
         buttonsClass: "default",
         showColumns: true,
         showExport: true,
-        exportTypes: ['excel', 'csv', 'pdf'],
+        exportTypes: ['excel', 'csv'],
         exportOptions: {
             "fileName": '@yield("title")',
-            "worksheetName": "test1",
+            "worksheetName": "test1"/*,
             "jspdf": {
               "autotable": {
                 "styles":{"overflow":"linebreak", "columnWidth":"auto", "rowHeight":20, "fontSize":10 },
@@ -33,7 +33,7 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
                 "alternateRowStyles": { "fillColor":[60, 69, 79], "textColor":255 },
                 "addPageContent": "pageContent"
               }
-            }
+            }*/
         }
     });
 

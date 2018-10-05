@@ -14389,6 +14389,10 @@ button[class*="item-"]:not(:last-child) {
   margin-right: 10px;
 }
 
+.light-table tbody tr td a.detail-icon {
+  margin-left: 10px;
+}
+
 .text-grey-light {
   color: #a5b3c7;
 }

@@ -94,7 +94,7 @@
         var initializeFileUpload = function() {
             $('#one').fileUploader({
                 useFileIcons: true,
-                fileMaxSize: 1.7,
+                fileMaxSize: 5,
                 totalMaxSize: 5,
                 useLoadingBars: false,
                 linkButtonContent: '',
@@ -174,12 +174,10 @@
         initializeFileUpload();
 
         $('#content-area').keditor({
-            snippetsUrl: "{{URL::to('topics/snippets')}}",
+            snippetsUrl: "{{URL::to('topics', $topic->id)}}/snippets",
             contentAreasSelector: '#contentHolder'
         });
         //$('#Header').charcounter({placement: 'bottom-d'});
-
-
 
         $('#btnSave').click(function(){
             saveHandler(true, $(this));
@@ -224,9 +222,14 @@
             }*/
         });
         request.done(function (msg) {
-            $('#topicId').val(msg.response);
-            $('#one').html('').data('fileUploader','');
+            $('#topicId').val(msg.response.id);
+            $('#one').html('');
+            $('#one').data('fileUploader','');
             $('#one').fileUploader();
+            $.each(msg.response.snippets, function(i, item) {
+                $('.keditor-snippets-inner').append(item);
+                $(item).draggable();
+            });
         });
         request.fail(function (jqXHR, textStatus) {
             console.log('fail');

@@ -9,12 +9,9 @@
         .alerty{ width: 500px !important;}
     </style>
     <script src="{{url('/')}}/js/tables.js"></script>
-    <script src="{{url('/')}}/plugins/html2canvas/html2canvas-1.0.0.a12.min.js"></script>
-    <script src="{{url('/')}}/plugins/alerty/alerty.min.js"></script>
+    <script src="{{url('/')}}/plugins/html2canvas/html2canvas-1.0.0.a12.min.js" defer></script>
+    <script src="{{url('/')}}/plugins/alerty/alerty.min.js" defer></script>
     <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
-    <link rel="stylesheet" href="{{url('/')}}/plugins/multiple-select/multiple-select.min.css">
-    <script src="{{url('/')}}/plugins/multiple-select/multiple-select.min.js"></script>
-
     <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
     <script>
 

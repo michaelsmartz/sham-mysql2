@@ -60,6 +60,10 @@ a[class*="item-"]:not(:last-child), button[class*="item-"]:not(:last-child) {
     transition: all 0.2s;
     margin-right:10px;
 }
+
+.light-table tbody tr td a.detail-icon {
+    margin-left: 10px;
+}
 .text-grey-light {
     color: $brand-grey-light;
 }

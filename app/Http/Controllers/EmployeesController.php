@@ -24,6 +24,7 @@ use App\EmployeeStatus;
 use App\ImmigrationStatus;
 use App\Qualification;
 use App\Skill;
+use App\SysConfigValue;
 use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -55,8 +56,6 @@ class EmployeesController extends CustomController
      */
     public function index()
     {
-        //$employees = $this->contextObj::with('department','jobTitle')->paginate(10);
-
         $employees = $this->contextObj::with('department','jobTitle')->filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('employees'));
     }
@@ -67,9 +66,11 @@ class EmployeesController extends CustomController
         $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
         $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
 
-        $employeeCode = setting('LATEST_SFE_CODE');
-        $this->contextObj->employee_code = $this->increment($employeeCode);
-        
+        $sfeCode = SysConfigValue::where('key','=', 'LATEST_SFE_CODE')->first();
+        $this->contextObj->employee_code = $this->increment($sfeCode->value);
+        $sfeCode->value = $this->contextObj->employee_code;
+        $sfeCode->save();
+
         if(!isset($this->contextObj->picture)){
             $this->contextObj->picture = asset('/img/avatar.png');
         }
@@ -83,7 +84,7 @@ class EmployeesController extends CustomController
                     'divisions','branches','skills','disabilities','lineManagers','employee','acceptedFiles'));        
     }
 
-        /**
+     /**
      * Show the form for editing the specified resource.
      *
      * @param  Request  $request
@@ -128,24 +129,7 @@ class EmployeesController extends CustomController
             list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
                  $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
                  $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
-            /*
-            $j = JobTitle::ManagerialJobs()->with(['employees' => function($q){
-                $q->EmployeesLite();
-            }])->get();
-    
-            $j->each(function($item) use (&$lineManagers){
-                $item->description = trim($item->description);
-                $lineManagers[$item->description] = array();
-                $item->employees->each(function($e) use (&$lineManagers,$item){
-                    $fullName = $e->first_name . ' ' .$e->surname;
-                    $temp = array($fullName => $e->id);
-                    array_push($lineManagers[$item->description], $temp);
-                });
-            });
 
-            $o = JobTitle::jobReportingLines();
-            dump($o);
-            */
         }
 
         $employeeSkills = $data->skills->pluck('id');
@@ -420,38 +404,36 @@ class EmployeesController extends CustomController
 
     protected function saveEmployee($request, $id = null) {
 
-        $otherFields = ['redirectsTo','picture','profile_pic','homeAddress','postalAddress','homePhone','mobilePhone','workPhone','privateEmail','workEmail','skills','disabilities','qualifications'];
+        $otherFields = ['_token','_method','redirectsTo','picture','profile_pic','homeAddress','postalAddress','homePhone','mobilePhone','workPhone','privateEmail','workEmail','skills','disabilities','qualifications'];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
         }
 
+        $input = array_except($request->all(), $otherFields);
         if ($request->hasFile('profile_pic')) {
             $image = $request->file('profile_pic');
             $contents = 'data:' . $image->getMimeType() .';base64,' .base64_encode(file_get_contents($image->getRealPath()));
+            $input['picture'] = $contents;
         }
 
         if ($id == null) { // Create
-            $input = array_except($request->all(), $otherFields);
-            $input['picture'] = $contents;
             $data = $this->contextObj->addData($input);
         } else { // Update
-            $excludeFields = array_merge($otherFields,['_token','_method']);
-            $input = array_except($request->all(), $excludeFields);
-            $input['picture'] = $contents;
             $this->contextObj->updateData($id, $input);
             $data = Employee::find($id);
         }
 
         $this->attach($request, $data->id);
 
-        if(empty($homePhone['tel_number'] || 
-           empty($mobilePhone['tel_number']) || 
+        if(empty($homePhone['tel_number'] || empty($mobilePhone['tel_number']) || 
            empty($workPhone['tel_number']))) {
             TelephoneNumber::where('employee_id', '=', $data->id)->delete();
         }
-        $data->phones()
-             ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>1], 
-                                $homePhone);
+        if(!empty($homePhone['tel_number'])){
+            $data->phones()
+            ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>1], 
+                               $homePhone);
+        }
         $data->phones()
              ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>2], 
                                 $mobilePhone);

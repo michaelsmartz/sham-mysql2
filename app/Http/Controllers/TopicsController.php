@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
+use Plank\Mediable\Media;
 use Exception;
 use View;
 
@@ -70,7 +71,7 @@ class TopicsController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
+        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf', 'mp3', 'mp4', 'wav']";
         $id = Route::current()->parameter('topic');
         $data = $this->contextObj->findData($id);
 
@@ -129,9 +130,16 @@ class TopicsController extends CustomController
 
     public function getSnippets(Request $request) {
 
-        $dir = Storage::disk('elearning')->getAdapter()->getPathPrefix();
-        $files = self::getMediaFiles($dir);
+        $id = Route::current()->parameter('topic');
+        $dir = Storage::disk('uploads')->getAdapter()->getPathPrefix();
 
+        $obj = $this->contextObj->find($id);
+        $relatedMedia = $obj->media()->whereIn('aggregate_type', [Media::TYPE_AUDIO,Media::TYPE_VIDEO])->pluck('filename')->all();
+
+        $files = self::getMediaFiles($dir.'Topic', $relatedMedia);
+        return $files;
+
+        die;
         $vw = View::make($this->baseViewPath .'.snippets', ['files' => $files]);
         return $vw->render();
 
@@ -163,13 +171,13 @@ class TopicsController extends CustomController
         }
     }
 
-    private static function getMediaFiles($dir) {
+    private static function getMediaFiles($dir, $filter) {
         // file extensions
         // value doesn't matter, search if key exists to see if the file extension is in the array
         $extensions = array(
             'Photo' => array('jpg' =>0, 'jpeg' =>1, 'png' =>2, 'gif' =>3, 'bmp' =>4),
-            'Audio' => array('mp3' => 5, 'wav' => 6),
-            'Video' => array('mp4' => 7)
+            'Audio' => array('mp3' => 5, 'wav' => 6, 'mpga' => 7),
+            'Video' => array('mp4' => 8)
         );
 
         // init result
@@ -177,33 +185,37 @@ class TopicsController extends CustomController
 
         // directory to scan
         $directory = new \DirectoryIterator($dir);
+        dump($filter);
 
         // iterate
         foreach ($directory as $fileinfo) {
-
-            // must be a file
-            if ($fileinfo->isFile()) {
+            if($fileinfo->isFile()){
                 // file extension
                 $extension = strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_EXTENSION));
-                $type = '';
-                // check if extension match
-                if (isset($extensions['Photo'][$extension])) {
-                    $type = 'Photo';
+                dump($fileinfo->getFilename());                
+                // must be a file
+                if (in_array($fileinfo->getFilename(). $extension, $filter)) {
+                    $type = '';
+                    // check if extension match
+                    if (isset($extensions['Photo'][$extension])) {
+                        $type = 'Photo';
+                    }
+                    if (isset($extensions['Audio'][$extension])) {
+                        $type = 'Audio';
+                    }
+                    if (isset($extensions['Video'][$extension])) {
+                        $type = 'Video';
+                    }
+                    // add to result
+                    $result[] = array(
+                        "name" => $fileinfo->getFilename(),
+                        "type" => $type,
+                        "ext" => $extension,
+                        "path" => $fileinfo->getPathname()
+                    );
                 }
-                if (isset($extensions['Audio'][$extension])) {
-                    $type = 'Audio';
-                }
-                if (isset($extensions['Video'][$extension])) {
-                    $type = 'Video';
-                }
-                // add to result
-                $result[] = array(
-                    "name" => $fileinfo->getFilename(),
-                    "type" => $type,
-                    "ext" => $extension,
-                    "path" => $fileinfo->getPathname()
-                );
             }
+
         }
 
         return $result;
@@ -212,6 +224,9 @@ class TopicsController extends CustomController
     private function saveTopic($id, $input)
     {
         try {
+
+            $response = ['status' => 'OK', 'snippets' => []]; 
+            $responseCode = 200;
 
             $snippetsLength = $input['snippetsLength'];
             $hasAttachments = isset($input['attachment']) && sizeof($input['attachment'])>0;
@@ -224,17 +239,32 @@ class TopicsController extends CustomController
                 $res = $this->contextObj->updateData($id, $temp);
                 $context = $this->contextObj->findData($id);
             }
-            if($hasAttachments){
+            $response['id'] = $context->id;
+
+            if($hasAttachments) {
                 $request = app('request');
-                $this->attach($request, $context->id);
+                $media = $this->attach($request, $context->id);
+
+                $elementId = intval($snippetsLength);
+
+                foreach ($media as $index => $file) {
+                    $elementId += intval($index);
+                    if($file->aggregate_type == 'audio') {
+                        $response['snippets'][] = '<section class="keditor-snippet ui-draggable ui-draggable-handle" data-snippet="#keditor-snippet-' . $elementId .'" data-type="component-media" title="'. $file->filename .'" data-categories="Media">   <img class="keditor-snippet-preview " src="http://localhost:17000/plugins/keditor/snippets/default/preview/audio.png"></section>';
+                    }
+                    if($file->aggregate_type == 'video') {
+                        $response['snippets'][] = '<section class="keditor-snippet ui-draggable ui-draggable-handle" data-snippet="#keditor-snippet-' . $elementId .'" data-type="component-media" title="'. $file->filename .'" data-categories="Media">   <img class="keditor-snippet-preview " src="http://localhost:17000/plugins/keditor/snippets/default/preview/video.png"></section>';
+                    }
+                }
             }
 
         } catch (Exception $exception) {
             dump($exception);
-            return response()->json(['response' => 'KO'], 500);
+            $response['status'] = 'KO';
+            $responseCode = 500;
         }
 
-        return response()->json(['response' => $context->id]);
+        return response()->json(['response' => $response], $responseCode);
 
     }
 

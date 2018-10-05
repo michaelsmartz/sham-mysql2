@@ -116,7 +116,7 @@ Auth::routes();
             Route::resource('modules', 'ModulesController' );
 
             Route::get('topics/embed/{file}', 'TopicsController@embedMedia');
-            Route::get('topics/snippets', 'TopicsController@getSnippets');
+            Route::get('topics/{topic}/snippets', 'TopicsController@getSnippets');
             Route::resource('topics', 'TopicsController' );
 
             Route::resource('module_assessments', 'ModuleAssessmentsController' );

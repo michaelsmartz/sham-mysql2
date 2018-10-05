@@ -24,10 +24,14 @@
 <link href="{{URL::to('/')}}/css/post-bootstrap-admin-reset.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
 <link href="{{URL::to('/')}}/css/employees.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select-1.13.2.min.css" rel="stylesheet">
 <style>
 
     .SumoSelect>.optWrapper { z-index: 1000; }
-
+    .bootstrap-select .dropdown-menu { opacity:1 !important; }
+    .bootstrap-select .dropdown-toggle .filter-option {
+        background-color: whitesmoke;
+    }
     .pic-holder {
         position: absolute;
         text-align: left;
@@ -104,9 +108,11 @@
     }
 </style>
 <script src="{{URL::to('/')}}/js/employees.js"></script>
+<script src="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select-1.13.2.min.js"></script>
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script>
     var initializeFileUpload = function() {
+        
         $('#one').fileUploader({
             useFileIcons: true,
             fileMaxSize: 1.7,
@@ -165,14 +171,18 @@
     };
     $(function(){
         initializeFileUpload();
+        $.fn.selectpicker.Constructor.BootstrapVersion = '3';
+        $('.selectpicker').selectpicker();
+        $('#job_title_id').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            console.log(e,clickedIndex, isSelected, previousValue);
+        });
     });
 
 </script>
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('employees.update', $data->id) }}" id="edit_employee_form" name="edit_employee_form" data-parsley-validate="" accept-charset="UTF-8"  enctype="multipart/form-data" 
-                data-quals = '[{"Title":"1", "Description":"abcde", "Institution":"Testing", "StudentNumber":"A001","DateObtained":"2015-01-01" }]'>
+    <form method="POST" action="{{ route('employees.update', $data->id) }}" id="edit_employee_form" name="edit_employee_form" data-parsley-validate="" accept-charset="UTF-8"  enctype="multipart/form-data"> 
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         @yield('modalContent')
