@@ -94,8 +94,8 @@ class TopicsController extends CustomController
      */
     public function update(Request $request, $id)
     {
-
-        $input = array_except($request->all(),array('_token', '_method'));
+        $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+        $input = array_except($request->all(),array('_token', '_method','redirectsTo'));
         
         return $this->saveTopic($id, $input);
     }
@@ -140,12 +140,16 @@ class TopicsController extends CustomController
         $dir = Storage::disk('uploads')->getAdapter()->getPathPrefix();
 
         $obj = $this->contextObj->find($id);
-        $relatedMedia = $obj->media()->whereIn('aggregate_type', [Media::TYPE_AUDIO,Media::TYPE_VIDEO])->pluck('filename')->all();
+        $relatedMedia = $obj->media()->whereIn('aggregate_type', [Media::TYPE_AUDIO,Media::TYPE_VIDEO])->get();
+        $filter = [];
+        if(sizeof($relatedMedia) > 0 ){
+            foreach($relatedMedia as $file) {
+                $filter[] = $file->filename . '.' .$file->extension;
+            }
+        }
 
-        $files = self::getMediaFiles($dir.'Topic', $relatedMedia);
-        return $files;
+        $files = self::getMediaFiles($dir.'Topic', $filter);
 
-        die;
         $vw = View::make($this->baseViewPath .'.snippets', ['files' => $files]);
         return $vw->render();
 
@@ -191,16 +195,15 @@ class TopicsController extends CustomController
 
         // directory to scan
         $directory = new \DirectoryIterator($dir);
-        dump($filter);
 
         // iterate
         foreach ($directory as $fileinfo) {
             if($fileinfo->isFile()){
                 // file extension
                 $extension = strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_EXTENSION));
-                dump($fileinfo->getFilename());                
+              
                 // must be a file
-                if (in_array($fileinfo->getFilename(). $extension, $filter)) {
+                if (in_array($fileinfo->getFilename(), $filter)) {
                     $type = '';
                     // check if extension match
                     if (isset($extensions['Photo'][$extension])) {

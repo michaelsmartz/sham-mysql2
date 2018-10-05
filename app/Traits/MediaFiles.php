@@ -42,6 +42,7 @@ trait MediaFiles
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);
+        $returns = [];
 
         if (!is_null($request->request->get('attachment'))) {
             foreach($request->request->get('attachment') as $file) {
@@ -74,8 +75,12 @@ trait MediaFiles
                 //to sync mediable table with media table on upload
                 $relatedMedias->attachMedia($media, $uModelName);
                 //$relatedMedias->syncMedia($media, $modelName);
+
+                $returns[] = $media;
             }
         }
+
+        return $returns;
     }
 
     /**
