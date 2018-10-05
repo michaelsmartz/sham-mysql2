@@ -50,9 +50,14 @@ trait MediaFiles
                     //get current disk where the file will be uploaded
                     $disk = 'uploads';
 
+                    //take only filename and not extension
+                    $temp = explode('.', $file['title']);
+                    $name = $temp[0];
+
                     $media = MediaUploader::fromSource($stream)
-                        ->useFilename($file['title'])
+                        ->useFilename($name)
                         ->toDestination($disk, $uModelName)
+                        ->setStrictTypeChecking(true)
                         // pass the callable
                         ->beforeSave(function (Media $model) use ($request) {
                             $model->setAttribute('comment', $request->input('comment'));
