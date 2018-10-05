@@ -42,7 +42,6 @@ trait MediaFiles
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);
-        $returns = [];
 
         if (!is_null($request->request->get('attachment'))) {
             foreach($request->request->get('attachment') as $file) {
@@ -54,13 +53,15 @@ trait MediaFiles
                     //take only filename and not extension
                     $temp = explode('.', $file['title']);
                     $name = $temp[0];
+                    $ext = $temp[1];
 
                     $media = MediaUploader::fromSource($stream)
                         ->useFilename($name)
                         ->toDestination($disk, $uModelName)
                         ->setStrictTypeChecking(true)
                         // pass the callable
-                        ->beforeSave(function (Media $model) use ($request) {
+                        ->beforeSave(function (Media $model) use ($request, $ext) {
+                            $model->setAttribute('extension', $ext);
                             $model->setAttribute('comment', $request->input('comment'));
                             $model->setAttribute('extrable_id', $request->input('Extrable_Id'));
                             $model->setAttribute('extrable_type', $request->input('Extrable_Type'));
@@ -73,12 +74,8 @@ trait MediaFiles
                 //to sync mediable table with media table on upload
                 $relatedMedias->attachMedia($media, $uModelName);
                 //$relatedMedias->syncMedia($media, $modelName);
-
-                $returns[] = $media;
             }
         }
-
-        return $returns;
     }
 
     /**
