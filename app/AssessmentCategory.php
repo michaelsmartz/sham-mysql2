@@ -10,8 +10,6 @@ class AssessmentCategory extends Model
     
     use SoftDeletes;
 
-
-
     /**
      * Attributes that should be mass-assignable.
      *
@@ -27,7 +25,7 @@ class AssessmentCategory extends Model
 
     public function assessmentCategoryCategoryQuestions()
     {
-        return $this->hasMany('App\AssessmentCategoryCategoryQuestion','assessmentcategory_id','id');
+        return $this->belongsToMany(CategoryQuestion::class,'assessment_category_category_question','assessment_category_id','category_question_id');
     }
 
     public function assessmentsAssessmentCategories()

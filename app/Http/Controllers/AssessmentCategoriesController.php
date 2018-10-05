@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+use App\CategoryQuestion;
 use Exception;
 
 class AssessmentCategoriesController extends CustomController
@@ -36,6 +37,12 @@ class AssessmentCategoriesController extends CustomController
         return view($this->baseViewPath .'.index', compact('assessmentCategories'));
     }
 
+    public function create()
+    {
+        $categoryquestions = CategoryQuestion::pluck('title', 'id');
+        return view($this->baseViewPath . '.create',compact('categoryquestions'));
+    }
+
     /**
      * Store a new assessment category in the storage.
      *
@@ -48,9 +55,11 @@ class AssessmentCategoriesController extends CustomController
         try {
             //$this->validator($request);
 
+            $accq = array_get($request->all(),'accq');
             $input = array_except($request->all(),array('_token'));
 
-            $this->contextObj->addData($input);
+            $data = $this->contextObj->addData($input);
+            $data->assessmentCategoryCategoryQuestions()->sync($accq);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -73,12 +82,12 @@ class AssessmentCategoriesController extends CustomController
         if(!empty($id)) {
             $data = $this->contextObj->findData($id);
         }
-        //$categoryQuestionTypes = CategoryQuestionType::pluck('description','id')->all();
 
-        ///$categoryquestionchoices = CategoryQuestionChoice::where('category_question_id',$id)->get();
+        $categoryquestions = CategoryQuestion::pluck('title', 'id');
+        $accq = $data->assessmentCategoryCategoryQuestions()->pluck('title', 'assessment_category_category_question.category_question_id');
 
         return view($this->baseViewPath .'.edit',
-            compact('_mode','fullPageEdit','data'));
+            compact('_mode','fullPageEdit','data','categoryquestions','accq'));
     }
 
     /**
@@ -92,13 +101,19 @@ class AssessmentCategoriesController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            //$this->validator($request);
             
             $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            
-            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
+
+            $accq = array_get($request->all(),'accq');
+            $input = array_except($request->all(),array('_token','_method','redirectsTo','q','accq'));
+
 
             $this->contextObj->updateData($id, $input);
+
+            $data = AssessmentCategory::find($id);
+            $data->assessmentCategoryCategoryQuestions()
+                ->sync($accq); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 

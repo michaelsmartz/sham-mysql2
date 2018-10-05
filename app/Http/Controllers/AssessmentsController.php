@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Assessment;
-use App\AssessmentCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
-use Exception;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
+use App\AssessmentCategory;
+use Exception;
 
 class AssessmentsController extends CustomController
 {
-
     /**
      * Create a new controller instance.
      *
@@ -31,9 +33,8 @@ class AssessmentsController extends CustomController
      */
     public function index()
     {
-        $assessments = Assessment::paginate(25);
-
-        return view('assessments.index', compact('assessments'));
+        $assessments = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.index', compact('assessments'));
     }
 
     /**
@@ -60,33 +61,23 @@ class AssessmentsController extends CustomController
     public function store(Request $request)
     {
         try {
-            $this->affirm($request);
-            $data = $this->getData($request);
-            
-            Assessment::create($data);
+            //$this->validator($request);
 
-            return redirect()->route('assessments.assessment.index')
-                             ->with('success_message', 'Assessment was successfully added!');
+            $assessmentcategories = array_get($request->all(),'assessmentcategories');
+            $input = array_except($request->all(),array('_token'));
+
+            $data = $this->contextObj->addData($input);
+
+            $data->assessmentsAssessmentCategories()
+                ->sync($assessmentcategories); //sync what has been selected
+
+            \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-
-            return back()->withInput()
-                         ->withErrors(['unexpected_error' => 'Unexpected error occurred while trying to process your request!']);
+            \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
-    }
 
-    /**
-     * Display the specified assessment.
-     *
-     * @param int $id
-     *
-     * @return Illuminate\View\View
-     */
-    public function show($id)
-    {
-        $assessment = Assessment::findOrFail($id);
-
-        return view('assessments.show', compact('assessment'));
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     public function edit(Request $request)
@@ -102,45 +93,44 @@ class AssessmentsController extends CustomController
             $data = $this->contextObj->findData($id);
         }
         $assessmentcategories = AssessmentCategory::pluck('description', 'id');
+        $assessmentaAssessmentCategories = $data->assessmentsAssessmentCategories()->pluck('description', 'assessments_assessment_category.assessment_category_id');
 
         return view($this->baseViewPath .'.edit',
-            compact('_mode','fullPageEdit','data','assessmentcategories'));
+            compact('_mode','fullPageEdit','data','assessmentcategories','assessmentaAssessmentCategories'));
     }
-
-    /**
-     * Show the form for editing the specified assessment.
-     *
-     * @param int $id
-     *
-     * @return Illuminate\View\View
-     */
-
 
     /**
      * Update the specified assessment in the storage.
      *
      * @param  int $id
-     * @param Illuminate\Http\Request $request
+     * @param Request $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function update($id, Request $request)
+    public function update(Request $request, $id)
     {
         try {
-            $this->affirm($request);
-            $data = $this->getData($request);
+            //$this->validator($request);
             
-            $assessment = Assessment::findOrFail($id);
-            $assessment->update($data);
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
 
-            return redirect()->route('assessments.assessment.index')
-                             ->with('success_message', 'Assessment was successfully updated!');
+            $assessmentcategories = array_get($request->all(),'assessmentcategories');
+            
+            $input = array_except($request->all(),array('_token','_method','redirectsTo','q','assessmentcategories'));
+
+            $this->contextObj->updateData($id, $input);
+
+            $data = Assessment::find($id);
+            $data->assessmentsAssessmentCategories()
+                ->sync($assessmentcategories); //sync what has been selected
+
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
+        }
 
-            return back()->withInput()
-                         ->withErrors(['unexpected_error' => 'Unexpected error occurred while trying to process your request!']);
-        }        
+        return Redirect::to($redirectsTo);
     }
 
     /**
@@ -150,55 +140,20 @@ class AssessmentsController extends CustomController
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         try {
-            $assessment = Assessment::findOrFail($id);
-            $assessment->delete();
+            $id = Route::current()->parameter('assessment');
+            $this->contextObj->destroyData($id);
 
-            return redirect()->route('assessments.assessment.index')
-                             ->with('success_message', 'Assessment was successfully deleted!');
+            \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
 
         } catch (Exception $exception) {
-
-            return back()->withInput()
-                         ->withErrors(['unexpected_error' => 'Unexpected error occurred while trying to process your request!']);
+            \Session::put('error', 'could not delete '. $this->baseFlash . '!');
         }
+
+        return redirect()->back();
     }
     
-    /**
-     * Validate the given request with the defined rules.
-     *
-     * @param  Illuminate\Http\Request  $request
-     *
-     * @return boolean
-     */
-    protected function affirm(Request $request)
-    {
-        $rules = [
-            'name' => 'required|string|min:1|max:1024',
-            'description' => 'required|string|min:1|max:1024',
-            'passmark_percentage' => 'nullable|numeric|min:-9|max:9',
-     
-        ];
-
-
-        return $this->validate($request, $rules);
-    }
-
     
-    /**
-     * Get the request's data from the request.
-     *
-     * @param Illuminate\Http\Request\Request $request 
-     * @return array
-     */
-    protected function getData(Request $request)
-    {
-        $data = $request->only(['name','description','passmark_percentage']);
-        $data['is_active'] = $request->has('is_active');
-
-        return $data;
-    }
-
 }

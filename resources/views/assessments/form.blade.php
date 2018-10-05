@@ -14,7 +14,7 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('passmark_percentage') ? 'has-error' : '' }}">
     <label for="passmark_percentage">Passmark Percentage</label>
-        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($assessment->passmark_percentage) ? $assessment->passmark_percentage : null) }}" min="-9" max="9" placeholder="Enter passmark percentage">
+        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($assessment->passmark_percentage) ? $assessment->passmark_percentage : null) }}" min="1" max="100" placeholder="Enter passmark percentage">
         {!! $errors->first('passmark_percentage', '<p class="help-block">:message</p>') !!}
 </div>
 
@@ -30,9 +30,9 @@
                 <button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
             </div>
             <div class="col-xs-5" style="padding-right: 0px;">
-                {!! Form::select('modules[]', isset($courseModules)?$courseModules:[],null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control', 'id'=>'multiselect_to')) !!}
+                {!! Form::select('assessmentcategories[]', isset($assessmentaAssessmentCategories)?$assessmentaAssessmentCategories:[],null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control', 'id'=>'multiselect_to')) !!}
             </div>
-            {!! $errors->first('modules[]', '<p class="help-block">:message</p>') !!}
+            {!! $errors->first('assessmentcategories[]', '<p class="help-block">:message</p>') !!}
         </div>
     </div>
 
