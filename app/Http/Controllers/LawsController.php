@@ -11,6 +11,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class LawsController extends CustomController
@@ -127,11 +128,11 @@ class LawsController extends CustomController
      */
     public function update(Request $request, $id)
     {
-        try{
+        try {
 
             $this->validator($request);
-
-            $input = array_except($request->all(),array('_token','_method','attachment'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+            $input = array_except($request->all(),array('_token','_method','attachment','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
             $this->attach($request, $id);
@@ -142,7 +143,7 @@ class LawsController extends CustomController
             \Session::put('error', 'Could not update ' . $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class CoursesController extends CustomController
@@ -32,6 +33,11 @@ class CoursesController extends CustomController
     public function index()
     {
         $courses = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($courses->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('courses'));
     }
 
@@ -102,15 +108,16 @@ class CoursesController extends CustomController
     public function update(Request $request, $id)
     {
         try {
+
             $this->validator($request);
-            
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             $modules = array_get($request->all(),'modules');
-            $input = array_except($request->all(),array('_token','_method', 'q', 'modules'));
+            $input = array_except($request->all(),array('_token','_method', 'q', 'modules','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
             $data = Course::find($id);
             $data->modules()
-                ->sync($modules); //sync what has been selected
+                 ->sync($modules); //sync what has been selected
             
             \Session::put('success', $this->baseFlash . 'updated Successfully!');
 
@@ -118,7 +125,7 @@ class CoursesController extends CustomController
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return Redirect::to($redirectsTo);
     }
 
     /**

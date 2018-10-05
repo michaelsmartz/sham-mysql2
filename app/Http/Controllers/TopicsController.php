@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
 use Plank\Mediable\Media;
 use Exception;
 use View;
@@ -38,6 +39,11 @@ class TopicsController extends CustomController
     public function index()
     {
         $topics = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($topics->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('topics'));
     }
 

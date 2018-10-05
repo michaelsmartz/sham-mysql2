@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class AssetSuppliersController extends CustomController
@@ -25,14 +26,14 @@ class AssetSuppliersController extends CustomController
      */
     public function index(Request $request)
     {
-        /*$assetSuppliers = $this->contextObj->getData();
-        $this->contextObj::filter($request->all())->paginate(10);*/
 
         // /jedrzej/searchable
         $assetSuppliers =  $this->contextObj::filtered()->paginate(10);
 
-        //san4io/eloquent-filter (php 7.1)
-        //$assetSuppliers =  $this->contextObj->filter($request->all())->paginate(10);
+        // handle empty result bug
+        if ($assetSuppliers->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('assetSuppliers'));
     }
 
@@ -101,8 +102,8 @@ class AssetSuppliersController extends CustomController
     {
         try{
             $this->validator($request);
-
-            $input = array_except($request->all(),array('_token','_method'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
 
@@ -112,7 +113,7 @@ class AssetSuppliersController extends CustomController
             \Session::put('error', 'Could not update ' . $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**

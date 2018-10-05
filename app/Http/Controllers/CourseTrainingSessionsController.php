@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,11 @@ class CourseTrainingSessionsController extends CustomController
     public function index()
     {
         $courseTrainingSessions = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($courseTrainingSessions->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('courseTrainingSessions'));
     }
 
@@ -127,9 +133,9 @@ class CourseTrainingSessionsController extends CustomController
     {
         try {
             $this->validator($request);
-
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             $employees = array_get($request->all(), 'employees');
-            $input = array_except($request->all(),array('_token','_method','employees'));
+            $input = array_except($request->all(),array('_token','_method','employees','redirectsTo'));
 
             $data = TrainingSession::find($id);
             $this->contextObj->updateData($id, $input);
@@ -148,7 +154,7 @@ class CourseTrainingSessionsController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**

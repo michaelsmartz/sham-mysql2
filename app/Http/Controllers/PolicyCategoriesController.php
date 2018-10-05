@@ -10,6 +10,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 use Illuminate\View\View;
 
@@ -98,11 +99,13 @@ class PolicyCategoriesController extends CustomController
     public function update(Request $request, $id)
     {
         try {
+            
             $this->validator($request);
-
-            $input = array_except($request->all(),array('_token','_method'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+            $input = array_except($request->all(),array('_token','_method','attachment','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
+            $this->attach($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -110,7 +113,7 @@ class PolicyCategoriesController extends CustomController
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return Redirect::to($redirectsTo);
     }
 
     /**

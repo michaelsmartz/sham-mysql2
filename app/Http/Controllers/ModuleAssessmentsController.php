@@ -10,6 +10,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class ModuleAssessmentsController extends CustomController
@@ -34,6 +35,11 @@ class ModuleAssessmentsController extends CustomController
     public function index()
     {
         $moduleAssessments = $this->contextObj::with(['module','assessmentType'])->filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($moduleAssessments->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('moduleAssessments'));
     }
 
@@ -74,8 +80,8 @@ class ModuleAssessmentsController extends CustomController
     {
         try {
             $this->validator($request);
-
-            $input = array_except($request->all(),array('_token','_method'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
 
@@ -85,7 +91,7 @@ class ModuleAssessmentsController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**

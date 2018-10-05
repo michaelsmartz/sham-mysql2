@@ -1,3 +1,4 @@
+{!! Form::hidden('redirectsTo', URL::previous()) !!}
 <div class="row">
     
 <div class="form-group col-xs-12 {{ $errors->has('main_heading') ? 'has-error' : '' }}">

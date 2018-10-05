@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class ModulesController extends CustomController
@@ -32,6 +33,11 @@ class ModulesController extends CustomController
     public function index()
     {
         $modules = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($modules->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('modules'));
     }
 
@@ -101,9 +107,9 @@ class ModulesController extends CustomController
     {
         try {
             $this->validator($request);
-
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             $topics = array_get($request->all(),'topics');
-            $input = array_except($request->all(),array('_token','_method', 'q', 'topics'));
+            $input = array_except($request->all(),array('_token','_method', 'q', 'topics','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
             $data = Module::find($id);
@@ -116,7 +122,7 @@ class ModulesController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return Redirect::to($redirectsTo);
     }
 
     /**

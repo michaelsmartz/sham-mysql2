@@ -1,3 +1,4 @@
+{!! Form::hidden('redirectsTo', URL::previous()) !!}
 <div class="row">
     {!! Form::hidden('id',$topic->id, ['id'=>'topicId', 'name'=>'id']) !!}
     {!! Form::hidden('model', 'Topic') !!}

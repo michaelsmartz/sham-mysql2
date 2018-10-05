@@ -11,6 +11,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class AssetsController extends CustomController
@@ -35,6 +36,11 @@ class AssetsController extends CustomController
     public function index()
     {
         $assets = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($assets->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('assets'));
     }
 
@@ -121,8 +127,8 @@ class AssetsController extends CustomController
     {
         try {
             $this->validator($request);
-
-            $input = array_except($request->all(),array('_token','_method'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
 
@@ -132,7 +138,7 @@ class AssetsController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return Redirect::to($redirectsTo);
     }
 
     /**

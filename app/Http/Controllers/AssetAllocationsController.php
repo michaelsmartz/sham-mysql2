@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Exception;
@@ -31,6 +32,11 @@ class AssetAllocationsController extends CustomController
     {
         // /jedrzej/searchable
         $assetEmployees =  $this->contextObj::with(['asset','employee'])->filtered()->paginate(10);
+
+        // handle empty result bug
+        if ($assetEmployees->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('assetEmployees'));
     }
 
@@ -114,8 +120,8 @@ class AssetAllocationsController extends CustomController
     {
         try {
             $this->validator($request);
-
-            $input = array_except($request->all(),array('_token','_method'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
+            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
 
@@ -125,7 +131,7 @@ class AssetAllocationsController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**
