@@ -44,6 +44,7 @@ class SSPController extends CustomController
 
     private function getWorkingHours($employee_id){
         $timeGroup = [];
+        $timeGroupTpDays = [];
 
         //dd($employee_id);
 
@@ -63,26 +64,47 @@ class SSPController extends CustomController
             }
         }
 
-        //dd($timeGroup['id']);
+        //dd($timeGroup);
 
         if(sizeof($timeGroup) > 0){
             $tg = TimeGroup::find($timeGroup['id']);
             //dd($tg);
 
             $tgDays = $tg->days()->get(['name', 'day_id', 'day_number'])->all();
-            $tgTimePeriods = $tg->timePeriods()->where('time_period_type',1)->get(['description', 'start_time', 'end_time'])->all();
+            $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time'])->all();
+
+            //dd($tgDays);
+            //dd($tgTimePeriods);
 
 
-            dd($tgDays);
-            dd($tgTimePeriods);
+             if ($tgDays != null) {
+                 $cp = 0;
+                 foreach ($tgTimePeriods as $tgTimePeriod) {
+                     $timeGroupTpDays['time_period'][$cp]['description'] = $tgTimePeriod->description;
+                     $timeGroupTpDays['time_period'][$cp]['start_time'] = $tgTimePeriod->start_time;
+                     $timeGroupTpDays['time_period'][$cp]['end_time'] = $tgTimePeriod->end_time;
+                     $cp++;
+                 }
+             }
 
+             if($tgDays != null) {
+                 $cd = 0;
+                 foreach ($tgDays as $tgDay) {
+                     $timeGroupTpDays['day'][$cd]['id'] = $tgDay->day_id;
+                     $timeGroupTpDays['day'][$cd]['name'] = $tgDay->name;
+                     $timeGroupTpDays['day'][$cd]['day_number'] = $tgDay->day_number;
+                     $cd++;
+                 }
+             }
 
-//             if ($tgDays != null && $tgTimePeriods != null) {
-//                $counter = 0;
-//                $counter_days = 0;
-//                foreach($tgDays as $tgDay) {
+             dd($timeGroupTpDays);
+
+             if(!empty($timeGroupTpDays)){
+                $counter = 0;
+                $counter_days = 0;
+                foreach($tgDays as $tgDay) {
 //
-//                    $day = $tgDay->name;
+                    $day = $tgDay->name;
 //                    $timeDesc = $tmpTimePeriod->TimePeriod->Description;
 //
 //                    //if TimePeriodType 1:  is for working hours
@@ -97,8 +119,8 @@ class SSPController extends CustomController
 //                    }
 //
 //                    $counter ++;
-//                }
-//            }
+                }
+            }
         }
 
 //        return $timeGroup;
