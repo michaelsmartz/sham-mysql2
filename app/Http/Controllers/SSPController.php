@@ -9,7 +9,7 @@ use App\Employee;
 use App\Http\Requests;
 use App\TimeGroup;
 use Carbon\Carbon;
-use DateInterval;
+use DateTime;
 
 class SSPController extends CustomController
 {
@@ -38,23 +38,16 @@ class SSPController extends CustomController
         $workingHours = $this->getWorkingHours($employee_id);
 
         // load the view and pass the parameters
-        return View::make('selfservice-portal.index')
+        return \View::make('selfservice-portal.index')
             ->with('workingHours', $workingHours);
     }
 
     private function getWorkingHours($employee_id){
         $timeGroup = [];
-        $timeGroupTpDays = [];
-
-        //dd($employee_id);
 
         $employee = Employee::find($employee_id);
         $team = $employee->team()->get(['description'])->first();
         $timeGroups = $employee->timeGroup()->get(['id','name'])->all();
-
-        //dd($employee);
-        //dd($team->description);
-        //dd($timeGroups);
 
         if ($employee != null && $team != null && $timeGroups != null) {
             foreach ($timeGroups as $tg) {
@@ -64,101 +57,70 @@ class SSPController extends CustomController
             }
         }
 
-        //dd($timeGroup);
-
-        if(sizeof($timeGroup) > 0){
+        if(sizeof($timeGroup) > 0) {
             $tg = TimeGroup::find($timeGroup['id']);
-            //dd($tg);
 
             $tgDays = $tg->days()->get(['name', 'day_id', 'day_number'])->all();
-            $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time'])->all();
+            $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time', 'time_period_type'])->all();
 
-            //dd($tgDays);
-            //dd($tgTimePeriods);
-
-
-             if ($tgDays != null) {
-                 $cp = 0;
-                 foreach ($tgTimePeriods as $tgTimePeriod) {
-                     $timeGroupTpDays['time_period'][$cp]['description'] = $tgTimePeriod->description;
-                     $timeGroupTpDays['time_period'][$cp]['start_time'] = $tgTimePeriod->start_time;
-                     $timeGroupTpDays['time_period'][$cp]['end_time'] = $tgTimePeriod->end_time;
-                     $cp++;
-                 }
-             }
-
-             if($tgDays != null) {
-                 $cd = 0;
-                 foreach ($tgDays as $tgDay) {
-                     $timeGroupTpDays['day'][$cd]['id'] = $tgDay->day_id;
-                     $timeGroupTpDays['day'][$cd]['name'] = $tgDay->name;
-                     $timeGroupTpDays['day'][$cd]['day_number'] = $tgDay->day_number;
-                     $cd++;
-                 }
-             }
-
-             dd($timeGroupTpDays);
-
-             if(!empty($timeGroupTpDays)){
-                $counter = 0;
-                $counter_days = 0;
-                foreach($tgDays as $tgDay) {
-//
-                    $day = $tgDay->name;
-//                    $timeDesc = $tmpTimePeriod->TimePeriod->Description;
-//
-//                    //if TimePeriodType 1:  is for working hours
-//                    if($tmpTimePeriod->TimePeriod->TimePeriodType == 1) {
-//                        $timeGroup = self::getOfficeHours($timeGroup, $tmpTimePeriod, $counter_days);
-//                        $counter_days ++;
-//                    }
-//                    //if TimePeriodType 2: add lunch hours to array
-//                    else if($tmpTimePeriod->TimePeriod->TimePeriodType == 2) {
-//                        $timeGroup['time_period'][$day]['breaks'][$timeDesc]
-//                            = self::getLunchHours($tmpTimePeriod);
-//                    }
-//
-//                    $counter ++;
+            if (!empty($timeGroup) && $tgTimePeriods != null && $tgDays != null) {
+                foreach ($tgTimePeriods as $tgTimePeriod) {
+                    $counter_days = 0;
+                    foreach ($tgDays as $tgDay) {
+                        //if TimePeriodType 1:  is for working hours
+                        if ($tgTimePeriod->time_period_type == 1) {
+                        $timeGroup['time_period'][$tgDay->name]['description'] = $tgTimePeriod->description;
+                        $timeGroup['time_period'][$tgDay->name]['start_time'] = $tgTimePeriod->start_time;
+                        $timeGroup['time_period'][$tgDay->name]['end_time'] = $tgTimePeriod->end_time;
+                        $timeGroup['time_period'][$tgDay->name]['day_count'] = $counter_days;
+                        }
+                        //if TimePeriodType 2: add lunch hours to array
+                        else if ($tgTimePeriod->time_period_type == 2) {
+                            $timeGroup['time_period'][$tgDay->name]['breaks'][$tgTimePeriod->description]
+                                = self::getLunchHours($tgTimePeriod);
+                        }
+                        $counter_days++;
+                    }
                 }
             }
         }
 
-//        return $timeGroup;
+        return $timeGroup;
     }
 
     private static function timeIntervalReadable($value) {
         if ($value != null) {
-            $interval = new DateInterval($value);
-            return $interval->format('%H:%I');
+            $interval = new DateTime($value);
+            return $interval->format('G:i');
         }
         return '00:00';
     }
 
-    private function getOfficeHours($timeGroup, $tmpTimePeriod, $counter_days){
-        if (!empty($tmpTimePeriod->TimePeriod->StartTime)) {
-            $objStartTime = self::timeIntervalReadable($tmpTimePeriod->TimePeriod->StartTime);
-            $timeGroup['time_period'][$tmpTimePeriod->Day->Name]['start_time'] = $objStartTime;
+    private function getOfficeHours($timeGroup, $tgTimePeriod, $counter_days){
+        if (!empty($tgTimePeriod->start_time)) {
+            $objStartTime = self::timeIntervalReadable($tgTimePeriod->start_time);
+            $timeGroup['time_period'][$tgTimePeriod->name]['start_time'] = $objStartTime;
         }
 
-        if (!empty($tmpTimePeriod->TimePeriod->StartTime)) {
-            $objEndTime = self::timeIntervalReadable($tmpTimePeriod->TimePeriod->EndTime);
-            $timeGroup['time_period'][$tmpTimePeriod->Day->Name]['end_time'] = $objEndTime;
+        if (!empty($tgTimePeriod->end_time)) {
+            $objEndTime = self::timeIntervalReadable($tgTimePeriod->end_time);
+            $timeGroup['time_period'][$tgTimePeriod->name]['end_time'] = $objEndTime;
         }
 
-        $timeGroup['time_period'][$tmpTimePeriod->Day->Name]['day_count'] =  $counter_days;
+        $timeGroup['time_period'][$tgTimePeriod->name]['day_count'] =  $counter_days;
 
         return $timeGroup;
     }
 
-    private function getLunchHours($tmpTimePeriod){
+    private function getLunchHours($tgTimePeriod){
         $lunchTime = [];
-        if (!empty($tmpTimePeriod->TimePeriod->StartTime)) {
-            $objStartTime = self::timeIntervalReadable($tmpTimePeriod->TimePeriod->StartTime);
+        if (!empty($tgTimePeriod->start_time)) {
+            $objStartTime = self::timeIntervalReadable($tgTimePeriod->start_time);
             $lunchTime['start_time'] = $objStartTime;
         }
 
-        if (!empty($tmpTimePeriod->TimePeriod->StartTime)) {
-            $objEndTime = self::timeIntervalReadable($tmpTimePeriod->TimePeriod->EndTime);
+        if (!empty($tgTimePeriod->end_time)) {
+            $objEndTime = self::timeIntervalReadable($tgTimePeriod->end_time);
             $lunchTime['end_time'] = $objEndTime;
         }
 
