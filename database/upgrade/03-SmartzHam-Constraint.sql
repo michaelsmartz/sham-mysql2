@@ -904,14 +904,17 @@ ADD CONSTRAINT `FK_ShamUserProfilesSubModulePermissions_SystemSubModules`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
-#--- add index on evaluation_results  
+#--- add index on evaluation_results
+#---- evaluation_results
 ALTER TABLE `evaluation_results` 
 ADD INDEX `IX_EvaluationResults_evaluation_accessor` (`evaluation_id` ASC, `assessoremployee_id` ASC);
 
 #--- Added on 20-09-2018
+#---- laws
 ALTER TABLE `laws` 
 ADD INDEX `IX_laws_deleted_at` (`deleted_at` DESC);
 
+#---- announcements
 ALTER TABLE `announcements`
 DROP FOREIGN KEY `FK_Announcements_AnnouncementStatuses`;
 
@@ -922,7 +925,7 @@ ALTER TABLE `announcements`
 CHANGE COLUMN `announcement_status_id` `announcement_status_id` ENUM('1', '2') NOT NULL DEFAULT '1' COMMENT '1 - Enabled, 2 - Disabled' ;
 
 #---- Added on 24/09/2018
-
+#---- course_modules
 ALTER TABLE `course_module`
 ADD CONSTRAINT `FK_CourseModules_Course`
   FOREIGN KEY (`course_id`)
@@ -935,7 +938,7 @@ ADD CONSTRAINT `FK_CourseModules_Module`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
-
+#---- email_addresses
   ALTER TABLE `email_addresses`
 ADD CONSTRAINT `FK_EmailAddresses_EmailAddressTypes`
 FOREIGN KEY (`email_address_type_id`)
@@ -948,6 +951,7 @@ REFERENCES `employees` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
+#---- employees
 ALTER TABLE `shamdev`.`employees`
 ADD CONSTRAINT `FK_Employees_JobTitles`
   FOREIGN KEY (`job_title_id`)
@@ -955,9 +959,23 @@ ADD CONSTRAINT `FK_Employees_JobTitles`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
+#---- assessments_assessment_category
   ALTER TABLE `shamdev`.`assessments_assessment_category`
 ADD CONSTRAINT `FK_AssessmentsAssessmentCategories_AssessmentCategories`
   FOREIGN KEY (`assessment_category_id`)
   REFERENCES `shamdev`.`assessment_categories` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+#---- assessment_category_category_question
+  ALTER TABLE `shamdev`.`assessment_category_category_question`
+ADD CONSTRAINT `FK_AssessmentCategoriesCategoryQuestions_AssessmentCategories`
+FOREIGN KEY (`assessment_category_id`)
+REFERENCES `shamdev`.`assessment_categories` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `FK_AssessmentCategoriesCategoryQuestions_CategoryQuestions`
+FOREIGN KEY (`category_question_id`)
+REFERENCES `shamdev`.`category_questions` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;

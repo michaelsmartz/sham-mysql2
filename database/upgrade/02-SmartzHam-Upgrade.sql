@@ -2160,6 +2160,7 @@ CHANGE COLUMN `Address3` `address3` VARCHAR(100) NULL DEFAULT NULL ,
 CHANGE COLUMN `Telephone` `telephone` VARCHAR(20) NULL DEFAULT NULL ,
 CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' ;
 
+#---- assetsuppliers
 ALTER TABLE `assetsuppliers`
 RENAME TO  `asset_suppliers` ;
 
@@ -2167,11 +2168,14 @@ RENAME TO  `asset_suppliers` ;
 #--ALTER TABLE `category_questions`
 #--DROP FOREIGN KEY `FK_CategoryQuestions_CategoryQuestionTypes`;
 
+#---- category_questions
 ALTER TABLE `category_questions`
 CHANGE COLUMN `categoryquestiontype_Id` `category_question_type_id` INT(11) NOT NULL ;
 
+#---- time_group_day_time_period/day_time_group_time_period
 RENAME TABLE `time_group_day_time_period` TO `day_time_group_time_period`;
 
+#---- shamuserprofile_shampermission/sham_permission_sham_user_profile_system_sub_module
 RENAME TABLE `shamuserprofile_shampermission` TO `sham_permission_sham_user_profile_system_sub_module`;
 
 #---- Added on 2018-09-25
@@ -2179,9 +2183,11 @@ RENAME TABLE `shamuserprofile_shampermission` TO `sham_permission_sham_user_prof
 ALTER TABLE `lawcategories`
 RENAME TO  `law_categories` ;
 
+#----course_training_sessions/training_sessions
 ALTER TABLE `course_training_sessions`
 RENAME TO  `training_sessions`;
 
+#---- training_session_participants/employee_training_session
 ALTER TABLE `training_session_participants`
 RENAME TO  `employee_training_session`;
 
@@ -2191,20 +2197,25 @@ RENAME TO  `employee_training_session`;
 #--ALTER TABLE `category_question_choices`
 #--DROP FOREIGN KEY `FK_CategoryQuestionChoices_CategoryQuestions2`;
 
+#---- category_question_choices
 ALTER TABLE `category_question_choices`
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ,
 CHANGE COLUMN `choicetext` `choice_text` LONGTEXT NOT NULL ;
 
+#---- asset_employee
 ALTER TABLE `asset_employee`
 ALTER `date_out` DROP DEFAULT;
 
+#---- asset_employee
 ALTER TABLE `asset_employee`
 CHANGE COLUMN `date_out` `date_out` DATE NOT NULL AFTER `employee_id`,
 CHANGE COLUMN `date_in` `date_in` DATE NULL DEFAULT NULL AFTER `date_out`;
 
+#---- telephone_numbers
 ALTER TABLE `telephone_numbers`
 CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `telephone_number_type_id`;
 
+#---- email_addresses
 ALTER TABLE `email_addresses`
 DROP FOREIGN KEY `FK_EmailAddresses_EmailAddressTypes`,
 DROP FOREIGN KEY `FK_EmailAddresses_Employees`;
@@ -2231,24 +2242,39 @@ UPDATE `sham_permissions` SET `Alias` = 'Create' WHERE `sham_permissions`.`id` =
 # Above Code reviewed on 2018-10-01
 
 #-- Added on 2018-10-01
+#---- employees
 ALTER TABLE `shamdev`.`employees`
 DROP FOREIGN KEY `FK_Employees_JobTitles`;
 
 ALTER TABLE `shamdev`.`employees`
 CHANGE COLUMN `jobtitle_id` `job_title_id` INT(11) NULL DEFAULT NULL ;
 
+#---- surveys
 ALTER TABLE `surveys` CHANGE `notification_recurrence_id` `notification_recurrence_id` INT(11) NULL, CHANGE `notification_group_id` `notification_group_id` INT(11) NULL, CHANGE `form_id` `form_id` INT(11) NULL;
 
+#---- forms
 ALTER TABLE `forms` CHANGE `description` `description` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL;
 
+#---- assessment_categories
 ALTER TABLE `assessment_categories`
 CHANGE COLUMN `eLearning_module` `eLearning_module` VARCHAR(100) NULL ,
 CHANGE COLUMN `threshold` `threshold` INT(11) NULL ;
 
+#---- Surveys
 ALTER TABLE `surveys` CHANGE `date_start` `date_start` DATE NOT NULL, CHANGE `EndDate` `date_end` DATE NOT NULL;
 
+#---- assessments_assessment_category
 ALTER TABLE `shamdev`.`assessments_assessment_category`
 DROP FOREIGN KEY `FK_AssessmentsAssessmentCategories_AssessmentCategories`;
 
 ALTER TABLE `shamdev`.`assessments_assessment_category`
 CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ;
+
+#---- assessment_category_category_question
+ALTER TABLE `shamdev`.`assessment_category_category_question`
+DROP FOREIGN KEY `FK_AssessmentCategoriesCategoryQuestions_AssessmentCategories`,
+DROP FOREIGN KEY `FK_AssessmentCategoriesCategoryQuestions_CategoryQuestions`;
+
+ALTER TABLE `shamdev`.`assessment_category_category_question`
+CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ,
+CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ;
