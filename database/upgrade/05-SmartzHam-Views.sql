@@ -93,7 +93,7 @@ as
        on ev.id = er.evaluation_id and ev.createdbyemployee_id = er.assessoremployee_id
        inner join (
               SELECT aac.assessment_id as assessmentid, sum(threshold) as total_threshold from assessments_assessment_category aac inner join assessment_categories ac
-              on aac.assessmentcategory_id = ac.id where aac.is_active = 1
+              on aac.assessment_category_id = ac.id where aac.is_active = 1
                group by aac.assessment_id
        ) T
        on T.assessmentid = ev.assessment_id
@@ -119,8 +119,8 @@ inner join
 (
 select t.assessment_id,sum(t.threshold) as total_threshold from 
 (
-select aac.assessment_id, aac.assessmentcategory_id, ac.threshold from assessments_assessment_category aac 
-inner join assessment_categories ac on ac.id = aac.assessmentcategory_id
+select aac.assessment_id, aac.assessment_category_id, ac.threshold from assessments_assessment_category aac 
+inner join assessment_categories ac on ac.id = aac.assessment_category_id
 where aac.is_active = 1 and aac.assessment_id in (
 
 select distinct(er.assessment_id) from evaluation_results er
@@ -129,7 +129,7 @@ where er.is_active = 1 and e.feedback_date between DATE_ADD(current_timestamp,In
 group by evaluation_id,assessoremployee_id,er.assessment_id,e.feedback_date
 
 )
-group by aac.assessment_id,aac.assessmentcategory_id,ac.threshold
+group by aac.assessment_id,aac.assessment_category_id,ac.threshold
 ) t
 group by t.assessment_id
 ) at

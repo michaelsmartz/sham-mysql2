@@ -2237,16 +2237,13 @@ UPDATE `sham_permissions` SET `Alias` = 'List' WHERE `sham_permissions`.`id` = 1
 UPDATE `sham_permissions` SET `Alias` = 'Read' WHERE `sham_permissions`.`id` = 2;
 UPDATE `sham_permissions` SET `Alias` = 'Write' WHERE `sham_permissions`.`id` = 3;
 UPDATE `sham_permissions` SET `Alias` = 'Delete' WHERE `sham_permissions`.`id` = 4;
-UPDATE `sham_permissions` SET `Alias` = 'Create' WHERE `sham_permissions`.`id` = 5
+UPDATE `sham_permissions` SET `Alias` = 'Create' WHERE `sham_permissions`.`id` = 5;
 
 # Above Code reviewed on 2018-10-01
 
 #-- Added on 2018-10-01
 #---- employees
-ALTER TABLE `shamdev`.`employees`
-DROP FOREIGN KEY `FK_Employees_JobTitles`;
-
-ALTER TABLE `shamdev`.`employees`
+ALTER TABLE `employees`
 CHANGE COLUMN `jobtitle_id` `job_title_id` INT(11) NULL DEFAULT NULL ;
 
 #---- surveys
@@ -2264,17 +2261,17 @@ CHANGE COLUMN `threshold` `threshold` INT(11) NULL ;
 ALTER TABLE `surveys` CHANGE `date_start` `date_start` DATE NOT NULL, CHANGE `EndDate` `date_end` DATE NOT NULL;
 
 #---- assessments_assessment_category
-ALTER TABLE `shamdev`.`assessments_assessment_category`
-DROP FOREIGN KEY `FK_AssessmentsAssessmentCategories_AssessmentCategories`;
+#--ALTER TABLE `assessments_assessment_category`
+#--DROP FOREIGN KEY `FK_AssessmentsAssessmentCategories_AssessmentCategories`;
 
-ALTER TABLE `shamdev`.`assessments_assessment_category`
+ALTER TABLE `assessments_assessment_category`
 CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ;
 
 #---- assessment_category_category_question
-ALTER TABLE `shamdev`.`assessment_category_category_question`
-DROP FOREIGN KEY `FK_AssessmentCategoriesCategoryQuestions_AssessmentCategories`,
-DROP FOREIGN KEY `FK_AssessmentCategoriesCategoryQuestions_CategoryQuestions`;
+#--ALTER TABLE `assessment_category_category_question`
+#--DROP FOREIGN KEY `FK_AssessmentCategoriesCategoryQuestions_AssessmentCategories`,
+#--DROP FOREIGN KEY `FK_AssessmentCategoriesCategoryQuestions_CategoryQuestions`;
 
-ALTER TABLE `shamdev`.`assessment_category_category_question`
+ALTER TABLE `assessment_category_category_question`
 CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ,
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ;
