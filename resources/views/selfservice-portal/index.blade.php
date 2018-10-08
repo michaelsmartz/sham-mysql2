@@ -186,6 +186,18 @@
             white-space: normal;
         }
 
+        .chat {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .chat li {
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted #999;
+        }
+
     </style>
     <script src="{{URL::to('/')}}/js/todoList.js"></script>
     <script>
@@ -332,7 +344,7 @@
 
 @section('right-title')
 <div id="icons-container" class="pull-right" style="position: relative;top:-10px;width:100%;text-align:right;vertical-align:text-top;">
-    <a class="btn" data-container="svg" data-placement="top" data-wenk="My Profile" href="{{URL::to('/')}}/my-details">
+    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My Profile" href="{{URL::to('/')}}/my-details">
         <svg class="icon" width="70" height="70" >
             <use xlink:href="#medical-3" />
 
@@ -340,13 +352,13 @@
         <span class="indicator-dot" id="myDetails"></span>
     </a>
 
-    <a class="btn" data-container="svg" data-placement="top" data-wenk="My E-learning" href="{{URL::to('/')}}/my-courses">
+    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My E-learning" href="{{URL::to('/')}}/my-courses">
         <svg class="icon" width="48" height="48">
             <use xlink:href="#mortarboard" />
         </svg>
     </a>
 
-    <a class="btn" data-container="svg" data-placement="top" data-wenk="My Surveys" href="{{URL::to('/')}}/my-surveys">
+    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My Surveys" href="{{URL::to('/')}}/my-surveys">
         <svg class="icon" width="47" height="40">
             <use xlink:href="#interface-4" />
         </svg>
@@ -380,7 +392,49 @@
     <br>
     <div class='row'>
 
-        {{-- working hours --}}
+        <!-- assets -->
+        <div class="col1 col-lg-8">
+            <main class="main-container">
+                <header class="portal-help-header">
+                    <div class="panel-heading-btn">
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                    </div>
+                    <h3>My Assets</h3>
+                </header>
+                <div class="default-body">
+                    <section>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @if(count($assets)>0)
+                                    @foreach($assets as $asset)
+                                        <div class="sham-rounded-border assetItem">
+                                            <span class="title">{{$asset['Name']}}</span><br>
+                                            <span>
+                                                    <span class="label-group"><span class="label label-default">Date allocated</span><span class="label label-default">{{ \Carbon\Carbon::parse($asset['DateOut'])->toDateString() }}</span></span>
+                                                    <span class="label-group"><span class="label label-default">Price</span><span class="label label-default">{{$asset['PurchasePrice']}}</span></span>
+                                                    <span class="label-group"><span class="label label-default">Warranty expiry</span><span class="label label-default">{{\Carbon\Carbon::parse($asset['WarrantyExpiryDate'])->toDateString()}}</span></span>
+                                                {{--
+                                                @if(!empty($asset->DateIn))
+                                                    <span class="label-group"><span class="label label-default">Date to return</span><span class="label label-default">{{\Carbon\Carbon::parse($asset->DateIn)->toDateString()}}</span></span>
+                                                @else
+                                                    <br><br>
+                                                @endif
+                                                --}}
+                                                </span>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-success">Currently, there are no assets allocated to you</div>
+                                @endif
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+        <!-- end of assets -->
+
+        <!-- working hours -->
         <div class="col2 col-lg-4 col-md-4">
             <main class="main-container" id="timesheet-main-container">
                 <header class="working-hours-header">
@@ -395,49 +449,49 @@
                             <div class="timesheet">
                                 <div class="working-hours">
                                     @if(isset($workingHours) && sizeof($workingHours) > 0)
-                                    @if(!empty($workingHours['team']))
-                                    <h2 class="list title">{{ $workingHours['team'] }}</h2>
-                                    @endif
-                                    @if(!empty($workingHours['description']))
-                                    <h3 class="list sub-title">{{ $workingHours['description'] }}</h3>
-                                    @endif
+                                        @if(!empty($workingHours['team']))
+                                            <h2 class="list title">{{ $workingHours['team'] }}</h2>
+                                        @endif
+                                        @if(!empty($workingHours['description']))
+                                            <h3 class="list sub-title">{{ $workingHours['description'] }}</h3>
+                                        @endif
 
-                                    <ul class="list-unstyled current-working-hours" id="accordion">
-                                        @if(!empty($workingHours['time_period']))
-                                        @foreach($workingHours['time_period'] as $workingDesc => $workingHour)
-                                        <li data-toggle="collapse"
-                                            href="#break_{{$workingHour['day_count']}}"
-                                            aria-expanded="false"
-                                            aria-controls="break_{{$workingHour['day_count']}}"
-                                            data-parent="#accordion"
-                                        >
-                                            @if($workingDesc != '' && !is_null($workingDesc)){{ $workingDesc }}@else No description @endif
-                                            <span class="pull-right">
+                                        <ul class="list-unstyled current-working-hours" id="accordion">
+                                            @if(!empty($workingHours['time_period']))
+                                                @foreach($workingHours['time_period'] as $workingDesc => $workingHour)
+                                                    <li data-toggle="collapse"
+                                                        href="#break_{{$workingHour['day_count']}}"
+                                                        aria-expanded="false"
+                                                        aria-controls="break_{{$workingHour['day_count']}}"
+                                                        data-parent="#accordion"
+                                                    >
+                                                        @if($workingDesc != '' && !is_null($workingDesc)){{ $workingDesc }}@else No description @endif
+                                                        <span class="pull-right">
                                                     {{ $workingHour['start_time'] }} - {{ $workingHour['end_time'] }}
                                             </span>
-                                            @if(!empty($workingHour['breaks']))
-                                            <span>
+                                                        @if(!empty($workingHour['breaks']))
+                                                            <span>
                                                 <i class="fa fa-question-circle" aria-hidden="true"  data-wenk="Click to view break details"></i>
                                             </span>
-                                            @endif
-                                        </li>
-                                        @if(!empty($workingHour['breaks']))
-                                        <ul id="break_{{$workingHour['day_count']}}" class="collapse in">
-                                            @foreach($workingHour['breaks'] as $periodDesc => $break)
-                                            <li>
-                                                @if($periodDesc != '' && !is_null($periodDesc)){{ $periodDesc }}@else No description @endif
-                                                <span class="pull-right">
+                                                        @endif
+                                                    </li>
+                                                    @if(!empty($workingHour['breaks']))
+                                                        <ul id="break_{{$workingHour['day_count']}}" class="collapse in">
+                                                            @foreach($workingHour['breaks'] as $periodDesc => $break)
+                                                                <li>
+                                                                    @if($periodDesc != '' && !is_null($periodDesc)){{ $periodDesc }}@else No description @endif
+                                                                    <span class="pull-right">
                                                    {{ $break['start_time'] }} - {{ $break['end_time'] }}
                                                 </span>
-                                            </li>
-                                            @endforeach
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
+                                                @endforeach
+                                            @endif
                                         </ul>
-                                        @endif
-                                        @endforeach
-                                        @endif
-                                    </ul>
                                     @else
-                                    <p style="color: #ffffee ">You have not been assigned to a team.</p>
+                                        <p style="color: #ffffee ">You have not been assigned to a team.</p>
                                     @endif
                                 </div>
                             </div>
@@ -446,7 +500,45 @@
                 </div>
             </main>
         </div>
-        {{--  end of working hours --}}
+        <!-- end of working hours -->
+
+        <!-- announcements -->
+        @if(count($announcements)>0)
+            <div class="col1 col-lg-8 col-md-8">
+                <main class="main-container">
+                    <header class="portal-help-header">
+                        <div class="panel-heading-btn">
+                            <a href="javascript:;" class="btn btn-xs btn-icon btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                        </div>
+                        <h3><i class="fa fa-bullhorn"></i> Announcements</h3>
+                    </header>
+                    <div class="default-body">
+                        <section>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <ul class="chat">
+                                        @foreach($announcements as $announcement)
+                                            <li class="right clearfix">
+                                                <span class="chat-img pull-right"></span>
+                                                <div class="chat-body">
+                                                    <div class="header">
+                                                        <a onclick="contentToModalDialogLoader('{{URL::to('/')}}/announcements/{{$announcement['Id']}}')" href="#">
+                                                            <strong class="primary-font">{{$announcement['Title']}}</strong>
+                                                        </a>
+                                                    </div>
+                                                    <p>{{$announcement['Description']}}</p>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </main>
+            </div>
+        @endif
+        <!-- end of announcements -->
     </div>
 </section>
 @stop

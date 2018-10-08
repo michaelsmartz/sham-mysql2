@@ -8,7 +8,7 @@
                 {{ csrf_field() }}
                 <div class="row">
                     <div class="col-sm-12">
-                        @include('asset_employees.form', [
+                        @include('asset_allocations.form', [
                             'assetEmployee' => null,
                         ])
                     </div>

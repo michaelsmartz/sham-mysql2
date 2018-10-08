@@ -2275,3 +2275,10 @@ CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL 
 ALTER TABLE `assessment_category_category_question`
 CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ,
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ;
+
+ALTER TABLE `announcement_department`
+  DROP `created_at`,
+  DROP `updated_at`,
+  DROP `deleted_at`;
+
+ALTER TABLE `announcements` CHANGE `date_start` `start_date` DATE NOT NULL, CHANGE `date_end` `end_date` DATE NOT NULL;

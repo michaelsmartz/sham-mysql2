@@ -28,5 +28,12 @@ class Department extends Model
         return $this->hasMany('App\Employee');
     }
 
+    /**
+     * Get the Announcement_Department for this model.
+     */
+    public function announcements()
+    {
+        return $this->belongsToMany(Announcement::class)->withPivot('department_id');
+    }
 
 }

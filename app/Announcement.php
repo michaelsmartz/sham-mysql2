@@ -34,11 +34,11 @@ class Announcement extends Model
     public $searchable = ['title', 'description', 'start_date', 'end_date', 'announcement_status_id'];
 
     /**
-     * Get the announcementDepartments for this model.
+     * Get the Announcement_Department for this model.
      */
     public function departments()
     {
-        return $this->belongsToMany(Department::class);
+        return $this->belongsToMany(Department::class)->withPivot('announcement_id');
     }
 
 }

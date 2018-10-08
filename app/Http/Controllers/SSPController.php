@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Announcement;
+use App\Asset;
+use App\AssetEmployee;
+use App\Department;
 use App\Http\Controllers\CustomController;
 
 use App\DateHelper;
@@ -35,17 +39,23 @@ class SSPController extends CustomController
             $warnings[] = 'Please check whether your profile is associated to an employee!';
         }
 
-        $workingHours = $this->getWorkingHours($employee_id);
+        $workingHours = $this->getWorkingHours($employeeObject);
+        $announcements = $this->getAnnouncements($employeeObject);
+        $assets = $this->getAllocatedAssets($employeeObject);
 
         // load the view and pass the parameters
         return \View::make('selfservice-portal.index')
+            ->with('announcements', $announcements)
+            ->with('assets', $assets)
             ->with('workingHours', $workingHours);
     }
 
-    private function getWorkingHours($employee_id){
+    private function getWorkingHours($employee){
         $timeGroup = [];
 
-        $employee = Employee::find($employee_id);
+        if (empty($employee)) {
+            return $timeGroup;
+        }
 
         if ($employee != null && $employee->team() != null && $employee->timeGroup() != null) {
             $team = $employee->team()->get(['description'])->first();
@@ -126,6 +136,66 @@ class SSPController extends CustomController
         }
 
         return $lunchTime;
+    }
+
+    private function getAnnouncements($employee) {
+
+        $announcements = [];
+
+        if (empty($employee)) {
+            return $announcements;
+        }
+
+
+        if ($employee != null && $employee->department() != null) {
+            $department = $employee->department()->get(['id','description'])->first();
+
+            if($department != null) {
+                $temp = $department->announcements()->where('announcement_status_id', 1)
+                    ->orderBy('priority', 'ASC')
+                    ->get(['announcement_id', 'title', 'description', 'start_date', 'end_date', 'priority'])
+                    ->all();
+
+                $count = 0;
+                foreach ($temp as $t){
+                    if(DateHelper::todayInRangeIncluded($t->start_date, $t->end_date)) {
+                        $announcements[$count]['Id'] = $t->announcement_id;
+                        $announcements[$count]['Title'] = $t->title;
+                        $announcements[$count]['Description'] = $t->description;
+                        $count++;
+                    }
+                }
+            }
+        }
+
+        return $announcements;
+    }
+
+    private function getAllocatedAssets($employee) {
+
+        $assets = [];
+
+        if (empty($employee)) {
+            return $assets;
+        }
+
+        $temp = $employee->assetEmployee()->get()->all();
+        if ($temp != null) {
+            $count = 0;
+            foreach($temp as $t) {
+              $asset = Asset::find($t->asset_id)->first();
+                if (empty($t->date_in) ||
+                    (!empty($t->date_in) && DateHelper::isTodayIncluded($t->date_in))) {
+                    $assets[$count]['WarrantyExpiryDate'] = $asset->warrantyexpires_at;
+                    $assets[$count]['DateOut'] = $t->date_out;
+                    $assets[$count]['PurchasePrice'] = $asset->purchase_price;
+                    $assets[$count]['Name'] = $asset->name;
+                    $count++;
+                }
+            }
+        }
+
+        return $assets;
     }
 }
 

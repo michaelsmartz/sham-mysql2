@@ -166,9 +166,9 @@ class Employee extends Model
         ->whereIn('address_type_id', [1,2]);
     }
 
-    public function assetallocation()
+    public function assetEmployee()
     {
-        return $this->hasOne('App\Assetallocation','employee_id','id');
+        return $this->hasMany('App\AssetEmployee','employee_id','id');
     }
 
     public function courses()
