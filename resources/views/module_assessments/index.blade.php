@@ -37,9 +37,9 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$moduleAssessment->id}}', event)">
+                                    <button type="button" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$moduleAssessment->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </a>
+                                    </button>
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$moduleAssessment->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>

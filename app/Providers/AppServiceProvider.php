@@ -9,6 +9,7 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Collective\Html\FormBuilder as Form;
 use App\Macros\Routing\Router;
+use Illuminate\Support\Collection;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -77,6 +78,17 @@ class AppServiceProvider extends ServiceProvider
                 return Form::select($name, $groups, $selected, $attributes);
             }
         );
+
+        Collection::macro('toAssoc', function () {
+            return $this->reduce(function ($assoc, $keyValuePair) {
+                list($key, $value) = $keyValuePair;
+                $assoc[$key] = $value;
+                return $assoc;
+            }, new static);
+        });
+        Collection::macro('mapToAssoc', function ($callback) {
+            return $this->map($callback)->toAssoc();
+        });
 
         Router::registerMacros();
     }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Module;
 use App\AssessmentType;
 use App\ModuleAssessment;
+use App\ModuleQuestion;
+use App\Enums\ModuleQuestionType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
@@ -15,6 +17,19 @@ use Exception;
 
 class ModuleAssessmentsController extends CustomController
 {
+
+    private $jsonQuestionMap = array(
+        'label' => 'title',
+        'type' => 'module_question_type_id',
+        'Points' => 'points'
+    );
+
+    private $jsonQuestionChoiceMap = array(
+        'label' => 'choice_text',
+        'selected' => 'correct_answer',
+        'Points' => 'points'
+    );
+
     /**
      * Create a new controller instance.
      *
@@ -43,6 +58,12 @@ class ModuleAssessmentsController extends CustomController
         return view($this->baseViewPath .'.index', compact('moduleAssessments'));
     }
 
+    public function create() {
+        $modules = Module::pluck('description', 'id');
+        $assessmentTypes = AssessmentType::pluck('description', 'id');
+        return view($this->baseViewPath . '.create',compact('modules','assessmentTypes'));
+    }
+
     /**
      * Store a new module assessment in the storage.
      *
@@ -55,9 +76,9 @@ class ModuleAssessmentsController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token'));
+            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
-            $this->contextObj->addData($input);
+            $this->saveAssessment(0, $input);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -66,6 +87,39 @@ class ModuleAssessmentsController extends CustomController
         }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request)
+    {
+        $data = $modules = $assessmentTypes = null;
+        $id = Route::current()->parameter('module_assessment');
+        $fullPageEdit = true;
+        $_mode = 'edit';
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+            $modules = Module::pluck('description', 'id');
+            $assessmentTypes = AssessmentType::pluck('description', 'id');
+        }
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data','modules','assessmentTypes','fullPageEdit','_mode'))
+                    ->renderSections();
+
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.edit', compact('data','modules','assessmentTypes','fullPageEdit','_mode'));
     }
 
     /**
@@ -83,7 +137,7 @@ class ModuleAssessmentsController extends CustomController
             $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
-            $this->contextObj->updateData($id, $input);
+            $this->saveAssessment($id, $input);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -115,6 +169,110 @@ class ModuleAssessmentsController extends CustomController
 
         return redirect()->back();
     }
+
+        /**
+     * Validate the given request with the defined rules.
+     *
+     * @param  Request $request
+     *
+     * @return boolean
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            'description' => 'string|min:5|max:100|required',
+            'module_id' => 'required',
+            'assessment_type_id' => 'required',
+            'pass_mark' => 'numeric|required'
+        ];
+        
+        $this->validate($request, $validateFields);
+    }
+
+    protected function saveAssessment($id, $input)
+    {
+        $response = ['status' => 'OK']; 
+        $responseCode = 200;
+
+        try {
+
+            $fd = $input['data'];
+
+            if ($id == 0) {
+                $context = $this->contextObj->create($input);
+            } else {
+                $temp['id'] = $id;
+                $res = $this->contextObj->where('id', $id)->update($input);
+                $context = $this->contextObj->findData($id);
+            }
+
+            $context = $this->contextObj->findData($id);
+            $context->load('questions')->toArray();
+
+            $existingModuleAssessmentKeyVal = $context->questions->mapToAssoc(function($assessment) {
+                return [$assessment['id'], $assessment['module_question_id']];    
+            });
+            $moduleAssessmentQuestionIds = $context->questions->pluck('module_question_id');
+
+            // The following string replace is required as the builder returns a null for a deleted choice.
+            // This results in an empty choice field when rendered. The replace function removes the null choices.
+            $fd = str_replace('null,','',$fd);
+            $fd = str_replace(',null','',$fd);
+            $fd = str_replace('[null]','[]',$fd);
+
+            $formDataJson = json_decode($fd);
+
+            // map each json model property to a ModuleQuestion object
+            $idm = 0;
+            $dbModuleQuestions = [];
+            foreach($formDataJson->model as $control => $question) {
+                // property correspondence json<->ModuleQuestion
+                $dbModuleQuestions[] = $this->jsonToModuleQuestion($question);
+
+            }
+
+            dd($formDataJson);
+
+        } catch (Exception $exception) {
+            dd($exception);
+            $response['status'] = 'KO';
+            $responseCode = 500;
+        }
+        die;
+    }
+
+    private function jsonToModuleQuestion($question) {
+
+        if(empty($question->dbId)) {
+            $objQuestion = new ModuleQuestion();
+        } else {
+            $objQuestion = ModuleQuestion::find($question->dbId);
+        }
+
+        foreach ($question as $k => $v) {
+            if (isset($this->jsonQuestionMap[$k])) {
+                $objQuestion->setAttribute($this->jsonQuestionMap[$k], $v);
+            }
+        }
+
+        // required for plugin compatibility
+        // not present in json example, but submitted when using the form builder
+        if(!property_exists($question, 'name') ) {
+            $question->name = $question->fbid;
+        }
+        
+        $questionTypeMap = [
+            'radio' => ModuleQuestionType::SingleChoice,
+            'checkbox' => ModuleQuestionType::MultipleChoice,
+            'textarea' => ModuleQuestionType::OpenText
+        ];
+
+        $objQuestion->module_question_type_id  = $questionTypeMap[$question->type];
+        $objQuestion->is_active = true;
+
+        return $objQuestion;
+    }
+
     
     
 }

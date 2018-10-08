@@ -308,5 +308,15 @@
         "model-name": "AssessmentCategory",
         "resource-file": "assessment_categories.json",
         "table-name": "assessment_categories"
+    },
+    {
+        "model-name": "ModuleAssessmentQuestion",
+        "resource-file": "module_assessment_questions.json",
+        "table-name": "module_assessment_questions"
+    },
+    {
+        "model-name": "ModuleQuestion",
+        "resource-file": "module_questions.json",
+        "table-name": "module_questions"
     }
 ]

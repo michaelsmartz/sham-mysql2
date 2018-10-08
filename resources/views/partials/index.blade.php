@@ -8,7 +8,7 @@
     <style>
         .alerty{ width: 500px !important;}
     </style>
-    <script src="{{url('/')}}/js/tables.js"></script>
+    <script src="{{url('/')}}/js/tables.min.js"></script>
     <script src="{{url('/')}}/plugins/html2canvas/html2canvas-1.0.0.a12.min.js" defer></script>
     <script src="{{url('/')}}/plugins/alerty/alerty.min.js" defer></script>
     <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
@@ -56,7 +56,7 @@
         function editForm(id, event) {
             //event.preventDefault();
             if (id) {
-                @if (isset($fullPageEdit) && $fullPageEdit == 'true')
+                @if (isset($fullPageEdit) && $fullPageEdit == TRUE)
                     window.location = '{{url()->current()}}/'+id+'/edit';
                 @else
                     $mainButton = $('.buttons button[type="submit"]');

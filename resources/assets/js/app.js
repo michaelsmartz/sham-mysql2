@@ -25,6 +25,14 @@ function specialTitleCaseFormat() {
     });
     $(this).val(s);
 }
+function validateDigitQty(e) {
+    var key = window.event ? e.keyCode : e.which;
+    if (e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 37 || e.keyCode == 39) {
+        return true;
+    } else if ( key < 48 || key > 57 ) {
+        return false;
+    } else return true;
+};
 
 $('[data-toggle=offcanvas]').click(function() {
     $('.row-offcanvas').toggleClass('active');
@@ -62,6 +70,8 @@ $.fn.clickToggle = function (f1, f2) {
         });
     });
 };
+
+window.validateDigitQty = validateDigitQty;
 
 window.Popper = Popper;
 window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-disable-line
