@@ -318,9 +318,10 @@
         //show/hide list in working hours
         let group = $('#accordion');
         group.on('show.bs.collapse','.collapse', function() {
-            alert("test");
             group.find('.collapse.in').collapse('hide');
         });
+
+        //group.collapse({"toggle": true, 'parent': '#accordion'});
 
         //***End working hours getting current day****
     </script>
@@ -330,71 +331,26 @@
 @section('subtitle',trans('home.SelfServicePortal.desc'))
 
 @section('right-title')
-<div id="icons-container" class="pull-right" style="position: absolute;top:-10px;width:100%;text-align:right;vertical-align:text-top;">
+<div id="icons-container" class="pull-right" style="position: relative;top:-10px;width:100%;text-align:right;vertical-align:text-top;">
     <a class="btn" data-container="svg" data-placement="top" data-wenk="My Profile" href="{{URL::to('/')}}/my-details">
-        <svg class="icon" width="49" height="49" >
+        <svg class="icon" width="70" height="70" >
             <use xlink:href="#medical-3" />
 
         </svg>
         <span class="indicator-dot" id="myDetails"></span>
     </a>
 
-    @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_DISCIPLINARY_RECORDS]))
-    <a class="btn" data-container="svg" data-placement="top" data-wenk="My Timesheet" href="{{URL::to('/')}}/my-timesheet" >
-        <svg class="icon" width="48" height="42">
-            <use xlink:href="#clock-3" />
-        </svg>
-    </a>
-    @endif
-    @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_TRAVEL_REQUESTS]))
-    <a class="btn" data-container="svg" data-placement="top" data-wenk="My Travels" href="{{URL::to('/')}}/my-travels">
-        <svg class="icon" width="50" height="45">
-            <use xlink:href="#travel" />
-        </svg>
-        <span class="indicator-dot error hide" id="myTravels"><i class="fa fa-thumbs-down"></i></span>
-    </a>
-    @endif
-
-    @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_SUGGESTIONS]))
-    <a class="btn" data-container="svg" data-placement="top" data-wenk="My Suggestions" href="{{URL::to('/')}}/my-suggestions">
-        <svg class="icon" width="49" height="45">
-            <use xlink:href="#interface-2" />
-        </svg>
-        <span class="indicator-dot hide" id="mySuggestions"><i class="fa fa-thumbs-up"></i> </span>
-    </a>
-    @endif
-
-    @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_COURSES]))
     <a class="btn" data-container="svg" data-placement="top" data-wenk="My E-learning" href="{{URL::to('/')}}/my-courses">
         <svg class="icon" width="48" height="48">
             <use xlink:href="#mortarboard" />
         </svg>
     </a>
-    @endif
 
-    @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_SURVEYS]))
     <a class="btn" data-container="svg" data-placement="top" data-wenk="My Surveys" href="{{URL::to('/')}}/my-surveys">
         <svg class="icon" width="47" height="40">
             <use xlink:href="#interface-4" />
         </svg>
     </a>
-    @endif
-    {{--
-    @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_DISCIPLINARY_RECORDS]))
-    <a class="btn ripple-effect tooltips" title="My timeline" href="{{URL::to('/')}}/my-timeline">
-        <svg  class="icon" width="52" height="52">
-            <use xlink:href="#timeline-2" />
-        </svg>
-    </a>
-    @endif
-    --}}
-    @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_VACANCIES]))
-    <a class="btn" data-container="svg" data-placement="top" data-wenk="Vacancies" href="{{URL::to('/')}}/ssp-vacancies">
-        <svg class="icon" width="42" height="40">
-            <use xlink:href="#business-1" />
-        </svg>
-    </a>
-    @endif
 </div>
 @endsection
 
@@ -450,7 +406,9 @@
                                         @if(!empty($workingHours['time_period']))
                                         @foreach($workingHours['time_period'] as $workingDesc => $workingHour)
                                         <li data-toggle="collapse"
-                                            data-target="#break_{{$workingHour['day_count']}}"
+                                            href="#break_{{$workingHour['day_count']}}"
+                                            aria-expanded="false"
+                                            aria-controls="break_{{$workingHour['day_count']}}"
                                             data-parent="#accordion"
                                         >
                                             @if($workingDesc != '' && !is_null($workingDesc)){{ $workingDesc }}@else No description @endif
@@ -464,7 +422,7 @@
                                             @endif
                                         </li>
                                         @if(!empty($workingHour['breaks']))
-                                        <ul id="break_{{$workingHour['day_count']}}" class="collapse">
+                                        <ul id="break_{{$workingHour['day_count']}}" class="collapse in">
                                             @foreach($workingHour['breaks'] as $periodDesc => $break)
                                             <li>
                                                 @if($periodDesc != '' && !is_null($periodDesc)){{ $periodDesc }}@else No description @endif

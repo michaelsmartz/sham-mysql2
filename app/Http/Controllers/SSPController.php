@@ -26,7 +26,7 @@ class SSPController extends CustomController
      */
     public function index()
     {
-        $employee_id  = \Auth::user()->id;
+        $employee_id  = (\Auth::check()) ? \Auth::user()->employee_id : 0;
         $employeeObject = Employee::find($employee_id);
 
         $warnings = array();
@@ -46,10 +46,11 @@ class SSPController extends CustomController
         $timeGroup = [];
 
         $employee = Employee::find($employee_id);
-        $team = $employee->team()->get(['description'])->first();
-        $timeGroups = $employee->timeGroup()->get(['id','name'])->all();
 
-        if ($employee != null && $team != null && $timeGroups != null) {
+        if ($employee != null && $employee->team() != null && $employee->timeGroup() != null) {
+            $team = $employee->team()->get(['description'])->first();
+            $timeGroups = $employee->timeGroup()->get(['id','name'])->all();
+
             foreach ($timeGroups as $tg) {
                 $timeGroup['team'] = $team->description;
                 $timeGroup['id'] = $tg->id;
