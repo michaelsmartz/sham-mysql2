@@ -318,5 +318,15 @@
         "model-name": "ModuleQuestion",
         "resource-file": "module_questions.json",
         "table-name": "module_questions"
+    },
+    {
+        "model-name": "Evaluation",
+        "resource-file": "evaluations.json",
+        "table-name": "evaluations"
+    },
+    {
+        "model-name": "EvaluationStatus",
+        "resource-file": "evaluation_statuses.json",
+        "table-name": "evaluation_statuses"
     }
 ]
