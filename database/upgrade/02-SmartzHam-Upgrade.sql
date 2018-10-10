@@ -2276,9 +2276,27 @@ ALTER TABLE `assessment_category_category_question`
 CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ,
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ;
 
+
 ALTER TABLE `announcement_department`
   DROP `created_at`,
   DROP `updated_at`,
   DROP `deleted_at`;
 
 ALTER TABLE `announcements` CHANGE `date_start` `start_date` DATE NOT NULL, CHANGE `date_end` `end_date` DATE NOT NULL;
+
+#--- Added on 08/10/2018
+#--- Evaluations
+ALTER TABLE `evaluations`
+DROP FOREIGN KEY `FK_Evaluations_Employees`,
+DROP FOREIGN KEY `FK_Evaluations_Employees1`,
+DROP FOREIGN KEY `FK_Evaluations_EvaluationStatuses`;
+
+ALTER TABLE `evaluations`
+CHANGE COLUMN `useremployee_id` `user_employee_id` INT(11) NOT NULL ,
+CHANGE COLUMN `referenceno` `reference_no` VARCHAR(200) NULL DEFAULT NULL ,
+CHANGE COLUMN `referencesource` `reference_source` VARCHAR(200) NULL DEFAULT NULL ,
+CHANGE COLUMN `qasample` `qa_sample` LONGBLOB NULL DEFAULT NULL ,
+CHANGE COLUMN `evaluationstatus_id` `evaluation_status_id` INT(11) NOT NULL ,
+CHANGE COLUMN `createdbyemployee_id` `createdby_employee_id` INT(11) NULL DEFAULT NULL ,
+CHANGE COLUMN `originalfilename` `original_filename` VARCHAR(256) NULL DEFAULT NULL ,
+CHANGE COLUMN `urlpath` `url_path` VARCHAR(256) NULL DEFAULT NULL;
