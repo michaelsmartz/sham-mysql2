@@ -44,9 +44,9 @@ class SSPMySurveysController extends CustomController
         $surveys = [];
 
         $temp = $this->contextObj::with(['users'])
+            ->doesntHave('SurveyResponse')
             ->where('author_sham_user_id',$userId)
             ->where('final',1)
-            ->where('survey_status_id',1)
             ->get()
             ->all();
 
@@ -119,9 +119,6 @@ class SSPMySurveysController extends CustomController
             $surveyRsp->sham_user_id = (\Auth::check()) ? \Auth::user()->id : 0;
             $surveyRsp->date_occurred = Carbon::now()->toDateTimeString();
             $surveyRsp->save();
-
-            $input = ['survey_status_id' => 3];
-            $this->contextObj->updateData(Input::get('id'), $input);
 
             \Session::put('success', 'Your survey response has been saved successfully!');
 

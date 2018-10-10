@@ -67,6 +67,11 @@ class Survey extends Model
         return $this->belongsTo('App\Form','form_id','id');
     }
 
+    public function SurveyResponse()
+    {
+        return $this->belongsTo('App\SurveyResponse','id','survey_id');
+    }
+
     /**
      * Set the date_start.
      *

@@ -73,8 +73,6 @@ class SurveyResponse extends Model
 
         if (!isset ($this->response)) return array();
         return json_decode($this->response,TRUE);
-
-
     }
 
 }
