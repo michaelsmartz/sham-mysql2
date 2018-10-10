@@ -950,3 +950,21 @@ FOREIGN KEY (`employee_id`)
 REFERENCES `employees` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+#---- Added on 08/10/2018
+ALTER TABLE `evaluations`
+ADD CONSTRAINT `FK_Evaluations_Employees`
+  FOREIGN KEY (`user_employee_id`)
+  REFERENCES `shamdev`.`employees` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `FK_Evaluations_Employees1`
+  FOREIGN KEY (`createdby_employee_id`)
+  REFERENCES `shamdev`.`employees` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `FK_Evaluations_EvaluationStatuses`
+  FOREIGN KEY (`evaluation_status_id`)
+  REFERENCES `shamdev`.`evaluation_statuses` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
