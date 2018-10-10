@@ -40,6 +40,8 @@ Auth::routes();
 
         #region MyPortal
             Route::resource('selfservice-portal', 'SSPController');
+            Route::resource('my-surveys', 'SSPMySurveysController');
+            Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');
         #endRegion
 
         #region Central HR

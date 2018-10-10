@@ -6,7 +6,6 @@ use App\Announcement;
 use App\Asset;
 use App\AssetEmployee;
 use App\Department;
-use App\Http\Controllers\CustomController;
 
 use App\DateHelper;
 use App\Employee;
@@ -14,6 +13,8 @@ use App\Http\Requests;
 use App\TimeGroup;
 use Carbon\Carbon;
 use DateTime;
+
+use View;
 
 class SSPController extends CustomController
 {
@@ -44,10 +45,8 @@ class SSPController extends CustomController
         $assets = $this->getAllocatedAssets($employeeObject);
 
         // load the view and pass the parameters
-        return \View::make('selfservice-portal.index')
-            ->with('announcements', $announcements)
-            ->with('assets', $assets)
-            ->with('workingHours', $workingHours);
+        return View::make('selfservice-portal.portal.selfservice-portal',
+            compact('warnings', 'announcements', 'assets','workingHours'));
     }
 
     private function getWorkingHours($employee){
