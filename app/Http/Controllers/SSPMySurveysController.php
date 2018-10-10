@@ -46,6 +46,7 @@ class SSPMySurveysController extends CustomController
         $temp = $this->contextObj::with(['users'])
             ->where('author_sham_user_id',$userId)
             ->where('final',1)
+            ->where('survey_status_id',1)
             ->get()
             ->all();
 
@@ -91,9 +92,45 @@ class SSPMySurveysController extends CustomController
 
         // my survey showed final surveys, only take final surveys
         if ($survey->final==true) {
-            // show the view and pass the data to it
-            return view($this->baseViewPath . '.show', compact('survey', 'id', 'form'));
+            $view = view($this->baseViewPath . '.complete-survey', compact('survey', 'id','form'))->renderSections();
+
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
         }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return mixed
+     */
+    public function store(Request $request) {
+        try {
+            // store
+            $filledFormData = Input::except(array('_token', 'id',));
+
+            $surveyRsp = new SurveyResponse();
+            $surveyRsp->survey_id = Input::get('id');
+            $surveyRsp->response = json_encode($filledFormData);
+            $surveyRsp->sham_user_id = (\Auth::check()) ? \Auth::user()->id : 0;
+            $surveyRsp->date_occurred = Carbon::now()->toDateTimeString();
+            $surveyRsp->save();
+
+            $input = ['survey_status_id' => 3];
+            $this->contextObj->updateData(Input::get('id'), $input);
+
+            \Session::put('success', 'Your survey response has been saved successfully!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'An error occurred while saving your survey response!');
+        }
+
+        return redirect()->route('my-surveys.index');
+
     }
 
     /**

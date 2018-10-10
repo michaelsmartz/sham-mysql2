@@ -67,12 +67,13 @@
 
         function showForm(id, event) {
             //event.preventDefault();
+            $("#modalForm input[name='_method']").remove();
             if (id) {
                 @if (isset($fullPageShow) && $fullPageShow == TRUE)
                     window.location = '{{url()->current()}}/'+id;
                 @else
                     $mainButton = $('.buttons button[type="submit"]');
-                loadUrl('{{url()->current()}}/'+id);
+                    loadUrl('{{url()->current()}}/'+id);
                 @endif
             }
         }
