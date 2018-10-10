@@ -38,9 +38,9 @@ class ModuleAssessment extends Model
         return $this->belongsTo('App\Employee','trainer_id','id');
     }
 
-    public function questions()
+    public function assessmentQuestions()
     {
-        return $this->hasMany('App\ModuleAssessmentQuestion','module_assessment_id')->where('is_active',1);
+        return $this->hasMany('App\ModuleAssessmentQuestion','module_assessment_id');
     }
 
 }

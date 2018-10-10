@@ -49,14 +49,19 @@ class ModuleQuestion extends Model
      */
     protected $casts = [];
 
-    public static function boot() {
+    protected static function boot() {
 	    parent::boot();
 
 	    static::created(function($item) {
             if($item->dbId == false){
                 $item->dbId = $item->id;
             }
-	    });
+        });
+
+        static::deleting(function($item) {
+            $item->questionChoices()->delete();
+        });
+
 	}
 
     /**
@@ -65,6 +70,14 @@ class ModuleQuestion extends Model
     public function moduleQuestionType()
     {
         return $this->belongsTo('App\ModuleQuestionType','module_question_type_id','id');
+    }
+
+    /**
+     * Get the moduleQuestionType for this model.
+     */
+    public function questionChoices()
+    {
+        return $this->hasMany('App\ModuleQuestionChoice');
     }
 
 }
