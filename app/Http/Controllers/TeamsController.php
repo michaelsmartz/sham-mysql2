@@ -32,7 +32,7 @@ class TeamsController extends CustomController
      */
     public function index()
     {
-        $teams = $this->contextObj::with(['products'])->filtered()->paginate(10);
+        $teams = $this->contextObj::with(['timeGroup','products'])->filtered()->paginate(10);
 
         // handle empty result bug
         if ($teams->isEmpty()) {
