@@ -3,14 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ModuleAssessmentQuestion extends Model
 {
-    
-    use SoftDeletes;
 
+    use SoftDeletes;
 
     /**
      * The database table used by the model.
@@ -64,41 +62,7 @@ class ModuleAssessmentQuestion extends Model
      */
     public function moduleQuestion()
     {
-        return $this->belongsTo('App\ModuleQuestion','module_question_id');
-    }
-
-
-    /**
-     * Get created_at in array format
-     *
-     * @param  string  $value
-     * @return array
-     */
-    public function getCreatedAtAttribute($value)
-    {
-        return date('j/n/Y g:i A', strtotime($value));
-    }
-
-    /**
-     * Get updated_at in array format
-     *
-     * @param  string  $value
-     * @return array
-     */
-    public function getUpdatedAtAttribute($value)
-    {
-        return date('j/n/Y g:i A', strtotime($value));
-    }
-
-    /**
-     * Get deleted_at in array format
-     *
-     * @param  string  $value
-     * @return array
-     */
-    public function getDeletedAtAttribute($value)
-    {
-        return date('j/n/Y g:i A', strtotime($value));
+        return $this->hasOne('App\ModuleQuestion','id','module_question_id');
     }
 
 }

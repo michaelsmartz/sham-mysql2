@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Module;
 use App\AssessmentType;
 use App\ModuleAssessment;
+use App\ModuleAssessmentQuestion;
 use App\ModuleQuestion;
 use App\Enums\ModuleQuestionType;
-use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
@@ -203,16 +204,24 @@ class ModuleAssessmentsController extends CustomController
             } else {
                 $temp['id'] = $id;
                 $res = $this->contextObj->where('id', $id)->update($input);
-                $context = $this->contextObj->findData($id);
             }
 
-            $context = $this->contextObj->findData($id);
+            $context = $this->contextObj->find($id);
+            // get Module Question ids, delete them 
+            // and their choices(see ModuleQuestion::boot -> ModuleQuestion::deleting)
+            // and delete them eventually
+            $questionIds = $context->assessmentQuestions->pluck('module_question_id');
+            ModuleQuestion::whereIn('id', $questionIds)->delete();
+            $context->assessmentQuestions()->delete();
+
+            /*
             $context->load('questions')->toArray();
 
             $existingModuleAssessmentKeyVal = $context->questions->mapToAssoc(function($assessment) {
                 return [$assessment['id'], $assessment['module_question_id']];    
             });
             $moduleAssessmentQuestionIds = $context->questions->pluck('module_question_id');
+            */
 
             // The following string replace is required as the builder returns a null for a deleted choice.
             // This results in an empty choice field when rendered. The replace function removes the null choices.
@@ -224,12 +233,23 @@ class ModuleAssessmentsController extends CustomController
 
             // map each json model property to a ModuleQuestion object
             $idm = 0;
-            $dbModuleQuestions = [];
+            $maQuestions = [];
+            /*
             foreach($formDataJson->model as $control => $question) {
                 // property correspondence json<->ModuleQuestion
-                $dbModuleQuestions[] = $this->jsonToModuleQuestion($question);
+                $dbModuleQuestion = $this->jsonToModuleQuestion($question);
+                $dbModuleQuestion->save();
+                $question->dbId = $dbModuleQuestion->id;
 
+                // prepare ModuleAssessmentQuestion
+                $maQuestions[] = [
+                    'module_assessment_id' => $context->id,
+                    'module_question_id' => $dbModuleQuestion->id,
+                    'sequence' => $question->sortOrder,
+                    'is_active' => true
+                ];
             }
+            */
 
             dd($formDataJson);
 
@@ -239,6 +259,33 @@ class ModuleAssessmentsController extends CustomController
             $responseCode = 500;
         }
         die;
+    }
+
+    private function jsonToModuleQuestionAssoc($question){
+        $toReturn = [];
+
+        foreach ($question as $k => $v) {
+            if (isset($this->jsonQuestionMap[$k])) {
+                $toReturn[$this->jsonQuestionMap[$k]] = $v;
+            }
+        }
+
+        // required for plugin compatibility
+        // not present in json example, but submitted when using the form builder
+        if(!property_exists($question, 'name') ) {
+            $toReturn['name'] = $question->fbid;
+        }
+        
+        $questionTypeMap = [
+            'radio' => ModuleQuestionType::SingleChoice,
+            'checkbox' => ModuleQuestionType::MultipleChoice,
+            'textarea' => ModuleQuestionType::OpenText
+        ];
+
+        $toReturn['module_question_type_id'] = $questionTypeMap[$question->type];
+        $toReturn['is_active'] = true;
+
+        return $toReturn;
     }
 
     private function jsonToModuleQuestion($question) {
