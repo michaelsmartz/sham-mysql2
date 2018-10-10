@@ -26,6 +26,7 @@ class SSPMySurveysController extends CustomController
      */
     public function __construct(){
         $this->contextObj = new Survey();
+        $this->baseViewPath = 'selfservice-portal.surveys';
     }
 
     /**
@@ -42,7 +43,11 @@ class SSPMySurveysController extends CustomController
 
         $surveys = [];
 
-        $temp = $this->contextObj::with(['users'])->where('author_sham_user_id',$userId)->get()->all();
+        $temp = $this->contextObj::with(['users'])
+            ->where('author_sham_user_id',$userId)
+            ->where('final',1)
+            ->get()
+            ->all();
 
         if ($temp!=null){
             foreach ($temp as $t) {
@@ -58,7 +63,7 @@ class SSPMySurveysController extends CustomController
         }
 
         // load the view and pass the surveys
-        return View::make('selfservice-portal.surveys.sspmysurveys',compact('surveys'));
+        return view($this->baseViewPath .'.index',compact('surveys'));
     }
 
     public function getFormData($formId) {
@@ -67,6 +72,28 @@ class SSPMySurveysController extends CustomController
             return $form->getFormHTML();
         }
         return '<b>Survey preview unavailable</b>';
+    }
+
+
+    /**
+     * Display the survey form for the user to fill.
+     *
+     * @param  string  $id
+     * @return Response
+     */
+    public function show($id) {
+        // send the survey form to fill
+        $survey = $this->contextObj::find($id);
+
+        $form = ($survey->form_id != "")?Form::find($survey->form_id):null;
+
+        if ($form !=null) $survey->FormData = $form->sata;//Handle the Form Data
+
+        // my survey showed final surveys, only take final surveys
+        if ($survey->final==true) {
+            // show the view and pass the data to it
+            return view($this->baseViewPath . '.show', compact('survey', 'id', 'form'));
+        }
     }
 
     /**

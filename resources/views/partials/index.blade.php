@@ -65,6 +65,18 @@
             }
         }
 
+        function showForm(id, event) {
+            //event.preventDefault();
+            if (id) {
+                @if (isset($fullPageShow) && $fullPageShow == TRUE)
+                    window.location = '{{url()->current()}}/'+id;
+                @else
+                    $mainButton = $('.buttons button[type="submit"]');
+                loadUrl('{{url()->current()}}/'+id);
+                @endif
+            }
+        }
+
         function matrixForm(id, event) {
             if (id) {
                 $mainButton = $('.buttons button[type="submit"]');

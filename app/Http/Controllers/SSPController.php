@@ -45,7 +45,7 @@ class SSPController extends CustomController
         $assets = $this->getAllocatedAssets($employeeObject);
 
         // load the view and pass the parameters
-        return View::make('selfservice-portal.portal.selfservice-portal',
+        return View::make('selfservice-portal.portal.index',
             compact('warnings', 'announcements', 'assets','workingHours'));
     }
 
