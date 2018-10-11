@@ -348,5 +348,9 @@
     {
         "model-name": "HistoryDisciplinaryAction",
         "resource-file": "history_disciplinary_actions.json"
+    },
+    {
+        "model-name": "HistoryJoinsTermination",
+        "resource-file": "history_joins_terminations.json"
     }
 ]

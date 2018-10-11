@@ -252,19 +252,19 @@ class Employee extends Model
         return $this->hasMany('App\HistoryDisciplinaryAction','employee_id','id');
     }
 
-    public function historyjobtitles()
+    public function historyJobTitles()
     {
-        return $this->hasMany('App\Historyjobtitle','EmployeeId','id');
+        return $this->hasMany('App\HistoryJobTitle','employee_id','id');
     }
 
-    public function historyjoinsterminations()
+    public function historyJoinsTerminations()
     {
-        return $this->hasMany('App\Historyjoinstermination','EmployeeId','id');
+        return $this->hasMany('App\HistoryJoinsTermination','employee_id','id');
     }
 
-    public function historyqualification()
+    public function historyQualification()
     {
-        return $this->hasOne('App\Historyqualification','EmployeeId','id');
+        return $this->hasOne('App\HistoryQualification','employee_id','id');
     }
 
     public function historyRewards()
@@ -272,9 +272,9 @@ class Employee extends Model
         return $this->hasMany('App\HistoryReward','employee_id','id');
     }
 
-    public function historytraining()
+    public function historyTraining()
     {
-        return $this->hasOne('App\Historytraining','EmployeeId','id');
+        return $this->hasOne('App\HistoryTraining','employee_id','id');
     }
 
     public function moduleassessmentresponses()

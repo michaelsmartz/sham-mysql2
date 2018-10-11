@@ -68,6 +68,7 @@ class SSPMyDetailsController extends CustomController
                                         'historyDepartments.department',
                                         'historyRewards.reward',
                                         'historyDisciplinaryActions.disciplinaryAction',
+                                        'historyJoinsTerminations',
                                 ])
                                 ->where('id',$id)
                                 ->get()
@@ -280,31 +281,32 @@ class SSPMyDetailsController extends CustomController
                         }
                     }
                     break;
-//                case "JoinTerminationDate":
-//                    $historyJoinTerminations = HistoryJoinsTermination::getFilterList(array_keys(HistoryJoinsTermination::getListFields()), "", "", "", 1, 0, 'Id eq ' . $eventid);
-//
-//                    if (count($historyJoinTerminations) > 0) {
-//                        $timelineresultObj = new TimelineResult();
-//                        $timelineresultObj->ShortcutType = 4;
-//
-//                        if ($historyJoinTerminations[0]->Joined == true) {
-//                            $timelineresultObj->Description = "Joined Date";
-//                            //$dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $employee[0]->JoinedDate);
-//                            // code above was raising an error.
-//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $employee->JoinedDate);
-//                            $timelineresultObj->MainClass = 'success';
-//                        } else {
-//                            $timelineresultObj->Description = "Termination";
-//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyJoinTerminations[0]->Date);
-//                            $timelineresultObj->MainClass = 'warning';
-//                            $timelineresultObj->icon = 'fa fa-sign-out';
-//                        }
-//
-//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
-//                        $timeCompileResults[] = $timelineresultObj;
-//                    }
-//                    break;
-//
+                case "JoinTerminationDate":
+                    $historyJoinTerminations = $employee->historyJoinsTerminations->where('id', $timeline->event_id);
+
+                    //dd($employee);
+
+                    if (count($historyJoinTerminations) > 0) {
+                        foreach ($historyJoinTerminations as $historyJoinTermination) {
+                            $timeline = new $timeline();
+                            $timeline->ShortcutType = 4;
+
+                            if ($historyJoinTermination->is_joined == true) {
+                                $timeline->Description = "Joined Date";
+                                $timeline->MainClass = 'success';
+                                $timeline->formattedDate =  date("d-m-Y", strtotime($employee->date_joined));
+                            } else {
+                                $timeline->Description = "Termination";
+                                $timeline->formattedDate = date("d-m-Y", strtotime($historyJoinTermination->date_occurred));
+                                $timeline->MainClass = 'warning';
+                                $timeline->icon = 'fa fa-sign-out';
+                            }
+
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+
 //                case "JobTitles":
 //                    $historyJobTitles = HistoryJobTitle::getFilterList(array_keys(HistoryJobTitle::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
 //                    if(count($historyJobTitles) > 0)

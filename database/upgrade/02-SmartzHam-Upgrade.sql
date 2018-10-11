@@ -2330,3 +2330,5 @@ ALTER TABLE `history_departments` CHANGE `date` `date` DATE NOT NULL;
 ALTER TABLE `history_rewards` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
 ALTER TABLE `history_disciplinary_actions` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+
+ALTER TABLE `history_joins_terminations` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
