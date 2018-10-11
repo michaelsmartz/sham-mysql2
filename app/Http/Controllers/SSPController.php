@@ -22,7 +22,10 @@ class SSPController extends CustomController
      * Create a new controller instance.
      *
      */
-    public function __construct(){}
+    public function __construct(){
+        $this->contextObj = new Employee();
+        $this->baseViewPath = 'selfservice-portal.portal';
+    }
 
     /**
      * Display a listing of the resource.
@@ -32,7 +35,7 @@ class SSPController extends CustomController
     public function index()
     {
         $employee_id  = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-        $employeeObject = Employee::find($employee_id);
+        $employeeObject =  $this->contextObj::find($employee_id);
 
         $warnings = array();
 
@@ -45,7 +48,7 @@ class SSPController extends CustomController
         $assets = $this->getAllocatedAssets($employeeObject);
 
         // load the view and pass the parameters
-        return View::make('selfservice-portal.portal.index',
+        return view($this->baseViewPath .'.index',
             compact('warnings', 'announcements', 'assets','workingHours'));
     }
 

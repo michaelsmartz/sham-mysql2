@@ -18,11 +18,11 @@ $(document).ready(function () {
                     })
                 );
 
-                oUvm.FilesData(
-                    data.files.map(function (item, index) {
-                        return new UserFileViewModel(item, index);
-                    })
-                );
+                // oUvm.FilesData(
+                //     data.files.map(function (item, index) {
+                //         return new UserFileViewModel(item, index);
+                //     })
+                // );
                 ko.applyBindings(oUvm, $("#sec-userProfile")[0]);
             }
         });
@@ -34,29 +34,29 @@ $(document).ready(function () {
         self.TimeLineData = ko.observableArray();
         self.FilesData = ko.observableArray();
 
-        self.FirstName = ko.observable(data.FirstName);
-        self.Surname = ko.observable(data.Surname);
-        self.KnownAs = ko.observable(data.KnownAs);
+        self.FirstName = ko.observable(data.first_name);
+        self.Surname = ko.observable(data.surname);
+        self.KnownAs = ko.observable(data.known_as);
 
-        if (data.Picture == '') {
+        if (data.picture == '') {
             self.Pic = ko.observable("/img/avatar.png");
         } else {
-            self.Pic = ko.observable(data.Picture);
+            self.Pic = ko.observable(data.picture);
         }
 
-        self.fullName = ko.observable(data.fullName);
+        self.fullName = ko.observable(data.full_name);
 
         self.Job = ko.computed(function(){
-            return data.Job + ', joined on: ' + data.formattedJoinedDate;
+            return data.job + ', joined on: ' + data.formatted_date_joined;
         });
 
-        self.Team = ko.observable(data.Team);
-        self.Department = ko.observable(data.Department);
-        self.Branch = ko.observable(data.Branch);
-        self.Division = ko.observable(data.Division);
+        self.Team = ko.observable(data.team.description);
+        self.Department = ko.observable(data.department.description);
+        self.Branch = ko.observable(data.branch.description);
+        self.Division = ko.observable(data.division.description);
 
-        self.MaritalStatusId = ko.observable(data.MaritalStatusId);
-        self.SpouseFullName = ko.observable(data.SpouseFullName);
+        self.MaritalStatusId = ko.observable(data.marital_status_id);
+        self.SpouseFullName = ko.observable(data.spouse_full_name);
 
         // staticXxx is read-only attribute for display only
         self.staticHomeAddressUnitNo = ko.computed(function() {

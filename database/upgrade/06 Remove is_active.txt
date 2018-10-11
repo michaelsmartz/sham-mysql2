@@ -99,3 +99,12 @@ ALTER TABLE `surveys` DROP `is_active`;
 
 UPDATE `forms` SET `deleted_at`= now() WHERE `is_active` = 0;
 ALTER TABLE `forms` DROP `is_active`;
+
+UPDATE `telephone_numbers` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `telephone_numbers` DROP `is_active`;
+
+UPDATE `email_addresses` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `email_addresses` DROP `is_active`;
+
+UPDATE `timeline_event_types` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `timeline_event_types` DROP `is_active`;

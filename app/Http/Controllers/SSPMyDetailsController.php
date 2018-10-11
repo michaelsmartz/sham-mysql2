@@ -1,0 +1,357 @@
+<?php
+
+namespace App\Http\Controllers;
+use App\MaritalStatus;
+use App\Employee;
+
+use App\Timeline;
+use Illuminate\Http\Request;
+use App\Libs\Extensions\Input;
+
+use Auth;
+use View;
+use Redirect;
+use Validator;
+use Session;
+
+class SSPMyDetailsController extends CustomController
+{
+
+    /**
+     * Create a new controller instance.
+     *
+     */
+    public function __construct(){
+        $this->contextObj = new Employee();
+        $this->baseViewPath = 'selfservice-portal.profile';
+    }
+
+    //functions necessary to handle 'resource' type of route
+    public function index()
+    {
+        $warnings = [];
+        $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        if ($id == 0) {
+            $warnings[] = 'Please check whether your profile is associated to an employee!';
+        }
+
+        // get the employee
+        $employee = $this->contextObj::find($id);
+
+        $attachments = [];
+
+        $maritalStatus = MaritalStatus::pluck('description', 'id');
+
+        // show the view and pass the nerd to it
+        return view($this->baseViewPath .'.index', compact('employee', 'warnings','attachments', 'maritalStatus'));
+    }
+
+//    public function show(Request $request){
+//        self::getProfile($request);
+//    }
+
+    public function show(Request $request) {
+        $employee = [];
+        $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        $tmp = $this->contextObj::with(['jobTitle',
+                                        'department',
+                                        'branch',
+                                        'division',
+                                        'team',
+                                        'addresses',
+                                        'emails',
+                                        'phones',
+                                        'timelines.timelineEventType',
+                                        'historyDepartments.department',
+                                ])
+                                ->where('id',$id)
+                                ->get()
+                                ->first();
+
+        if(!empty($tmp)){
+            $employee = self::getAdditionalFields($tmp);
+        }
+
+        $timelineData = self::getTimeline($employee);
+
+        //$filesData = self::getFiles($employee);
+
+        return response()->json(['data' => $employee,
+                                 'timeline' => $timelineData,
+                                 //'files' => $filesData
+                            ], 200);
+    }
+
+    private static function getAdditionalFields($employeeObject)
+    {
+        if(!empty($employeeObject->known_as)) {
+            $employeeObject->full_name .= " (" . $employeeObject->known_as. ")";
+        }
+        if(!empty($employeeObject->date_joined)) {
+            $employeeObject->formatted_date_joined = date("d-m-Y", strtotime($employeeObject->date_joined));
+        }
+
+        if(empty($employeeObject->picture) || strlen($employeeObject->picture) < 10){
+            $employeeObject->picture = "/img/avatar.png";
+        }
+
+        if (isset($employeeObject->jobTitle)) {
+            $employeeObject->job = $employeeObject->jobTitle->description;
+        }
+
+        if (isset($employeeObject->team)) {
+            $employeeObject->team = $employeeObject->team->description;
+        }
+
+        if (isset($employeeObject->department)) {
+            $employeeObject->department = $employeeObject->department->description;
+        }
+
+        if (isset($employeeObject->branch)) {
+            $employeeObject->branch = $employeeObject->branch->description;
+        }
+
+        if (isset($employeeObject->division)) {
+            $employeeObject->division = $employeeObject->division->description;
+        }
+
+        if ($employeeObject != null) {
+            if (isset($employeeObject->addresses)) {
+                foreach ($employeeObject->addresses as $address) {
+
+                    switch ($address->address_type_id) {
+                        case 1://Home:
+                            $employeeObject->HomeAddressUnitNo = $address->unit_no;
+                            $employeeObject->HomeAddressComplex = $address->complex;
+                            $employeeObject->HomeAddressLine1 = $address->addr_line_1;
+                            $employeeObject->HomeAddressLine2 = $address->addr_line_2;
+                            $employeeObject->HomeAddressLine3 = $address->addr_line_3;
+                            $employeeObject->HomeAddressLine4 = $address->addr_line_4;
+                            $employeeObject->HomeAddressCity = $address->city;
+                            $employeeObject->HomeAddressProvince = $address->province;
+                            $employeeObject->HomeAddressCountryId = $address->country_id;
+                            $employeeObject->HomeAddressZipCode = $address->zip_code;
+                            break;
+                        case 2://Postal
+                            $employeeObject->PostalAddressUnitNo = $address->unit_no;
+                            $employeeObject->PostalAddressComplex = $address->complex;
+                            $employeeObject->PostalAddressLine1 = $address->addr_line_1;
+                            $employeeObject->PostalAddressLine2 = $address->addr_line_2;
+                            $employeeObject->PostalAddressLine3 = $address->addr_line_3;
+                            $employeeObject->PostalAddressLine4 = $address->addr_line_4;
+                            $employeeObject->PostalAddressCity = $address->city;
+                            $employeeObject->PostalAddressProvince = $address->province;
+                            $employeeObject->PostalAddressCountryId = $address->country_id;
+                            $employeeObject->PostalAddressZipCode = $address->zip_code;
+                            break;
+                    }
+
+                }
+                unset($employeeObject->addresses);
+
+            }
+
+            //Adjust Tel Numbers
+            if (isset($employeeObject->phones)) {
+                foreach ($employeeObject->phones as $tel) {
+
+                    switch ($tel->telephone_number_type_id) {
+                        case 1://Home:
+                            $employeeObject->HomeTel = $tel->tel_number;
+
+                            break;
+                        case 2://Mobile
+                            $employeeObject->Mobile = $tel->tel_number;
+
+                            break;
+                        case 3://work
+                            $employeeObject->WorkTel = $tel->tel_number;
+                            break;
+                    }
+
+                }
+                unset($employeeObject->phones);
+
+            }
+
+            //Adjust Email Addresses
+            if (isset($employeeObject->emails)) {
+                foreach ($employeeObject->emails as $email) {
+
+                    switch ($email->email_address_type_id) {
+                        case 1://Private:
+                            $employeeObject->HomeEmailAddress = $email->email_address;
+                            break;
+                        case 2://Work
+                            $employeeObject->WorkEmailAddress = $email->email_address;
+                            break;
+                    }
+                }
+                unset($employeeObject->emails);
+            }
+        }
+
+        return $employeeObject;
+    }
+
+
+    private static function getTimeline($employee) {
+
+        //dd($employee->timelines);
+
+        $timeCompileResults = [];
+
+        foreach($employee->timelines as $timeline) {
+            $timelineEventType = $timeline->timelineEventType->name;
+            $readableDesc = $timeline->timelineEventType->description;
+            $eventid = trim($timeline->event_id);
+
+            //dd($timelineEventType);
+
+            switch ($timelineEventType) {
+                case "Departments":
+                    //dd($employee->historyDepartments);
+                    $historyDepartments =  $employee->historyDepartments;
+
+                    if(count($historyDepartments) > 0)
+                    {
+                        //dd($historyDepartments);
+                        foreach ($historyDepartments as $historyDepartment) {
+                            $timeline = new Timeline();
+                            $timeline->ShortcutType = 1;
+                            $timeline->MainClass = 'info';
+                            $timeline->Description = "Joined Department: " . $historyDepartment->department->description;
+                            $timeline->EventType = $timelineEventType;
+                            //$timelineresultObj->Date = "Date: ".$historyDepartments[0]->Date;
+                            $timeline->formattedDate = date("d-m-Y", strtotime($historyDepartment->date));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+
+//                case "Rewards":
+//                    $historyRewards = HistoryReward::getFilterList(array_keys(HistoryReward::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
+//                    if(count($historyRewards) > 0)
+//                    {
+//                        $timelineresultObj = new TimelineResult();
+//                        $timelineresultObj->ShortcutType = 2;
+//                        $timelineresultObj->MainClass = 'success';
+//                        $timelineresultObj->Description = "Reward: " .$historyRewards[0]->Reward->Description;
+//                        $timelineresultObj->EventType = $timelineEventType;
+//                        //$timelineresultObj->Date = "Date: ".$timeline->EventDate;
+//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $timeline->EventDate);
+//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
+//                        $timelineresultObj->icon = 'fa fa-certificate';
+//                        $timeCompileResults[] = $timelineresultObj;
+//                    }
+//                    break;
+//                case "Disciplinary":
+//                    $historyDisciplinary = HistoryDisciplinaryAction::getFilterList(array_keys(HistoryDisciplinaryAction::getListFields()), "", "", "", 1, 0, 'Id eq ' . $eventid);
+//                    if (count($historyDisciplinary) > 0) {
+//                        $timelineresultObj = new TimelineResult();
+//                        $timelineresultObj->ShortcutType = 3;
+//                        $timelineresultObj->MainClass = 'danger';
+//                        $violation = Violation::find($historyDisciplinary[0]->DisciplinaryAction->ViolationId);
+//                        $timelineresultObj->DisciplinaryActionId = $historyDisciplinary[0]->DisciplinaryActionId;
+//                        $timelineresultObj->Description = "Discriplinary Action: " .$violation->Description;//$historyDisciplinary[0]->DisciplinaryAction->ViolationId;//""; //TODO: Get Proper ODATA query to retrieve vioation description
+//                        $timelineresultObj->EventType = "Discriplinary Action";//$timelineeventype;
+//                        //$timelineresultObj->Date = "Date: " . $timeline->EventDate;
+//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyDisciplinary[0]->Date);
+//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
+//                        $timeCompileResults[] = $timelineresultObj;
+//                        If ($violation->Id == 3) {
+//                            $timelineresultObj->icon = 'vs vs-no-smoking-alt';
+//                        } else {
+//                            $timelineresultObj->icon = 'fa fa-ban';
+//                        }
+//                    }
+//                    break;
+//                case "JoinTerminationDate":
+//                    $historyJoinTerminations = HistoryJoinsTermination::getFilterList(array_keys(HistoryJoinsTermination::getListFields()), "", "", "", 1, 0, 'Id eq ' . $eventid);
+//
+//                    if (count($historyJoinTerminations) > 0) {
+//                        $timelineresultObj = new TimelineResult();
+//                        $timelineresultObj->ShortcutType = 4;
+//
+//                        if ($historyJoinTerminations[0]->Joined == true) {
+//                            $timelineresultObj->Description = "Joined Date";
+//                            //$dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $employee[0]->JoinedDate);
+//                            // code above was raising an error.
+//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $employee->JoinedDate);
+//                            $timelineresultObj->MainClass = 'success';
+//                        } else {
+//                            $timelineresultObj->Description = "Termination";
+//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyJoinTerminations[0]->Date);
+//                            $timelineresultObj->MainClass = 'warning';
+//                            $timelineresultObj->icon = 'fa fa-sign-out';
+//                        }
+//
+//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
+//                        $timeCompileResults[] = $timelineresultObj;
+//                    }
+//                    break;
+//
+//                case "JobTitles":
+//                    $historyJobTitles = HistoryJobTitle::getFilterList(array_keys(HistoryJobTitle::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
+//                    if(count($historyJobTitles) > 0)
+//                    {
+//                        $timelineresultObj = new TimelineResult();
+//                        $timelineresultObj->ShortcutType = 5;
+//                        $timelineresultObj->MainClass = 'info';
+//                        $timelineresultObj->Description = "Started as: ".$historyJobTitles[0]->JobTitle->Description;
+//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyJobTitles[0]->Date);
+//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
+//                        $timeCompileResults[] = $timelineresultObj;
+//                    }
+//                    break;
+//
+//                case "Qualifications":
+//                    $historyQualifications = HistoryQualification::getFilterList(array_keys(HistoryQualification::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
+//                    if(count($historyQualifications) > 0)
+//                    {
+//                        $timelineresultObj = new TimelineResult();
+//                        $timelineresultObj->ShortcutType = 6;
+//                        $timelineresultObj->MainClass = 'success';
+//                        $timelineresultObj->Description = "Obtained: ".$historyQualifications[0]->Qualification->Description;
+//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyQualifications[0]->Date);
+//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
+//                        $timeCompileResults[] = $timelineresultObj;
+//                    }
+//                    break;
+//
+//                case "Trainings":
+//                    $historyTrainings = HistoryTraining::getFilterList(array_keys(HistoryTraining::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
+//
+//                    if(count($historyTrainings) > 0)
+//                    {
+//                        $timelineresultObj = new TimelineResult();
+//                        $timelineresultObj->ShortcutType = 7;
+//                        $timelineresultObj->Description = $historyTrainings[0]->CourseParticipantStatus->Description. ": ".$historyTrainings[0]->Cours->Description;
+//                        $timelineresultObj->EventType = $readableDesc;
+//
+//                        if($historyTrainings[0]->CourseParticipantStatusId == CourseParticipantStatus::CONST_JUST_ENROLLED) {
+//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyTrainings[0]->Date);
+//                            $timelineresultObj->Description = "Enrolled on the course: " .$historyTrainings[0]->Cours->Description;
+//                        } elseif($historyTrainings[0]->CourseParticipantStatusId == CourseParticipantStatus::CONST_COMPLETED) {
+//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyTrainings[0]->Date);
+//                            $timelineresultObj->Description = "Completed the course: " .$historyTrainings[0]->Cours->Description;
+//                        }
+//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
+//                        $timeCompileResults[] = $timelineresultObj;
+//                    }
+//                    break;
+
+                default:
+                    break;
+            }
+        }
+
+//        dd($timeCompileResults);
+
+        return $timeCompileResults;
+
+    }
+}
+

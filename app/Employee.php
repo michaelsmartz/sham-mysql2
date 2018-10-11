@@ -137,7 +137,7 @@ class Employee extends Model
 
     public function team()
     {
-        return $this->belongsTo('App\Team','team_id','Id');
+        return $this->belongsTo('App\Team','team_id','id');
     }
 
     public function employeeStatus()
@@ -242,9 +242,9 @@ class Employee extends Model
         return $this->hasMany('App\Eventtaskinstance','TargetId','id');
     }
 
-    public function historydepartments()
+    public function historyDepartments()
     {
-        return $this->hasMany('App\Historydepartment','EmployeeId','id');
+        return $this->hasMany('App\HistoryDepartment','employee_id','id');
     }
 
     public function historydisciplinaryactions()
@@ -335,7 +335,7 @@ class Employee extends Model
 
     public function timelines()
     {
-        return $this->hasMany('App\Timeline','EmployeeId','id');
+        return $this->hasMany('App\Timeline','employee_id','id');
     }
 
     public function trainingSessions()

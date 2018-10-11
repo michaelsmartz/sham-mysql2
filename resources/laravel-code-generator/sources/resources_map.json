@@ -328,5 +328,17 @@
         "model-name": "EvaluationStatus",
         "resource-file": "evaluation_statuses.json",
         "table-name": "evaluation_statuses"
+    },
+    {
+        "model-name": "Timeline",
+        "resource-file": "timelines.json"
+    },
+    {
+        "model-name": "TimelineEventType",
+        "resource-file": "timeline_event_types.json"
+    },
+    {
+        "model-name": "HistoryDepartment",
+        "resource-file": "history_departments.json"
     }
 ]

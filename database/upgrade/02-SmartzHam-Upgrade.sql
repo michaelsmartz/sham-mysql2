@@ -2320,3 +2320,9 @@ ALTER TABLE `divisions`
 ALTER TABLE `forms` CHANGE `title` `title` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
 
 ALTER TABLE `immigration_statuses` CHANGE `Id` `id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `Description` `description` VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+ALTER TABLE `employees` CHANGE `date_joined` `date_joined` DATE NULL DEFAULT NULL, CHANGE `date_terminated` `date_terminated` DATE NULL DEFAULT NULL;
+
+ALTER TABLE `timelines` CHANGE `date_event` `date_event` DATE NOT NULL;
+
+ALTER TABLE `history_departments` CHANGE `date` `date` DATE NOT NULL;
