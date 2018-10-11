@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use App\Auth\CachingUserProvider;
+use App\Auth\CacheUserProvider;
 use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
@@ -27,12 +27,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Auth::provider('caching', function ($app, array $config) {
-            return new CachingUserProvider(
-                $app->make('Illuminate\Contracts\Hashing\Hasher'),
-                $config['model'],
-                $app->make('Illuminate\Contracts\Cache\Repository')
-            );
+        // Cache user
+        Auth::provider('cache-user', function() {
+            return resolve(CacheUserProvider::class);
         });
     }
 }

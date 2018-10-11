@@ -1,5 +1,6 @@
 @extends('portal-index')
-@section('title','Employees')
+@section('title','Employee Statuses')
+@section('subtitle','Employee Status drop-down values for employees')
 @section('content')
     <br>
     <ul class="nav nav-tabs">

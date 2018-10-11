@@ -39,7 +39,7 @@ class CachingUserProvider extends EloquentUserProvider
      */
     public function retrieveById($identifier)
     {
-        return $this->cache->tags($this->getModel())->remember('user_by_id_'.$identifier, 60, function () use ($identifier) {
+        return $this->cache->tags($this->getModel())->remember('user_by_id_'.$identifier, 180, function () use ($identifier) {
           $model = $this->createModel();
           return $model->newQuery()
             /*->with('roles', 'permissions', 'profile')*/

@@ -1,5 +1,6 @@
 @extends('portal-index')
-@section('title','Employees')
+@section('title','Immigration Statuses')
+@section('subtitle','Immigration Status drop-down values for employees')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
@@ -48,8 +49,8 @@
                     </thead>
                     <tbody>
                         @foreach($immigrationStatuses as $immigrationStatus)
-                        <tr id="tr{{$immigrationStatus->Id}}">
-                            <td>{{ $immigrationStatus->Description }}</td>
+                        <tr id="tr{{$immigrationStatus->id}}">
+                            <td>{{ $immigrationStatus->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

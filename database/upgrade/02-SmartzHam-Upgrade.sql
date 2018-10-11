@@ -2301,4 +2301,20 @@ CHANGE COLUMN `createdbyemployee_id` `createdby_employee_id` INT(11) NULL DEFAUL
 CHANGE COLUMN `originalfilename` `original_filename` VARCHAR(256) NULL DEFAULT NULL ,
 CHANGE COLUMN `urlpath` `url_path` VARCHAR(256) NULL DEFAULT NULL;
 
+#--- Tax statuses
+ALTER TABLE `tax_statuses`
+	ALTER `Description` DROP DEFAULT,
+	ALTER `Active` DROP DEFAULT;
+ALTER TABLE `tax_statuses`
+	CHANGE COLUMN `Description` `description` VARCHAR(50) NOT NULL AFTER `id`,
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL AFTER `description`;
+
+#--- Divisions
+ALTER TABLE `divisions`
+	ALTER `Description` DROP DEFAULT,
+	ALTER `Active` DROP DEFAULT;
+ALTER TABLE `divisions`
+	CHANGE COLUMN `Description` `description` VARCHAR(50) NOT NULL AFTER `id`,
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL AFTER `description`;
+
 ALTER TABLE `forms` CHANGE `title` `title` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;

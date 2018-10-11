@@ -67,7 +67,7 @@ return [
     'providers' => [
 
         'users' => [
-            'driver' => 'caching',
+            'driver' => 'cache-user' /*'caching'*/,
             'model' => App\User::class,
         ],
 

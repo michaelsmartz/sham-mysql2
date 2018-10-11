@@ -17,11 +17,11 @@ class ImmigrationStatus extends Model
      * @var array
      */
     protected $fillable = [
-                  'Description',
+                  'description',
                   'is_system_predefined'
               ];
 
-    public $searchable = ['Description'];
+    public $searchable = ['description'];
 
     public function employees()
     {
