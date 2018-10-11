@@ -2332,3 +2332,17 @@ ALTER TABLE `history_rewards` CHANGE `date_occurred` `date_occurred` DATE NOT NU
 ALTER TABLE `history_disciplinary_actions` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
 ALTER TABLE `history_joins_terminations` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+
+ALTER TABLE `history_job_titles` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+
+RENAME TABLE `historyqualifications` TO `history_qualifications`;
+
+ALTER TABLE `history_qualifications`
+DROP FOREIGN KEY `FK_HistoryQualifications_Employees`,
+DROP FOREIGN KEY `FK_HistoryQualifications_Qualifications`;
+
+ALTER TABLE `history_qualifications` CHANGE `EmployeeId` `employee_id` INT(11) NOT NULL, CHANGE `QualificationId` `qualification_id` INT(11) NOT NULL, CHANGE `Id` `id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `Date` `date` DATE NOT NULL;
+
+ALTER TABLE `history_qualifications` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `history_qualifications` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `history_qualifications` ADD `deleted_at` DATETIME NULL;

@@ -352,5 +352,13 @@
     {
         "model-name": "HistoryJoinsTermination",
         "resource-file": "history_joins_terminations.json"
+    },
+    {
+        "model-name": "HistoryJobTitle",
+        "resource-file": "history_job_titles.json"
+    },
+    {
+        "model-name": "HistoryQualification",
+        "resource-file": "history_qualifications.json"
     }
 ]

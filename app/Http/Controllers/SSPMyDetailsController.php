@@ -69,6 +69,8 @@ class SSPMyDetailsController extends CustomController
                                         'historyRewards.reward',
                                         'historyDisciplinaryActions.disciplinaryAction',
                                         'historyJoinsTerminations',
+                                        'historyJobTitles.jobTitle',
+                                        'historyQualification.qualification',
                                 ])
                                 ->where('id',$id)
                                 ->get()
@@ -307,33 +309,42 @@ class SSPMyDetailsController extends CustomController
                     }
                     break;
 
-//                case "JobTitles":
-//                    $historyJobTitles = HistoryJobTitle::getFilterList(array_keys(HistoryJobTitle::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
-//                    if(count($historyJobTitles) > 0)
-//                    {
-//                        $timelineresultObj = new TimelineResult();
-//                        $timelineresultObj->ShortcutType = 5;
-//                        $timelineresultObj->MainClass = 'info';
-//                        $timelineresultObj->Description = "Started as: ".$historyJobTitles[0]->JobTitle->Description;
-//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyJobTitles[0]->Date);
-//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
-//                        $timeCompileResults[] = $timelineresultObj;
-//                    }
-//                    break;
-//
-//                case "Qualifications":
-//                    $historyQualifications = HistoryQualification::getFilterList(array_keys(HistoryQualification::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
-//                    if(count($historyQualifications) > 0)
-//                    {
-//                        $timelineresultObj = new TimelineResult();
-//                        $timelineresultObj->ShortcutType = 6;
-//                        $timelineresultObj->MainClass = 'success';
-//                        $timelineresultObj->Description = "Obtained: ".$historyQualifications[0]->Qualification->Description;
-//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyQualifications[0]->Date);
-//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
-//                        $timeCompileResults[] = $timelineresultObj;
-//                    }
-//                    break;
+                case "JobTitles":
+                    $historyJobTitles = $employee->historyJobTitles->where('id', $timeline->event_id);
+
+                    //dd($historyJobTitles);
+
+                    if(count($historyJobTitles) > 0)
+                    {
+                        foreach ($historyJobTitles as $historyJobTitle) {
+                            $timeline = new $timeline();
+                            $timeline->ShortcutType = 5;
+                            $timeline->MainClass = 'info';
+                            $timeline->Description = "Started as: " . $historyJobTitle->jobTitle->description;
+                            $timeline->formattedDate = date("d-m-Y", strtotime($historyJobTitle->date_occurred));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+
+                case "Qualifications":
+
+                    $historyQualifications = $employee->historyQualification->where('id', $timeline->event_id)->get();
+
+                    //dd($historyQualifications);
+
+                    if(count($historyQualifications) > 0)
+                    {
+                        foreach ($historyQualifications as $historyQualification) {
+                            $timeline = new $timeline();
+                            $timeline->ShortcutType = 6;
+                            $timeline->MainClass = 'success';
+                            $timeline->Description = "Obtained: " . $historyQualification->qualification->description;
+                            $timeline->formattedDate = date("d-m-Y", strtotime($historyQualification->date));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
 //
 //                case "Trainings":
 //                    $historyTrainings = HistoryTraining::getFilterList(array_keys(HistoryTraining::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
