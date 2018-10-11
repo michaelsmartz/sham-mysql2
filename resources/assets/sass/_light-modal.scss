@@ -60,6 +60,8 @@ $modal-background-color: $body-bg;
         justify-content: space-between;
     -ms-flex-align: center;
         align-items: center;
+    text-overflow: ellipsis;
+    word-break: break-word;
   }
   
   .light-modal-heading {

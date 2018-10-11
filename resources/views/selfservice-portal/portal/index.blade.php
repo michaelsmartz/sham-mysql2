@@ -7,6 +7,11 @@
     <link href="{{URL::to('/')}}/css/todolist.css" rel="stylesheet">
 
     <style>
+        #icons-container .icon{
+           height: 60px;
+           width: 60px;
+        }
+
         #icons-container a {
             vertical-align: text-top;
         }
@@ -345,7 +350,7 @@
 @section('right-title')
 <div id="icons-container" class="pull-right" style="position: relative;top:-10px;width:100%;text-align:right;vertical-align:text-top;">
     <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My Profile" href="{{URL::to('/')}}/my-details">
-        <svg class="icon" width="70" height="70" >
+        <svg class="icon" width="48" height="48" >
             <use xlink:href="#medical-3" />
 
         </svg>

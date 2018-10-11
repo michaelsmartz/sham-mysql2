@@ -2300,3 +2300,5 @@ CHANGE COLUMN `evaluationstatus_id` `evaluation_status_id` INT(11) NOT NULL ,
 CHANGE COLUMN `createdbyemployee_id` `createdby_employee_id` INT(11) NULL DEFAULT NULL ,
 CHANGE COLUMN `originalfilename` `original_filename` VARCHAR(256) NULL DEFAULT NULL ,
 CHANGE COLUMN `urlpath` `url_path` VARCHAR(256) NULL DEFAULT NULL;
+
+ALTER TABLE `forms` CHANGE `title` `title` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;

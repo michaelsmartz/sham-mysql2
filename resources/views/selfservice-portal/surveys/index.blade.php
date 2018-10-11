@@ -1,6 +1,47 @@
 @extends('portal-index')
 @section('title','My Surveys')
 
+@section('scripts')
+    <style>
+        .thumbnail {
+            position: relative;
+            padding: 0px;
+            margin-bottom: 20px;
+        }
+        .thumbnail > h4 {
+            font-size: 16px;
+            padding: 7px 5px 0px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-left: 5px;
+            white-space: nowrap;
+        }
+        .thumbnail h4 .info {
+            position: absolute;
+            top:0;
+            right:0;
+            font-size: 0.6em;
+            padding-left: 15px;
+            border-top-right-radius: 3px;
+            border-bottom-left-radius: 4px;
+            border-radius: 0px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .thumbnail h4 .info > span {
+            margin-right: 10px;
+        }
+
+        .thumbnail img {
+            width: 100%;
+        }
+        .thumbnail a.btn {
+            border-top-left-radius: 0px;
+            border-top-right-radius: 0px;
+        }
+    </style>
+@endsection
+
 @section('content')
     <section id="survey">
         <p></p>
