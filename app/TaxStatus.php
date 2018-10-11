@@ -18,7 +18,7 @@ class TaxStatus extends Model
      * @var array
      */
     protected $fillable = [
-                  'fescription',
+                  'description',
                   'is_system_predefined'
               ];
 

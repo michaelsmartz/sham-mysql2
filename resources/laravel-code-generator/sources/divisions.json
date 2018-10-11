@@ -35,7 +35,7 @@
             "on-update": null
         },
         {
-            "name": "Description",
+            "name": "description",
             "labels": "Description",
             "html-type": "text",
             "css-class": "",

@@ -7,7 +7,7 @@
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
 @endsection
 
-@section('postModalUrl', route('immigration_statuses.update', $data->Id))
+@section('postModalUrl', route('immigration_statuses.update', $data->id))
 
 @section('modalContent')
     <div class="row">
@@ -25,7 +25,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('immigration_statuses.update', $data->Id) }}" id="edit_immigration_status_form" name="edit_immigration_status_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('immigration_statuses.update', $data->id) }}" id="edit_immigration_status_form" name="edit_immigration_status_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">

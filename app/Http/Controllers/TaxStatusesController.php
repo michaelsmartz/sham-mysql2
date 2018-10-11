@@ -134,7 +134,7 @@ class TaxStatusesController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'Description' => 'required|string|min:5|max:50'
+            'description' => 'required|string|min:5|max:50'
         ];
 
         $this->validate($request, $validateFields);

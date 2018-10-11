@@ -138,7 +138,7 @@ class DivisionsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'Description' => 'required|string|min:1|max:50'
+            'description' => 'required|string|min:1|max:50'
         ];
 
         $this->validate($request, $validateFields);

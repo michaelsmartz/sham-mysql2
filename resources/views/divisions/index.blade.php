@@ -50,7 +50,7 @@
                     <tbody>
                         @foreach($divisions as $division)
                         <tr id="tr{{$division->id}}">
-                                                        <td>{{ $division->Description }}</td>
+                                                        <td>{{ $division->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
