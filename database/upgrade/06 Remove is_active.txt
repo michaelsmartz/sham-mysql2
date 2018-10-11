@@ -108,3 +108,6 @@ ALTER TABLE `email_addresses` DROP `is_active`;
 
 UPDATE `timeline_event_types` SET `deleted_at`= now() WHERE `is_active` = 0;
 ALTER TABLE `timeline_event_types` DROP `is_active`;
+
+UPDATE `disciplinary_actions` SET `deleted_at`= now() WHERE `is_active` = 0;
+ALTER TABLE `disciplinary_actions` DROP `is_active`;

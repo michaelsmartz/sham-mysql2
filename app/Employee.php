@@ -247,9 +247,9 @@ class Employee extends Model
         return $this->hasMany('App\HistoryDepartment','employee_id','id');
     }
 
-    public function historydisciplinaryactions()
+    public function historyDisciplinaryActions()
     {
-        return $this->hasMany('App\Historydisciplinaryaction','EmployeeId','id');
+        return $this->hasMany('App\HistoryDisciplinaryAction','employee_id','id');
     }
 
     public function historyjobtitles()
@@ -267,9 +267,9 @@ class Employee extends Model
         return $this->hasOne('App\Historyqualification','EmployeeId','id');
     }
 
-    public function historyrewards()
+    public function historyRewards()
     {
-        return $this->hasMany('App\Historyreward','EmployeeId','id');
+        return $this->hasMany('App\HistoryReward','employee_id','id');
     }
 
     public function historytraining()

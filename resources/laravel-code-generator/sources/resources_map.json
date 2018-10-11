@@ -340,5 +340,13 @@
     {
         "model-name": "HistoryDepartment",
         "resource-file": "history_departments.json"
+    },
+    {
+        "model-name": "HistoryReward",
+        "resource-file": "history_rewards.json"
+    },
+    {
+        "model-name": "HistoryDisciplinaryAction",
+        "resource-file": "history_disciplinary_actions.json"
     }
 ]

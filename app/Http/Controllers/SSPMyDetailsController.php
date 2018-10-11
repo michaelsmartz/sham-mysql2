@@ -5,6 +5,7 @@ use App\MaritalStatus;
 use App\Employee;
 
 use App\Timeline;
+use App\Violation;
 use Illuminate\Http\Request;
 use App\Libs\Extensions\Input;
 
@@ -65,6 +66,8 @@ class SSPMyDetailsController extends CustomController
                                         'phones',
                                         'timelines.timelineEventType',
                                         'historyDepartments.department',
+                                        'historyRewards.reward',
+                                        'historyDisciplinaryActions.disciplinaryAction',
                                 ])
                                 ->where('id',$id)
                                 ->get()
@@ -213,7 +216,7 @@ class SSPMyDetailsController extends CustomController
             switch ($timelineEventType) {
                 case "Departments":
                     //dd($employee->historyDepartments);
-                    $historyDepartments =  $employee->historyDepartments;
+                    $historyDepartments =  $employee->historyDepartments->where('id', $timeline->event_id);
 
                     if(count($historyDepartments) > 0)
                     {
@@ -231,43 +234,52 @@ class SSPMyDetailsController extends CustomController
                     }
                     break;
 
-//                case "Rewards":
-//                    $historyRewards = HistoryReward::getFilterList(array_keys(HistoryReward::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
-//                    if(count($historyRewards) > 0)
-//                    {
-//                        $timelineresultObj = new TimelineResult();
-//                        $timelineresultObj->ShortcutType = 2;
-//                        $timelineresultObj->MainClass = 'success';
-//                        $timelineresultObj->Description = "Reward: " .$historyRewards[0]->Reward->Description;
-//                        $timelineresultObj->EventType = $timelineEventType;
-//                        //$timelineresultObj->Date = "Date: ".$timeline->EventDate;
-//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $timeline->EventDate);
-//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
-//                        $timelineresultObj->icon = 'fa fa-certificate';
-//                        $timeCompileResults[] = $timelineresultObj;
-//                    }
-//                    break;
-//                case "Disciplinary":
-//                    $historyDisciplinary = HistoryDisciplinaryAction::getFilterList(array_keys(HistoryDisciplinaryAction::getListFields()), "", "", "", 1, 0, 'Id eq ' . $eventid);
-//                    if (count($historyDisciplinary) > 0) {
-//                        $timelineresultObj = new TimelineResult();
-//                        $timelineresultObj->ShortcutType = 3;
-//                        $timelineresultObj->MainClass = 'danger';
-//                        $violation = Violation::find($historyDisciplinary[0]->DisciplinaryAction->ViolationId);
-//                        $timelineresultObj->DisciplinaryActionId = $historyDisciplinary[0]->DisciplinaryActionId;
-//                        $timelineresultObj->Description = "Discriplinary Action: " .$violation->Description;//$historyDisciplinary[0]->DisciplinaryAction->ViolationId;//""; //TODO: Get Proper ODATA query to retrieve vioation description
-//                        $timelineresultObj->EventType = "Discriplinary Action";//$timelineeventype;
-//                        //$timelineresultObj->Date = "Date: " . $timeline->EventDate;
-//                        $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyDisciplinary[0]->Date);
-//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
-//                        $timeCompileResults[] = $timelineresultObj;
-//                        If ($violation->Id == 3) {
-//                            $timelineresultObj->icon = 'vs vs-no-smoking-alt';
-//                        } else {
-//                            $timelineresultObj->icon = 'fa fa-ban';
-//                        }
-//                    }
-//                    break;
+                case "Rewards":
+                   // dd($timeline->event_id);
+                    $historyRewards =  $employee->historyRewards->where('id', $timeline->event_id);
+                    //dd($historyRewards);
+                    if(count($historyRewards) > 0)
+                    {
+                        foreach ($historyRewards as $historyReward) {
+                            //dd($timeline);
+                            //dump($historyReward);
+                            $timeline = new $timeline();
+                            $timeline->ShortcutType = 2;
+                            $timeline->MainClass = 'success';
+                            $timeline->Description = "Reward: " . $historyReward->reward->description;
+                            $timeline->EventType = $timelineEventType;
+                            $timeline->formattedDate = date("d-m-Y", strtotime($historyReward->date_occurred));
+                            $timeline->icon = 'fa fa-certificate';
+                            $timeCompileResults[] = $timeline;
+                        }
+                        //die();
+                    }
+                    break;
+                case "Disciplinary":
+                    $historyDisciplinaries =  $employee->historyDisciplinaryActions->where('id', $timeline->event_id);
+
+                    //dd($historyDisciplinaries);
+                    if (count($historyDisciplinaries) > 0) {
+                        foreach ($historyDisciplinaries as $historyDisciplinary) {
+                            //dd($historyDisciplinary);
+                            $timeline = new $timeline();
+                            $timeline->ShortcutType = 3;
+                            $timeline->MainClass = 'danger';
+                            $violation = Violation::find($historyDisciplinary->disciplinaryAction->violation_id);
+                            $timeline->DisciplinaryActionId = $historyDisciplinary->disciplinary_action_id;
+                            $timeline->Description = "Discriplinary Action: " . $violation->description;
+                            $timeline->EventType = "Discriplinary Action";//$timelineeventype;
+                            //$timelineresultObj->Date = "Date: " . $timeline->EventDate;
+                            $timeline->formattedDate = date("d-m-Y", strtotime($historyDisciplinary->date_occurred));
+                            $timeCompileResults[] = $timeline;
+                            If ($violation->id == 3) {
+                                $timeline->icon = 'vs vs-no-smoking-alt';
+                            } else {
+                                $timeline->icon = 'fa fa-ban';
+                            }
+                        }
+                    }
+                    break;
 //                case "JoinTerminationDate":
 //                    $historyJoinTerminations = HistoryJoinsTermination::getFilterList(array_keys(HistoryJoinsTermination::getListFields()), "", "", "", 1, 0, 'Id eq ' . $eventid);
 //

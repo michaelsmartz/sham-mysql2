@@ -2326,3 +2326,7 @@ ALTER TABLE `employees` CHANGE `date_joined` `date_joined` DATE NULL DEFAULT NUL
 ALTER TABLE `timelines` CHANGE `date_event` `date_event` DATE NOT NULL;
 
 ALTER TABLE `history_departments` CHANGE `date` `date` DATE NOT NULL;
+
+ALTER TABLE `history_rewards` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+
+ALTER TABLE `history_disciplinary_actions` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
