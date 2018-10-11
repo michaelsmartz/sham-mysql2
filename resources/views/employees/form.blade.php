@@ -1,5 +1,5 @@
 @php
-    if(sizeof($errors) > 0){ dump($errors);}
+    if(sizeof($errors) > 0){ dump($errors->bags->messages);}
     $groups = [];
     foreach ($jobTitles as $model) {
         $groups[$model->description][$model->id] = ['name' => $model->full_name, 'manager_id' => $model->employee_id];
@@ -326,6 +326,7 @@
                             {!! Form::text('tax_number', old('tax_number', isset($employee->tax_number) ? $employee->tax_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Tax No']) !!}
                             <label for="tax_number">Tax Number</label>
                         </span>
+                        {!! $errors->first('tax_number', '<p class="help-block">:message</p>') !!}
                     </div>
                 </div>
                 <div class="form-group">

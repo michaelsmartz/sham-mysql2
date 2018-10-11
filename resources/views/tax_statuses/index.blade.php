@@ -1,5 +1,6 @@
 @extends('portal-index')
-@section('title','Employees')
+@section('title','Tax Statuses')
+@section('subtitle','Tax Status drop-down values for employees')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
@@ -49,7 +50,7 @@
                     <tbody>
                         @foreach($taxStatuses as $taxStatus)
                         <tr id="tr{{$taxStatus->id}}">
-                                                        <td>{{ $taxStatus->Description }}</td>
+                                                        <td>{{ $taxStatus->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

@@ -10,6 +10,8 @@ use Monolog\Handler\StreamHandler;
 use Collective\Html\FormBuilder as Form;
 use App\Macros\Routing\Router;
 use Illuminate\Support\Collection;
+use App\User;
+use App\Observers\UserObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        User::observe(UserObserver::class);
+        
         if( env('APP_DEBUG') === true ){
             DB::listen(function($query) {
                 $logFile = storage_path('logs/query.log');

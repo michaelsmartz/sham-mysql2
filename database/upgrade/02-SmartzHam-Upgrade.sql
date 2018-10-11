@@ -2300,3 +2300,19 @@ CHANGE COLUMN `evaluationstatus_id` `evaluation_status_id` INT(11) NOT NULL ,
 CHANGE COLUMN `createdbyemployee_id` `createdby_employee_id` INT(11) NULL DEFAULT NULL ,
 CHANGE COLUMN `originalfilename` `original_filename` VARCHAR(256) NULL DEFAULT NULL ,
 CHANGE COLUMN `urlpath` `url_path` VARCHAR(256) NULL DEFAULT NULL;
+
+#--- Tax statuses
+ALTER TABLE `tax_statuses`
+	ALTER `Description` DROP DEFAULT,
+	ALTER `Active` DROP DEFAULT;
+ALTER TABLE `tax_statuses`
+	CHANGE COLUMN `Description` `description` VARCHAR(50) NOT NULL AFTER `id`,
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL AFTER `description`;
+
+#--- Divisions
+ALTER TABLE `divisions`
+	ALTER `Description` DROP DEFAULT,
+	ALTER `Active` DROP DEFAULT;
+ALTER TABLE `divisions`
+	CHANGE COLUMN `Description` `description` VARCHAR(50) NOT NULL AFTER `id`,
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL AFTER `description`;
