@@ -79,7 +79,7 @@ class SSPMyDetailsController extends CustomController
         if(!empty($tmp)){
             $employee = self::getAdditionalFields($tmp);
         }
-
+        
         $timelineData = self::getTimeline($employee);
 
         //$filesData = self::getFiles($employee);

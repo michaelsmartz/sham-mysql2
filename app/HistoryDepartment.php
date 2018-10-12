@@ -30,7 +30,7 @@ class HistoryDepartment extends Model
     protected $fillable = [
                 'employee_id',
                 'department_id',
-                'date',
+                'date_occurred',
               ];
 
     public function employee()
