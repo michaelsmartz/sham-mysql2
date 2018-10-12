@@ -30,7 +30,7 @@ class HistoryQualification extends Model
     protected $fillable = [
         'employee_id',
         'qualification_id',
-        'date',
+        'date_occurred',
     ];
 
     public function employee()

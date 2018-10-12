@@ -2319,13 +2319,16 @@ ALTER TABLE `divisions`
 
 ALTER TABLE `forms` CHANGE `title` `title` VARCHAR(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
 
-ALTER TABLE `immigration_statuses` CHANGE `Id` `id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `Description` `description` VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ALTER TABLE `immigration_statuses` CHANGE `Id` `id` INT(11) NOT NULL AUTO_INCREMENT, 
+CHANGE `Description` `description` VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
 
-ALTER TABLE `employees` CHANGE `date_joined` `date_joined` DATE NULL DEFAULT NULL, CHANGE `date_terminated` `date_terminated` DATE NULL DEFAULT NULL;
+ALTER TABLE `employees` 
+	CHANGE `date_joined` `date_joined` DATE NULL DEFAULT NULL, 
+	CHANGE `date_terminated` `date_terminated` DATE NULL DEFAULT NULL;
 
 ALTER TABLE `timelines` CHANGE `date_event` `date_event` DATE NOT NULL;
 
-ALTER TABLE `history_departments` CHANGE `date` `date` DATE NOT NULL;
+ALTER TABLE `history_departments` CHANGE `date` `date_occurred` DATE NOT NULL;
 
 ALTER TABLE `history_rewards` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
@@ -2341,7 +2344,11 @@ ALTER TABLE `history_qualifications`
 DROP FOREIGN KEY `FK_HistoryQualifications_Employees`,
 DROP FOREIGN KEY `FK_HistoryQualifications_Qualifications`;
 
-ALTER TABLE `history_qualifications` CHANGE `EmployeeId` `employee_id` INT(11) NOT NULL, CHANGE `QualificationId` `qualification_id` INT(11) NOT NULL, CHANGE `Id` `id` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `Date` `date` DATE NOT NULL;
+ALTER TABLE `history_qualifications` 
+	CHANGE `EmployeeId` `employee_id` INT(11) NOT NULL, 
+	CHANGE `QualificationId` `qualification_id` INT(11) NOT NULL, 
+	CHANGE `Id` `id` INT(11) NOT NULL AUTO_INCREMENT, 
+	CHANGE `Date` `date` DATE NOT NULL;
 
 ALTER TABLE `history_qualifications` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE `history_qualifications` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
