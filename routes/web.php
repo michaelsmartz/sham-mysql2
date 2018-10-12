@@ -72,7 +72,12 @@ Auth::routes();
             Route::resource('asset_allocations', 'AssetAllocationsController');
 
             Route::resource('surveys', 'SurveysController' );
-            Route::any('surveys/{Id}/results', 'SurveysController@results' );
+            Route::get('surveys/{Id}/results', 'SurveysController@results' );
+            Route::resource('timelines', 'TimelinesController', [
+                'parameters' => ['show' => 'timeline'],
+                'names' => ['show' => 'timelines.index'],
+                'only' => ['show']
+            ]);
 
         #endregion
 

@@ -48,6 +48,10 @@
             window.location = '{{url()->current()}}/create';
         });
 
+        function showTimeline(id, event) {
+            window.location = '{{url()->to("timelines")}}/'+id;
+        };
+
         function cleanUrlHash() {
             history.replaceState(null, "", window.location.pathname);
             return window.location.hash.replace(/^#/, '');

@@ -42,8 +42,11 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <button type="button" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$employee->id}}', event)">
+                                    <button type="button" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$employee->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
+                                    </button>
+                                    <button type="button" class="b-n b-n-r bg-transparent" data-wenk="Show Timeline" onclick="showTimeline('{{$employee->id}}', event)">
+                                        <i class="glyphicon glyphicon-film text-primary"></i>
                                     </button>
                                     <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$employee->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>

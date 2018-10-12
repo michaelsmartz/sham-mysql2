@@ -257,9 +257,9 @@ class Employee extends Model
         return $this->hasMany('App\HistoryJobTitle','employee_id','id');
     }
 
-    public function historyJoinsTerminations()
+    public function historyJoinTermination()
     {
-        return $this->hasMany('App\HistoryJoinsTermination','employee_id','id');
+        return $this->hasMany('App\HistoryJoinTermination','employee_id','id');
     }
 
     public function historyQualification()

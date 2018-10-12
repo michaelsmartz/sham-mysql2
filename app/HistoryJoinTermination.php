@@ -25,10 +25,6 @@ class HistoryJoinTermination extends Model
         return $this->belongsTo('App\Employee','employee_id');
     }
 
-    public function events()
-    {
-      return $this->morphMany('App\Timeline', 'eventtable');
-    }
 
 
 }
