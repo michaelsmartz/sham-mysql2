@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Enums\TimelineEventType;
 use App\MaritalStatus;
 use App\Employee;
 
@@ -84,17 +85,20 @@ class SSPMyDetailsController extends CustomController
                                         'addresses',
                                         'emails',
                                         'phones',
-                                        'timelines.timelineEventType',
+                                        'timelines',
                                         'historyDepartments.department',
                                         'historyRewards.reward',
                                         'historyDisciplinaryActions.disciplinaryAction',
-                                        'historyJoinsTerminations',
+                                        'historyJoinTermination',
                                         'historyJobTitles.jobTitle',
-                                        'historyQualification.qualification',
+                                        'historyQualification.qualification'
                                 ])
+                                //->orderBy('timelines.date_event', 'DESC')
                                 ->where('id',$id)
                                 ->get()
                                 ->first();
+
+        //dd($tmp);
 
         if(!empty($tmp)){
             $employee = self::getAdditionalFields($tmp);
@@ -227,14 +231,13 @@ class SSPMyDetailsController extends CustomController
 
         $timeCompileResults = [];
 
-        foreach($employee->timelines as $timeline) {
-            $timelineEventType = $timeline->timelineEventType->name;
-            $readableDesc = $timeline->timelineEventType->description;
-            $eventid = trim($timeline->event_id);
+        foreach( $employee->timelines as $timeline) {
+            $timelineEventType = TimelineEventType::getDescription($timeline->timeline_event_type_id);
+            $event_id = trim($timeline->event_id);
 
             switch ($timelineEventType) {
-                case "Departments":
-                    $historyDepartments =  $employee->historyDepartments->where('id', $timeline->event_id);
+                case "Department":
+                    $historyDepartments =  $employee->historyDepartments->where('id', $event_id);
 
                     if(count($historyDepartments) > 0)
                     {
@@ -245,15 +248,14 @@ class SSPMyDetailsController extends CustomController
                             $timeline->MainClass = 'info';
                             $timeline->Description = "Joined Department: " . $historyDepartment->department->description;
                             $timeline->EventType = $timelineEventType;
-                            //$timelineresultObj->Date = "Date: ".$historyDepartments[0]->Date;
-                            $timeline->formattedDate = date("d-m-Y", strtotime($historyDepartment->date));
+                            $timeline->formattedDate = date("d-m-Y", strtotime($historyDepartment->date_occurred));
                             $timeCompileResults[] = $timeline;
                         }
                     }
                     break;
 
-                case "Rewards":
-                    $historyRewards =  $employee->historyRewards->where('id', $timeline->event_id);
+                case "Reward":
+                    $historyRewards =  $employee->historyRewards->where('id', $event_id);
 
                     if(count($historyRewards) > 0)
                     {
@@ -272,8 +274,8 @@ class SSPMyDetailsController extends CustomController
                         //die();
                     }
                     break;
-                case "Disciplinary":
-                    $historyDisciplinaries =  $employee->historyDisciplinaryActions->where('id', $timeline->event_id);
+                case "Disciplinary Action":
+                    $historyDisciplinaries =  $employee->historyDisciplinaryActions->where('id', $event_id);
 
                     if (count($historyDisciplinaries) > 0) {
                         foreach ($historyDisciplinaries as $historyDisciplinary) {
@@ -296,8 +298,8 @@ class SSPMyDetailsController extends CustomController
                         }
                     }
                     break;
-                case "JoinTerminationDate":
-                    $historyJoinTerminations = $employee->historyJoinsTerminations->where('id', $timeline->event_id);
+                case "Join/Termination Date":
+                    $historyJoinTerminations = $employee->historyJoinTermination->where('id', $event_id);
 
                     if (count($historyJoinTerminations) > 0) {
                         foreach ($historyJoinTerminations as $historyJoinTermination) {
@@ -320,8 +322,8 @@ class SSPMyDetailsController extends CustomController
                     }
                     break;
 
-                case "JobTitles":
-                    $historyJobTitles = $employee->historyJobTitles->where('id', $timeline->event_id);
+                case "Job Title":
+                    $historyJobTitles = $employee->historyJobTitles->where('id', $event_id);
 
                     if(count($historyJobTitles) > 0)
                     {
@@ -336,9 +338,9 @@ class SSPMyDetailsController extends CustomController
                     }
                     break;
 
-                case "Qualifications":
+                case "Qualification":
 
-                    $historyQualifications = $employee->historyQualification->where('id', $timeline->event_id)->get();
+                    $historyQualifications = $employee->historyQualification->where('id', $event_id)->get();
 
                     if(count($historyQualifications) > 0)
                     {
@@ -347,7 +349,7 @@ class SSPMyDetailsController extends CustomController
                             $timeline->ShortcutType = 6;
                             $timeline->MainClass = 'success';
                             $timeline->Description = "Obtained: " . $historyQualification->qualification->description;
-                            $timeline->formattedDate = date("d-m-Y", strtotime($historyQualification->date));
+                            $timeline->formattedDate = date("d-m-Y", strtotime($historyQualification->date_occurred));
                             $timeCompileResults[] = $timeline;
                         }
                     }
