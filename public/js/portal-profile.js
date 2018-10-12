@@ -205,13 +205,18 @@ function saveHandler(event) {
     l.start();
     var data = $('#frmEditProfile').serializeJSON();
 
+    var method_data = $.extend( true, data, {'_method': 'PATCH'});
+
+    console.log(data);
+
     var request = $.ajax({
         url: window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/my-details/updateProfile',
         type: "POST",
-        data: data,
+        data: method_data,
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
+        },
+
     });
 
     request.done(function(msg) {

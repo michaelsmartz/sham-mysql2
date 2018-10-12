@@ -43,6 +43,7 @@ Auth::routes();
 
             Route::resource('my-details', 'SSPMyDetailsController');
             Route::any('my-details/getProfile', 'SSPMyDetailsController@getProfile' );
+            Route::any('my-details/updateProfile', 'SSPMyDetailsController@store' );
 
             Route::resource('my-surveys', 'SSPMySurveysController');
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');

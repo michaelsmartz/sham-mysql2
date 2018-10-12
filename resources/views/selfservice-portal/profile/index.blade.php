@@ -6,6 +6,11 @@
     <link href="{{URL::to('/')}}/plugins/fancybox/jquery.fancybox.min.css" rel="stylesheet">
     <link href="{{URL::to('/')}}/css/bootstrap-reset.css" rel="stylesheet">
 
+    {{-- TODO import library --}}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
     <script type="text/javascript" src="{{URL::to('/')}}/js/knockout-min.js"></script>
     <script type="text/javascript" src="{{URL::to('/')}}/js/knockout.mapping-2.4.1.min.js"></script>
     <script type="text/javascript" src="{{URL::to('/')}}/js/jquery.serializejson.min.js"></script>
@@ -821,25 +826,25 @@
             <section class="panel" style="margin-bottom:5px">
                 <header class="panel-heading tab-bg-dark-navy-blue">
                     <ul class="nav nav-tabs nav-justified ">
-                        <li class="active">
-                            <a data-toggle="tab" href="#job-history">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#job-history">
                                 Timeline
                             </a>
                         </li>
-                        <li class="">
-                            <a data-toggle="tab" href="#contacts" class="contact-map">
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#contacts" class="contact-map">
                                 Contacts
                             </a>
                         </li>
                         <!-- ko if: FilesData().length > 0 -->
-                        <li class="">
-                            <a data-toggle="tab" href="#files">
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#files">
                                 Files
                             </a>
                         </li>
                         <!-- /ko -->
-                        <li class="">
-                            <a data-toggle="tab" href="#settings">
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#settings">
                                 Edit Profile
                             </a>
                         </li>
@@ -1154,6 +1159,7 @@
                                     @if (!empty($employee->id))
                                     <div class="form-group">
                                         <div class="col-lg-offset-2 col-lg-10">
+                                            <input name="_method" type="hidden" value="PATCH">
                                             <button id="btnSave" class="btn btn-primary ladda-button" data-size="l" data-style="expand-left" type="submit" onclick="saveHandler(event)">Save</button>
                                         </div>
                                     </div>

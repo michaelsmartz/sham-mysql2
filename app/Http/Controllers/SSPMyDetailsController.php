@@ -48,6 +48,26 @@ class SSPMyDetailsController extends CustomController
         return view($this->baseViewPath .'.index', compact('employee', 'warnings','attachments', 'maritalStatus'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function store(Request $request)
+    {
+        $warnings = [];
+
+        // get the employee
+
+        $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        $employee = $this->contextObj->fill(Input::all());
+
+        dd($employee);
+
+    }
+
 //    public function show(Request $request){
 //        self::getProfile($request);
 //    }
@@ -205,8 +225,6 @@ class SSPMyDetailsController extends CustomController
 
     private static function getTimeline($employee) {
 
-        //dd($employee->timelines);
-
         $timeCompileResults = [];
 
         foreach($employee->timelines as $timeline) {
@@ -214,11 +232,8 @@ class SSPMyDetailsController extends CustomController
             $readableDesc = $timeline->timelineEventType->description;
             $eventid = trim($timeline->event_id);
 
-            //dd($timelineEventType);
-
             switch ($timelineEventType) {
                 case "Departments":
-                    //dd($employee->historyDepartments);
                     $historyDepartments =  $employee->historyDepartments->where('id', $timeline->event_id);
 
                     if(count($historyDepartments) > 0)
@@ -238,9 +253,8 @@ class SSPMyDetailsController extends CustomController
                     break;
 
                 case "Rewards":
-                   // dd($timeline->event_id);
                     $historyRewards =  $employee->historyRewards->where('id', $timeline->event_id);
-                    //dd($historyRewards);
+
                     if(count($historyRewards) > 0)
                     {
                         foreach ($historyRewards as $historyReward) {
@@ -261,7 +275,6 @@ class SSPMyDetailsController extends CustomController
                 case "Disciplinary":
                     $historyDisciplinaries =  $employee->historyDisciplinaryActions->where('id', $timeline->event_id);
 
-                    //dd($historyDisciplinaries);
                     if (count($historyDisciplinaries) > 0) {
                         foreach ($historyDisciplinaries as $historyDisciplinary) {
                             //dd($historyDisciplinary);
@@ -285,8 +298,6 @@ class SSPMyDetailsController extends CustomController
                     break;
                 case "JoinTerminationDate":
                     $historyJoinTerminations = $employee->historyJoinsTerminations->where('id', $timeline->event_id);
-
-                    //dd($employee);
 
                     if (count($historyJoinTerminations) > 0) {
                         foreach ($historyJoinTerminations as $historyJoinTermination) {
@@ -312,8 +323,6 @@ class SSPMyDetailsController extends CustomController
                 case "JobTitles":
                     $historyJobTitles = $employee->historyJobTitles->where('id', $timeline->event_id);
 
-                    //dd($historyJobTitles);
-
                     if(count($historyJobTitles) > 0)
                     {
                         foreach ($historyJobTitles as $historyJobTitle) {
@@ -331,8 +340,6 @@ class SSPMyDetailsController extends CustomController
 
                     $historyQualifications = $employee->historyQualification->where('id', $timeline->event_id)->get();
 
-                    //dd($historyQualifications);
-
                     if(count($historyQualifications) > 0)
                     {
                         foreach ($historyQualifications as $historyQualification) {
@@ -345,35 +352,11 @@ class SSPMyDetailsController extends CustomController
                         }
                     }
                     break;
-//
-//                case "Trainings":
-//                    $historyTrainings = HistoryTraining::getFilterList(array_keys(HistoryTraining::getListFields()), "", "", "", 1, 0,'Id eq '.$eventid);
-//
-//                    if(count($historyTrainings) > 0)
-//                    {
-//                        $timelineresultObj = new TimelineResult();
-//                        $timelineresultObj->ShortcutType = 7;
-//                        $timelineresultObj->Description = $historyTrainings[0]->CourseParticipantStatus->Description. ": ".$historyTrainings[0]->Cours->Description;
-//                        $timelineresultObj->EventType = $readableDesc;
-//
-//                        if($historyTrainings[0]->CourseParticipantStatusId == CourseParticipantStatus::CONST_JUST_ENROLLED) {
-//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyTrainings[0]->Date);
-//                            $timelineresultObj->Description = "Enrolled on the course: " .$historyTrainings[0]->Cours->Description;
-//                        } elseif($historyTrainings[0]->CourseParticipantStatusId == CourseParticipantStatus::CONST_COMPLETED) {
-//                            $dt = Carbon::createFromFormat('Y-m-d\TH:i:sP', $historyTrainings[0]->Date);
-//                            $timelineresultObj->Description = "Completed the course: " .$historyTrainings[0]->Cours->Description;
-//                        }
-//                        $timelineresultObj->formattedDate = $dt->format('d M Y');
-//                        $timeCompileResults[] = $timelineresultObj;
-//                    }
-//                    break;
 
                 default:
                     break;
             }
         }
-
-//        dd($timeCompileResults);
 
         return $timeCompileResults;
 
