@@ -242,5 +242,8 @@
 
         @yield('scripts')
         @yield('post-body')
+        @stack('css-stack')
+        @stack('js-stack')
+
     </body>
 </html>

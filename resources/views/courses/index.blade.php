@@ -25,7 +25,7 @@
                         <i class="glyphicon glyphicon-align-left"></i> 
                         <span>Filters</span>
                     </button>
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="right" onclick="addForm(event)">
+                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="right">
                         <i class="glyphicon glyphicon-plus"></i> <strong>Add New</strong>
                     </button>
 

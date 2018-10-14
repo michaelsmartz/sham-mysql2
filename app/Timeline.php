@@ -31,7 +31,7 @@ class Timeline extends Model
         'employee_id',
         'timeline_event_type_id',
         'event_id',
-        'date_event',
+        'event_date',
     ];
 
 

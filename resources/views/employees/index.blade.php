@@ -10,7 +10,7 @@
             @if(count($employees) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
+                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
                 </div>
@@ -48,9 +48,9 @@
                                     <button type="button" class="b-n b-n-r bg-transparent" data-wenk="Show Timeline" onclick="showTimeline('{{$employee->id}}', event)">
                                         <i class="glyphicon glyphicon-film text-primary"></i>
                                     </button>
-                                    <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$employee->id}}')">
+                                    <button type="button" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$employee->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </a>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

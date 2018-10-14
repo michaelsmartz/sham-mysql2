@@ -4,7 +4,7 @@
     {{ method_field('DELETE') }}
 </form>
 
-@section('post-body')
+@push('js-stack')
     <style>
         .alerty{ width: 500px !important;}
     </style>
@@ -14,8 +14,10 @@
     <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
     <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
     <script>
+    (function mainIIFE($) {
+        "use strict";
 
-        var oldVal, $mainButton, loadUrl = function (url) {
+        var oldVal, $mainButton, loadUrl = function(url) {
             $(".light-modal-body").empty().html('Loading...please wait...');
             $.get(url).done(function(data) {
                 $(".light-modal-heading").empty().html(data.title);
@@ -45,63 +47,64 @@
         };
 
         $('#item-create,.item-create').click(function() {
-            window.location = '{{url()->current()}}/create';
+            var createUrl = $(this).data('create-url');
+            if(createUrl === void 0){
+                window.location = '{{url()->current()}}/create';
+            } else window.location = createUrl;
         });
 
-        function showTimeline(id, event) {
+        window.showTimeline = function(id, event) {
             window.location = '{{url()->to("timelines")}}/'+id;
         };
-
-        function cleanUrlHash() {
+        window.cleanUrlHash = function(){
             history.replaceState(null, "", window.location.pathname);
             return window.location.hash.replace(/^#/, '');
-        }
+        };
+        window.editForm = function(id, event, baseUrl) {
+            var route; 
+            if (baseUrl === void 0) {
+                route = '{{url()->current()}}/';
+            } else {
+                route = '{{URL::to('/')}}/' + baseUrl + '/';
+            }
 
-        function editForm(id, event) {
-            //event.preventDefault();
             if (id) {
                 @if (isset($fullPageEdit) && $fullPageEdit == TRUE)
-                    window.location = '{{url()->current()}}/'+id+'/edit';
+                    window.location = route + id + '/edit';
                 @else
-                    $mainButton = $('.buttons button[type="submit"]');
-                    loadUrl('{{url()->current()}}/'+id+'/edit');
+                    //$mainButton = $('.buttons button[type="submit"]');
+                    loadUrl(route + id + '/edit');
                 @endif
             }
-        }
-
-        function showForm(id, event) {
-            //event.preventDefault();
+        };
+        window.showForm = function(id, event) {
             $("#modalForm input[name='_method']").remove();
             if (id) {
                 @if (isset($fullPageShow) && $fullPageShow == TRUE)
                     window.location = '{{url()->current()}}/'+id;
                 @else
-                    $mainButton = $('.buttons button[type="submit"]');
+                    //$mainButton = $('.buttons button[type="submit"]');
                     loadUrl('{{url()->current()}}/'+id);
                 @endif
             }
-        }
-
-        function matrixForm(id, event) {
+        };
+        window.matrixForm = function(id, event) {
             if (id) {
-                $mainButton = $('.buttons button[type="submit"]');
+                //$mainButton = $('.buttons button[type="submit"]');
                 loadUrl('{{url()->current()}}/'+id+'/matrix');
             }
-        }
-
-        function generateResult(id, event) {
+        };
+        window.generateResult = function(id, event) {
             event.preventDefault();
             if (id) {
                 window.location = '{{url()->current()}}/'+id+'/results';
             }
-        }
-
-        function editFullPage(id, event){
+        };
+        window.editFullPage = function(id, event){
             event.preventDefault();
             window.location = '{{url()->current()}}/'+id+'/edit';
-        }
-
-        function deleteForm(id) {
+        };
+        window.deleteForm = function(id) {
             $("#deleteField").val(id);
             var oldVal = $("#indexDeleteForm").attr("action");
             $("#indexDeleteForm").attr("action", $("#indexDeleteForm").attr("action").replace('deleteId', id));
@@ -126,11 +129,8 @@
                         }
                 )
             };
-
-        }
-
-        function deleteAttachment(fileName, id, mediaId){
-            //event.preventDefault();
+        };
+        window.deleteAttachment = function(fileName, id, mediaId){
             alerty.confirm(
                 "Are you sure to <strong class='text-danger'>delete</strong> file  <strong class='text-danger'>"+fileName+"</strong>?<br>",
                 {
@@ -142,8 +142,8 @@
                     window.location = '{{url()->current()}}/'+id+'/attachment/'+mediaId+'/detach';
                 }
             )
-        }
+        };
+    }(window.jQuery));
 
     </script>
-
-@endsection
+@endpush

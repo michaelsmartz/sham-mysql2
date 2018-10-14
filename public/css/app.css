@@ -10602,6 +10602,8 @@ textarea.parsley-error {
   -ms-flex-align: center;
   -webkit-box-align: center;
           align-items: center;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .light-modal-heading {

@@ -335,7 +335,7 @@ class Employee extends Model
 
     public function timelines()
     {
-        return $this->hasMany('App\Timeline','employee_id','id');
+        return $this->hasMany('App\Timeline','employee_id','id')->orderBy('event_date');
     }
 
     public function trainingSessions()

@@ -73,12 +73,15 @@ Auth::routes();
 
             Route::resource('surveys', 'SurveysController' );
             Route::get('surveys/{Id}/results', 'SurveysController@results' );
+            
             Route::resource('timelines', 'TimelinesController', [
-                'parameters' => ['show' => 'timeline'],
+                'parameters' => ['index' => 'employee'],
                 'names' => ['show' => 'timelines.index'],
                 'only' => ['show']
             ]);
-
+            Route::employeeInResource('rewards');
+            Route::employeeInResource('disciplinaryactions');
+            
         #endregion
 
         #region Configuration parameters routes

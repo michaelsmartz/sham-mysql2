@@ -13,5 +13,11 @@
         ];
         [% file_validation_snippet %]
 
-        $this->validate($request, $validateFields);
+        $validator = Validator::make($request->all(), $validateFields);
+        if($validator->fails()) {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors($validator);
+        }
+
     }

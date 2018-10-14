@@ -2328,13 +2328,13 @@ ALTER TABLE `employees`
 
 ALTER TABLE `timelines` CHANGE `date_event` `date_event` DATE NOT NULL;
 
-ALTER TABLE `history_departments` CHANGE `date` `date_occurred` DATE NOT NULL;
+ALTER TABLE `history_departments` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
 ALTER TABLE `history_rewards` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
 ALTER TABLE `history_disciplinary_actions` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
-ALTER TABLE `history_joins_terminations` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+ALTER TABLE `history_join_terminations` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
 ALTER TABLE `history_job_titles` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 

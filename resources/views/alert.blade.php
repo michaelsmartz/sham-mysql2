@@ -1,10 +1,13 @@
 <div class="alert-container">
     @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-            <strong>Error!</strong> Please check the form below for <strong>errors</strong>
+        <div class="alert error" role="alert">
+            <input type="checkbox" id="alert1"/>
+            <label class="close" title="close" for="alert1">
+                <i class="fa fa-times"></i>
+            </label>
+            <p class="inner">
+                <strong>Error!</strong> Please check the form below for <strong>errors</strong>
+            </p>
         </div>
     @endif
     @if ($message = Session::get('success'))

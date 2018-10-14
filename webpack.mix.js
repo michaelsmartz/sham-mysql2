@@ -57,6 +57,9 @@ mix.sass('resources/assets/sass/employees.scss', 'public/css', {
 mix.sass('resources/assets/sass/dropzone.scss', 'public/css', {
   outputStyle: 'nested'
 });
+mix.sass('resources/assets/sass/lifecycle.scss', 'public/css', {
+  outputStyle: 'nested'
+});
 
 mix/*.webpackConfig({
     externals:{
@@ -72,11 +75,13 @@ mix.minify('public/js/uploader.js');
 mix.minify('public/css/app.css');
 mix.minify('public/css/employees.css');
 mix.minify('public/css/dropzone.css');
+mix.minify('public/css/lifecycle.css');
 
 mix.then(() => {
     minifier.minify('public/css/app.css');
     minifier.minify('public/css/employees.css');
     minifier.minify('public/css/dropzone.css');
+    minifier.minify('public/css/lifecycle.css');
 
     minifier.minify('public/js/app.js');
     minifier.minify('public/js/tables.js');

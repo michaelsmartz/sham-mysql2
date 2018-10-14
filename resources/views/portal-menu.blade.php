@@ -22,13 +22,10 @@
         </a>
         <ul class="sub-menu">
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_EMPLOYEE_DATABASE]))
-                <li class="{{ (Request::is('employees/*') || Request::is('employees') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/employees">Employees</a></li>
+                <li class="{{ (Request::is('employees/*') || Request::is('employees') || Request::is('timelines/*') || Request::is('rewards/*')|| Request::is('disciplinaryactions/*') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/employees">Employees</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ORGANISATION_STRUCTURE]))
                 <li class="{{ (Request::is('organisationcharts-auto')|| Request::is('organisationcharts-auto/*') || Request::is('organisationcharts') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/organisationcharts">Organisation Charts</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_LIFECYCLE_MANAGEMENT]))
-                <li class="{{ (Request::is('timelines/*') || Request::is('disciplinaryactions/*') || Request::is('rewards/*') || Request::is('timelines') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/lifecyclemanagement">Timeline</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
                 <li class="{{ (Request::is('policies/*') || Request::is('policies') || Request::is('laws/*') || Request::is('laws') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/laws">Compliance</a></li>

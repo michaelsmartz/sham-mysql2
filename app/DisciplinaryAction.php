@@ -20,6 +20,7 @@ class DisciplinaryAction extends Model
     protected $fillable = [
                   'employee_id',
                   'violation_id',
+                  'violation_date',
                   'employee_statement',
                   'employer_statement',
                   'decision',

@@ -44,10 +44,6 @@
         "resource-file": "rewards.json"
     },
     {
-        "model-name": "DisciplinaryAction",
-        "resource-file": "disciplinary_actions.json"
-    },
-    {
         "model-name": "TrainingDeliveryMethod",
         "resource-file": "training_delivery_methods.json"
     },
@@ -360,5 +356,15 @@
     {
         "model-name": "HistoryQualification",
         "resource-file": "history_qualifications.json"
+    },
+    {
+        "model-name": "DisciplinaryAction",
+        "resource-file": "disciplinary_actions.json",
+        "table-name": "disciplinary_actions"
+    },
+    {
+        "model-name": "DisciplinaryDecision",
+        "resource-file": "disciplinary_decisions.json",
+        "table-name": "disciplinary_decisions"
     }
 ]

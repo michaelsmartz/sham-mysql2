@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class CustomController extends Controller
 {
@@ -35,6 +36,10 @@ class CustomController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create() {
+        if (!Session::has('redirectsTo'))
+        {
+          Session::put('redirectsTo', \URL::previous());
+        }
         return view($this->baseViewPath . '.create');
     }
 

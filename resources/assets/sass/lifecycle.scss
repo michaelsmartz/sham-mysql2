@@ -1,0 +1,94 @@
+.panel-default>.panel-heading, .panel-primary>.panel-heading{
+    background-color: white;
+    color:#a1a1a1;
+    border-color: #ddd;
+}
+
+.profile-information .profile-pic img {
+    width:160px;
+    height:160px;
+    border-radius:50%;
+    -webkit-border-radius:50%;
+    border:10px solid #f1f2f7;
+    margin-top:0;
+}
+
+.profile-information .profile-pic img[src] {
+    opacity: 1 !important;
+}
+
+.profile-information .profile-pic img:empty {
+    display: inline-block;
+    background-color: #a1a1a1;
+    opacity: 0.25;
+}
+
+.profile-information .profile-desk {
+    border-right: 1px solid #ddd;
+    padding-right: 30px;
+}
+.profile-information .profile-desk h1 {
+    color: #1fb5ad;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.profile-information .profile-desk h1:empty {
+    background-color: #1FB5AD;
+    height: 26px;
+    width: 100%;
+    opacity: 0.25;
+}
+
+.profile-information .profile-desk span,.profile-information .profile-desk p {
+    padding-bottom: 25px;
+    display: inline-block;
+    transition: opacity 1s ease-in-out;
+}
+
+.profile-information .profile-desk span:empty {
+    margin-top: 5px;
+    width: 100%;
+    height: 20px;
+    background-color: #a1a1a1;
+    display: inline-block;
+    opacity: 0.25;
+}
+
+.profile-information .profile-statistics h1 {
+    color: #757575;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 5px;
+}
+.profile-information .profile-statistics p {
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.profile-information .profile-statistics p:last-of-type {
+    margin-bottom: 0;
+}
+.profile-information .profile-statistics ul {
+    margin-top:10px;
+}
+.profile-information .profile-statistics ul li {
+    float:left;
+    margin-right:10px;
+    list-style: none;
+}
+.profile-information .profile-statistics ul li a {
+    background:#f6f6f6;
+    text-align:center;
+    border-radius:50%;
+    -webkit-border-radius:50%;
+    width:30px;
+    height:30px;
+    line-height:30px;
+    float:left;
+}
+.profile-information .profile-statistics ul li a:hover {
+    color: #1fb5ad;
+}

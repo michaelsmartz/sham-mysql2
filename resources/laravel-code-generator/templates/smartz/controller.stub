@@ -7,6 +7,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class [% controller_name %] [% controller_extends %]
@@ -110,4 +112,24 @@ class [% controller_name %] [% controller_extends %]
     }
     [% affirm_method %]
     [% upload_method %]
+
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param Request $request
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            [% validation_rules %] 
+        ];
+        [% file_validation_snippet %]
+
+        $validator = Validator::make($request->all(), $validateFields);
+        if($validator->fails()) {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors($validator);
+        }
+    }
 }

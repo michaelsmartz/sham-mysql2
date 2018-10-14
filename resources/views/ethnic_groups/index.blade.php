@@ -29,7 +29,7 @@
             @if(count($ethnicGroups) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
+                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
                 </div>
