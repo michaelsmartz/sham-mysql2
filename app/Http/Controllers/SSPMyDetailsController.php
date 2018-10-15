@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 use App\Address;
+use App\EmailAddress;
 use App\Enums\TimelineEventType;
 use App\MaritalStatus;
 use App\Employee;
 
+use App\TelephoneNumber;
 use App\Timeline;
 use App\Violation;
 use Illuminate\Http\Request;
 
 use Auth;
+use Illuminate\Support\Facades\Redirect;
 use View;
-use Redirect;
 use Validator;
 use Session;
 
@@ -57,6 +59,7 @@ class SSPMyDetailsController extends CustomController
      */
     public function update(Request $request, $id)
     {
+        $warnings = [];
         $input = array_except($request->all(), ['_token', '_method']);
 
         $employee = array_only($input, ['marital_status_id', 'spouse_full_name']);
@@ -156,7 +159,105 @@ class SSPMyDetailsController extends CustomController
             }else {
                 Address::where('employee_id',$id)->where('address_type_id',2)->update($postalAddress);
             }
+
+            $phone = array_only($input, [
+                'HomeTel',
+                'Mobile',
+                'WorkTel'
+            ]);
+
+           //Home
+            $tel = [];
+            $tel['employee_id'] = $id;
+            $tel['tel_number'] = $phone['HomeTel'];
+            $tel['telephone_number_type_id'] = 1;//Home
+
+            $telephoneNumber = TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 1)->get()->all();
+
+            if (empty($telephoneNumber)) {
+                $tel = new TelephoneNumber();
+                $tel->employee_id = $id;
+                $tel->tel_number = $phone['HomeTel'];
+                $tel->telephone_number_type_id = 1;//Home
+                $tel->save();
+            } else {
+                TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 1)->update($tel);
+            }
+
+
+            //Work
+            $tel = [];
+            $tel['employee_id'] = $id;
+            $tel['tel_number'] = $phone['Mobile'];
+            $tel['telephone_number_type_id'] = 2;//Work
+
+            $telephoneNumber = TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 2)->get()->all();
+
+            if (empty($telephoneNumber)) {
+                $tel = new TelephoneNumber();
+                $tel->employee_id = $id;
+                $tel->tel_number = $phone['HomeTel'];
+                $tel->telephone_number_type_id = 2;//Work
+                $tel->save();
+            } else {
+                TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 2)->update($tel);
+            }
+
+            //WorkTel
+            $tel = [];
+            $tel['employee_id'] = $id;
+            $tel['tel_number'] = $phone['WorkTel'];
+            $tel['telephone_number_type_id'] = 3;//WorkTel
+
+            $telephoneNumber = TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 3)->get()->all();
+
+            if (empty($telephoneNumber)) {
+                $tel = new TelephoneNumber();
+                $tel->employee_id = $id;
+                $tel->tel_number = $phone['HomeTel'];
+                $tel->telephone_number_type_id = 3;//WorkTel
+                $tel->save();
+            } else {
+                TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 3)->update($tel);
+            }
+
+
+            //email
+            $email = array_only($input, [
+                'HomeEmailAddress'
+            ]);
+
+            if ($email['HomeEmailAddress'] === null) {
+                $warnings[] = 'Email address cannot be empty';
+            }else {
+                $mail = [];
+                $mail['employee_id'] = $id;
+                $mail['email_address'] = $email['HomeEmailAddress'];
+                $mail['email_address_type_id'] = 1;//private
+
+                $emailAddress = EmailAddress::where('employee_id', $id)->where('email_address_type_id', 1)->get()->all();
+
+                if (empty($emailAddress)) {
+                    $tel = new EmailAddress();
+                    $tel->employee_id = $id;
+                    $tel->email_address = $email['HomeEmailAddress'];
+                    $tel->email_address_type_id = 1;//private
+                    $tel->save();
+                } else {
+                    EmailAddress::where('employee_id', $id)->where('email_address_type_id', 1)->update($mail);
+                }
+            }
         }
+
+        if (count($warnings) == 0) {
+            \Session::put('success','My details successfully saved!');
+        }else{
+            foreach ($warnings as $warning){
+                \Session::put('error', $warning);
+            }
+        }
+
+        return Redirect::back();
     }
 
     public function getProfile(Request $request) {
