@@ -6,9 +6,9 @@ use App\User;
 use App\Employee;
 use App\Violation;
 use App\DisciplinaryAction;
-use Illuminate\Http\Request;
 use App\DisciplinaryDecision;
-use Illuminate\Support\Facades\Auth;
+use App\TimelineManager;
+use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -48,16 +48,12 @@ class DisciplinaryActionsController extends CustomController
     }
 
     public function create() {
-        if (!Session::has('redirectsTo'))
-        {
-            Session::put('redirectsTo', \URL::previous());
-        }
-        $violations = Violation::pluck('description','id')->all();
-        $employees = Employee::pluck('full_name', 'id');
+        Session::put('redirectsTo', \URL::previous());
+        $id = Route::current()->parameter('employee');
         $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
-        $updaters = $employees;
+        $violations = Violation::pluck('description','id');
 
-        return view($this->baseViewPath . '.create',compact('employees','violations','disciplinaryDecisions','updaters'));
+        return view($this->baseViewPath . '.create',compact('id','disciplinaryDecisions','violations'));
     }
 
     /**
@@ -79,13 +75,15 @@ class DisciplinaryActionsController extends CustomController
             $input = array_except($request->all(),array('_token', '_method'));
 
             $data = $this->contextObj->addData($input);
+            TimelineManager::addDisciplinaryActionTimelineHistory($data);
+
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->to(action('DisciplinaryActionsController@index',['employee' => $input['employee_id']]));
     }
 
     /**
@@ -99,12 +97,10 @@ class DisciplinaryActionsController extends CustomController
         $data = $this->contextObj->findData($id);
 
         $violations = Violation::pluck('description','id')->all();
-        $employees = Employee::pluck('full_name', 'id');
         $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
-        $updaters = $employees;
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data', 'employees','violations','disciplinaryDecisions','updaters'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -112,7 +108,7 @@ class DisciplinaryActionsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data', 'employees','violations','disciplinaryDecisions','updaters'));
+        return view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'));
     }
 
     /**
@@ -140,7 +136,7 @@ class DisciplinaryActionsController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->back();
     }
 
     /**

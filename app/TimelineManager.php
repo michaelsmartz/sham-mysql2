@@ -14,10 +14,11 @@ class TimelineManager extends Model
         $historyRewardObj->reward_id = $reward->id;
         $historyRewardObj->date_occurred = $reward->date_received;
         $historyRewardObj->updated_by_employee_id = "";
-        $historyRewardObj = HistoryReward::add($historyRewardObj);
+
+        $historyRewardObj->save();
 
         // Insert record in Timelines Table
-        self::addToTimeline($reward->employee_id,TimelineEventType::Reward,(string) $historyRewardObj->id);
+        self::addToTimeline($reward->employee_id,TimelineEventType::Reward, $historyRewardObj->id);
 
     }
 
@@ -32,8 +33,10 @@ class TimelineManager extends Model
             $historyJoinsTerminationObj->is_joined = true;
             $historyJoinsTerminationObj->date_occurred = $employee->date_joined;
             $historyJoinsTerminationObj->updated_by_employee_id = "";
-            $historyJoinsTerminationObj = HistoryJoinTermination::add($historyJoinsTerminationObj);
-            self::addToTimeline($employee->id,TimelineEventType::JoinTermination,(string) $historyJoinsTerminationObj->id);
+
+            $historyJoinsTerminationObj->save();
+
+            self::addToTimeline($employee->id,TimelineEventType::JoinTermination, $historyJoinsTerminationObj->id);
         }
 
         $departmentid = $employee->department_id;
@@ -44,8 +47,10 @@ class TimelineManager extends Model
             $historyDepartmentObj->department_id =  $departmentid;
             $historyDepartmentObj->date_occurred = date('Y-m-d\TH:i:s');
             $historyDepartmentObj->updated_by_employee_id = "";
-            $historyDepartmentObj = HistoryDepartment::add($historyDepartmentObj);
-            self::addToTimeline($employee->id,TimelineEventType::Department,(string) $historyDepartmentObj->id);
+
+            $historyDepartmentObj->save();
+
+            self::addToTimeline($employee->id,TimelineEventType::Department, $historyDepartmentObj->id);
         }
 
         $jobtitleid = $employee->job_title_id;
@@ -56,8 +61,10 @@ class TimelineManager extends Model
             $historyjobtitleObj->job_title_id = $jobtitleid;
             $historyjobtitleObj->date_occurred = date('Y-m-d\TH:i:s');
             $historyjobtitleObj->updated_by_employee_id = "";
-            $historyjobtitleObj = HistoryJobTitle::add($historyjobtitleObj);
-            self::addToTimeline($employee->id,TimelineEventType::JobTitle,(string) $historyjobtitleObj->id);
+
+            $historyjobtitleObj->save();
+
+            self::addToTimeline($employee->id,TimelineEventType::JobTitle, $historyjobtitleObj->id);
         }
     }
 
@@ -75,8 +82,6 @@ class TimelineManager extends Model
         $selectedTerminationDate = "";
         $selectedDepartmentid = "";
         $selectedJobtitleid = "";
-
-        //Log::info("Executed select command...");
 
         // Get last termination date from history table
         foreach ($arr as $element) {
@@ -108,8 +113,10 @@ class TimelineManager extends Model
                 $historyJoinsTerminationObj->is_joined = false;
                 $historyJoinsTerminationObj->date_occurred = $employee->date_terminated;
                 $historyJoinsTerminationObj->updated_by_employee_id = "";
-                $historyJoinsTerminationObj = HistoryJoinTermination::add($historyJoinsTerminationObj);
-                self::addToTimeline($employee->id, TimelineEventType::JoinTermination, (string)$historyJoinsTerminationObj->id);
+
+                $historyJoinsTerminationObj->save();
+
+                self::addToTimeline($employee->id, TimelineEventType::JoinTermination, $historyJoinsTerminationObj->id);
             }
         }
 
@@ -122,8 +129,10 @@ class TimelineManager extends Model
                 $historyDepartmentObj->department_id = $departmentid;
                 $historyDepartmentObj->date_occurred = date('Y-m-d\TH:i:s');
                 $historyDepartmentObj->updated_by_employee_id = "";
-                $historyDepartmentObj = HistoryDepartment::add($historyDepartmentObj);
-                self::addToTimeline($employee->id, TimelineEventType::Department, (string)$historyDepartmentObj->id);
+
+                $historyDepartmentObj->save();
+
+                self::addToTimeline($employee->id, TimelineEventType::Department, $historyDepartmentObj->id);
             }
         }
 
@@ -136,8 +145,10 @@ class TimelineManager extends Model
                 $historyJobtitleObj->job_title_id = $jobtitleid;
                 $historyJobtitleObj->date_occurred = date('Y-m-d\TH:i:s');
                 $historyJobtitleObj->updated_by_employee_id = "";
-                $historyJobtitleObj = HistoryJobTitle::add($historyJobtitleObj);
-                self::addToTimeline($employee->id, TimelineEventType::JobTitle, (string)$historyJobtitleObj->id);
+
+                $historyJobtitleObj->save();
+
+                self::addToTimeline($employee->id, TimelineEventType::JobTitle, $historyJobtitleObj->id);
             }
         }
     }
@@ -155,10 +166,11 @@ class TimelineManager extends Model
         $historyDispActionObj->disciplinary_action_id = $dispAction->id;
         $historyDispActionObj->date_occurred = $dispAction->violation_date;
         $historyDispActionObj->updated_by_employee_id = "";
-        $historyDispActionObj = HistoryDisciplinaryAction::add($historyDispActionObj);
+
+        $historyDispActionObj->save();
 
         // Insert record in Timelines Table
-        self::addToTimeline($dispAction->employee_id,TimelineEventType::Disciplinary,(string) $historyDispActionObj->id);
+        self::addToTimeline($dispAction->employee_id,TimelineEventType::Disciplinary, $historyDispActionObj->id);
     }
 
 
@@ -169,7 +181,8 @@ class TimelineManager extends Model
         $timelineObj->timeline_event_type_id = $timelineEventyTypid;
         $timelineObj->event_id =  $eventid;
         $timelineObj->event_date = date('Y-m-d\TH:i:s');
-        $timelineObj = Timeline::add($timelineObj);
+        
+        $timelineObj->save();
     }
 
 }

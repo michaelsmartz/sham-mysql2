@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use App\Reward;
+use App\TimelineManager;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -30,20 +31,22 @@ class RewardsController extends CustomController
     //functions necessary to handle 'resource' type of route
     public function index(Request $request)
     {
+
         $id = Route::current()->parameter('employee');
 
         $rewards = $this->contextObj::where('employee_id', $id)->filtered()->paginate(10);
-
+        // handle empty result bug
+        if ($rewards->isEmpty()) {
+            return redirect()->to(action('RewardsController@index', ['employee'=>$id]));
+        }
         return view($this->baseViewPath .'.index', compact('id','rewards'));
     }
 
     public function create() {
-        if (!Session::has('redirectsTo'))
-        {
-            Session::put('redirectsTo', \URL::previous());
-        }
-        $employees = Employee::pluck('full_name', 'id');
-        return view($this->baseViewPath . '.create',compact('employees'));
+        Session::put('redirectsTo', \URL::previous());
+        $id = Route::current()->parameter('employee');
+
+        return view($this->baseViewPath . '.create',compact('id'));
     }
 
     /**
@@ -56,22 +59,20 @@ class RewardsController extends CustomController
     public function store(Request $request)
     {
 
-       if (!Session::has('redirectsTo'))
-       {
-         Session::put('redirectsTo', URL::previous());
-       }
        try {
             $this->validator($request);
             $input = array_except($request->all(),array('_token', '_method'));
 
             $data = $this->contextObj->addData($input);
+            TimelineManager::addRewardTimelineHistory($data);
+
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return Session::get('redirectsTo');
     }
 
     /**
@@ -84,10 +85,8 @@ class RewardsController extends CustomController
         $id = Route::current()->parameter('reward');
         $data = $this->contextObj->findData($id);
 
-        $employees = Employee::pluck('full_name', 'id');
-
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data', 'employees'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -95,7 +94,7 @@ class RewardsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data', 'employees'));
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
     /**
@@ -112,7 +111,6 @@ class RewardsController extends CustomController
             $this->validator($request);
 
             $input = array_except($request->all(),array('_token','_method'));
-
             $this->contextObj->updateData($id, $input);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
@@ -121,7 +119,7 @@ class RewardsController extends CustomController
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');       
+        return redirect()->back();
     }
 
     /**
@@ -143,7 +141,7 @@ class RewardsController extends CustomController
             \Session::put('error', 'could not delete '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->back();
     }
 
     /**

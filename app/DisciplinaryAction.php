@@ -30,6 +30,8 @@ class DisciplinaryAction extends Model
                   'disciplinary_decision_id'
               ];
 
+    public $searchable = ['violation:description', 'violation_date', 'date_issued'];
+
     public function employee()
     {
         return $this->belongsTo('App\Employee','employee_id');

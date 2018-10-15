@@ -2328,11 +2328,36 @@ ALTER TABLE `employees`
 
 ALTER TABLE `timelines` CHANGE `date_event` `date_event` DATE NOT NULL;
 
+ALTER TABLE `history_departments`
+	ALTER `date` DROP DEFAULT;
+ALTER TABLE `history_departments`
+	CHANGE COLUMN `date` `date_occurred` DATETIME(6) NOT NULL AFTER `department_id`;
+
 ALTER TABLE `history_departments` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+
+ALTER TABLE `rewards`
+	ALTER `date_received` DROP DEFAULT;
+ALTER TABLE `rewards`
+	CHANGE COLUMN `date_received` `date_received` DATE NOT NULL AFTER `rewarded_by`;
 
 ALTER TABLE `history_rewards` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
-ALTER TABLE `history_disciplinary_actions` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+ALTER TABLE `history_disciplinary_actions` 
+CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
+
+ALTER TABLE `disciplinary_actions`
+	ALTER `violation_date` DROP DEFAULT;
+ALTER TABLE `disciplinary_actions`
+	CHANGE COLUMN `violation_date` `violation_date` DATE NOT NULL AFTER `violation_id`,
+	CHANGE COLUMN `date_issued` `date_issued` DATE NULL DEFAULT NULL AFTER `is_active`,
+	CHANGE COLUMN `date_expires` `date_expires` DATE NULL DEFAULT NULL AFTER `date_issued`;
+
+RENAME TABLE `history_joins_terminations` TO `history_join_terminations`;
+
+ALTER TABLE `history_join_terminations`
+	ALTER `date` DROP DEFAULT;
+ALTER TABLE `history_join_terminations`
+	CHANGE COLUMN `date` `date_occurred` DATETIME(6) NOT NULL AFTER `is_joined`;
 
 ALTER TABLE `history_join_terminations` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 

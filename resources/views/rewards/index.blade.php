@@ -19,7 +19,7 @@
             @if(count($rewards) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
-                    <button id="item-create" type="button" class="btn btn-sham" data-create-url="{{action('RewardsController@create')}}" data-wenk="Add new" data-wenk-pos="bottom">
+                    <button id="item-create" type="button" class="btn btn-sham" data-create-url="{{action('RewardsController@create',['employee' => $id])}}" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
                 </div>
@@ -27,7 +27,7 @@
             @endif
             <div class="table-responsive">
             @if(count($rewards) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create" data-create-url="{{action('RewardsController@create')}}">here</a> to add a new reward</h4>
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create" data-create-url="{{action('RewardsController@create',['employee' => $id])}}">here</a> to add a new reward</h4>
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>
@@ -61,7 +61,7 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $rewards->render() !!}
+                    {!! $rewards->appends(request()->query())->render() !!}
                 </nav>
             @endif
             </div>

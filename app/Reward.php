@@ -24,6 +24,8 @@ class Reward extends Model
                   'date_received'
               ];
 
+    public $searchable = ['description', 'rewarded_by', 'date_received'];
+
     public function employee()
     {
         return $this->belongsTo('App\Employee','employee_id');

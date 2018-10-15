@@ -77,7 +77,7 @@
             @endif
 
             <div class="footer">
-                Copyright &copy; {{ date('Y') }} Kalija Global - Smartz Human Asset Management. All rights reserved. Release {{env('VERSION', '1.2')}} {{env('PLATFORM', '(VVM Version)')}}
+                Copyright &copy; {{ date('Y') }} Kalija Global - Smartz Human Asset Management. All rights reserved. Release {{env('VERSION', '2.0')}} {{env('PLATFORM', '(VVM Version)')}}
                 @yield('footer')
             </div>
         </div>
