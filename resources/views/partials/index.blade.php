@@ -57,8 +57,9 @@
             window.location = '{{url()->to("timelines")}}/'+id;
         };
         window.cleanUrlHash = function(){
-            history.replaceState(null, "", window.location.pathname);
-            return window.location.hash.replace(/^#/, '');
+            window.history.pushState(null, "", window.location.href.replace("#light-modal", ""));
+            //history.replaceState(null, "", window.location.pathname);
+            //return window.location.hash.replace(/^#/, '');
         };
         window.editForm = function(id, event, baseUrl) {
             var route; 

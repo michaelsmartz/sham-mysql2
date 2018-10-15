@@ -9987,6 +9987,10 @@ __webpack_require__(54);
     $table.on('collapse-row.bs.table', function (e, index, row) {
         $('#table tr[data-index=' + index + '] td:first-child a.detail-icon i').attr('data-wenk', 'Show documents');
     });
+
+    $table.on('post-body.bs.table', function (e, index, row) {
+        $('.detail-icon').parent('td').attr('data-html2canvas-ignore', true);
+    });
 }(jQuery);
 
 $(window).load(function () {
