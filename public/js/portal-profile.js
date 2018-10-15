@@ -55,10 +55,13 @@ $(document).ready(function () {
         self.Branch = ko.observable(data.branch.description);
         self.Division = ko.observable(data.division.description);
 
-        self.MaritalStatusId = ko.observable(data.marital_status_id);
-        self.SpouseFullName = ko.observable(data.spouse_full_name);
+        self.marital_status_id = ko.observable(data.marital_status_id);
+        self.spouse_full_name = ko.observable(data.spouse_full_name);
 
         // staticXxx is read-only attribute for display only
+        self.address_type_id = ko.computed(function() {
+            return data.address_type_id;
+        });
         self.staticHomeAddressUnitNo = ko.computed(function() {
             return data.HomeAddressUnitNo;
         });
@@ -199,24 +202,31 @@ $(document).ready(function () {
 });
 
 function saveHandler(event) {
-    event.preventDefault();
+    //event.preventDefault();
 
     var l = Ladda.create( document.getElementById('btnSave') );
     l.start();
+
+    var _token = $("input[name='_token']").val();
     var data = $('#frmEditProfile').serializeJSON();
+    var id = $('#employeeId').val();
 
-    var method_data = $.extend( true, data, {'_method': 'PATCH'});
-
-    console.log(data);
+    var fd = new FormData($('#frmEditProfile'));
+    fd.append('id', id);
+    fd.append('data', data);
 
     var request = $.ajax({
-        url: window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/my-details/updateProfile',
-        type: "POST",
-        data: method_data,
+        url: $('#frmEditProfile').attr('action'),
+        dataType : 'json',
+        data: fd,
+        type: "PATCH",
+        cache: false,
+        async: false,
+        processData: false,
+        contentType: false,
         headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': _token
         },
-
     });
 
     request.done(function(msg) {

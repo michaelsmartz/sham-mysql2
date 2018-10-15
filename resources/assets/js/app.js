@@ -9,6 +9,7 @@ import sortable from 'jquery-ui/ui/widgets/sortable';
 import datepicker from 'jquery-ui/ui/widgets/datepicker';
 import timepicker from 'jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon';
 import sliderAccess from 'jquery-ui/ui/widgets/slider';
+import tab from 'bootstrap/js/dist/tab';
 
 window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
 $.ajaxSetup({
@@ -80,5 +81,6 @@ window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-d
 //window.Modal = require('exports-loader?Modal!bootstrap/js/dist/modal'); // eslint-disable-line
 //window.Popover = require('exports-loader?Tooltip!bootstrap/js/dist/popover'); // eslint-disable-line
 window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
+window.Tab = require('exports-loader?Tap!bootstrap/js/dist/tap'); // eslint-disable-line
 
 window.asyncJS = global.asyncJS = asyncJS;

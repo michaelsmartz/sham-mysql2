@@ -6,9 +6,7 @@
     <link href="{{URL::to('/')}}/plugins/fancybox/jquery.fancybox.min.css" rel="stylesheet">
     <link href="{{URL::to('/')}}/css/bootstrap-reset.css" rel="stylesheet">
 
-    {{-- TODO import library --}}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    {{-- TODO remove --}}
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
     <script type="text/javascript" src="{{URL::to('/')}}/js/knockout-min.js"></script>
@@ -971,7 +969,12 @@
                         </div>
                         <!-- /ko -->
                         <div id="settings" class="tab-pane">
-                            <form role="form" class="form-horizontal" id="frmEditProfile">
+                            <form role="form" method="POST" action="{{ route('my-details.update', $employee->id) }}"
+                                  class="form-horizontal" id="frmEditProfile" accept-charset="UTF-8" enctype="multipart/form-data">
+                                {{ csrf_field() }}
+                                {{ method_field('PATCH') }}
+                                {!! Form::hidden('id',$employee->id, ['id'=>'employeeId', 'name'=>'id']) !!}
+                                <input type="hidden" id="address_type_id" name="address_type_id" data-bind="value: address_type_id">
                                 <div class="position-center">
                                     <div class="prf-contacts sttng">
                                         <h2>  Personal Information</h2>
@@ -979,13 +982,13 @@
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Marital Status</label>
                                         <div class="col-lg-8">
-                                            {!! Form::select('MaritalStatusId', $maritalStatus, null, ['id' =>'MaritalStatusId', 'name'=>'MaritalStatusId', 'data-bind'=>'value: MaritalStatusId', 'class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>' ']) !!}
+                                            {!! Form::select('marital_status_id', $maritalStatus, null, ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'data-bind'=>'value: marital_status_id', 'class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>' ']) !!}
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Next of Kin</label>
                                         <div class="col-lg-8">
-                                            <input placeholder=" " id="SpouseFullName" name="SpouseFullName" data-bind="value: SpouseFullName" class="form-control" type="text">
+                                            <input placeholder=" " id="spouse_full_name" name="spouse_full_name" data-bind="value: spouse_full_name" class="form-control" type="text">
                                         </div>
                                     </div>
 
@@ -1159,7 +1162,6 @@
                                     @if (!empty($employee->id))
                                     <div class="form-group">
                                         <div class="col-lg-offset-2 col-lg-10">
-                                            <input name="_method" type="hidden" value="PATCH">
                                             <button id="btnSave" class="btn btn-primary ladda-button" data-size="l" data-style="expand-left" type="submit" onclick="saveHandler(event)">Save</button>
                                         </div>
                                     </div>

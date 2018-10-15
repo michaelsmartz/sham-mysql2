@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Address;
 use App\Enums\TimelineEventType;
 use App\MaritalStatus;
 use App\Employee;
@@ -8,7 +9,6 @@ use App\Employee;
 use App\Timeline;
 use App\Violation;
 use Illuminate\Http\Request;
-use App\Libs\Extensions\Input;
 
 use Auth;
 use View;
@@ -50,30 +50,116 @@ class SSPMyDetailsController extends CustomController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
+     * @param  int $id
      * @param Request $request
-     * @return Response
+     *
+     * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function update(Request $request, $id)
     {
-        $warnings = [];
+        $input = array_except($request->all(), ['_token', '_method']);
 
-        // get the employee
+        $employee = array_only($input, ['marital_status_id', 'spouse_full_name']);
 
-        $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+        $res =  $this->contextObj->updateData($id, $employee);
 
-        $employee = $this->contextObj->fill(Input::all());
+        if($res){
+            //handle the Home Address
+            $homeAddress = [];
 
-        dd($employee);
+            $homeAddressInputs = array_only($input, [
+                'HomeAddressUnitNo',
+                'HomeAddressComplex',
+                'HomeAddressLine1',
+                'HomeAddressLine2',
+                'HomeAddressLine3',
+                'HomeAddressLine4',
+                'HomeAddressCity',
+                'HomeAddressProvince',
+                'HomeAddressZipCode'
+            ]);
 
+            $homeAddress['unit_no']= $homeAddressInputs['HomeAddressUnitNo'];
+            $homeAddress['complex']= $homeAddressInputs['HomeAddressComplex'];
+            $homeAddress['addr_line_1']= $homeAddressInputs['HomeAddressLine1'];
+            $homeAddress['addr_line_2']= $homeAddressInputs['HomeAddressLine2'];
+            $homeAddress['addr_line_3']= $homeAddressInputs['HomeAddressLine3'];
+            $homeAddress['addr_line_4']= $homeAddressInputs['HomeAddressLine4'];
+            $homeAddress['city']= $homeAddressInputs['HomeAddressCity'];
+            $homeAddress['province']= $homeAddressInputs['HomeAddressProvince'];
+            $homeAddress['zip_code']= $homeAddressInputs['HomeAddressZipCode'];
+            $homeAddress['address_type_id']= 1;
+
+            $addressHomeType = Address::where('employee_id',$id)->where('address_type_id',1)->get()->all();
+
+            if(empty($addressHomeType)){
+                $homeAddress = new Address();
+                $homeAddress->unit_no= $homeAddressInputs['HomeAddressUnitNo'];
+                $homeAddress->complex= $homeAddressInputs['HomeAddressComplex'];
+                $homeAddress->addr_line_1= $homeAddressInputs['HomeAddressLine1'];
+                $homeAddress->addr_line_2= $homeAddressInputs['HomeAddressLine2'];
+                $homeAddress->addr_line_3= $homeAddressInputs['HomeAddressLine3'];
+                $homeAddress->addr_line_4= $homeAddressInputs['HomeAddressLine4'];
+                $homeAddress->city= $homeAddressInputs['HomeAddressCity'];
+                $homeAddress->province= $homeAddressInputs['HomeAddressProvince'];
+                $homeAddress->zip_code= $homeAddressInputs['HomeAddressZipCode'];
+                $homeAddress->address_type_id= 1;
+                $homeAddress->employee_id= $id;
+                $homeAddress->save();
+            }else {
+                Address::where('employee_id', $id)->where('address_type_id', 1)->update($homeAddress);
+            }
+
+            //handle the Postal Address
+            $postalAddress = [];
+
+            $postalAddressInputs = array_only($input, [
+                'PostalAddressUnitNo',
+                'PostalAddressComplex',
+                'PostalAddressLine1',
+                'PostalAddressLine2',
+                'PostalAddressLine3',
+                'PostalAddressLine4',
+                'PostalAddressCity',
+                'PostalAddressProvince',
+                'PostalAddressZipCode'
+            ]);
+
+            $postalAddress['unit_no']= $postalAddressInputs['PostalAddressUnitNo'];
+            $postalAddress['complex']= $postalAddressInputs['PostalAddressComplex'];
+            $postalAddress['addr_line_1']= $postalAddressInputs['PostalAddressLine1'];
+            $postalAddress['addr_line_2']= $postalAddressInputs['PostalAddressLine2'];
+            $postalAddress['addr_line_3']= $postalAddressInputs['PostalAddressLine3'];
+            $postalAddress['addr_line_4']= $postalAddressInputs['PostalAddressLine4'];
+            $postalAddress['city']= $postalAddressInputs['PostalAddressCity'];
+            $postalAddress['province']= $postalAddressInputs['PostalAddressProvince'];
+            $postalAddress['zip_code']= $postalAddressInputs['PostalAddressZipCode'];
+            $postalAddress['address_type_id']= 2;
+
+            $addressPortalType = Address::where('employee_id',$id)->where('address_type_id',2)->get()->all();
+
+            if(empty($addressPortalType)){
+                $postalAddress = new Address();
+                $postalAddress->unit_no= $postalAddressInputs['PostalAddressUnitNo'];
+                $postalAddress->complex= $postalAddressInputs['PostalAddressComplex'];
+                $postalAddress->addr_line_1= $postalAddressInputs['PostalAddressLine1'];
+                $postalAddress->addr_line_2= $postalAddressInputs['PostalAddressLine2'];
+                $postalAddress->addr_line_3= $postalAddressInputs['PostalAddressLine3'];
+                $postalAddress->addr_line_4= $postalAddressInputs['PostalAddressLine4'];
+                $postalAddress->city= $postalAddressInputs['PostalAddressCity'];
+                $postalAddress->province= $postalAddressInputs['PostalAddressProvince'];
+                $postalAddress->zip_code= $postalAddressInputs['PostalAddressZipCode'];
+                $postalAddress->address_type_id= 2;
+                $postalAddress->employee_id= $id;
+                $postalAddress->save();
+
+            }else {
+                Address::where('employee_id',$id)->where('address_type_id',2)->update($postalAddress);
+            }
+        }
     }
 
-//    public function show(Request $request){
-//        self::getProfile($request);
-//    }
-
-    public function show(Request $request) {
+    public function getProfile(Request $request) {
         $employee = [];
         $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
@@ -93,12 +179,9 @@ class SSPMyDetailsController extends CustomController
                                         'historyJobTitles.jobTitle',
                                         'historyQualification.qualification'
                                 ])
-                                //->orderBy('timelines.date_event', 'DESC')
                                 ->where('id',$id)
                                 ->get()
                                 ->first();
-
-        //dd($tmp);
 
         if(!empty($tmp)){
             $employee = self::getAdditionalFields($tmp);
@@ -163,6 +246,7 @@ class SSPMyDetailsController extends CustomController
                             $employeeObject->HomeAddressProvince = $address->province;
                             $employeeObject->HomeAddressCountryId = $address->country_id;
                             $employeeObject->HomeAddressZipCode = $address->zip_code;
+                            $employeeObject->address_type_id = $address->address_type_id;
                             break;
                         case 2://Postal
                             $employeeObject->PostalAddressUnitNo = $address->unit_no;
@@ -175,9 +259,9 @@ class SSPMyDetailsController extends CustomController
                             $employeeObject->PostalAddressProvince = $address->province;
                             $employeeObject->PostalAddressCountryId = $address->country_id;
                             $employeeObject->PostalAddressZipCode = $address->zip_code;
+                            $employeeObject->address_type_id = $address->address_type_id;
                             break;
                     }
-
                 }
                 unset($employeeObject->addresses);
 
@@ -241,7 +325,6 @@ class SSPMyDetailsController extends CustomController
 
                     if(count($historyDepartments) > 0)
                     {
-                        //dd($historyDepartments);
                         foreach ($historyDepartments as $historyDepartment) {
                             $timeline = new Timeline();
                             $timeline->ShortcutType = 1;
@@ -260,9 +343,7 @@ class SSPMyDetailsController extends CustomController
                     if(count($historyRewards) > 0)
                     {
                         foreach ($historyRewards as $historyReward) {
-                            //dd($timeline);
-                            //dump($historyReward);
-                            $timeline = new $timeline();
+                            $timeline = new Timeline();
                             $timeline->ShortcutType = 2;
                             $timeline->MainClass = 'success';
                             $timeline->Description = "Reward: " . $historyReward->reward->description;
@@ -271,7 +352,6 @@ class SSPMyDetailsController extends CustomController
                             $timeline->icon = 'fa fa-certificate';
                             $timeCompileResults[] = $timeline;
                         }
-                        //die();
                     }
                     break;
                 case "Disciplinary Action":
@@ -280,14 +360,13 @@ class SSPMyDetailsController extends CustomController
                     if (count($historyDisciplinaries) > 0) {
                         foreach ($historyDisciplinaries as $historyDisciplinary) {
                             //dd($historyDisciplinary);
-                            $timeline = new $timeline();
+                            $timeline = new Timeline();
                             $timeline->ShortcutType = 3;
                             $timeline->MainClass = 'danger';
                             $violation = Violation::find($historyDisciplinary->disciplinaryAction->violation_id);
                             $timeline->DisciplinaryActionId = $historyDisciplinary->disciplinary_action_id;
                             $timeline->Description = "Discriplinary Action: " . $violation->description;
                             $timeline->EventType = "Discriplinary Action";//$timelineeventype;
-                            //$timelineresultObj->Date = "Date: " . $timeline->EventDate;
                             $timeline->formattedDate = date("d-m-Y", strtotime($historyDisciplinary->date_occurred));
                             $timeCompileResults[] = $timeline;
                             If ($violation->id == 3) {
@@ -303,7 +382,7 @@ class SSPMyDetailsController extends CustomController
 
                     if (count($historyJoinTerminations) > 0) {
                         foreach ($historyJoinTerminations as $historyJoinTermination) {
-                            $timeline = new $timeline();
+                            $timeline = new Timeline();
                             $timeline->ShortcutType = 4;
 
                             if ($historyJoinTermination->is_joined == true) {
@@ -328,7 +407,7 @@ class SSPMyDetailsController extends CustomController
                     if(count($historyJobTitles) > 0)
                     {
                         foreach ($historyJobTitles as $historyJobTitle) {
-                            $timeline = new $timeline();
+                            $timeline = new Timeline();
                             $timeline->ShortcutType = 5;
                             $timeline->MainClass = 'info';
                             $timeline->Description = "Started as: " . $historyJobTitle->jobTitle->description;
@@ -345,7 +424,7 @@ class SSPMyDetailsController extends CustomController
                     if(count($historyQualifications) > 0)
                     {
                         foreach ($historyQualifications as $historyQualification) {
-                            $timeline = new $timeline();
+                            $timeline = new Timeline();
                             $timeline->ShortcutType = 6;
                             $timeline->MainClass = 'success';
                             $timeline->Description = "Obtained: " . $historyQualification->qualification->description;

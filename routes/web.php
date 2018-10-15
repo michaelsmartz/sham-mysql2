@@ -41,9 +41,10 @@ Auth::routes();
         #region MyPortal
             Route::resource('selfservice-portal', 'SSPController');
 
-            Route::resource('my-details', 'SSPMyDetailsController');
-            Route::any('my-details/getProfile', 'SSPMyDetailsController@getProfile' );
-            Route::any('my-details/updateProfile', 'SSPMyDetailsController@store' );
+            Route::get('my-details/getProfile', 'SSPMyDetailsController@getProfile');
+            Route::resource('my-details', 'SSPMyDetailsController',[
+                'only'=>['index','update']
+            ]);
 
             Route::resource('my-surveys', 'SSPMySurveysController');
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');
