@@ -83,6 +83,15 @@ class SSPMyDetailsController extends CustomController
                 'HomeAddressZipCode'
             ]);
 
+            if(is_null($homeAddressInputs['HomeAddressUnitNo']) || is_null($homeAddressInputs['HomeAddressComplex']) ||
+                is_null($homeAddressInputs['HomeAddressLine1']) || is_null($homeAddressInputs['HomeAddressLine2']) ||
+                is_null($homeAddressInputs['HomeAddressLine3']) || is_null($homeAddressInputs['HomeAddressLine4']) ||
+                is_null($homeAddressInputs['HomeAddressCity']) || is_null($homeAddressInputs['HomeAddressProvince']) ||
+                is_null($homeAddressInputs['HomeAddressZipCode'])
+            ) {
+                Address::where('employee_id', '=', $data->id)->delete();
+            }
+
             $homeAddress['unit_no']= $homeAddressInputs['HomeAddressUnitNo'];
             $homeAddress['complex']= $homeAddressInputs['HomeAddressComplex'];
             $homeAddress['addr_line_1']= $homeAddressInputs['HomeAddressLine1'];
@@ -92,26 +101,11 @@ class SSPMyDetailsController extends CustomController
             $homeAddress['city']= $homeAddressInputs['HomeAddressCity'];
             $homeAddress['province']= $homeAddressInputs['HomeAddressProvince'];
             $homeAddress['zip_code']= $homeAddressInputs['HomeAddressZipCode'];
-            $homeAddress['address_type_id']= 1;
 
-            $addressHomeType = Address::where('employee_id',$id)->where('address_type_id',1)->get()->all();
-
-            if(empty($addressHomeType)){
-                $homeAddress = new Address();
-                $homeAddress->unit_no= $homeAddressInputs['HomeAddressUnitNo'];
-                $homeAddress->complex= $homeAddressInputs['HomeAddressComplex'];
-                $homeAddress->addr_line_1= $homeAddressInputs['HomeAddressLine1'];
-                $homeAddress->addr_line_2= $homeAddressInputs['HomeAddressLine2'];
-                $homeAddress->addr_line_3= $homeAddressInputs['HomeAddressLine3'];
-                $homeAddress->addr_line_4= $homeAddressInputs['HomeAddressLine4'];
-                $homeAddress->city= $homeAddressInputs['HomeAddressCity'];
-                $homeAddress->province= $homeAddressInputs['HomeAddressProvince'];
-                $homeAddress->zip_code= $homeAddressInputs['HomeAddressZipCode'];
-                $homeAddress->address_type_id= 1;
-                $homeAddress->employee_id= $id;
-                $homeAddress->save();
-            }else {
-                Address::where('employee_id', $id)->where('address_type_id', 1)->update($homeAddress);
+            if(!empty($homeAddress)){
+                $data->addresses()
+                    ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>1],
+                        $homeAddress);
             }
 
             //handle the Postal Address
@@ -129,6 +123,15 @@ class SSPMyDetailsController extends CustomController
                 'PostalAddressZipCode'
             ]);
 
+            if(is_null($postalAddressInputs['PostalAddressUnitNo']) || is_null($postalAddressInputs['PostalAddressComplex']) ||
+                is_null($postalAddressInputs['PostalAddressLine1']) || is_null($postalAddressInputs['PostalAddressLine2']) ||
+                is_null($postalAddressInputs['PostalAddressLine3']) || is_null($postalAddressInputs['PostalAddressLine4']) ||
+                is_null($postalAddressInputs['PostalAddressCity']) || is_null($postalAddressInputs['PostalAddressProvince']) ||
+                is_null($postalAddressInputs['PostalAddressZipCode'])
+            ) {
+                Address::where('employee_id', '=', $data->id)->delete();
+            }
+
             $postalAddress['unit_no']= $postalAddressInputs['PostalAddressUnitNo'];
             $postalAddress['complex']= $postalAddressInputs['PostalAddressComplex'];
             $postalAddress['addr_line_1']= $postalAddressInputs['PostalAddressLine1'];
@@ -138,27 +141,11 @@ class SSPMyDetailsController extends CustomController
             $postalAddress['city']= $postalAddressInputs['PostalAddressCity'];
             $postalAddress['province']= $postalAddressInputs['PostalAddressProvince'];
             $postalAddress['zip_code']= $postalAddressInputs['PostalAddressZipCode'];
-            $postalAddress['address_type_id']= 2;
 
-            $addressPortalType = Address::where('employee_id',$id)->where('address_type_id',2)->get()->all();
-
-            if(empty($addressPortalType)){
-                $postalAddress = new Address();
-                $postalAddress->unit_no= $postalAddressInputs['PostalAddressUnitNo'];
-                $postalAddress->complex= $postalAddressInputs['PostalAddressComplex'];
-                $postalAddress->addr_line_1= $postalAddressInputs['PostalAddressLine1'];
-                $postalAddress->addr_line_2= $postalAddressInputs['PostalAddressLine2'];
-                $postalAddress->addr_line_3= $postalAddressInputs['PostalAddressLine3'];
-                $postalAddress->addr_line_4= $postalAddressInputs['PostalAddressLine4'];
-                $postalAddress->city= $postalAddressInputs['PostalAddressCity'];
-                $postalAddress->province= $postalAddressInputs['PostalAddressProvince'];
-                $postalAddress->zip_code= $postalAddressInputs['PostalAddressZipCode'];
-                $postalAddress->address_type_id= 2;
-                $postalAddress->employee_id= $id;
-                $postalAddress->save();
-
-            }else {
-                Address::where('employee_id',$id)->where('address_type_id',2)->update($postalAddress);
+            if(!empty($postalAddress)){
+                $data->addresses()
+                    ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>2],
+                        $postalAddress);
             }
 
             $phone = array_only($input, [
