@@ -65,6 +65,7 @@ class SSPMyDetailsController extends CustomController
         $employee = array_only($input, ['marital_status_id', 'spouse_full_name']);
 
         $res =  $this->contextObj->updateData($id, $employee);
+        $data = Employee::find($id);
 
         if($res){
             //handle the Home Address
@@ -166,86 +167,49 @@ class SSPMyDetailsController extends CustomController
                 'WorkTel'
             ]);
 
-           //Home
-            $tel = [];
-            $tel['employee_id'] = $id;
-            $tel['tel_number'] = $phone['HomeTel'];
-            $tel['telephone_number_type_id'] = 1;//Home
-
-            $telephoneNumber = TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 1)->get()->all();
-
-            if (empty($telephoneNumber)) {
-                $tel = new TelephoneNumber();
-                $tel->employee_id = $id;
-                $tel->tel_number = $phone['HomeTel'];
-                $tel->telephone_number_type_id = 1;//Home
-                $tel->save();
-            } else {
-                TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 1)->update($tel);
+            if(is_null($phone['HomeTel']) || is_null($phone['HomeTel']) ||
+                is_null($phone['WorkTel'])) {
+                TelephoneNumber::where('employee_id', '=', $data->id)->delete();
             }
 
+           //Home
+            if(!is_null($phone['HomeTel'])){
+                $homePhone = ['tel_number' => $phone['HomeTel']];
+                $data->phones()
+                    ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>1],
+                        $homePhone);
+            }
+
+            //Mobile
+            if(!is_null($phone['Mobile'])){
+                $mobilePhone = ['tel_number' => $phone['Mobile']];
+                $data->phones()
+                    ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>2],
+                        $mobilePhone);
+            }
 
             //Work
-            $tel = [];
-            $tel['employee_id'] = $id;
-            $tel['tel_number'] = $phone['Mobile'];
-            $tel['telephone_number_type_id'] = 2;//Work
-
-            $telephoneNumber = TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 2)->get()->all();
-
-            if (empty($telephoneNumber)) {
-                $tel = new TelephoneNumber();
-                $tel->employee_id = $id;
-                $tel->tel_number = $phone['HomeTel'];
-                $tel->telephone_number_type_id = 2;//Work
-                $tel->save();
-            } else {
-                TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 2)->update($tel);
+            if(!is_null($phone['WorkTel'])){
+                $workPhone = ['tel_number' => $phone['WorkTel']];
+                $data->phones()
+                    ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>3],
+                        $workPhone);
             }
-
-            //WorkTel
-            $tel = [];
-            $tel['employee_id'] = $id;
-            $tel['tel_number'] = $phone['WorkTel'];
-            $tel['telephone_number_type_id'] = 3;//WorkTel
-
-            $telephoneNumber = TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 3)->get()->all();
-
-            if (empty($telephoneNumber)) {
-                $tel = new TelephoneNumber();
-                $tel->employee_id = $id;
-                $tel->tel_number = $phone['HomeTel'];
-                $tel->telephone_number_type_id = 3;//WorkTel
-                $tel->save();
-            } else {
-                TelephoneNumber::where('employee_id', $id)->where('telephone_number_type_id', 3)->update($tel);
-            }
-
 
             //email
             $email = array_only($input, [
                 'HomeEmailAddress'
             ]);
 
-            if ($email['HomeEmailAddress'] === null) {
-                $warnings[] = 'Email address cannot be empty';
-            }else {
-                $mail = [];
-                $mail['employee_id'] = $id;
-                $mail['email_address'] = $email['HomeEmailAddress'];
-                $mail['email_address_type_id'] = 1;//private
+            if(is_null($email['HomeEmailAddress'])) {
+                EmailAddress::where('employee_id', '=', $data->id)->delete();
+            }
 
-                $emailAddress = EmailAddress::where('employee_id', $id)->where('email_address_type_id', 1)->get()->all();
-
-                if (empty($emailAddress)) {
-                    $tel = new EmailAddress();
-                    $tel->employee_id = $id;
-                    $tel->email_address = $email['HomeEmailAddress'];
-                    $tel->email_address_type_id = 1;//private
-                    $tel->save();
-                } else {
-                    EmailAddress::where('employee_id', $id)->where('email_address_type_id', 1)->update($mail);
-                }
+            if(!is_null($email['HomeEmailAddress'])){
+                $homeEmail = ['email_address' => $email['HomeEmailAddress']];
+                $data->emails()
+                    ->updateOrCreate(['employee_id'=>$data->id, 'email_address_type_id'=>1],
+                        $homeEmail);
             }
         }
 
