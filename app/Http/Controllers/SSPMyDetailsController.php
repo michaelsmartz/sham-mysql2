@@ -216,24 +216,45 @@ class SSPMyDetailsController extends CustomController
         $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
         $tmp = $this->contextObj::with(['jobTitle',
-                                        'department',
-                                        'branch',
-                                        'division',
-                                        'team',
-                                        'addresses',
-                                        'emails',
-                                        'phones',
-                                        'timelines',
-                                        'historyDepartments.department',
-                                        'historyRewards.reward',
-                                        'historyDisciplinaryActions.disciplinaryAction',
-                                        'historyJoinTermination',
-                                        'historyJobTitles.jobTitle',
-                                        'historyQualification.qualification'
-                                ])
-                                ->where('id',$id)
-                                ->get()
-                                ->first();
+            'department',
+            'branch',
+            'division',
+            'team',
+            'addresses',
+            'emails',
+            'phones',
+            'timelines'])
+        ->with([
+            'historyDepartments.department'=> function ($query) {
+                $query->withTrashed();
+            }
+        ])
+        ->with([
+            'historyRewards.reward'=> function ($query) {
+                $query->withTrashed();
+            }
+        ])
+        ->with([
+            'historyDisciplinaryActions.disciplinaryAction'=> function ($query) {
+                $query->withTrashed();
+            }
+        ])
+        ->with([
+            'historyJoinTermination'
+        ])
+        ->with([
+            'historyJobTitles.jobTitle'=> function ($query) {
+                $query->withTrashed();
+            }
+        ])
+        ->with([
+            'historyQualification.qualification'=> function ($query) {
+                $query->withTrashed();
+            }
+        ])
+        ->where('employees.id',$id)
+        ->get()
+        ->first();
 
         if(!empty($tmp)){
             $employee = self::getAdditionalFields($tmp);
@@ -378,13 +399,13 @@ class SSPMyDetailsController extends CustomController
                     if(count($historyDepartments) > 0)
                     {
                         foreach ($historyDepartments as $historyDepartment) {
-                            $timeline = new Timeline();
-                            $timeline->ShortcutType = 1;
-                            $timeline->MainClass = 'info';
-                            $timeline->Description = "Joined Department: " . $historyDepartment->department->description;
-                            $timeline->EventType = $timelineEventType;
-                            $timeline->formattedDate = date("d-m-Y", strtotime($historyDepartment->date_occurred));
-                            $timeCompileResults[] = $timeline;
+                                $timeline = new Timeline();
+                                $timeline->ShortcutType = 1;
+                                $timeline->MainClass = 'info';
+                                $timeline->Description = "Joined Department: " . $historyDepartment->department->description;
+                                $timeline->EventType = $timelineEventType;
+                                $timeline->formattedDate = date("Y-m-d", strtotime($historyDepartment->date_occurred));
+                                $timeCompileResults[] = $timeline;
                         }
                     }
                     break;
@@ -395,14 +416,14 @@ class SSPMyDetailsController extends CustomController
                     if(count($historyRewards) > 0)
                     {
                         foreach ($historyRewards as $historyReward) {
-                            $timeline = new Timeline();
-                            $timeline->ShortcutType = 2;
-                            $timeline->MainClass = 'success';
-                            $timeline->Description = "Reward: " . $historyReward->reward->description;
-                            $timeline->EventType = $timelineEventType;
-                            $timeline->formattedDate = date("d-m-Y", strtotime($historyReward->date_occurred));
-                            $timeline->icon = 'fa fa-certificate';
-                            $timeCompileResults[] = $timeline;
+                                $timeline = new Timeline();
+                                $timeline->ShortcutType = 2;
+                                $timeline->MainClass = 'success';
+                                $timeline->Description = "Reward: " . $historyReward->reward->description;
+                                $timeline->EventType = $timelineEventType;
+                                $timeline->formattedDate = date("Y-m-d", strtotime($historyReward->date_occurred));
+                                $timeline->icon = 'fa fa-certificate';
+                                $timeCompileResults[] = $timeline;
                         }
                     }
                     break;
@@ -411,21 +432,20 @@ class SSPMyDetailsController extends CustomController
 
                     if (count($historyDisciplinaries) > 0) {
                         foreach ($historyDisciplinaries as $historyDisciplinary) {
-                            //dd($historyDisciplinary);
-                            $timeline = new Timeline();
-                            $timeline->ShortcutType = 3;
-                            $timeline->MainClass = 'danger';
-                            $violation = Violation::find($historyDisciplinary->disciplinaryAction->violation_id);
-                            $timeline->DisciplinaryActionId = $historyDisciplinary->disciplinary_action_id;
-                            $timeline->Description = "Discriplinary Action: " . $violation->description;
-                            $timeline->EventType = "Discriplinary Action";//$timelineeventype;
-                            $timeline->formattedDate = date("d-m-Y", strtotime($historyDisciplinary->date_occurred));
-                            $timeCompileResults[] = $timeline;
-                            If ($violation->id == 3) {
-                                $timeline->icon = 'vs vs-no-smoking-alt';
-                            } else {
-                                $timeline->icon = 'fa fa-ban';
-                            }
+                                $timeline = new Timeline();
+                                $timeline->ShortcutType = 3;
+                                $timeline->MainClass = 'danger';
+                                $violation = Violation::find($historyDisciplinary->disciplinaryAction->violation_id);
+                                $timeline->DisciplinaryActionId = $historyDisciplinary->disciplinary_action_id;
+                                $timeline->Description = "Discriplinary Action: " . $violation->description;
+                                $timeline->EventType = "Discriplinary Action";//$timelineeventype;
+                                $timeline->formattedDate = date("Y-m-d", strtotime($historyDisciplinary->date_occurred));
+                                $timeCompileResults[] = $timeline;
+                                If ($violation->id == 3) {
+                                    $timeline->icon = 'vs vs-no-smoking-alt';
+                                } else {
+                                    $timeline->icon = 'fa fa-ban';
+                                }
                         }
                     }
                     break;
@@ -440,10 +460,10 @@ class SSPMyDetailsController extends CustomController
                             if ($historyJoinTermination->is_joined == true) {
                                 $timeline->Description = "Joined Date";
                                 $timeline->MainClass = 'success';
-                                $timeline->formattedDate =  date("d-m-Y", strtotime($employee->date_joined));
+                                $timeline->formattedDate =  date("Y-m-d", strtotime($employee->date_joined));
                             } else {
                                 $timeline->Description = "Termination";
-                                $timeline->formattedDate = date("d-m-Y", strtotime($historyJoinTermination->date_occurred));
+                                $timeline->formattedDate = date("Y-m-d", strtotime($historyJoinTermination->date_occurred));
                                 $timeline->MainClass = 'warning';
                                 $timeline->icon = 'fa fa-sign-out';
                             }
@@ -459,12 +479,12 @@ class SSPMyDetailsController extends CustomController
                     if(count($historyJobTitles) > 0)
                     {
                         foreach ($historyJobTitles as $historyJobTitle) {
-                            $timeline = new Timeline();
-                            $timeline->ShortcutType = 5;
-                            $timeline->MainClass = 'info';
-                            $timeline->Description = "Started as: " . $historyJobTitle->jobTitle->description;
-                            $timeline->formattedDate = date("d-m-Y", strtotime($historyJobTitle->date_occurred));
-                            $timeCompileResults[] = $timeline;
+                                $timeline = new Timeline();
+                                $timeline->ShortcutType = 5;
+                                $timeline->MainClass = 'info';
+                                $timeline->Description = "Started as: " . $historyJobTitle->jobTitle->description;
+                                $timeline->formattedDate = date("Y-m-d", strtotime($historyJobTitle->date_occurred));
+                                $timeCompileResults[] = $timeline;
                         }
                     }
                     break;
@@ -476,12 +496,12 @@ class SSPMyDetailsController extends CustomController
                     if(count($historyQualifications) > 0)
                     {
                         foreach ($historyQualifications as $historyQualification) {
-                            $timeline = new Timeline();
-                            $timeline->ShortcutType = 6;
-                            $timeline->MainClass = 'success';
-                            $timeline->Description = "Obtained: " . $historyQualification->qualification->description;
-                            $timeline->formattedDate = date("d-m-Y", strtotime($historyQualification->date_occurred));
-                            $timeCompileResults[] = $timeline;
+                                $timeline = new Timeline();
+                                $timeline->ShortcutType = 6;
+                                $timeline->MainClass = 'success';
+                                $timeline->Description = "Obtained: " . $historyQualification->qualification->description;
+                                $timeline->formattedDate = date("Y-m-d", strtotime($historyQualification->date_occurred));
+                                $timeCompileResults[] = $timeline;
                         }
                     }
                     break;

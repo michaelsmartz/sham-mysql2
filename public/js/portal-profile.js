@@ -10,10 +10,12 @@ $(document).ready(function () {
             dataType: "json",
             url: 'my-details/getProfile',
             success: function (data) {
+                var timeline = data.timeline.sort(compareFormattedDate);
+
                 oUvm = new UserDetailViewModel(data.data);
 
                 oUvm.TimeLineData(
-                    data.timeline.map(function (item, index) {
+                    timeline.map(function (item, index) {
                         return new UserTimeLineViewModel(item, index);
                     })
                 );
@@ -27,6 +29,14 @@ $(document).ready(function () {
             }
         });
     };
+
+    function compareFormattedDate(a,b) {
+        if (a.formattedDate < b.formattedDate)
+            return -1;
+        if (a.formattedDate > b.formattedDate)
+            return 1;
+        return 0;
+    }
 
     function UserDetailViewModel(data){
         var self = this;
