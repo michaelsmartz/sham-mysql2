@@ -20,11 +20,11 @@ $(document).ready(function () {
                     })
                 );
 
-                // oUvm.FilesData(
-                //     data.files.map(function (item, index) {
-                //         return new UserFileViewModel(item, index);
-                //     })
-                // );
+                oUvm.FilesData(
+                    data.files.map(function (item, index) {
+                        return new UserFileViewModel(item, index);
+                    })
+                );
                 ko.applyBindings(oUvm, $("#sec-userProfile")[0]);
             }
         });
@@ -194,9 +194,9 @@ $(document).ready(function () {
         self.FileName = data.OriginalFileName;
         self.FileSize = data.HumanReadableSize;
         self.FileClass = fileClasses[data.FileExtension];
-        self.Filter = data.ExtendedMime.group;
-        self.DownloadLink = "/employee-attachment/" + data.Id + "/download";
-        self.PreviewLink = "/employee-attachment/" + data.Id + "/embed";
+        self.Filter = data.ExtendedMime;
+        self.DownloadLink = data.DownloadLink;
+        //self.PreviewLink = "/employee-attachment/" + data.Id + "/embed";
 
         self.canPreview = (self.Filter == 'Document');
 

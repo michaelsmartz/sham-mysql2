@@ -937,7 +937,7 @@
                                                         <div class="panel-body text-center">
                                                             <div class="clearfix discover">
                                                                 <div class="pull-right">
-                                                                    <a target="_blank" data-bind="attr: { 'href': DownloadLink}" title="Download" class="text-muted mr-sm tooltips">
+                                                                    <a data-bind="attr: { 'href': DownloadLink}" data-wenk="Download" class="text-muted mr-sm tooltips">
                                                                         <em class="fa fa-download fa-fw"></em>
                                                                     </a>
                                                                 </div>

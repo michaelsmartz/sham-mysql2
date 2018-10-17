@@ -14,6 +14,10 @@ use Illuminate\Http\Request;
 
 use Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Plank\Mediable\Media;
+use Plank\Mediable\Mediable;
 use View;
 use Validator;
 use Session;
@@ -256,11 +260,11 @@ class SSPMyDetailsController extends CustomController
         
         $timelineData = self::getTimeline($employee);
 
-        //$filesData = self::getFiles($employee);
+        $filesData = self::getFiles($employee);
 
         return response()->json(['data' => $employee,
                                  'timeline' => $timelineData,
-                                 //'files' => $filesData
+                                 'files' => $filesData
                             ], 200);
     }
 
@@ -506,7 +510,39 @@ class SSPMyDetailsController extends CustomController
         }
 
         return $timeCompileResults;
+    }
 
+    private static function getFiles($employee) {
+        $attachments = [];
+
+        if(count($employee->getAllMediaByTag())>0) {
+            $medias = $employee->getAllMediaByTag()->get('Employee')->all();
+
+            if ($medias != null) {
+                foreach ($medias as $media) {
+                    $downloadLink = URL::to('/') .
+                        DIRECTORY_SEPARATOR . 'employees' .
+                        DIRECTORY_SEPARATOR . $employee->id .
+                        DIRECTORY_SEPARATOR . 'attachment' .
+                        DIRECTORY_SEPARATOR . $media->id;
+
+                    $attachments[] = array(
+                        'Id' => $media->id,
+                        'OriginalFileName' => $media->filename . '.' . $media->extension,
+                        'Comment' => $media->comment,
+                        'EmployeeAttachmentTypeId' => $media->extrable_id,
+                        //'EmployeeAttachmentDescription' => $media->EmployeeAttachmentType->Description, //EmployeeAttachmentType
+                        'FileExtension' => $media->extension,
+                        'Size' => $media->size,
+                        'HumanReadableSize' => $media->readableSize(),
+                        'ExtendedMime' => $media->mime_type,
+                        'DownloadLink' => $downloadLink
+                    );
+                }
+            }
+        }
+
+        return $attachments;
     }
 }
 
