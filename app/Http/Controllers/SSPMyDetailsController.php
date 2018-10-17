@@ -89,7 +89,7 @@ class SSPMyDetailsController extends CustomController
                 is_null($homeAddressInputs['HomeAddressCity']) || is_null($homeAddressInputs['HomeAddressProvince']) ||
                 is_null($homeAddressInputs['HomeAddressZipCode'])
             ) {
-                Address::where('employee_id', '=', $data->id)->delete();
+                Address::where('employee_id', '=', $data->id)->where('address_type_id',1)->delete();
             }
 
             $homeAddress['unit_no']= $homeAddressInputs['HomeAddressUnitNo'];
@@ -129,7 +129,7 @@ class SSPMyDetailsController extends CustomController
                 is_null($postalAddressInputs['PostalAddressCity']) || is_null($postalAddressInputs['PostalAddressProvince']) ||
                 is_null($postalAddressInputs['PostalAddressZipCode'])
             ) {
-                Address::where('employee_id', '=', $data->id)->delete();
+                Address::where('employee_id', '=', $data->id)->where('address_type_id',2)->delete();
             }
 
             $postalAddress['unit_no']= $postalAddressInputs['PostalAddressUnitNo'];
