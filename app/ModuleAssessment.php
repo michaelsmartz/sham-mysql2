@@ -15,13 +15,15 @@ class ModuleAssessment extends Model
      * @var array
      */
     protected $fillable = [
-                  'module_id',
-                  'assessment_type_id',
-                  'description',
-                  'data',
-                  'pass_mark',
-                  'trainer_id'
-              ];
+        'module_id',
+        'assessment_type_id',
+        'description',
+        'data',
+        'pass_mark',
+        'trainer_id'
+    ];
+
+    public $searchable = ['description', 'modules:description', 'assessment_types:description'];
 
     public function module()
     {

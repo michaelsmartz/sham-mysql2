@@ -25,6 +25,7 @@ use App\ImmigrationStatus;
 use App\Qualification;
 use App\Skill;
 use App\SysConfigValue;
+use App\TimelineManager;
 use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -56,7 +57,9 @@ class EmployeesController extends CustomController
      */
     public function index()
     {
-        $employees = $this->contextObj::with('department','jobTitle')->filtered()->paginate(10);
+        //$employees = $this->contextObj::with('department','jobTitle')->filtered()->paginate(10);
+        $employees = $this->contextObj::employeesList()->filtered()->paginate(10);
+        //dd($employees->first());
         return view($this->baseViewPath .'.index', compact('employees'));
     }
 
@@ -404,7 +407,7 @@ class EmployeesController extends CustomController
 
     protected function saveEmployee($request, $id = null) {
 
-        $otherFields = ['_token','_method','redirectsTo','picture','profile_pic','homeAddress','postalAddress','homePhone','mobilePhone','workPhone','privateEmail','workEmail','skills','disabilities','qualifications'];
+        $otherFields = ['_token','_method','attachment','redirectsTo','picture','profile_pic','homeAddress','postalAddress','homePhone','mobilePhone','workPhone','privateEmail','workEmail','skills','disabilities','qualifications'];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
         }
@@ -418,9 +421,13 @@ class EmployeesController extends CustomController
 
         if ($id == null) { // Create
             $data = $this->contextObj->addData($input);
+
+            TimelineManager::addEmployeeTimelineHistory($data);
+
         } else { // Update
             $this->contextObj->updateData($id, $input);
             $data = Employee::find($id);
+            TimelineManager::updateEmployeeTimelineHistory($data);
         }
 
         $this->attach($request, $data->id);

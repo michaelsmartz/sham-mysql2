@@ -85,6 +85,30 @@
     // On document ready
     $(function(){
 
+        function loadFromJsonFile() {
+            $.getJSON( '{{URL::to('/')}}/plugins/Formbuilder/fake-form-db-vals.json', function(jsonObj){
+                var fbOptions = {
+                    templateBasePath: '{{URL::to('/')}}/plugins/Formbuilder/templates/assessments/builder',
+                    // Provide a dom element the form will be built to
+                    // jQuery or simpleDOM elements required
+                    targets: $('.formbuilder'),
+                    // A callback allowing you to handle saving the form
+                    save: function(genFormData){
+                        var json_data = JSON.stringify(genFormData);
+                        $('#Data').val(json_data);
+                    },
+                    form_id:  jsonObj.form_id,
+                    startingModel: jsonObj.model,
+
+                    // use assessment field types
+                    field_types: assessmentFieldTypes
+                };
+
+                // Create an instance of form builder
+                myForm = new Formbuilder(fbOptions);
+            });
+        }
+
         function loadFromDb() {
             var fbOptions = {
                 templateBasePath: '{{URL::to('/')}}/plugins/Formbuilder/templates/assessments/builder',

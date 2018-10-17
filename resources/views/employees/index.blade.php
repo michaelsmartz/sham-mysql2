@@ -37,8 +37,8 @@
                             <td>{{ $employee->id }}</td>
                             <td>{{ $employee->first_name }}</td>
                             <td>{{ $employee->surname }}</td>
-                            <td>{{  isset($employee->department->description) ? $employee->department->description : ''  }}</td>
-                            <td>{{  isset($employee->jobTitle->description) ? $employee->jobTitle->description : ''  }}</td>
+                            <td>{{ optional($employee)->department }}</td>
+                            <td>{{ optional($employee)->job_title }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

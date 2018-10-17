@@ -6,11 +6,11 @@
 			</div>
 			<div class="col-md-4 text-right" style="padding-right: 0">
 				<label for="{fbid}.selected">Mark as correct answer? </label>
-				<input type="checkbox" class="choicecorrect"
-					   data-parsley-validate-if-empty=""
-					   data-parsley-mincheck="1" data-parsley-multiple="{parentFbid}"
-					   data-parsley-group="{parentFbid}"
-					   data-parsley-errors-container="#parsley-id-multiple-{parentFbid}"
+				<input type="checkbox" class="choicecorrect" 
+					   data-parsley-validate-if-empty="" 
+					   data-parsley-mincheck="1" data-parsley-multiple="{parentFbid}" 
+					   data-parsley-group="{parentFbid}" 
+					   data-parsley-errors-container="#parsley-id-multiple-{parentFbid}" 
 					   value="1" {?model.selected}checked="checked"{/model.selected} name="{fbid}.selected" id="{fbid}.selected" style="margin-right: 0">
 			</div>
 			<div class="col-md-2 text-right">
@@ -20,8 +20,8 @@
 	</div>
 	<div class="row">
 		<div class="col-md-10">
-			<input type="text" class="form-control choicequestion" value="{model.label}" placeholder="ex: Red"
-				   data-parsley-required="true" data-parsley-minlength="1"
+			<input type="text" class="form-control choicequestion" value="{model.label}" placeholder="ex: Red" 
+				   data-parsley-required="true" data-parsley-minlength="1" 
 				   name="{fbid}.label" id="{fbid}.label">
 		</div>
 		<div class="col-md-2">

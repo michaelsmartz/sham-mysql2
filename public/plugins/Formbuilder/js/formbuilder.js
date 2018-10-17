@@ -439,19 +439,21 @@
             model: existingModel,
             parentFbid: parentModel.fbid
           };
-
+          
           // new index
           //index = (typeof index === 'number') ? index : parentModel.choices.length;
           // KALIJA
           index = (typeof index === 'number') ? index : parentModel.choices.length -1;
 
           bodyObj.fbid += '_choices.'+index;
-          console.log(bodyObj);
+
           dust.render(field.template, bodyObj, function(err, out){
-            frmb_group.find('.frmb-choices').append( out );
+            $($('li#' + frmb_group.attr('id') + ' > .frmb-choices')[0]).append( out );
+            //frmb_group.find('.frmb-choices')[0].append( out );
           });
         }
-      }
+      } 
+      
     },
 
     /**

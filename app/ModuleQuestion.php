@@ -61,7 +61,6 @@ class ModuleQuestion extends Model
         static::deleting(function($item) {
             $item->questionChoices()->delete();
         });
-
 	}
 
     /**

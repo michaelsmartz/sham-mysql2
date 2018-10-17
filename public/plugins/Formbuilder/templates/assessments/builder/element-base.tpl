@@ -16,13 +16,13 @@
 	<div class="row">
 		<label for="{label}_label" style="margin-left: 20px;">Question:</label> <br>
 		<div class="form-group col-md-10">
-			<input type="text" class="form-control question" autocomplete="off" value="{model.label}" placeholder="ex: First Name"
+			<input type="text" class="form-control question" autocomplete="off" value="{model.label}" placeholder="ex: First Name" 
 				   name="{fbid}_label" id="{fbid}_label" required data-parsley-required="true" data-parsley-minlength="5">
 		</div>
 		<div class="form-group col-md-2">
 			<label for="" style="float:left;vertical-align:middle;">Points: </label>
 			<input type="text" class="form-control points" style="margin-left:5px; float:left; width:41%;" value="{model.Points}" placeholder="10" name="{fbid}_Points" id="{fbid}_Points"
-				   data-parsley-required="true" data-parsley-type="digits"
+				   data-parsley-required="true" data-parsley-type="digits" 
 				   data-parsley-min="1" data-parsley-min-message="Minimum points value: 1">
 		</div>
 	</div>

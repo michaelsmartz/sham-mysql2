@@ -366,5 +366,15 @@
         "model-name": "DisciplinaryDecision",
         "resource-file": "disciplinary_decisions.json",
         "table-name": "disciplinary_decisions"
+    },
+    {
+        "model-name": "ModuleAssessmentResponse",
+        "resource-file": "module_assessment_responses.json",
+        "table-name": "module_assessment_responses"
+    },
+    {
+        "model-name": "ModuleAssessmentResponseDetail",
+        "resource-file": "module_assessment_response_details.json",
+        "table-name": "module_assessment_response_details"
     }
 ]

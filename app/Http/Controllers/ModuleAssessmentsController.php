@@ -7,6 +7,7 @@ use App\AssessmentType;
 use App\ModuleAssessment;
 use App\ModuleAssessmentQuestion;
 use App\ModuleQuestion;
+use App\ModuleQuestionChoice;
 use App\Enums\ModuleQuestionType;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Request;
@@ -53,7 +54,7 @@ class ModuleAssessmentsController extends CustomController
         $moduleAssessments = $this->contextObj::with(['module','assessmentType'])->filtered()->paginate(10);
 
         // handle empty result bug
-        if ($moduleAssessments->isEmpty()) {
+        if (Input::has('page') && $moduleAssessments->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('moduleAssessments'));
@@ -62,7 +63,8 @@ class ModuleAssessmentsController extends CustomController
     public function create() {
         $modules = Module::pluck('description', 'id');
         $assessmentTypes = AssessmentType::pluck('description', 'id');
-        return view($this->baseViewPath . '.create',compact('modules','assessmentTypes'));
+        $_mode = "create";
+        return view($this->baseViewPath . '.create',compact('_mode','modules','assessmentTypes'));
     }
 
     /**
@@ -201,19 +203,27 @@ class ModuleAssessmentsController extends CustomController
 
             if ($id == 0) {
                 $context = $this->contextObj->create($input);
+                $id = $context->id;
             } else {
                 $temp['id'] = $id;
                 $res = $this->contextObj->where('id', $id)->update($input);
             }
 
             $context = $this->contextObj->find($id);
-            // get Module Question ids, delete them 
-            // and their choices(see ModuleQuestion::boot -> ModuleQuestion::deleting)
-            // and delete them eventually
-            $questionIds = $context->assessmentQuestions->pluck('module_question_id');
-            ModuleQuestion::whereIn('id', $questionIds)->delete();
-            $context->assessmentQuestions()->delete();
+            $context->load('assessmentQuestions');
+            // get Module Questions, their choices and their referenced Assessment questions 
 
+            $questionIds = optional($context->assessmentQuestions)->pluck('module_question_id');
+            $maQuestionIds = optional($context->assessmentQuestions)->pluck('id');
+
+            $mqs = ModuleQuestion::with('questionChoices')->whereIn('id', $questionIds)->get();
+
+            $mqChoiceIds = $mqs->pluck('questionChoices')->collapse()->pluck('id');
+
+            ModuleQuestionChoice::whereIn('id', $mqChoiceIds)->delete();
+            $context->assessmentQuestions()->delete();
+            ModuleQuestion::whereIn('id', $questionIds)->delete();
+            
             /*
             $context->load('questions')->toArray();
 
@@ -234,7 +244,7 @@ class ModuleAssessmentsController extends CustomController
             // map each json model property to a ModuleQuestion object
             $idm = 0;
             $maQuestions = [];
-            /*
+            
             foreach($formDataJson->model as $control => $question) {
                 // property correspondence json<->ModuleQuestion
                 $dbModuleQuestion = $this->jsonToModuleQuestion($question);
@@ -242,23 +252,41 @@ class ModuleAssessmentsController extends CustomController
                 $question->dbId = $dbModuleQuestion->id;
 
                 // prepare ModuleAssessmentQuestion
-                $maQuestions[] = [
+                ModuleAssessmentQuestion::create([
                     'module_assessment_id' => $context->id,
                     'module_question_id' => $dbModuleQuestion->id,
                     'sequence' => $question->sortOrder,
                     'is_active' => true
-                ];
-            }
-            */
+                ]);
 
-            dd($formDataJson);
+                if (property_exists($question, 'choices')) {
+                    foreach($question->choices as $qc) {
+                        //if($qc->dbId == false){
+                            //new item added on form
+                            // property correspondence json<->ModuleQuestionChoice
+                            $dbModuleQuestionChoice = $this->jsonToModuleQuestionChoice($qc, $dbModuleQuestion->id);
+                            $dbModuleQuestionChoice->save();
+                            $qc->dbId = $dbModuleQuestionChoice->id; // save id of newly added
+                        //} else {
+                            // was existing, but is now deleted
+                            //unset($question->choices[$idx]);
+                        //}
+                    }
+                }
+            }
+            
+            $context->data = json_encode($formDataJson);
+            $employeeId = intval(optional(\Auth::user())->employee_id);
+            $context->trainer_id = $employeeId;
+
+            $context->save();
 
         } catch (Exception $exception) {
             dd($exception);
             $response['status'] = 'KO';
             $responseCode = 500;
         }
-        die;
+
     }
 
     private function jsonToModuleQuestionAssoc($question){
@@ -290,11 +318,7 @@ class ModuleAssessmentsController extends CustomController
 
     private function jsonToModuleQuestion($question) {
 
-        if(empty($question->dbId)) {
-            $objQuestion = new ModuleQuestion();
-        } else {
-            $objQuestion = ModuleQuestion::find($question->dbId);
-        }
+        $objQuestion = new ModuleQuestion();
 
         foreach ($question as $k => $v) {
             if (isset($this->jsonQuestionMap[$k])) {
@@ -320,6 +344,20 @@ class ModuleAssessmentsController extends CustomController
         return $objQuestion;
     }
 
-    
+    private function jsonToModuleQuestionChoice($qc, $moduleQuestionId) {
+
+        $toReturn = new ModuleQuestionChoice();
+
+        foreach ($qc as $k => $v) {
+            if (isset($this->jsonQuestionChoiceMap[$k])) {
+                $toReturn->setAttribute($this->jsonQuestionChoiceMap[$k], $v);
+            }
+        }
+
+        $toReturn->module_question_id = $moduleQuestionId;
+        $toReturn->is_active = true;
+
+        return $toReturn;
+    }    
     
 }

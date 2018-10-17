@@ -75,33 +75,21 @@ class TimelineManager extends Model
         $jobtitleid = $employee->job_title_id;
 
         $id = $employee->id;
-        $arr = HistoryJoinTermination::getList(['id','is_joined','date_occurred'], "" , "", "",1,0,"employee_id eq ".$id);
-        $arrDeptids = HistoryDepartment::getList(['id','department_id','date_occurred'], "" , "", "",1,0,"employee_id eq ".$id);
-        $arrJobtitleids = HistoryJobTitle::getList(['id','job_title_id','date_occurred'], "" , "", "",1,0,"employee_id eq ".$id);
-
-        $selectedTerminationDate = "";
-        $selectedDepartmentid = "";
-        $selectedJobtitleid = "";
 
         // Get last termination date from history table
-        foreach ($arr as $element) {
-            if(!$element->is_joined)
-            {
-                $selectedTerminationDate = date("Y-m-d", strtotime($element->date_occurred));//$element->date_occurred;
-            }
+        $arr = HistoryJoinTermination::where('employee_id','=', $id)->orderBy('id','desc')->get()->first();
+        if(!$arr->is_joined)
+        {
+            $selectedTerminationDate = date("Y-m-d", strtotime($arr->date_occurred));//$element->date_occurred;
         }
 
         // Get last departmentid from history table
-        foreach($arrDeptids as $element)
-        {
-            $selectedDepartmentid = $element->department_id;
-        }
+        $lastDepartment = HistoryDepartment::where('employee_id','=', $id)->orderBy('id','desc')->get()->first();
+        $selectedDepartmentid = optional($lastDepartment)->department_id;
 
         // Get last jobtitleid from history table
-        foreach($arrJobtitleids as $element)
-        {
-            $selectedJobtitleid = $element->job_title_id;
-        }
+        $lastJobTitle = HistoryJobTitle::where('employee_id','=', $id)->orderBy('id','desc')->get()->first();
+        $selectedJobtitleid = optional($lastJobTitle)->job_title_id;
 
         // Add  new terminationdate if keyed termination date is not equal to historytermination date.
         if ($terminationDate != null) {

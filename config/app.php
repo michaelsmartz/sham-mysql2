@@ -162,8 +162,6 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        //bnjns\SearchTools\SearchToolsServiceProvider::class,
-        //Andrewboy\SearchBox\SearchBoxServiceProvider::class,
         /*
          * Package Service Providers...
          */
