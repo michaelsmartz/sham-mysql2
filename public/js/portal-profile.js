@@ -212,7 +212,7 @@ $(document).ready(function () {
 });
 
 function saveHandler(event) {
-    //event.preventDefault();
+    event.preventDefault();
 
     var l = Ladda.create( document.getElementById('btnSave') );
     l.start();
@@ -221,7 +221,7 @@ function saveHandler(event) {
     var data = $('#frmEditProfile').serializeJSON();
     var id = $('#employeeId').val();
 
-    var fd = new FormData($('#frmEditProfile'));
+    var fd = new FormData($('#frmEditProfile')[0]);
     fd.append('id', id);
     fd.append('data', data);
 
@@ -229,9 +229,7 @@ function saveHandler(event) {
         url: $('#frmEditProfile').attr('action'),
         dataType : 'json',
         data: fd,
-        type: "PATCH",
-        cache: false,
-        async: false,
+        type: "POST",
         processData: false,
         contentType: false,
         headers: {
@@ -239,20 +237,21 @@ function saveHandler(event) {
         },
     });
 
-    request.done(function(msg) {
-        $.amaran({
-            'content'   :{
-                title: 'Profile',
-                message: 'Profile details updated',
-                info: '',
-                icon: 'fa fa-check'
-            },
-            'delay': 5500, // 5.5 seconds
-            'closeButton': true,
-            'position': 'top right'
-        });
+    request.done(function(response) {
+        if(response.status ===  200) {
+            $.amaran({
+                'content': {
+                    title: 'Profile',
+                    message: 'Profile details updated',
+                    info: '',
+                    icon: 'fa fa-check'
+                },
+                'delay': 5500, // 5.5 seconds
+                'closeButton': true,
+                'position': 'top right'
+            });
+        }
     });
-
     request.fail(function(jqXHR, textStatus) {
         $.amaran({
             'content'   :{

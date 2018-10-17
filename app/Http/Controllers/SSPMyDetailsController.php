@@ -198,17 +198,11 @@ class SSPMyDetailsController extends CustomController
                     ->updateOrCreate(['employee_id'=>$data->id, 'email_address_type_id'=>1],
                         $homeEmail);
             }
-        }
 
-        if (count($warnings) == 0) {
-            \Session::put('success','My details successfully saved!');
+            return response()->json(['msg' => 'success', 'status' =>200]);
         }else{
-            foreach ($warnings as $warning){
-                \Session::put('error', $warning);
-            }
+            return response()->json(['msg' => 'failure', 'status' =>500]);
         }
-
-        return Redirect::back();
     }
 
     public function getProfile(Request $request) {
