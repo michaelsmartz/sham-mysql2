@@ -33,10 +33,10 @@ class OrganisationChartsController extends CustomController
      */
     public function index()
     {
-
         $managerEmployeeId = Input::get('ManagerEmployeeId', ''); //search string
         $jsonData = json_encode(self::orgStructData($managerEmployeeId)); //json_encode($data);
         $managers = JobTitle::ManagerialJobs()->with('employees')->get();
+
         // load the view and pass the organisationcharts
         return view($this->baseViewPath .'.index',compact('allowedActions', 'managers'))
             ->with('data', $jsonData)

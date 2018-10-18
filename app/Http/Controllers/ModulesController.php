@@ -35,7 +35,7 @@ class ModulesController extends CustomController
         $modules = $this->contextObj::filtered()->paginate(10);
 
         // handle empty result bug
-        if ($modules->isEmpty()) {
+        if (Input::has('page') && $modules->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('modules'));

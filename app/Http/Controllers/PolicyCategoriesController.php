@@ -36,6 +36,11 @@ class PolicyCategoriesController extends CustomController
     public function index()
     {
         $policyCategories = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $policyCategories->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('policyCategories'));
     }
 

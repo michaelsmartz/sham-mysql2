@@ -31,6 +31,11 @@ class JobTitlesController extends CustomController
     public function index()
     {
         $jobTitles = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $jobTitles->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('jobTitles'));
     }
 

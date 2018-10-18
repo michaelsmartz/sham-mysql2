@@ -31,6 +31,11 @@ class TitlesController extends CustomController
     public function index()
     {
         $titles = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $titles->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('titles'));
     }
 

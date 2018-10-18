@@ -59,7 +59,11 @@ class EmployeesController extends CustomController
     {
         //$employees = $this->contextObj::with('department','jobTitle')->filtered()->paginate(10);
         $employees = $this->contextObj::employeesList()->filtered()->paginate(10);
-        //dd($employees->first());
+
+        // handle empty result bug
+        if (Input::has('page') && $employees->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('employees'));
     }
 

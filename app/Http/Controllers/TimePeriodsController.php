@@ -32,6 +32,11 @@ class TimePeriodsController extends CustomController
     public function index()
     {
         $timePeriods = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $timePeriods->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('timePeriods'));
     }
 

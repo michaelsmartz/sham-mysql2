@@ -31,6 +31,11 @@ class SkillsController extends CustomController
     public function index()
     {
         $skills = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $skills->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('skills'));
     }
 

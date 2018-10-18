@@ -31,6 +31,11 @@ class TrainingDeliveryMethodsController extends CustomController
     public function index()
     {
         $trainingDeliveryMethods = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $trainingDeliveryMethods->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('trainingDeliveryMethods'));
     }
 

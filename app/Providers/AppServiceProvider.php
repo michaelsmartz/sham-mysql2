@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
         
-        if( env('APP_DEBUG') === true ){
+        if( env('LOG_QUERIES') === true ){
             DB::listen(function($query) {
                 $logFile = storage_path('logs/query.log');
                 $monolog = new Logger('log');
@@ -53,16 +53,11 @@ class AppServiceProvider extends ServiceProvider
             'groupRelationSelect', 
             function ($name, $collection, $relation, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
             {
-        
                 $groups = [];
-        
-                foreach ($collection as $model)
-                {
-                    foreach($model->$relation as $rel)
-                    {
+                foreach ($collection as $model) {
+                    foreach($model->$relation as $rel) {
                         $groups[$model->$groupName][$rel->$optValue] = $rel->$optName;
                     }
-                    
                 }
 
                 return Form::select($name, $groups, $selected, $attributes);

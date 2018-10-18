@@ -81,6 +81,6 @@ window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-d
 //window.Modal = require('exports-loader?Modal!bootstrap/js/dist/modal'); // eslint-disable-line
 //window.Popover = require('exports-loader?Tooltip!bootstrap/js/dist/popover'); // eslint-disable-line
 window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
-window.Tab = require('exports-loader?Tap!bootstrap/js/dist/tap'); // eslint-disable-line
+window.Tab = require('exports-loader?Tab!bootstrap/js/dist/tab'); // eslint-disable-line
 
 window.asyncJS = global.asyncJS = asyncJS;

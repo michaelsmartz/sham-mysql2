@@ -34,6 +34,11 @@ class AssessmentsController extends CustomController
     public function index()
     {
         $assessments = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $assessments->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('assessments'));
     }
 

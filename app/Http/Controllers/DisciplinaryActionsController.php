@@ -39,11 +39,13 @@ class DisciplinaryActionsController extends CustomController
      */
     public function index(Request $request)
     {
-
         $id = Route::current()->parameter('employee');
-
         $disciplinaryActions = $this->contextObj::where('employee_id', $id)->filtered()->paginate(10);
 
+        // handle empty result bug
+        if (Input::has('page') && $disciplinaryActions->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('id','disciplinaryActions'));
     }
 

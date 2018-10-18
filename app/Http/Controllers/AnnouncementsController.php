@@ -32,8 +32,12 @@ class AnnouncementsController extends CustomController
      */
     public function index(Request $request)
     {
-        //$data = $this->contextObj->getData(['announcement_status_id' => 'asc', 'end_date' => 'asc']);
         $announcements = $this->contextObj->getData(['announcement_status_id' => 'asc', 'end_date' => 'asc']);
+
+        // handle empty result bug
+        if (Input::has('page') && $announcements->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('announcements'));
     }
 

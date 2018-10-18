@@ -35,7 +35,7 @@ class CoursesController extends CustomController
         $courses = $this->contextObj::filtered()->paginate(10);
 
         // handle empty result bug
-        if ($courses->isEmpty()) {
+        if (Input::has('page') && $courses->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('courses'));

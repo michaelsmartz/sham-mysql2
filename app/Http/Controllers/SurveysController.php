@@ -38,6 +38,11 @@ class SurveysController extends CustomController
     public function index()
     {
         $surveys = $this->contextObj::with('users.employee')->filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $surveys->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('surveys'));
     }
 

@@ -31,7 +31,7 @@ class AssetSuppliersController extends CustomController
         $assetSuppliers =  $this->contextObj::filtered()->paginate(10);
 
         // handle empty result bug
-        if ($assetSuppliers->isEmpty()) {
+        if (Input::has('page') && $assetSuppliers->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('assetSuppliers'));

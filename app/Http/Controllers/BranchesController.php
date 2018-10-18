@@ -34,7 +34,7 @@ class BranchesController extends CustomController
         $branches = $this->contextObj::with(['company'])->filtered()->paginate(10);
 
         // handle empty result bug
-        if ($branches->isEmpty()) {
+        if (Input::has('page') && $branches->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('branches'));

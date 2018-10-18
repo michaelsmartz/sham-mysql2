@@ -31,6 +31,11 @@ class ProductsController extends CustomController
     public function index()
     {
         $products = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $products->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
         return view($this->baseViewPath .'.index', compact('products'));
     }
 

@@ -35,7 +35,7 @@ class TeamsController extends CustomController
         $teams = $this->contextObj::with(['timeGroup','products'])->filtered()->paginate(10);
 
         // handle empty result bug
-        if ($teams->isEmpty()) {
+        if (Input::has('page') && $teams->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
 

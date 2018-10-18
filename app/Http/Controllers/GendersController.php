@@ -31,6 +31,11 @@ class GendersController extends CustomController
     public function index()
     {
         $genders = $this->contextObj::filtered()->paginate(10);
+
+        // handle empty result bug
+        if (Input::has('page') && $genders->isEmpty()) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }        
         return view($this->baseViewPath .'.index', compact('genders'));
     }
 

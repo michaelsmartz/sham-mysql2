@@ -38,7 +38,7 @@ class AssetsController extends CustomController
         $assets = $this->contextObj::filtered()->paginate(10);
 
         // handle empty result bug
-        if ($assets->isEmpty()) {
+        if (Input::has('page') && $assets->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('assets'));

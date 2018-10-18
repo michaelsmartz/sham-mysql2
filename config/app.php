@@ -183,7 +183,7 @@ return [
         App\Providers\SysConfigServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
         //Arrilot\Widgets\ServiceProvider::class,
-        Clockwork\Support\Laravel\ClockworkServiceProvider::class,
+        //Clockwork\Support\Laravel\ClockworkServiceProvider::class,
         Plank\Mediable\MediableServiceProvider::class
 
     ],

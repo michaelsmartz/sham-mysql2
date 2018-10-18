@@ -31,12 +31,11 @@ class RewardsController extends CustomController
     //functions necessary to handle 'resource' type of route
     public function index(Request $request)
     {
-
         $id = Route::current()->parameter('employee');
-
         $rewards = $this->contextObj::where('employee_id', $id)->filtered()->paginate(10);
+
         // handle empty result bug
-        if ($rewards->isEmpty()) {
+        if (Input::has('page') && $rewards->isEmpty()) {
             return redirect()->to(action('RewardsController@index', ['employee'=>$id]));
         }
         return view($this->baseViewPath .'.index', compact('id','rewards'));

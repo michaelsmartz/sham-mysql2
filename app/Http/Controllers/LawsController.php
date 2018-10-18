@@ -39,7 +39,7 @@ class LawsController extends CustomController
         $laws = $this->contextObj::with(['country','lawCategory'])->filtered()->paginate(10);
 
         // handle empty result bug
-        if ($laws->isEmpty()) {
+        if (Input::has('page') && $laws->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('laws'));

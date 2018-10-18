@@ -34,7 +34,7 @@ class AssetAllocationsController extends CustomController
         $assetEmployees =  $this->contextObj::with(['asset','employee'])->filtered()->paginate(10);
 
         // handle empty result bug
-        if ($assetEmployees->isEmpty()) {
+        if (Input::has('page') && $assetEmployees->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('assetEmployees'));
