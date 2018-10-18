@@ -21,8 +21,6 @@ $(document).ready(function () {
         }
     });
 
-    $("[data-toggle='tooltip']").tooltip({title: 'Completion percentage', placement: 'auto right',container: 'body'});
-
     $(".overflow-container").niceScroll({
         cursorborder:"3",
         cursorcolor:"#fff",

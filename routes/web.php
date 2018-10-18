@@ -46,6 +46,10 @@ Auth::routes();
                 'only'=>['index','update']
             ]);
 
+            Route::resource('my-courses', 'SSPMyCourseController',[
+                'only'=>['index']
+            ]);
+
             Route::resource('my-surveys', 'SSPMySurveysController');
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');
         #endRegion

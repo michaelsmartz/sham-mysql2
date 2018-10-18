@@ -1,0 +1,18 @@
+.scrollable-content {
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding-right: 8px;
+}
+.scrollable-xs {
+    height: 200px;
+    overflow-y: scroll;
+}
+.scrollable-sm {
+    height: 400px;
+    overflow-y: scroll;
+}
+.scrollable-lg {
+    height: 500px;
+    overflow-y: scroll;
+}

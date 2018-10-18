@@ -1,0 +1,206 @@
+@extends('portal-index')
+@section('title','My E-learning')
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+@section('post-body')
+
+<link href="{{URL::to('/')}}/css/Amaran/amaran.min.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/css/nicescroll.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/css/metro-colors.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
+<style>
+    iframe {
+        width: 100%;
+        min-height: 45px;
+        height: 100% !important;
+        overflow: hidden !important;
+    }
+    .loadMsg {
+        width: 100%;
+        height: 100%;
+        font-weight: bold;
+        text-align: center;
+        display: table;
+        font-size:14pt;
+    }
+
+    .loadMsg div {
+        display: table-cell;
+        vertical-align: middle;
+    }
+</style>
+
+<script src="{{URL::to('/')}}/js/Amaran/jquery.amaran.min.js"></script>
+<script src="{{URL::to('/')}}/js/jquery.nicescroll-3.6.8.min.js"></script>
+<script src="{{URL::to('/')}}/js/my-elearning.js"></script>
+<script>
+    $(function() {
+        // load iframe content
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            paneID = $(e.target).attr('href');
+            src = $(paneID).attr('data-src');
+            // if the iframe hasn't already been loaded once
+            if($(paneID+" iframe").attr("src")=="")
+            {
+                Pace.restart({minTime:500});
+                Pace.track(function(){
+                    $(paneID+" iframe").attr("src",src);
+                });
+            }
+
+            Pace.track(function(){
+                $(paneID+" iframe").load(function() {
+                    // hide loading message when iframe loaded
+                    $(paneID+" .loadMsg").hide();
+                    Pace.stop();
+                });
+            });
+
+        });
+    });
+
+    $(document).ready(function(){
+
+        var url = window.location.href;
+
+        var activeTab = url.substring(url.indexOf("#") + 1);
+        if(activeTab == "mycourse")
+        {
+            $("li").removeClass("active");
+            $('#mycourses').click();
+            $('#mycourses').addClass("active");
+        }
+    });
+
+</script>
+@stop
+
+<?php
+    $courseBaseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink', 'bg-darkBrown','bg-darkCyan','bg-darkCobalt','bg-darkOrange','bg-lightOlive','bg-lightRed'];
+    //$courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink'];
+    $courseBgClasses =    $courseBaseBgClasses;
+     if(count($coursesAvailable)>12)
+     {
+         for ($x = 12; $x <= count($coursesAvailable); $x++)
+         {
+             $colourindex = $x % 12;
+             $courseBgClasses[] = $courseBaseBgClasses[$colourindex];
+         }
+     }
+?>
+@section('content')
+    @if (!empty($warnings))
+        <div class="col-xs-12 alert alert-danger">
+            <i class="glyphicon glyphicon-exclamation-sign"></i>
+            @foreach($warnings as $index => $warning)
+                <div>{{$warning}}</div>
+                @if($index<count($warnings)-1))<br>@endif
+            @endforeach
+        </div>
+    @endif
+
+    <div class="col-xs-12">
+        <div id="message"></div>
+    </div>
+
+    <section id="elearning">
+        <br>
+        <ul class="nav nav-tabs" id="myTabs">
+            <li class="active"><a data-toggle="tab" href="#sectionA">Available</a></li>
+            @if(sizeof($warnings) == 0)
+                <li><a id="mycourses" data-toggle="tab" href="#myCoursesTab">My courses</a></li>
+                <li><a data-toggle="tab" href="#myAssessmentsTab">My assessments</a></li>
+                <li><a data-toggle="tab" href="#qAndATab">Questions & Answers</a></li>
+            @endif
+        </ul>
+        <p></p>
+        <div class="tab-content">
+            <!-- available courses content -->
+            <div id="sectionA" class="tab-pane fade in active"> <!-- available courses content start -->
+                <p></p>
+                <div class="panel panel-default">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            @if(count($coursesAvailable)>0)
+                                <div class="metro-tile-container">
+                                    @foreach($coursesAvailable as $index => $course)
+                                        <div class="metro-tile metro-tile-lg carousel slide" id="myCarousel-{{$index}}" data-interval="false">
+                                            <div class="hide tile-progressbar" title="" data-html="true" data-wenk="<h3 class='text-info'><b>65%</b></h3> completed">
+                                                <span style="width: 65%;"></span>
+                                            </div>
+
+                                            <div class="carousel-inner">
+
+                                                <div class="metro-tile-page item active fg-white {{$courseBgClasses[$index]}}" data-slide-number="0">
+                                                    <h4>
+                                                        {{$course->description}}
+                                                        @if(count($course->employees) > 0)
+                                                            <small><i class="text-primary fa fa-info-circle" data-wenk="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled"></i></small>
+                                                        @endif
+                                                    </h4>
+                                                    @if(!$course->enrolled)
+                                                    <div class="backside-button" role="button">
+                                                        <span class="enrol" data-id="{{$course->id}}">Enrol on this course</span>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                                <div class="metro-tile-page item fg-white {{$courseBgClasses[$index]}}" data-slide-number="1">
+                                                    <div class="">
+                                                        <div class="row">
+                                                            <div class="description">
+                                                                <strong>Description</strong>
+                                                            </div>
+                                                            <div class="objective">
+                                                                <strong>Objectives</strong>
+                                                            </div>
+                                                        </div>
+                                                        <div class="overflow-container">
+                                                            <p class="description">{{$course->overview}}</p>
+                                                            <p class="objective">{{$course->objectives}}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Carousel nav -->
+                                            <a href="#myCarousel-{{$index}}" class="left carousel-control" title="previous content" data-slide="prev">
+                                                <span class="fa fa-chevron-left fa-2x"></span>
+                                            </a>
+                                            <a href="#myCarousel-{{$index}}" class="right carousel-control"title="next content" data-slide-to="1">
+                                                <span class="fa fa-chevron-right fa-2x"></span>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <span class="text-success">There are no courses available yet</span>
+                                <br><br>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="myCoursesTab" class="tab-pane" data-src="{{URL::to('/')}}/my-elearning/my-courses">
+                <div class="panel panel-default">
+                    <div class="loadMsg"><div><i class="fa fa-spin"></i> Loading...</div></div>
+                    <iframe id="myCoursesFrame" src="" scrolling="no" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <div id="myAssessmentsTab" class="tab-pane" data-src="{{URL::to('/')}}/my-elearning/my-assessments">
+                <div class="panel panel-default">
+                    <div class="loadMsg"><div><i class="fa fa-spin"></i> Loading...</div></div>
+                    <iframe src="" scrolling="no" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <div id="qAndATab" class="tab-pane"  data-src="{{URL::to('/')}}/my-elearning/questions">
+                <div class="panel panel-default">
+                    <iframe id="qAndAFrame" src="" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+@stop
