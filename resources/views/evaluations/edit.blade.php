@@ -13,6 +13,7 @@
     <div class="row">
         <div class="col-sm-12">
             @include ('evaluations.form', [
+                'mode' => 'edit',
                 'evaluation' => $data,
             ])
         </div>
@@ -25,7 +26,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('evaluations.update', $data->id) }}" id="edit_evaluation_form" name="edit_evaluation_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('evaluations.update', $data->id) }}" id="edit_evaluation_form" name="edit_evaluation_form" accept-charset="UTF-8" enctype="multipart/form-data">
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">

@@ -102,10 +102,28 @@
     {!! $errors->first('evaluation_status_id', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('qa_sample') ? 'has-error' : '' }}">
-    <label for="qa_sample">Qa Sample</label>
-        <textarea class="form-control" name="qa_sample" cols="50" rows="1" id="qa_sample" placeholder="Enter qa sample">{{ old('qa_sample', optional($evaluation)->qa_sample) }}</textarea>
-        {!! $errors->first('qa_sample', '<p class="help-block">:message</p>') !!}
+<div class="form-group col-xs-12">
+    {{ Form::label('QA Sample','QA Sample',array('id'=>'','class'=>'')) }}
+    {{ Form::radio('status','savecontent',true,['id'=>'savecontent']) }} Upload Sample File
+    {{ Form::radio('status','savepath',false,['id'=>'savepath']) }} Save Path Only
+</div>
+
+<div id="contentcontainer">
+    <?php if ($mode == 'edit'): ?>
+    <div class="form-group col-xs-12">
+        {!! Form::label('SameAudio','Replace Audio File:') !!}
+        {!! Form::checkbox('SameAudio','true',null,($mode =='view')?['disabled']:['id'=>'SameAudio']) !!}
+    </div>
+    <?php endif; ?>
+    <div class="form-group col-xs-12">
+        {!! Form::label('QaSample','Audio File New:') !!}
+        {{ Form::file('attachment', ($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke','accept'=>'audio/*', 'autocomplete'=>'off', 'placeholder'=>'Audio File', 'id'=>'attachment']) }}
+    </div>
+</div>
+    <input type="file" name="photo" id="photo">
+<div class="form-group col-xs-12" id="filecontainer">
+    {{ Form::label('QA File Path','QA File Path',array('id'=>'','class'=>'')) }}
+    {!! Form::text('UrlPath', null,($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'QA File Path', 'id'=>'UrlPath']) !!}
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('comments') ? 'has-error' : '' }}">
@@ -115,3 +133,32 @@
 </div>
 
 </div>
+
+@section('post-body')
+    <script>
+
+        $('#savepath').click(function() {
+            $('#contentcontainer').hide();
+            $('#filecontainer').show(200);
+            $('#UrlPath').addClass("required");
+            $('#QaSample').removeClass("required");
+        });
+
+        $('#savecontent').click(function() {
+            $('#contentcontainer').show(200);
+            $('#filecontainer').hide();
+
+            mode = '{{$mode}}';
+            $('#UrlPath').removeClass("required");
+
+            if(mode == 'create')
+            {
+                $('#QaSample').addClass("required");
+            }
+        });
+
+        $(document).ready(function(){
+            $( "#savecontent" ).click();
+        });
+    </script>
+@endsection

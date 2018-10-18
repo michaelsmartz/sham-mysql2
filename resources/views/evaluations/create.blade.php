@@ -4,11 +4,12 @@
 @section('content')
     <div class="box box-primary">
         <div class="box-body">
-            <form method="POST" action="{{ route('evaluations.store') }}" accept-charset="UTF-8" id="create_evaluation_form" name="create_evaluation_form" class="form-horizontal">
+            <form method="POST" action="{{ route('evaluations.store') }}" accept-charset="UTF-8" id="create_evaluation_form" name="create_evaluation_form" class="form-horizontal" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="row">
                     <div class="col-sm-12">
                         @include('evaluations.form', [
+                            'mode' => 'create',
                             'evaluation' => null,
                         ])
                     </div>

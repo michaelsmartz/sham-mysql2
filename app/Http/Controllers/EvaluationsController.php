@@ -16,10 +16,12 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+use App\Traits\MediaFiles;
 use Exception;
 
 class EvaluationsController extends CustomController
 {
+    use MediaFiles;
     /**
      * Create a new controller instance.
      *
@@ -65,15 +67,34 @@ class EvaluationsController extends CustomController
     public function store(Request $request)
     {
         try {
-            //$this->validator($request);
 
+            $employeeid = \Auth::user()->employee->id;
             $input = array_except($request->all(),array('_token'));
 
-            $this->contextObj->addData($input);
+            $input['createdby_employee_id'] = $employeeid;
+
+            if($input['status'] == 'savecontent') {
+
+                $input['is_usecontent'] = 1;
+                if (Input::hasFile('attachment') && Input::file('attachment')->isValid()) {
+                    $filename = Input::file('attachment')->getClientOriginalName();
+                    $input['original_filename'] = $filename;
+                }
+                else
+                {
+                    unset($input['QaSample']);
+                }
+            }
+
+            $context = $this->contextObj->addData($input);
+
+            //$this->attach($request, $context->id);
+
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
+            dump($exception->getMessage());die;
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
