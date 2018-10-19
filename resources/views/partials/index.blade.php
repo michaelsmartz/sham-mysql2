@@ -1,8 +1,10 @@
+@if(!empty($routeName))
 <form method="POST" action="{{route($routeName, 'deleteId')}}" id="indexDeleteForm">
     <input type="hidden" name="id" id='deleteField'>
     {{ csrf_field() }}
     {{ method_field('DELETE') }}
 </form>
+@endif
 
 @push('js-stack')
     <style>

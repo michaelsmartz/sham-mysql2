@@ -3,7 +3,7 @@
 @section('content')
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($moduleAssessments) > 0)
+            @if(count($moduleAssessments) == 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">

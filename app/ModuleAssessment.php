@@ -25,6 +25,7 @@ class ModuleAssessment extends Model
 
     public $searchable = ['description', 'modules:description', 'assessment_types:description'];
 
+    #region auto-generated relations
     public function module()
     {
         return $this->belongsTo('App\Module','module_id','id');
@@ -43,6 +44,12 @@ class ModuleAssessment extends Model
     public function assessmentQuestions()
     {
         return $this->hasMany('App\ModuleAssessmentQuestion','module_assessment_id');
+    }
+    #endregion
+
+    public function moduleAssessmentResponses()
+    {
+        return $this->hasMany('App\ModuleAssessmentResponse','module_assessment_id');
     }
 
 }
