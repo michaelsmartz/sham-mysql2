@@ -40,6 +40,9 @@
                                     <button type="button" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$moduleAssessment->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </button>
+                                    <button type="button" data-wenk="Review Candidate Responses" class="b-n b-n-r bg-transparent item-review" onclick="showResponses('{{$moduleAssessment->id}}', event)">
+                                        <i class="glyphicon glyphicon-equalizer text-primary"></i>
+                                    </button>
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$moduleAssessment->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>

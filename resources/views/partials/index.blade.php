@@ -58,6 +58,10 @@
         window.showTimeline = function(id, event) {
             window.location = '{{url()->to("timelines")}}/'+id;
         };
+        window.showResponses = function(id, event) {
+            window.location = '{{url()->to("module_assessments")}}/' + id + '/responses';
+        };
+        
         window.cleanUrlHash = function(){
             window.history.pushState(null, "", window.location.href.replace("#light-modal", ""));
             //history.replaceState(null, "", window.location.pathname);
