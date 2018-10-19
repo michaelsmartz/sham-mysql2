@@ -83,6 +83,49 @@ trait MediaFiles
         return $returns;
     }
 
+    public function attachSingleFile(Request $request, $Id, $filefield)
+    {
+        $name = $this->getModelName($request);
+
+        $uModelName = $name['model'];
+        $modelClass = 'App\\'.$uModelName;
+
+        $relatedMedias = $modelClass::find($Id);
+        $returns = [];
+
+        if($request->hasFile( $filefield) && $request->file($filefield)->isValid()){
+
+            $fileToProcess = $request->file($filefield);
+            dump($fileToProcess->getClientOriginalName());
+            $stream = fopen($fileToProcess, 'r');
+            try {
+                //get current disk where the file will be uploaded
+                $disk = 'uploads';
+
+                //take only filename and not extension
+                $temp = explode('.', $fileToProcess->getClientOriginalName());
+                $name = $temp[0];
+                $ext = $temp[1];
+
+                $media =  MediaUploader::fromSource($request->file($filefield))
+                    ->toDestination($disk, $uModelName)
+                    ->upload();
+
+            } catch (MediaUploadException $e) {
+                Session::put('error', $e->getMessage());
+            }
+
+            //dump($relatedMedias);die;
+
+            //to sync mediable table with media table on upload
+            $relatedMedias->attachMedia($media, $uModelName);
+            //$relatedMedias->syncMedia($media, $modelName);
+
+            $returns[] = $media;
+        }
+        return $returns;
+    }
+
     /**
      * remove media
      * @param $pivot_mediable_id
