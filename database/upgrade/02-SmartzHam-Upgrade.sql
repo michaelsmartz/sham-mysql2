@@ -2378,3 +2378,18 @@ ALTER TABLE `history_qualifications`
 ALTER TABLE `history_qualifications` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE `history_qualifications` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE `history_qualifications` ADD `deleted_at` DATETIME NULL;
+
+#-- 19/10/2018
+
+ALTER TABLE `evaluation_assessors`
+CHANGE COLUMN `starttime` `start_time` DATETIME NULL DEFAULT NULL,
+CHANGE COLUMN `endtime` `end_time` DATETIME NULL DEFAULT NULL;
+
+ALTER TABLE `evaluation_assessors`
+RENAME TO  `employee_evaluation` ;
+
+ALTER TABLE `module_assessment_responses`
+CHANGE COLUMN `date_start` `date_start` DATE NULL DEFAULT NULL AFTER `employee_id`,
+CHANGE COLUMN `date_end` `date_end` DATE NULL DEFAULT NULL AFTER `date_start`,
+CHANGE COLUMN `date_completed` `date_completed` DATE NULL DEFAULT NULL AFTER `date_end`,
+CHANGE COLUMN `is_reviewed` `is_reviewed` TINYINT(1) NULL DEFAULT '0' AFTER `date_completed`
