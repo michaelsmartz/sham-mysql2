@@ -48,11 +48,10 @@ $(document).ready(function () {
         var request = $.ajax({
             url: 'my-elearning/enrol',
             type: "POST",
-            global: false,
             data: {
-                'Id': el.attr('data-id')
+                'id': el.attr('data-id')
             },
-            dataType: "html"
+            dataType: "json"
         });
 
         request.done(function (msg) {

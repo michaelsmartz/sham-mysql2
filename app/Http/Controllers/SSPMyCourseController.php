@@ -23,7 +23,7 @@ class SSPMyCourseController extends CustomController
      *
      */
     public function __construct(){
-        $this->contextObj = new Employee();
+        $this->contextObj = new Course();
         $this->baseViewPath = 'selfservice-portal.e-learning';
     }
 
@@ -42,8 +42,7 @@ class SSPMyCourseController extends CustomController
         if ($id == 0) {
             $warnings[] = 'Please check whether your profile is associated to an employee!';
         }else{
-            $course = new Course();
-            $coursesAvailable = $course->with(['modules.topics','employees'])->where('is_public',1)->get()->all();
+            $coursesAvailable = $this->contextObj->with(['modules.topics','employees'])->where('is_public',1)->get()->all();
 
             foreach ($coursesAvailable as $index => $course) {
                 if($course->modules->count() == 0){
@@ -68,7 +67,52 @@ class SSPMyCourseController extends CustomController
             }
         }
 
+        //dd($coursesAvailable);
+
         // load the view and pass the coursesAvailable
         return View::make($this->baseViewPath .'.available', compact('coursesAvailable', 'warnings'));
+    }
+
+    public function enrol(Request $request) {
+        $course_id = $request->get('id');
+
+        $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        $course = $this->contextObj::find($course_id);
+
+        $course_employee_pivot[] = [
+            'course_id' => $course_id,
+            'employee_id' => $employee_id,
+            'courseparticipantstatus_id' => 1, //Just Enrolled
+        ];
+
+        $course->employees()->sync($course_employee_pivot);
+
+        //TODO HistoryTraining
+
+        $courseModTopics = $this->contextObj::where('id',$course_id)->with(['modules.topics','employees'])->get()->all();
+
+        $course_employee_module_topic_pivot = [];
+
+        if($courseModTopics != null){
+            $module_count = 0;
+            foreach ($courseModTopics[0]->modules as $module) {
+                foreach ($module->topics as $topic) {
+                    $course_employee_module_topic_pivot[$module_count] = [
+                        'employee_id' => $employee_id,
+                        'course_id' => $course_id,
+                        'module_id' => $module->id,
+                        'topic_id' => $topic->id,
+                        'is_completed' => false
+                    ];
+                    $module_count++;
+                }
+            }
+
+            $course->employeeProgress()->sync($course_employee_module_topic_pivot);
+
+            return response()->json(['response' => 'OK']);
+        }
+        return response()->json(['response' => 'KO'], 500);
     }
 }

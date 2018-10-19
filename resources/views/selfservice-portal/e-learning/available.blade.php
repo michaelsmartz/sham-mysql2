@@ -1,14 +1,18 @@
 @extends('portal-index')
 @section('title','My E-learning')
 
-<meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('post-body')
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link href="{{URL::to('/')}}/css/Amaran/amaran.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/css/nicescroll.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/css/metro-colors.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/css/css-pack.css" rel="stylesheet">
+
+{{--TODO remove and add from public assets--}}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <style>
     iframe {
         width: 100%;
@@ -29,13 +33,18 @@
         display: table-cell;
         vertical-align: middle;
     }
+
+    .text-primary {
+        color: #000000;
+    }
 </style>
 
 <script src="{{URL::to('/')}}/js/Amaran/jquery.amaran.min.js"></script>
 <script src="{{URL::to('/')}}/js/jquery.nicescroll-3.6.8.min.js"></script>
 <script src="{{URL::to('/')}}/js/my-elearning.js"></script>
+<script src="{{URL::to('/')}}/js/pace.min.js"></script>
 <script>
-    $(function() {
+$(function() {
         // load iframe content
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             paneID = $(e.target).attr('href');
@@ -126,7 +135,7 @@
                             @if(count($coursesAvailable)>0)
                                 <div class="metro-tile-container">
                                     @foreach($coursesAvailable as $index => $course)
-                                        <div class="metro-tile metro-tile-lg carousel slide" id="myCarousel-{{$index}}" data-interval="false">
+                                        <div class="metro-tile metro-tile-lg carousel slide" data-ride="carousel" id="myCarousel-{{$index}}" data-interval="false">
                                             <div class="hide tile-progressbar" title="" data-html="true" data-wenk="<h3 class='text-info'><b>65%</b></h3> completed">
                                                 <span style="width: 65%;"></span>
                                             </div>
@@ -137,7 +146,7 @@
                                                     <h4>
                                                         {{$course->description}}
                                                         @if(count($course->employees) > 0)
-                                                            <small><i class="text-primary fa fa-info-circle" data-wenk="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled"></i></small>
+                                                           <i class="text-primary fa fa-info-circle" data-toggle="tooltip" data-original-title="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled" data-wenk="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled"></i>
                                                         @endif
                                                     </h4>
                                                     @if(!$course->enrolled)

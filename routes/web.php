@@ -46,6 +46,7 @@ Auth::routes();
                 'only'=>['index','update']
             ]);
 
+            Route::post('my-elearning/enrol', 'SSPMyCourseController@enrol');
             Route::resource('my-courses', 'SSPMyCourseController',[
                 'only'=>['index']
             ]);
