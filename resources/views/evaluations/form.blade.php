@@ -57,7 +57,7 @@
 <div class="form-group col-xs-6 {{ $errors->has('productcategory_id') ? 'has-error' : '' }}">
     <label for="productcategory_id">Product category</label>
         <select class="form-control" id="productcategory_id" name="productcategory_id" required="true">
-        	    <option value="" style="display: none;" {{ old('productcategory_id', optional($evaluation)->productcategory_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select productcategory</option>
+        	    <option value="" style="display: none;" {{ old('productcategory_id', optional($evaluation)->productcategory_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select product category</option>
         	@foreach ($productCategories as $key => $productCategory)
 			    <option value="{{ $key }}" {{ old('productcategory_id', optional($evaluation)->productcategory_id) == $key ? 'selected' : '' }}>
 			    	{{ $productCategory }}
@@ -120,7 +120,6 @@
         {{ Form::file('attachment', ($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke','accept'=>'audio/*', 'autocomplete'=>'off', 'placeholder'=>'Audio File', 'id'=>'attachment']) }}
     </div>
 </div>
-    <input type="file" name="photo" id="photo">
 <div class="form-group col-xs-12" id="filecontainer">
     {{ Form::label('QA File Path','QA File Path',array('id'=>'','class'=>'')) }}
     {!! Form::text('UrlPath', null,($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'QA File Path', 'id'=>'UrlPath']) !!}
@@ -132,9 +131,46 @@
         {!! $errors->first('comments', '<p class="help-block">:message</p>') !!}
 </div>
 
+    <div class="form-group col-xs-12" style="padding-top: 20px;">
+        <div class="flex-wrapper">
+            <div class="col-xs-5" style="padding-left: 0px;">
+                {!! Form::select('from[]', $employees, null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control multipleSelect', 'id'=>'multiselect')) !!}
+            </div>
+            <div class="col-xs-2">
+                <button type="button" id="multiselect_rightAll" class="btn btn-block"><i class="glyphicon glyphicon-forward"></i></button>
+                <button type="button" id="multiselect_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                <button type="button" id="multiselect_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                <button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
+            </div>
+            <div class="col-xs-5" style="padding-right: 0px;">
+                {!! Form::select('selectedassessors[]', isset($assessmentaAssessmentCategories)?$assessmentaAssessmentCategories:[],null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control', 'id'=>'multiselect_to')) !!}
+            </div>
+            {!! $errors->first('selectedassessors[]', '<p class="help-block">:message</p>') !!}
+        </div>
+    </div>
+
 </div>
 
 @section('post-body')
+    <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
+    <script>
+        $(function () {
+            $('.multipleSelect').each(function(){
+                $(this).multiselect({
+                    submitAllLeft:false,
+                    sort: false,
+                    keepRenderingSort: false,
+                    search: {
+                        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                        right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                    },
+                    fireSearch: function(value) {
+                        return value.length > 3;
+                    }
+                });
+            });
+        });
+    </script>
     <script>
 
         $('#savepath').click(function() {

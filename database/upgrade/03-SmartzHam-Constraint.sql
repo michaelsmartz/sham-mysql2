@@ -973,4 +973,22 @@ ADD CONSTRAINT `FK_Evaluations_EvaluationStatuses`
 ALTER TABLE `history_job_titles`
 	ADD INDEX `IX_HistoryJobTitle_employee_id` (`employee_id`);
 ALTER TABLE `history_disciplinary_actions`
-	ADD INDEX `IX_HistoryDisciplinaryActions_employee_id` (`employee_id`);	
+	ADD INDEX `IX_HistoryDisciplinaryActions_employee_id` (`employee_id`);
+
+#---- Added on 22-10-2018
+		ALTER TABLE `shamdev`.`evaluation_results`
+ADD CONSTRAINT `FK_EvaluationResults_AssessmentCategories`
+  FOREIGN KEY (`assessment_category_id`)
+  REFERENCES `shamdev`.`assessment_categories` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `FK_EvaluationResults_CategoryQuestions`
+  FOREIGN KEY (`category_question_id`)
+  REFERENCES `shamdev`.`category_questions` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `FK_EvaluationResults_Employees`
+  FOREIGN KEY (`assessor_employee_id`)
+  REFERENCES `shamdev`.`employees` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
