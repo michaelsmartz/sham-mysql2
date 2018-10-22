@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use App\Employee;
+use App\Enums\CourseParticipantStatusType;
 use App\Http\Requests;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
@@ -113,6 +114,79 @@ class SSPMyCourseController extends CustomController
 
             return response()->json(['response' => 'OK']);
         }
-        return response()->json(['response' => 'KO'], 500);
+    }
+
+    public function myCourses() {
+        $myCourses = [];
+        $courseParticipantStatus = [];
+
+        $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        $courses = $this->contextObj->with(['employees','modules.topics','employeeProgress'])
+            ->whereHas('employees', function($query) use ($employee_id) {
+                $query->where('employee_id',$employee_id);
+            })
+            ->get()->all();
+
+        if($courses != null) {
+            $courses_count = 0;
+            foreach ($courses as $course) {
+                $modules = [];
+                $topics_completed = 0;
+                $modules_count = 0;
+                foreach ($course->modules as $module) {
+                    $topics_count = 0;
+                    $modules[$modules_count]['Id'] = $module->id;
+                    $modules[$modules_count]['Description'] = $module->description;
+                    if(!$module->topics->isEmpty()) {
+                        foreach ($module->topics as $topic) {
+                            $modules[$modules_count]['Topics'][$topics_count]['Id'] = $topic->id;
+                            $modules[$modules_count]['Topics'][$topics_count]['Header'] = $topic->header;
+                            $topics_count++;
+                        }
+                    }else{
+                        $modules[$modules_count]['Topics'] = [];
+                    }
+                }
+
+                foreach ($course->employeeProgress as $employeeProgress){
+                    if($employeeProgress->employee_id == $employee_id) {
+                        if ($employeeProgress->is_completed > 0) {
+                            $topics_completed++;
+                        }
+
+                        if ($employeeProgress->courseparticipantstatus_id == 2) {
+                            if ($myCourses[$courses_count]['ProgressPercentage'] == 100) {
+                                $myCourses[$courses_count]['ProgressPercentage'] = 90;
+                            }
+                        }
+                    }
+                }
+
+                foreach ($course->employees as $employee){
+                    if($employee->employee_id == $employee_id){
+                        $course_participant_description = CourseParticipantStatusType::getKey($employee->courseparticipantstatus_id);
+                        $courseParticipantStatus['Id'] = $employee->courseparticipantstatus_id;
+                        $courseParticipantStatus['Description'] = $course_participant_description;
+                    }
+                }
+
+                //display course and modules that has topics
+                if($topics_count > 0) {
+                    $myCourses[$courses_count]['Id'] = $course->id;
+                    $myCourses[$courses_count]['Description'] = $course->description;
+                    $myCourses[$courses_count]['TopicsCount'] = $topics_count;
+                    $myCourses[$courses_count]['TopicsCompleted'] = $topics_completed;
+                    $myCourses[$courses_count]['Modules'] = $modules;
+                    $myCourses[$courses_count]['CourseParticipantStatus'] = $courseParticipantStatus;
+                    $myCourses[$courses_count]['ProgressPercentage'] = ($topics_completed/$topics_count) * 100;
+                    $courses_count++;
+                }
+            }
+        }
+
+        //dd($myCourses);
+
+        return View::make($this->baseViewPath .'.mycourse', compact('myCourses'));
     }
 }

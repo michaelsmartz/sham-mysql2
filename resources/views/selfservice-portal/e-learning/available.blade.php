@@ -4,99 +4,91 @@
 
 @section('post-body')
 
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<link href="{{URL::to('/')}}/css/Amaran/amaran.min.css" rel="stylesheet">
-<link href="{{URL::to('/')}}/css/nicescroll.css" rel="stylesheet">
-<link href="{{URL::to('/')}}/css/metro-colors.css" rel="stylesheet">
-<link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
-<link href="{{URL::to('/')}}/css/css-pack.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="{{URL::to('/')}}/css/Amaran/amaran.min.css" rel="stylesheet">
+    <link href="{{URL::to('/')}}/css/nicescroll.css" rel="stylesheet">
+    <link href="{{URL::to('/')}}/css/metro-colors.css" rel="stylesheet">
+    <link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
+    <link href="{{URL::to('/')}}/css/css-pack.css" rel="stylesheet">
 
-{{--TODO remove and add from public assets--}}
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<style>
-    iframe {
-        width: 100%;
-        min-height: 45px;
-        height: 100% !important;
-        overflow: hidden !important;
-    }
-    .loadMsg {
-        width: 100%;
-        height: 100%;
-        font-weight: bold;
-        text-align: center;
-        display: table;
-        font-size:14pt;
-    }
+    {{--TODO remove and add from public assets--}}
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        iframe {
+            width: 100%;
+            min-height: 45px;
+            height: 100% !important;
+            overflow: hidden !important;
+        }
+        .loadMsg {
+            width: 100%;
+            height: 100%;
+            font-weight: bold;
+            text-align: center;
+            display: table;
+            font-size:14pt;
+        }
+        .loadMsg div {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .text-primary {
+            color: #000000;
+        }
+    </style>
 
-    .loadMsg div {
-        display: table-cell;
-        vertical-align: middle;
-    }
-
-    .text-primary {
-        color: #000000;
-    }
-</style>
-
-<script src="{{URL::to('/')}}/js/Amaran/jquery.amaran.min.js"></script>
-<script src="{{URL::to('/')}}/js/jquery.nicescroll-3.6.8.min.js"></script>
-<script src="{{URL::to('/')}}/js/my-elearning.js"></script>
-<script src="{{URL::to('/')}}/js/pace.min.js"></script>
-<script>
-$(function() {
-        // load iframe content
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            paneID = $(e.target).attr('href');
-            src = $(paneID).attr('data-src');
-            // if the iframe hasn't already been loaded once
-            if($(paneID+" iframe").attr("src")=="")
-            {
-                Pace.restart({minTime:500});
+    <script src="{{URL::to('/')}}/js/Amaran/jquery.amaran.min.js"></script>
+    <script src="{{URL::to('/')}}/js/jquery.nicescroll-3.6.8.min.js"></script>
+    <script src="{{URL::to('/')}}/js/my-elearning.js"></script>
+    <script src="{{URL::to('/')}}/js/pace.min.js"></script>
+    <script>
+        $(function() {
+            // load iframe content
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                paneID = $(e.target).attr('href');
+                src = $(paneID).attr('data-src');
+                // if the iframe hasn't already been loaded once
+                if($(paneID+" iframe").attr("src")=="")
+                {
+                    Pace.restart({minTime:500});
+                    Pace.track(function(){
+                        $(paneID+" iframe").attr("src",src);
+                    });
+                }
                 Pace.track(function(){
-                    $(paneID+" iframe").attr("src",src);
-                });
-            }
-
-            Pace.track(function(){
-                $(paneID+" iframe").load(function() {
-                    // hide loading message when iframe loaded
-                    $(paneID+" .loadMsg").hide();
-                    Pace.stop();
+                    $(paneID+" iframe").load(function() {
+                        // hide loading message when iframe loaded
+                        $(paneID+" .loadMsg").hide();
+                        Pace.stop();
+                    });
                 });
             });
-
         });
-    });
-
-    $(document).ready(function(){
-
-        var url = window.location.href;
-
-        var activeTab = url.substring(url.indexOf("#") + 1);
-        if(activeTab == "mycourse")
-        {
-            $("li").removeClass("active");
-            $('#mycourses').click();
-            $('#mycourses').addClass("active");
-        }
-    });
-
-</script>
+        $(document).ready(function(){
+            var url = window.location.href;
+            var activeTab = url.substring(url.indexOf("#") + 1);
+            if(activeTab == "mycourse")
+            {
+                $("li").removeClass("active");
+                $('#mycourses').click();
+                $('#mycourses').addClass("active");
+            }
+        });
+    </script>
 @stop
 
 <?php
-    $courseBaseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink', 'bg-darkBrown','bg-darkCyan','bg-darkCobalt','bg-darkOrange','bg-lightOlive','bg-lightRed'];
-    //$courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink'];
-    $courseBgClasses =    $courseBaseBgClasses;
-     if(count($coursesAvailable)>12)
-     {
-         for ($x = 12; $x <= count($coursesAvailable); $x++)
-         {
-             $colourindex = $x % 12;
-             $courseBgClasses[] = $courseBaseBgClasses[$colourindex];
-         }
-     }
+$courseBaseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink', 'bg-darkBrown','bg-darkCyan','bg-darkCobalt','bg-darkOrange','bg-lightOlive','bg-lightRed'];
+//$courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink'];
+$courseBgClasses =    $courseBaseBgClasses;
+if(count($coursesAvailable)>12)
+{
+    for ($x = 12; $x <= count($coursesAvailable); $x++)
+    {
+        $colourindex = $x % 12;
+        $courseBgClasses[] = $courseBaseBgClasses[$colourindex];
+    }
+}
 ?>
 @section('content')
     @if (!empty($warnings))
@@ -146,13 +138,13 @@ $(function() {
                                                     <h4>
                                                         {{$course->description}}
                                                         @if(count($course->employees) > 0)
-                                                           <i class="text-primary fa fa-info-circle" data-toggle="tooltip" data-original-title="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled" data-wenk="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled"></i>
+                                                            <i class="text-primary fa fa-info-circle" data-toggle="tooltip" data-original-title="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled" data-wenk="{{count($course->employees)}} {{str_plural('person', count($course->employees))}} enrolled"></i>
                                                         @endif
                                                     </h4>
                                                     @if(!$course->enrolled)
-                                                    <div class="backside-button" role="button">
-                                                        <span class="enrol" data-id="{{$course->id}}">Enrol on this course</span>
-                                                    </div>
+                                                        <div class="backside-button" role="button">
+                                                            <span class="enrol" data-id="{{$course->id}}">Enrol on this course</span>
+                                                        </div>
                                                     @endif
                                                 </div>
                                                 <div class="metro-tile-page item fg-white {{$courseBgClasses[$index]}}" data-slide-number="1">
