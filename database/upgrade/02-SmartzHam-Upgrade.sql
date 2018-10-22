@@ -2395,12 +2395,12 @@ CHANGE COLUMN `date_completed` `date_completed` DATE NULL DEFAULT NULL AFTER `da
 CHANGE COLUMN `is_reviewed` `is_reviewed` TINYINT(1) NULL DEFAULT '0' AFTER `date_completed`
 
 #-- 22/10/2018
-ALTER TABLE `shamdev`.`evaluation_results`
+ALTER TABLE `evaluation_results`
 DROP FOREIGN KEY `FK_EvaluationResults_AssessmentCategories`,
 DROP FOREIGN KEY `FK_EvaluationResults_CategoryQuestions`,
 DROP FOREIGN KEY `FK_EvaluationResults_Employees`;
 
-ALTER TABLE `shamdev`.`evaluation_results`
+ALTER TABLE `evaluation_results`
 CHANGE COLUMN `assessoremployee_id` `assessor_employee_id` INT(11) NOT NULL ,
 CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ,
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ;

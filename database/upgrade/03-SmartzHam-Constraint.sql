@@ -976,15 +976,15 @@ ALTER TABLE `history_disciplinary_actions`
 	ADD INDEX `IX_HistoryDisciplinaryActions_employee_id` (`employee_id`);
 
 #---- Added on 22-10-2018
-		ALTER TABLE `shamdev`.`evaluation_results`
+ALTER TABLE `evaluation_results`
 ADD CONSTRAINT `FK_EvaluationResults_AssessmentCategories`
   FOREIGN KEY (`assessment_category_id`)
-  REFERENCES `shamdev`.`assessment_categories` (`id`)
+  REFERENCES assessment_categories` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_EvaluationResults_CategoryQuestions`
   FOREIGN KEY (`category_question_id`)
-  REFERENCES `shamdev`.`category_questions` (`id`)
+  REFERENCES category_questions` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_EvaluationResults_Employees`
