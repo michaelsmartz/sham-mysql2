@@ -69,6 +69,8 @@ class EvaluationsController extends CustomController
         try {
 
             $employeeid = \Auth::user()->employee->id;
+
+            $selectedassessors = array_get($request->all(),'selectedassessors');
             $input = array_except($request->all(),array('_token'));
 
             $input['createdby_employee_id'] = $employeeid;
@@ -85,16 +87,23 @@ class EvaluationsController extends CustomController
                     unset($input['QaSample']);
                 }
             }
+            elseif($input['status'] == 'savepath')
+            {
+                $input['is_usecontent'] = 0;
+                $input['url_path'] = $input['UrlPath'];
+            }
 
             $context = $this->contextObj->addData($input);
+            $this->attachSingleFile($request, $context->id,'attachment');
 
-            //$this->attach($request, $context->id);
-
+            $context->assessors()
+                ->attach($selectedassessors); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-            dump($exception->getMessage());die;
+            dump($exception->getMessage());
+            die;
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
@@ -149,6 +158,12 @@ class EvaluationsController extends CustomController
         }
 
         return redirect()->back();
+    }
+
+    public function showinstances()
+    {
+        $evaluations = $this->contextObj::filtered()->paginate(10);
+        return view($this->baseViewPath .'.instancesindex', compact('evaluations'));
     }
     
     

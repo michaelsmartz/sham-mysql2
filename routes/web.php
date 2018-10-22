@@ -152,6 +152,7 @@ Auth::routes();
             Route::resource('assessment_categories', 'AssessmentCategoriesController' );
             Route::resource('category_questions', 'CategoryQuestionsController');
             Route::resource('evaluations', 'EvaluationsController');
+            Route::any('instances', 'EvaluationsController@showInstances');
         #endregion
   
     });

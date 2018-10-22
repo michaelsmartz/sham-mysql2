@@ -4,10 +4,11 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
 
 class Evaluation extends Model
 {
-    
+    use Mediable;
     use SoftDeletes;
 
 
@@ -67,15 +68,19 @@ class Evaluation extends Model
         return $this->belongsTo('App\EvaluationStatus','evaluation_status_id','id');
     }
 
-    public function evaluationAssessors()
+    //public function evaluationAssessors()
+    //{
+    //    return $this->hasMany('App\EvaluationAssessor','evaluation_id','id');
+    //}
+
+    public function assessors()
     {
-        return $this->hasMany('App\EvaluationAssessor','evaluation_id','id');
+        return $this->belongsToMany(Employee::class,'employee_evaluation','evaluation_id','employee_id');
     }
 
     public function evaluationResults()
     {
         return $this->hasMany('App\EvaluationResult','evaluation_id','id');
     }
-
 
 }
