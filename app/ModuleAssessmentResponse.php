@@ -53,5 +53,4 @@ class ModuleAssessmentResponse extends Model
         return $this->hasMany('App\ModuleAssessmentResponseDetail','module_assessment_response_id');
     }
 
-
 }

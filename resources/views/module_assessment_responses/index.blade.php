@@ -30,7 +30,7 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$moduleAssessmentResponse->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$moduleAssessmentResponse->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
                                 </div>

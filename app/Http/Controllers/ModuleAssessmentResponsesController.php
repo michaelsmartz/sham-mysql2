@@ -8,6 +8,7 @@ use App\Employee;
 use App\ModuleAssessment;
 use Illuminate\Http\Request;
 use App\ModuleAssessmentResponse;
+use App\ModuleAssessmentResponseDetail;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -48,6 +49,27 @@ class ModuleAssessmentResponsesController extends CustomController
         return view($this->baseViewPath .'.index', compact('moduleAssessmentResponses'));
     }
 
+    public function edit(Request $request)
+    {
+        $id = Route::current()->parameter('response');
+        $moduleAssessmentResponses = ModuleAssessmentResponseDetail::assessmentResponseSheet()
+                                     ->where('module_assessment_response_id', '=', $id)
+                                     ->get();
+        dump($moduleAssessmentResponses);
+        return $moduleAssessmentResponses;
+        
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.edit', compact('data', 'topics', 'moduleTopics'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.edit', compact('data', 'topics', 'moduleAssessmentResponses'));
+    }
 
     /**
      * Update the specified module assessment response in the storage.

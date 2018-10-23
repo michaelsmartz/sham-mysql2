@@ -107,9 +107,15 @@
                 window.location = '{{url()->current()}}/'+id+'/results';
             }
         };
-        window.editFullPage = function(id, event){
+        window.editFullPage = function(id, event, baseUrl) {
             event.preventDefault();
-            window.location = '{{url()->current()}}/'+id+'/edit';
+            var route; 
+            if (baseUrl === void 0) {
+                route = '{{url()->current()}}/';
+            } else {
+                route = '{{URL::to('/')}}/' + baseUrl + '/';
+            }
+            window.location = route + id + '/edit';
         };
         window.deleteForm = function(id) {
             $("#deleteField").val(id);

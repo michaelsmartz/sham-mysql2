@@ -143,7 +143,7 @@ Auth::routes();
 
             Route::resource('module_assessments', 'ModuleAssessmentsController' );
             Route::resource('module_assessments/{module_assessment}/responses', 'ModuleAssessmentResponsesController',[
-                'only'=>['index']
+                'only'=>['index','edit','update']
             ]);
             Route::resource('training_sessions', 'CourseTrainingSessionsController' );
         #endregion
