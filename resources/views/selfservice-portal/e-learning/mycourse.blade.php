@@ -1,9 +1,10 @@
+<!DOCTYPE html>
+<head>
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <link rel="stylesheet" href="{{asset('css/app.min.css')}}">
 <script src="{{asset('js/app.js')}}"></script>
-<!-- Bootstrap Core CSS -->
-{{--<link href="{{URL::to('/')}}/sbadmin2/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">--}}
-<!-- Custom Fonts -->
-{{--<link href="{{URL::to('/')}}/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">--}}
 
 <link href="{{URL::to('/')}}/css/metro-colors.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
@@ -13,10 +14,6 @@
     }
 
 </style>
-<!-- jQuery -->
-{{--<script src="{{URL::to('/')}}/plugins/sbadmin2/bower_components/jquery/dist/jquery.min.js"></script>--}}
-<!-- Bootstrap Core JavaScript -->
-{{--<script src="{{URL::to('/')}}/plugins/sbadmin2/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>--}}
 <!-- Custom CSS -->
 <link href="{{URL::to('/')}}/css/sb-admin-2.css" rel="stylesheet">
 
@@ -41,6 +38,7 @@
         });
     }
 </script>
+</head>
 
 <body style="background-color: white; padding-left:15px;padding-right:15px;">
 

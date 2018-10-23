@@ -13,8 +13,8 @@
     <style>
         iframe {
             width: 100%;
-            min-height: 45px;
-            height: 100% !important;
+            /*min-height: 45px;*/
+            /*height: 100% !important;*/
             overflow: hidden !important;
         }
         .loadMsg {
@@ -32,12 +32,31 @@
         .text-primary {
             color: #000000;
         }
+
+        .iframe-container {
+            overflow: hidden;
+            padding-top: 56.25%;
+            position: relative;
+        }
+
+        .iframe-container iframe {
+            border: 0;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        /* 4x3 Aspect Ratio */
+        .iframe-container-4x3 {
+            padding-top: 75%;
+        }
     </style>
 
     <script src="{{URL::to('/')}}/js/Amaran/jquery.amaran.min.js"></script>
     <script src="{{URL::to('/')}}/js/jquery.nicescroll-3.6.8.min.js"></script>
     <script src="{{URL::to('/')}}/js/my-elearning.js"></script>
-    <script src="{{URL::to('/')}}/js/pace.min.js"></script>
     <script>
         $(function() {
             // load iframe content
@@ -47,17 +66,11 @@
                 // if the iframe hasn't already been loaded once
                 if($(paneID+" iframe").attr("src")=="")
                 {
-                    Pace.restart({minTime:500});
-                    Pace.track(function(){
                         $(paneID+" iframe").attr("src",src);
-                    });
                 }
-                Pace.track(function(){
-                    $(paneID+" iframe").load(function() {
-                        // hide loading message when iframe loaded
-                        $(paneID+" .loadMsg").hide();
-                        Pace.stop();
-                    });
+                $(paneID+" iframe").load(function() {
+                    // hide loading message when iframe loaded
+                    $(paneID+" .loadMsg").hide();
                 });
             });
         });
@@ -75,7 +88,22 @@
 @stop
 
 <?php
-$courseBaseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink', 'bg-darkBrown','bg-darkCyan','bg-darkCobalt','bg-darkOrange','bg-lightOlive','bg-lightRed'];
+$courseBaseBgClasses = [
+    'bg-lightBlue',
+    'bg-teal',
+    'bg-amber',
+    'bg-mauve',
+    'bg-taupe',
+    'bg-steel',
+    'bg-olive',
+    'bg-Pink',
+    'bg-darkBrown',
+    'bg-darkCyan',
+    'bg-darkCobalt',
+    'bg-darkOrange',
+    'bg-lightOlive',
+    'bg-lightRed'
+];
 //$courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','bg-steel','bg-olive','bg-Pink'];
 $courseBgClasses =    $courseBaseBgClasses;
 if(count($coursesAvailable)>12)
@@ -123,6 +151,7 @@ if(count($coursesAvailable)>12)
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             @if(count($coursesAvailable)>0)
                                 <div class="metro-tile-container">
+                                    <?php $counter = 0; ?>
                                     @foreach($coursesAvailable as $index => $course)
                                         <div class="metro-tile metro-tile-lg carousel slide" data-ride="carousel" id="myCarousel-{{$index}}" data-interval="false">
                                             <div class="hide tile-progressbar" title="" data-html="true" data-wenk="<h3 class='text-info'><b>65%</b></h3> completed">
@@ -131,7 +160,7 @@ if(count($coursesAvailable)>12)
 
                                             <div class="carousel-inner">
 
-                                                <div class="metro-tile-page item active fg-white {{$courseBgClasses[$index]}}" data-slide-number="0">
+                                                <div class="metro-tile-page item active fg-white {{$courseBgClasses[$counter]}}" data-slide-number="0">
                                                     <h4>
                                                         {{$course->description}}
                                                         @if(count($course->employees) > 0)
@@ -144,7 +173,7 @@ if(count($coursesAvailable)>12)
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="metro-tile-page item fg-white {{$courseBgClasses[$index]}}" data-slide-number="1">
+                                                <div class="metro-tile-page item fg-white {{$courseBgClasses[$counter]}}" data-slide-number="1">
                                                     <div class="">
                                                         <div class="row">
                                                             <div class="description">
@@ -162,13 +191,14 @@ if(count($coursesAvailable)>12)
                                                 </div>
                                             </div>
                                             <!-- Carousel nav -->
-                                            <a href="#myCarousel-{{$index}}" class="left carousel-control" title="previous content" data-slide="prev">
+                                            <a href="#myCarousel-{{$counter}}" class="left carousel-control" title="previous content" data-slide="prev">
                                                 <span class="fa fa-chevron-left fa-2x"></span>
                                             </a>
-                                            <a href="#myCarousel-{{$index}}" class="right carousel-control"title="next content" data-slide-to="1">
+                                            <a href="#myCarousel-{{$counter}}" class="right carousel-control"title="next content" data-slide-to="1">
                                                 <span class="fa fa-chevron-right fa-2x"></span>
                                             </a>
                                         </div>
+                                        <?php $counter++; ?>
                                     @endforeach
                                 </div>
                             @else
@@ -183,20 +213,26 @@ if(count($coursesAvailable)>12)
             <div id="myCoursesTab" class="tab-pane" data-src="{{URL::to('/')}}/my-elearning/my-courses">
                 <div class="panel panel-default">
                     <div class="loadMsg"><div><i class="fa fa-spin"></i> Loading...</div></div>
-                    <iframe id="myCoursesFrame" src="" scrolling="no" frameborder="0"></iframe>
+                    <div class="iframe-container">
+                        <iframe id="myCoursesFrame" src="" scrolling="no" frameborder="0"></iframe>
+                    </div>
                 </div>
             </div>
 
             <div id="myAssessmentsTab" class="tab-pane" data-src="{{URL::to('/')}}/my-elearning/my-assessments">
                 <div class="panel panel-default">
                     <div class="loadMsg"><div><i class="fa fa-spin"></i> Loading...</div></div>
-                    <iframe src="" scrolling="no" frameborder="0"></iframe>
+                    <div class="iframe-container">
+                        <iframe src="" scrolling="no" frameborder="0"></iframe>
+                    </div>
                 </div>
             </div>
 
             <div id="qAndATab" class="tab-pane"  data-src="{{URL::to('/')}}/my-elearning/questions">
                 <div class="panel panel-default">
-                    <iframe id="qAndAFrame" src="" frameborder="0"></iframe>
+                    <div class="iframe-container">
+                        <iframe id="qAndAFrame" src="" frameborder="0"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
