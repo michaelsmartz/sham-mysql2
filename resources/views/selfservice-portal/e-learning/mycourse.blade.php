@@ -1,51 +1,46 @@
-{{--@section('scripts')--}}
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="stylesheet" href="{{asset('css/app.min.css')}}">
+<script src="{{asset('js/app.js')}}"></script>
+<!-- Bootstrap Core CSS -->
+{{--<link href="{{URL::to('/')}}/sbadmin2/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">--}}
+<!-- Custom Fonts -->
+{{--<link href="{{URL::to('/')}}/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">--}}
 
-    <!-- Bootstrap Core CSS -->
-    <link href="{{URL::to('/')}}/sbadmin2/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom Fonts -->
-    <link href="{{URL::to('/')}}/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="{{URL::to('/')}}/css/metro-colors.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
+<style>
+    .progress, .progress-bar {
+        height: 18px;
+    }
 
-    <link href="{{URL::to('/')}}/css/metro-colors.css" rel="stylesheet">
-    <link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
-    <style>
-        .progress, .progress-bar {
-            height: 18px;
-        }
+</style>
+<!-- jQuery -->
+{{--<script src="{{URL::to('/')}}/plugins/sbadmin2/bower_components/jquery/dist/jquery.min.js"></script>--}}
+<!-- Bootstrap Core JavaScript -->
+{{--<script src="{{URL::to('/')}}/plugins/sbadmin2/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>--}}
+<!-- Custom CSS -->
+<link href="{{URL::to('/')}}/css/sb-admin-2.css" rel="stylesheet">
 
-    </style>
-    <!-- jQuery -->
-    <script src="{{URL::to('/')}}/plugins/sbadmin2/bower_components/jquery/dist/jquery.min.js"></script>
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{URL::to('/')}}/plugins/sbadmin2/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <!-- Custom CSS -->
-    <link href="{{URL::to('/')}}/plugins/sbadmin2/dist/css/sb-admin-2.css" rel="stylesheet">
+<script type="text/javascript">
+    // set up jQuery with the CSRF token, or else post routes will fail
+    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+    window.onload = function() {
 
-    <script type="text/javascript">
+        $('.begin,.resume').click(function(e) {
+            e.preventDefault();
+            top.window.location.href = '{{URL::to('/')}}/my-course/' + $(this).data('id');
+            //parent.location.href = 'my-courses/' + $(this).data('id');
+            //document.location.href = 'my-courses/' + $(this).data('id');
+        });
 
-        // set up jQuery with the CSRF token, or else post routes will fail
-        $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
-        window.onload = function() {
-
-            $("[data-toggle='tooltip']").tooltip({title: 'Completion percentage', placement: 'auto right',container: 'body'});
-
-            $('.begin,.resume').click(function(e) {
-                e.preventDefault();
-                top.window.location.href = '{{URL::to('/')}}/my-course/' + $(this).data('id');
-                //parent.location.href = 'my-courses/' + $(this).data('id');
-                //document.location.href = 'my-courses/' + $(this).data('id');
-            });
-
-            $('.restart').click(function(e) {
-                e.preventDefault();
-                top.window.location.href = '{{URL::to('/')}}/my-courses/' + $(this).data('id')+'/restart';
-                //parent.location.href = 'my-courses/' + $(this).data('id');
-                //document.location.href = 'my-courses/' + $(this).data('id');
-                //alert('Course will be restarted....');
-            });
-        }
-    </script>
-{{--@stop--}}
+        $('.restart').click(function(e) {
+            e.preventDefault();
+            top.window.location.href = '{{URL::to('/')}}/my-courses/' + $(this).data('id')+'/restart';
+            //parent.location.href = 'my-courses/' + $(this).data('id');
+            //document.location.href = 'my-courses/' + $(this).data('id');
+            //alert('Course will be restarted....');
+        });
+    }
+</script>
 
 <body style="background-color: white; padding-left:15px;padding-right:15px;">
 
@@ -74,12 +69,11 @@ $courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','b
                                     <a class="accordion-toggle" data-toggle="collapse"
                                        href="#TOC-{{$course['Id']}}">
                                         <span>{{$course['Description']}}</span>
-                                        <i class="text-primary fa fa-info-circle" data-toggle="tooltip"
-                                           data-original-title="{{$course['CourseParticipantStatus']['Description']}}"></i>
+                                        <i class="text-primary fa fa-info-circle" data-wenk="{{$course['CourseParticipantStatus']['Description']}}"></i>
                                     </a>
                                 </td>
                                 <td class="course-progress">
-                                    <div class="progress" data-toggle="tooltip" data-original-title="{{intval($course['ProgressPercentage'])}}%">
+                                    <div class="progress" data-wenk="{{intval($course['ProgressPercentage'])}}%">
                                         <div class="progress-bar" style="width: {{intval($course['ProgressPercentage'])}}%; background-color: black; text-align: center; color:#5bc0de">
                                             {{intval($course['ProgressPercentage'])}}%
                                         </div>
