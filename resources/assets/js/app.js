@@ -10,6 +10,7 @@ import datepicker from 'jquery-ui/ui/widgets/datepicker';
 import timepicker from 'jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon';
 import sliderAccess from 'jquery-ui/ui/widgets/slider';
 import tab from 'bootstrap/js/dist/tab';
+import collapse from 'bootstrap/js/dist/collapse';
 
 window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
 $.ajaxSetup({
@@ -82,5 +83,6 @@ window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-d
 //window.Popover = require('exports-loader?Tooltip!bootstrap/js/dist/popover'); // eslint-disable-line
 window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
 window.Tab = require('exports-loader?Tab!bootstrap/js/dist/tab'); // eslint-disable-line
+window.Collapse= require('exports-loader?Collapse!bootstrap/js/dist/collapse'); // eslint-disable-line
 
 window.asyncJS = global.asyncJS = asyncJS;

@@ -6,9 +6,6 @@
     <link href="{{URL::to('/')}}/plugins/fancybox/jquery.fancybox.min.css" rel="stylesheet">
     <link href="{{URL::to('/')}}/css/bootstrap-reset.css" rel="stylesheet">
 
-    {{-- TODO remove --}}
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-
     <script type="text/javascript" src="{{URL::to('/')}}/js/knockout-min.js"></script>
     <script type="text/javascript" src="{{URL::to('/')}}/js/knockout.mapping-2.4.1.min.js"></script>
     <script type="text/javascript" src="{{URL::to('/')}}/js/jquery.serializejson.min.js"></script>
