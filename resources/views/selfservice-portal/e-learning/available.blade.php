@@ -132,12 +132,20 @@ if(count($coursesAvailable)>12)
 
     <section id="elearning">
         <br>
-        <ul class="nav nav-tabs" id="myTabs">
-            <li class="active"><a data-toggle="tab" href="#sectionA">Available</a></li>
+        <ul class="nav nav-tabs nav-justified" id="myTabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#sectionA">Available</a>
+            </li>
             @if(sizeof($warnings) == 0)
-                <li><a id="mycourses" data-toggle="tab" href="#myCoursesTab">My courses</a></li>
-                <li><a data-toggle="tab" href="#myAssessmentsTab">My assessments</a></li>
-                <li><a data-toggle="tab" href="#qAndATab">Questions & Answers</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" id="mycourses" data-toggle="tab" href="#myCoursesTab">My courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#myAssessmentsTab">My assessments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"data-toggle="tab" href="#qAndATab">Questions & Answers</a>
+                </li>
             @endif
         </ul>
         <p></p>
