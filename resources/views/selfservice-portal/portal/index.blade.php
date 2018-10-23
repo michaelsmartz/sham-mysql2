@@ -481,7 +481,7 @@
                                                         @endif
                                                     </li>
                                                     @if(!empty($workingHour['breaks']))
-                                                        <ul id="break_{{$workingHour['day_count']}}" class="collapse in">
+                                                        <ul id="break_{{$workingHour['day_count']}}" class="collapse">
                                                             @foreach($workingHour['breaks'] as $periodDesc => $break)
                                                                 <li>
                                                                     @if($periodDesc != '' && !is_null($periodDesc)){{ $periodDesc }}@else No description @endif
