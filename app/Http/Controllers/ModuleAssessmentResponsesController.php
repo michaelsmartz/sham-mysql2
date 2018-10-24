@@ -6,11 +6,14 @@ use App\Course;
 use App\Module;
 use App\Employee;
 use App\ModuleAssessment;
-use Illuminate\Http\Request;
 use App\ModuleAssessmentResponse;
 use App\ModuleAssessmentResponseDetail;
+use App\Enums\ModuleQuestionType;
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
@@ -51,15 +54,20 @@ class ModuleAssessmentResponsesController extends CustomController
 
     public function edit(Request $request)
     {
+        Session::put('redirectsTo', \URL::previous());
         $id = Route::current()->parameter('response');
+        $assessmentId = Route::current()->parameter('module_assessment');
+
+        $moduleAssessment = ModuleAssessment::with('module','assessmentType')->find($assessmentId);
         $moduleAssessmentResponses = ModuleAssessmentResponseDetail::assessmentResponseSheet()
+                                     ->with('moduleAssessmentResponse')
                                      ->where('module_assessment_response_id', '=', $id)
                                      ->get();
-        dump($moduleAssessmentResponses);
-        return $moduleAssessmentResponses;
-        
+
+        $data = $moduleAssessmentResponses[0]->moduleAssessmentResponse;
+
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data', 'topics', 'moduleTopics'))->renderSections();
+            $view = view($this->baseViewPath . '.show', compact('assessmentId', 'data', 'moduleAssessmentResponses', 'moduleAssessment'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -68,7 +76,7 @@ class ModuleAssessmentResponsesController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath . '.edit', compact('data', 'topics', 'moduleAssessmentResponses'));
+        return view($this->baseViewPath . '.edit', compact('assessmentId', 'data', 'moduleAssessmentResponses','moduleAssessment'));
     }
 
     /**
@@ -79,16 +87,26 @@ class ModuleAssessmentResponsesController extends CustomController
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, $responseId)
     {
+
         try {
             $this->validator($request);
-            
-            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            
-            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
-            $this->contextObj->updateData($id, $input);
+            $input = array_except($request->all(),array('_token','_method','is_reviewed'));
+            $reviewed = $request->only('is_reviewed');
+
+            $ids = array_map(function ($value) {
+                return  $value['id'];
+            }, $input['responseDetail']);
+            $revisedPoints = array_map(function ($value) {
+                return  $value['points'];
+            }, $input['responseDetail']);
+            
+            $this->contextObj->updateData($responseId, $reviewed);
+            foreach($ids as $key => $id) {
+                ModuleAssessmentResponseDetail::where('id', $id)->update(['points' => $revisedPoints[$key]]);
+            }
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -96,7 +114,8 @@ class ModuleAssessmentResponsesController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->to(Session::get('redirectsTo'));
+
     }
 
     /**
@@ -106,8 +125,7 @@ class ModuleAssessmentResponsesController extends CustomController
      */
     protected function validator(Request $request)
     {
-        $validateFields = [
-        ];
+        $validateFields = [];
 
         $validator = Validator::make($request->all(), $validateFields);
         if($validator->fails()) {

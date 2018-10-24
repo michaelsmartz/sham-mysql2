@@ -47,7 +47,8 @@ class ModuleAssessmentResponseDetail extends Model
     
     public function scopeAssessmentResponseSheet($query)
     {
-        $query->select(['module_assessment_response_details.id as id', 
+        $query->select(['module_assessment_response_details.id as id',
+                        'module_assessment_response_details.module_assessment_response_id',
                         'module_assessment_response_details.module_question_id',
                         'module_questions.module_question_type_id', 'module_questions.title', 
                         'module_questions.Points as question_points',
@@ -56,7 +57,7 @@ class ModuleAssessmentResponseDetail extends Model
                         DB::raw("group_concat(distinct module_assessment_response_details.content SEPARATOR '|') as response"),
                         DB::raw("group_concat(distinct module_assessment_response_details.points SEPARATOR '|') as points")])
               ->join('module_questions','module_questions.id','=','module_assessment_response_details.module_question_id')
-              ->join('module_question_choices','module_question_choices.module_question_id','=','module_questions.id')
+              ->leftJoin('module_question_choices','module_question_choices.module_question_id','=','module_questions.id')
               ->groupBy(['module_assessment_response_details.id','module_assessment_response_details.module_question_id']);
     }
 

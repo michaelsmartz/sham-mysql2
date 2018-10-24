@@ -1,51 +1,81 @@
 <div class="row">
-    
-<div class="form-group col-xs-12 {{ $errors->has('module_id') ? 'has-error' : '' }}">
-    <label for="module_id">Module</label>
-        <select class="form-control" id="module_id" name="module_id" required="true">
-        	    <option value="" style="display: none;" {{ old('module_id', optional($moduleAssessmentResponse)->module_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select module</option>
-        	@foreach ($modules as $key => $module)
-			    <option value="{{ $key }}" {{ old('module_id', optional($moduleAssessmentResponse)->module_id) == $key ? 'selected' : '' }}>
-			    	{{ $module }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('module_id', '<p class="help-block">:message</p>') !!}
+	<div class="col-xs-12">
+		<span>
+			<strong>{{$moduleAssessment->description}}</strong> 
+			<h5> <strong>Assessment Type:</strong> {{$moduleAssessment->assessmentType->description}}
+				|  <strong>Assessment Response Date:</strong> {{$moduleAssessmentResponses[0]->moduleAssessmentResponse->date_completed}}
+				|  <strong>Passmark:</strong> {{$moduleAssessment->pass_mark}}
+			</h5>
+		</span>
+	</div>
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('employee_id') ? 'has-error' : '' }}">
-    <label for="employee_id">Employee</label>
-        <select class="form-control" id="employee_id" name="employee_id" required="true">
-        	    <option value="" style="display: none;" {{ old('employee_id', optional($moduleAssessmentResponse)->employee_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select employee</option>
-        	@foreach ($employees as $key => $employee)
-			    <option value="{{ $key }}" {{ old('employee_id', optional($moduleAssessmentResponse)->employee_id) == $key ? 'selected' : '' }}>
-			    	{{ $employee }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('employee_id', '<p class="help-block">:message</p>') !!}
-</div>
+{!! Form::hidden('is_reviewed', "1") !!}
 
-<div class="form-group col-xs-12 {{ $errors->has('is_reviewed') ? 'has-error' : '' }}">
-    <label for="is_reviewed">Is Reviewed</label>
-        <input class="form-control" name="is_reviewed" type="text" id="is_reviewed" value="{{ old('is_reviewed', optional($moduleAssessmentResponse)->is_reviewed) }}">
-        {!! $errors->first('is_reviewed', '<p class="help-block">:message</p>') !!}
-</div>
+<ul class="questions">
+	@forelse($moduleAssessmentResponses as $responseDetail)
+		<li class="question-container">
+			<div class="row">
+				<div class="col-xs-9">
+					<strong class="text-danger">{{$responseDetail->title}}</strong>
+				</div>
+				<div class="col-xs-3 text-right">
+					@if($responseDetail->module_question_type_id != App\Enums\ModuleQuestionType::OpenText)
+						<span class="disabled-score-box">{{$responseDetail->points}}</span>
+					@else
+						<input type="hidden" name="responseDetail[{{$loop->index}}][id]" value="{{$responseDetail->id}}">
+						<input name="responseDetail[{{$loop->index}}][points]" style="width:48px" type="number" min="0" max="{{$responseDetail->question_points}}"
+								value="{{$responseDetail->points}}">
+					@endif
+					<strong class="text-danger">of {{$responseDetail->question_points}} marks</strong>
+				</div>
+			</div>
+			<div class="row" style="padding-top:5px; padding-bottom:5px;">
+				<div class="col-xs-12">
+					<strong>Candidate&apos;s response: </strong>
+				</div>
+				<div class="col-xs-12">
+					@if($responseDetail->module_question_type_id == App\Enums\ModuleQuestionType::OpenText)
+						<div class="col-xs-12">
+							<p class="text-justify" style="margin-left:5px;">{{$responseDetail->response}}</p>
+						</div>
+					@else
+						@php
+							$responses = explode('|', $responseDetail->response);
+						@endphp
+						@foreach($responses as $response)
+							<div class="col-xs-6 col-md-3">
+								{{$response}}
+							</div>
+						@endforeach
+					@endif
 
-<div class="form-group col-xs-12 {{ $errors->has('module_assessment_id') ? 'has-error' : '' }}">
-    <label for="module_assessment_id">Module Assessment</label>
-        <select class="form-control" id="module_assessment_id" name="module_assessment_id">
-        	    <option value="" style="display: none;" {{ old('module_assessment_id', optional($moduleAssessmentResponse)->module_assessment_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select module assessment</option>
-        	@foreach ($moduleAssessments as $key => $moduleAssessment)
-			    <option value="{{ $key }}" {{ old('module_assessment_id', optional($moduleAssessmentResponse)->module_assessment_id) == $key ? 'selected' : '' }}>
-			    	{{ $moduleAssessment }}
-			    </option>
-			@endforeach
-        </select>
-        
-        {!! $errors->first('module_assessment_id', '<p class="help-block">:message</p>') !!}
-</div>
-
-</div>
+				</div>
+			</div>
+			@if($responseDetail->module_question_type_id != App\Enums\ModuleQuestionType::OpenText)
+				<div class="row" style="padding-top:5px; padding-bottom:5px;">
+					<div class="col-xs-12">
+						<strong>Question choices: </strong>
+					</div>
+					<div class="col-xs-12">
+						@php
+							$choices = explode('|', $responseDetail->question_choices);
+							$choicePoints = explode('|', $responseDetail->question_choices_points);
+						@endphp
+						@for($i = 0; $i < sizeof($choices); $i++)
+							<div class="col-xs-6 col-md-3">
+								<strong>{{$choices[$i]}}</strong>
+								@if($choicePoints[$i] > 0)
+									<span class="label label-success">Correct</span>
+								@else
+									<span class="label label-danger">Incorrect</span>
+								@endif
+							</div>
+						@endfor
+					</div>
+				</div>
+			@endif
+		</li>
+	@empty
+	@endforelse
+</ul>
