@@ -1,0 +1,352 @@
+/*** checkbox and radio buttons ***/
+.checkbox label:after,
+.radio label:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.checkbox .cr,
+.radio .cr {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    border-radius: .25em;
+    width: 1.3em;
+    height: 1.3em;
+    float: left;
+    margin-right: .5em;
+}
+
+.radio .cr {
+    border-radius: 50%;
+}
+
+.checkbox .cr .cr-icon,
+.radio .cr .cr-icon {
+    position: absolute;
+    font-size: .8em;
+    line-height: 0;
+    top: 50%;
+    left: 20%;
+}
+
+.radio .cr .cr-icon {
+    /*margin-left: 0.04em;*/
+}
+
+.checkbox label input[type="checkbox"],
+.radio label input[type="radio"] {
+    display: none;
+}
+
+.checkbox label input[type="checkbox"] + .cr > .cr-icon,
+.radio label input[type="radio"] + .cr > .cr-icon {
+    transform: scale(3) rotateZ(-20deg);
+    opacity: 0;
+    transition: all .3s ease-in;
+}
+
+.checkbox label input[type="checkbox"]:checked + .cr > .cr-icon,
+.radio label input[type="radio"]:checked + .cr > .cr-icon {
+    transform: scale(1) rotateZ(0deg);
+    opacity: 1;
+}
+
+.checkbox label input[type="checkbox"]:disabled + .cr,
+.radio label input[type="radio"]:disabled + .cr {
+    opacity: .5;
+}
+
+textarea {
+    border: 1px solid #a9a9a9;
+    border-radius: .25em;
+}
+
+.cr-label {
+    font-size: 1.2em;
+}
+
+/*** html tags presentation ***/
+.reveal .slides {
+    top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.reveal .slides>section {
+    top: auto !important;
+}
+
+.reveal .slides>section>section {
+    top: auto !important;
+}
+
+.reveal h1, .reveal h2 {
+    margin-bottom: 8px !important;
+}
+
+#topicContent a {
+    display: none !important;
+}
+
+.reveal .topic > p {
+    margin-left:15px;
+    margin-right: 15px;
+    text-align: justify;
+}
+
+.reveal .topic > img {
+    margin-left:15px !important;
+    margin-right: 15px !important;
+    text-align: left !important;
+}
+
+.reveal .topic > ul {
+    display: block;
+    margin-bottom: 10px !important;
+}
+
+.reveal .topic > ul > li {
+    padding-left:15px;
+    margin-left:15px;
+    float: left;
+    width: 90%;
+}
+
+.reveal .topic > ul > li:last-child {
+    margin-bottom: 10px !important;
+}
+
+.reveal .topic > p {
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+}
+
+.reveal #indicators {
+    position: absolute;
+    bottom: 0em;
+    left: 0em;
+    font-size: 0.5em;
+    width: 100%;
+    height: 5%;
+}
+
+.reveal br {
+    font-size: 4px;
+}
+
+/** control links **/
+#indicators .my-controls {
+    position: fixed !important;
+    bottom: 32px;
+    z-index: 31;
+    font-size: 18px;
+}
+
+#indicators .my-controls .navigate-next {
+    right: 30px;
+    bottom: inherit;
+    position: inherit;
+    -webkit-animation: bounce-down 2s 10 both ease-out;
+    animation: bounce-down 2s 10 both ease-out;
+}
+#indicators .my-controls .navigate-prev {
+    right: 65px !important;
+    bottom: inherit;
+    position: inherit;
+    visibility: hidden;
+}
+
+#indicators .my-controls .navigate-prev.enabled {
+    visibility: visible;
+}
+
+#indicators .my-controls .navigate-down {
+    right: 45px !important;
+    bottom: 10px;
+    position: inherit;
+    -webkit-animation: bounce-down 2s 10 both ease-out;
+    animation: bounce-down 2s 10 both ease-out;
+    visibility: hidden;
+}
+
+#indicators .my-controls .navigate-down.enabled {
+    visibility: visible;
+}
+
+#indicators .my-controls .navigate-up {
+    right: 45px !important;
+    bottom: 60px;
+    position: inherit;
+    -webkit-animation: bounce-down 2s 10 both ease-out;
+    animation: bounce-down 2s 10 both ease-out;
+    visibility: hidden;
+}
+#indicators .my-controls .navigate-up.enabled {
+    visibility: visible;
+}
+
+#indicators .my-controls .navigate-prev:active,
+#indicators .my-controls .navigate-prev:focus,
+#indicators .my-controls .navigate-prev:hover,
+#indicators .my-controls .navigate-prev:visited,
+#indicators .my-controls .navigate-next:active,
+#indicators .my-controls .navigate-next:focus,
+#indicators .my-controls .navigate-next:hover,
+#indicators .my-controls .navigate-next:visited,
+#indicators .my-controls .navigate-up:active,
+#indicators .my-controls .navigate-up:focus,
+#indicators .my-controls .navigate-up:hover,
+#indicators .my-controls .navigate-down:active,
+#indicators .my-controls .navigate-down:focus,
+#indicators .my-controls .navigate-down:hover {
+    outline: 0 none;
+    text-decoration: none !important;
+}
+
+.reveal .slides section .fragment {
+    font-size: 14px !important;
+}
+
+.reveal {
+    font-size: 18px;
+}
+
+div[data-form="true"] {
+    position: relative !important;
+    top: auto;
+}
+
+.reveal form button {
+    font-size: 20px;
+}
+
+.audio-controls > audio {
+    background-color: transparent;
+}
+
+.formrunner li { padding: 10px }
+.formrunner form > ul > li > label { display: block; font-weight: 700 }
+
+
+.frmb-form > ul > li > input[type=text], .frmb-form > ul > li > textarea {
+    color: black;
+}
+
+.frmb-form ul {
+    list-style-type: none !important;
+    width:50%;
+}
+.frmb-form ul li {
+    margin-top: 10px !important;
+    padding-bottom: 5px !important;
+    margin-bottom: 5px !important;
+    display: grid;
+}
+
+.frmb-form, .assessment-container {
+    font-size: 16px !important;
+}
+
+.frmb-save, .frmb-cancel{
+    width: 50%;
+    float:left;
+    display: inline-block;
+    margin-right: 20px !important;
+}
+
+
+.frmb-form label { color: white; }
+.frmb-choices .radio,.frmb-choices .checkbox  {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+    padding-bottom: 10px;
+}
+
+.semi-transparent-button {
+    display: block;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 8px;
+    width: 80%;
+    max-width: 150px;
+    background: #fff; /* fallback color for old browsers */
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease-out;
+}
+
+.semi-transparent-button:hover,
+.semi-transparent-button:focus,
+.semi-transparent-button:active {
+    background: #fff;
+    color: #000;
+    transition: all 0.5s ease-in;
+}
+
+#naviagationtext{
+    position:relative;
+    top:5px;
+    left:5px;
+    opacity:0.3;
+    z-index:99;
+    color:white;
+    font-family: inherit;
+}
+
+.alert {
+    padding: 20px;
+    background-color: #008080;
+    color: white;
+    position:absolute;
+    top:0px;
+    left:0px;
+    opacity:1;
+    width:100%;
+    z-index:100;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: black;
+}
+
+.keditor-component-content audio, .keditor-component-content video {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+@-webkit-keyframes bounce-down {
+    0%, 10%, 25%, 40%, 50% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0); }
+    20% {
+        -webkit-transform: translateY(10px);
+        transform: translateY(10px); }
+    30% {
+        -webkit-transform: translateY(-5px);
+        transform: translateY(-5px); } }
+
+@keyframes bounce-down {
+    0%, 10%, 25%, 40%, 50% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0); }
+    20% {
+        -webkit-transform: translateY(10px);
+        transform: translateY(10px); }
+    30% {
+        -webkit-transform: translateY(-5px);
+        transform: translateY(-5px); } }

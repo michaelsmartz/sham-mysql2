@@ -234,7 +234,9 @@ class SSPMyCourseController extends CustomController
                     $current_module_id = $module->id;
                     $topics_counter = 0;
 
-                    foreach ($module->topics as $topic) {
+                    $topics = $module->topics;
+
+                    foreach ($topics as $topic) {
                         //dd($topic->pivot->module_id);
                         $topic_assessments = [];
                         $topic_assessments1 = [];
@@ -275,20 +277,18 @@ class SSPMyCourseController extends CustomController
                         if(is_null($topic->data) || empty($topic->data) || $topic->data == "")
                         {
                             $topic->data = "<section><p>No content to display.</p></section>";
-                        }else {
-
-                            $topic_data = preg_replace("/<img([^>]+)\>/is", "<img $1 />", $topic->data);
-                            $topic_data = preg_replace("/<source([^>]+)\>/is", "<source $1 />", $topic_data);
-                            $topic_data = preg_replace('/&nbsp/', '&amp;nbsp', $topic_data);
-                            $topic_data = str_replace("fragment", " ", $topic_data);
-                            $xml = simplexml_load_string("<main>" . $topic_data . "</main>");
-                            $topic->sections = [];
-
-                            //dump($xml);
-
-                            $sectioncount = count($xml);
-                            $counter = 1;
                         }
+
+                        $topic_data = preg_replace("/<img([^>]+)\>/is", "<img $1 />", "<section><p>$topic->data</p></section>");
+                        $topic_data = preg_replace("/<source([^>]+)\>/is", "<source $1 />", $topic_data);
+                        $topic_data = preg_replace('/&nbsp/', '&amp;nbsp', $topic_data);
+                        $topic_data = str_replace("fragment", " ", $topic_data);
+                        $xml = simplexml_load_string("<main>" . $topic_data . "</main>");
+                        $topic->sections = [];
+
+                        //dump($xml);
+                        $sectioncount = count($xml);
+                        $counter = 1;
 
                         //dump($topic);
                         //dump($all_topic_counter);
@@ -299,7 +299,68 @@ class SSPMyCourseController extends CustomController
                         {
                             $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
                             //dump($displayText);
+
+                            foreach($xml as $item) {
+                                //dump($item);
+                                //$item['data-last'] = "0";
+                                $item['data-state'] = "";
+                                $item['data-course'] = $course_id;
+                                $item['data-assessment'] = "false";
+                                $item['data-assessmentid'] = "";
+                                $item['data-topic'] = $topic->id;
+                                //$item['data-audio-advance'] = "-1";
+                                //$item['data-audio-text'] = "";
+                                $item['class'] = "topicsection scrollable";
+                                $item['data-topichasassessment'] = "false";
+                                $item['data-islasttopic'] = $topic->LastTopic;
+                                $item['data-displaynavtext'] = $displayText;
+
+                                if($topic->LastTopic && $counter == $sectioncount)
+                                {
+                                    if(count($topic->assessments) > 0){
+                                        $item['data-lastslideofcourse'] = "0";
+                                    }
+                                    else{
+                                        $item['data-lastslideofcourse'] = "1";
+                                    }
+                                }
+                                else
+                                {
+                                    $item['data-lastslideofcourse'] = "0";
+                                }
+
+                                if($counter == $sectioncount)
+                                {
+                                    $item['data-lastslideoftopic'] = "1";
+                                    if(count($topic->assessments) > 0)
+                                    {
+                                        $item['data-topichasassessment']= "true";
+                                    }
+                                    else
+                                    {
+                                        $item['data-topichasassessment']= "false";
+                                    }
+                                }
+                                else
+                                {
+                                    $item['data-lastslideoftopic'] = "0";
+                                    $item['data-topichasassessment']= "false";
+                                }
+
+                                $innerSection = substr($item->asXML(),8);
+                                $innerSection = substr($innerSection,0,strlen($innerSection)-10);
+                                $innerSection = str_replace("<section","<div",$innerSection);
+                                $innerSection = str_replace("</section","</div",$innerSection);
+                                $innerSection = "<section". $innerSection."</section>";
+                                $innerSection = str_replace('&amp;nbsp','&nbsp', $innerSection );
+                                $topic->sections = $innerSection;
+                                //$topic->sections[] = $item->asXML();
+                                //dump($innerSection);
+                                $counter++;
+                            }
                         }
+
+                        //dump($topic);
 
                         $all_topic_counter++;
                     }
@@ -310,6 +371,27 @@ class SSPMyCourseController extends CustomController
             }
 
         }
+
+        //dd($topics);
+
+        // TODO: detect if this topic is an assessment
+
+        $returnHTML = view($this->baseViewPath.'.partials.view-topic')
+            ->with('topic', $topic)
+            ->with('assessmentId',$assessmentId)
+            ->with('courseId',$course_id)
+            ->with('topics', $topics)
+            //->with('assessmentlist',$assessment_list)
+            ->render();
+
+        // show the view and pass the Model to it
+        return View::make($this->baseViewPath.'.myelearningtopicprototype')
+            ->with('assessmentData', $assessmentData)
+            ->with('assessmentId',$assessmentId)
+            ->with('dyn', $returnHTML)
+            ->with('topics', $topics)
+            //->with('assessmentlist',$assessmentlist)
+            ->with('courseId',$course_id);
     }
 
     /**
@@ -333,7 +415,6 @@ class SSPMyCourseController extends CustomController
         //dump($moduleId);
         //dump($topicId);
         //die();
-        $retDisplayText = "";
         $course = Course::find($courseId);
         $module = Module::find($moduleId);
         $topic = Topic::find($topicId);
