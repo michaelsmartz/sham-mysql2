@@ -48,9 +48,11 @@ Auth::routes();
 
             Route::post('my-elearning/enrol', 'SSPMyCourseController@enrol');
             Route::get('my-elearning/my-courses', 'SSPMyCourseController@myCourses');
+            Route::get('my-course/{Id}','SSPMyCourseController@renderTopic');
+
             Route::resource('my-courses', 'SSPMyCourseController',[
-                'only'=>['index']
-            ]);
+                    'only'=>['index']
+                ]);
 
             Route::resource('my-surveys', 'SSPMySurveysController');
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');

@@ -132,7 +132,7 @@ if(count($coursesAvailable)>12)
 
     <section id="elearning">
         <br>
-        <ul class="nav nav-tabs nav-justified" id="myTabs">
+        <ul class="nav nav-tabs" id="myTabs">
             <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#sectionA">Available</a>
             </li>

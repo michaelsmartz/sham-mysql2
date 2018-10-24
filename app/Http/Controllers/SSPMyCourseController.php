@@ -6,6 +6,9 @@ use App\Course;
 use App\Employee;
 use App\Enums\CourseParticipantStatusType;
 use App\Http\Requests;
+use App\Module;
+use App\ModuleAssessment;
+use App\Topic;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
 use View;
@@ -68,12 +71,14 @@ class SSPMyCourseController extends CustomController
             }
         }
 
-        //dd($coursesAvailable);
-
         // load the view and pass the coursesAvailable
         return View::make($this->baseViewPath .'.available', compact('coursesAvailable', 'warnings'));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function enrol(Request $request) {
         $course_id = $request->get('id');
 
@@ -116,6 +121,9 @@ class SSPMyCourseController extends CustomController
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function myCourses() {
         $myCourses = [];
         $courseParticipantStatus = [];
@@ -165,7 +173,7 @@ class SSPMyCourseController extends CustomController
 
                 foreach ($course->employees as $employee){
                     if($employee->employee_id == $employee_id){
-                        $course_participant_description = CourseParticipantStatusType::getKey($employee->courseparticipantstatus_id);
+                        $course_participant_description = CourseParticipantStatusType::getDescription($employee->courseparticipantstatus_id);
                         $courseParticipantStatus['Id'] = $employee->courseparticipantstatus_id;
                         $courseParticipantStatus['Description'] = $course_participant_description;
                     }
@@ -185,8 +193,153 @@ class SSPMyCourseController extends CustomController
             }
         }
 
-        //dd($myCourses);
-
         return View::make($this->baseViewPath .'.mycourse', compact('myCourses'));
+    }
+
+    /**
+     * @param $course_id
+     */
+    public function renderTopic($course_id) {
+        $topic = null;
+        $assessmentData = null;
+        $assessmentId = 0;
+        $topics = null;
+        $assessment_list = [];
+
+        $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        $course = $this->contextObj::with(['modules.topics','employees', 'employeeProgress'])
+            ->whereHas('employees', function($query) use ($employee_id, $course_id) {
+                $query->where('employee_id',$employee_id);
+                $query->where('course_id',$course_id);
+            })
+            ->whereHas('employeeProgress', function($query){
+                $query->where('is_completed',0);
+            })
+            ->get()->first();
+
+        if ($course != null){
+            //dd($course);
+            $isFirst = true;
+            $prev_module_id = 0;
+            $all_topic_counter = 0;
+
+            foreach ($course->modules as $module) {
+                //count no of topics in modules
+                $topics_count = $module->topics->count();
+                //dump($topics_count);
+                //check if topics is not empty in modules i.e. present in pivot module_topic
+                if($topics_count != 0) {
+                    // Detect a change in moduleid...
+                    $current_module_id = $module->id;
+                    $topics_counter = 0;
+
+                    foreach ($module->topics as $topic) {
+                        //dd($topic->pivot->module_id);
+                        $topic_assessments = [];
+                        $topic_assessments1 = [];
+
+                        if(!$isFirst && $current_module_id != $prev_module_id)
+                        {
+                            self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments, $course_id);
+                            //dd($topic);
+                            $topic->assessments = $topic_assessments;
+                        }
+
+                        $topics_counter++;
+
+                        //dump($topics_count);
+                        //dump($topics_counter);
+
+                        if($topics_count == $topics_counter)
+                        {
+                            // Check if module has assemment and get ModuleAssessmentId and AssessmentData
+                            // This check is being done on last topic of courses.
+                            self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments1, $course_id);
+                            $topic->assessments =  $topic_assessments1;
+                            $topic->LastTopic = true;
+                        }
+                        else
+                        {
+                            $topic->LastTopic = false;
+                            $topic->assessments =  $topic_assessments1;
+                        }
+
+
+                        $prev_module_id = $topic->pivot->module_id;
+                        $isFirst = false;
+
+                        // Add forward slash  before closing tag of img and source html tag.
+                        // The missing forward slash was raising an error when invoking the simplexml_load_string method.
+
+                        if(is_null($topic->data) || empty($topic->data) || $topic->data == "")
+                        {
+                            $topic->data = "<section><p>No content to display.</p></section>";
+                        }else {
+
+                            $topic_data = preg_replace("/<img([^>]+)\>/is", "<img $1 />", $topic->data);
+                            $topic_data = preg_replace("/<source([^>]+)\>/is", "<source $1 />", $topic_data);
+                            $topic_data = preg_replace('/&nbsp/', '&amp;nbsp', $topic_data);
+                            $topic_data = str_replace("fragment", " ", $topic_data);
+                            $xml = simplexml_load_string("<main>" . $topic_data . "</main>");
+                            $topic->sections = [];
+
+                            //dump($xml);
+
+                            $sectioncount = count($xml);
+                            $counter = 1;
+                        }
+
+                        //dump($topic);
+                        //dump($all_topic_counter);
+                        //dump($course->employeeProgress[$all_topic_counter]->is_completed);
+
+                        //to prevent loop again on course_progress, making use of a counter
+                        if(!$course->employeeProgress[$all_topic_counter]->is_completed)
+                        {
+                            $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
+                            //dump($displayText);
+                        }
+
+                        $all_topic_counter++;
+                    }
+                    //die();
+                    //dump($topics);
+                    //dump($topics_counter);
+                }
+            }
+
+        }
+    }
+
+    /**
+     * @param $employee_id
+     * @param $module_id
+     * @param $assessment_list
+     * @param $topic_assessments
+     * @param $course_id
+     */
+    private function extractModuleAssessmentDetails($employee_id, $module_id, &$assessment_list,&$topic_assessments,$course_id)
+    {
+        $module_assessment = ModuleAssessment::find($module_id);
+
+        //dd($module_assessment);
+
+    }
+
+    private function getDisplayText($courseId,$moduleId,$topicId)
+    {
+        //dump($courseId);
+        //dump($moduleId);
+        //dump($topicId);
+        //die();
+        $retDisplayText = "";
+        $course = Course::find($courseId);
+        $module = Module::find($moduleId);
+        $topic = Topic::find($topicId);
+        $retDisplayText = 'Course: '.$course->description.' | '."Module: ".$module->description.' | '."Topic: ".$topic->header;
+
+        //dump($retDisplayText);
+        return $retDisplayText;
     }
 }
