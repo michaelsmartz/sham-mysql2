@@ -1,4 +1,4 @@
-@extends('portal-index')
+@extends('index')
 @section('title','My E-learning')
 @section('post-body')
     <link href="{{URL::to('/')}}/css/nicescroll.css" rel="stylesheet">
@@ -101,7 +101,7 @@
 
             function postProgress(el) {
                 //console.log('postProgress ' + el.getAttribute('data-course') + ' '+ el.getAttribute('data-topic'));
-                var datacourse, datatopic, datahasassessment;
+                var datacourse, datatopic, datamodule, datahasassessment;
 
                 //datacourse = el.parentNode.parentNode.parentNode.getAttribute('data-course');
                 //datatopic = el.parentNode.parentNode.parentNode.getAttribute('data-topic');
@@ -109,16 +109,17 @@
 
                 datacourse = el.closest(".topicsection").getAttribute('data-course');
                 datatopic = el.closest(".topicsection").getAttribute('data-topic');
+                datamodule = el.closest(".topicsection").getAttribute('data-module');
                 datahasassessment = el.closest(".topicsection").getAttribute('data-topichasassessment');
 
-                if (datacourse !='' && datatopic != '') {
+                if (datacourse !='' && datatopic != '' && datamodule != '') {
                     //alert(el.parentNode.parentNode.parentNode.getAttribute('class'));
                     var request = jQuery.ajax({
                         url: '{{URL::to('/')}}/my-courses/progress',
                         type: "POST",
                         global: false,
                         data: {
-                            'courseId': datacourse, 'topicId': datatopic, 'topicHasAssessment':datahasassessment
+                            'courseId': datacourse, 'topicId': datatopic, 'moduleId': datamodule, 'topicHasAssessment':datahasassessment
                         }
                     });
                     return request;
@@ -217,7 +218,7 @@
             var lastslideoftopic = el.closest(".topicsection").getAttribute('data-lastslideoftopic');
             var assessmentid = el.closest(".topicsection").getAttribute('data-assessmentid');
             //var navtext = el.closest(".topicsection").getAttribute('data-displaynavtext');
-            var navtext =  event.currentSlide.closest(".topicsection").getAttribute('data-displaynavtext');
+            var navtext =  event.currentSlide.getAttribute('data-displaynavtext');
             $('#naviagationtext').text(navtext);
 
 
@@ -266,11 +267,13 @@
                 //console.log('Next link clicked:' + currentSlide + ' ' + totalSlides);
                 var el = Reveal.getCurrentSlide();
                 //var lastslideofCourse = el.parentNode.parentNode.parentNode.getAttribute('data-lastslideofcourse');
-                var lastslideofCourse = el.closest(".topicsection").getAttribute('data-lastslideofcourse');
+                var lastslideofCourse;
 
                 //if (currentSlide == totalSlides-1) {
                 if (el.getAttribute('data-lastslideofcourse') != null) {
                     lastslideofCourse = el.getAttribute('data-lastslideofcourse');
+                }else{
+                    lastslideofCourse = el.closest(".topicsection").getAttribute('data-lastslideofcourse');
                 }
 
                 if (lastslideofCourse == "1") {

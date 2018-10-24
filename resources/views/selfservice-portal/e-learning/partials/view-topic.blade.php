@@ -44,12 +44,12 @@
     <audio data-src="{{URL::to('/')}}/audio/0.0.ogg" autoplay="autoplay"></audio>
 </section>
 
-<?php if (isset($topics)&& count($topics)>0): ?>
+<?php if (isset($topics) && count($topics)>0): ?>
 @foreach($topics as $topic)
     {{--@foreach($topic->sections as $section)--}}
         {!! $topic->sections !!}
     {{--@endforeach--}}
-    @if(!empty($topic['assessments']))
+    @if(!empty($topic->assessments))
         <?php
         $count = count($topic->assessments);
         $counter = 0;
@@ -60,13 +60,13 @@
             ?>
             @if($assessment)
                 @if($topic->LastTopic && $counter == $count)
-                    <section data-state="slideCustomEvent" data-course="{{$courseId}}" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
+                    <section data-state="slideCustomEvent" data-course="{{$courseId}}" data-module="" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
                              class="topicsection" data-topichasassessment=""  data-islasttopic="" data-lastelement="true" data-lastslideoftopic="1" data-displaynavtext="">
                         <audio class="assessment-audio" data-src="{{url("/").'/audio/assessment.ogg'}}"></audio>
                         <div class="assessment-container"></div>
                     </section>
                 @else
-                    <section data-state="slideCustomEvent"  data-course="{{$courseId}}" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
+                    <section data-state="slideCustomEvent"  data-course="{{$courseId}}" data-module="" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
                              class="topicsection" data-topichasassessment="" data-islasttopic="" data-lastelement="false" data-lastslideoftopic="1" data-displaynavtext="">
                         <audio class="assessment-audio" data-src="{{url("/").'/audio/assessment.ogg'}}"></audio>
                         <div class="assessment-container"></div>

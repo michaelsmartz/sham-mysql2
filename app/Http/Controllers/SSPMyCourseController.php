@@ -96,13 +96,13 @@ class SSPMyCourseController extends CustomController
 
         //TODO HistoryTraining
 
-        $courseModTopics = $this->contextObj::where('id',$course_id)->with(['modules.topics','employees'])->get()->all();
+        $courseModTopics = $this->contextObj::where('id',$course_id)->with(['modules.topics','employees'])->get()->first();
 
         $course_employee_module_topic_pivot = [];
 
         if($courseModTopics != null){
             $module_count = 0;
-            foreach ($courseModTopics[0]->modules as $module) {
+            foreach ($courseModTopics->modules as $module) {
                 foreach ($module->topics as $topic) {
                     $course_employee_module_topic_pivot[$module_count] = [
                         'employee_id' => $employee_id,
@@ -198,6 +198,7 @@ class SSPMyCourseController extends CustomController
 
     /**
      * @param $course_id
+     * @return mixed
      */
     public function renderTopic($course_id) {
         $topic = null;
@@ -219,7 +220,6 @@ class SSPMyCourseController extends CustomController
             ->get()->first();
 
         if ($course != null){
-            //dd($course);
             $isFirst = true;
             $prev_module_id = 0;
             $all_topic_counter = 0;
@@ -227,7 +227,6 @@ class SSPMyCourseController extends CustomController
             foreach ($course->modules as $module) {
                 //count no of topics in modules
                 $topics_count = $module->topics->count();
-                //dump($topics_count);
                 //check if topics is not empty in modules i.e. present in pivot module_topic
                 if($topics_count != 0) {
                     // Detect a change in moduleid...
@@ -237,21 +236,16 @@ class SSPMyCourseController extends CustomController
                     $topics = $module->topics;
 
                     foreach ($topics as $topic) {
-                        //dd($topic->pivot->module_id);
                         $topic_assessments = [];
                         $topic_assessments1 = [];
 
                         if(!$isFirst && $current_module_id != $prev_module_id)
                         {
                             self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments, $course_id);
-                            //dd($topic);
                             $topic->assessments = $topic_assessments;
                         }
 
                         $topics_counter++;
-
-                        //dump($topics_count);
-                        //dump($topics_counter);
 
                         if($topics_count == $topics_counter)
                         {
@@ -286,28 +280,22 @@ class SSPMyCourseController extends CustomController
                         $xml = simplexml_load_string("<main>" . $topic_data . "</main>");
                         $topic->sections = [];
 
-                        //dump($xml);
                         $sectioncount = count($xml);
                         $counter = 1;
-
-                        //dump($topic);
-                        //dump($all_topic_counter);
-                        //dump($course->employeeProgress[$all_topic_counter]->is_completed);
 
                         //to prevent loop again on course_progress, making use of a counter
                         if(!$course->employeeProgress[$all_topic_counter]->is_completed)
                         {
                             $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
-                            //dump($displayText);
 
                             foreach($xml as $item) {
-                                //dump($item);
                                 //$item['data-last'] = "0";
                                 $item['data-state'] = "";
                                 $item['data-course'] = $course_id;
                                 $item['data-assessment'] = "false";
                                 $item['data-assessmentid'] = "";
                                 $item['data-topic'] = $topic->id;
+                                $item['data-module'] = $topic->pivot->module_id;
                                 //$item['data-audio-advance'] = "-1";
                                 //$item['data-audio-text'] = "";
                                 $item['class'] = "topicsection scrollable";
@@ -355,24 +343,16 @@ class SSPMyCourseController extends CustomController
                                 $innerSection = str_replace('&amp;nbsp','&nbsp', $innerSection );
                                 $topic->sections = $innerSection;
                                 //$topic->sections[] = $item->asXML();
-                                //dump($innerSection);
                                 $counter++;
                             }
                         }
 
-                        //dump($topic);
-
                         $all_topic_counter++;
                     }
-                    //die();
-                    //dump($topics);
-                    //dump($topics_counter);
                 }
             }
 
         }
-
-        //dd($topics);
 
         // TODO: detect if this topic is an assessment
 
@@ -411,16 +391,95 @@ class SSPMyCourseController extends CustomController
 
     private function getDisplayText($courseId,$moduleId,$topicId)
     {
-        //dump($courseId);
-        //dump($moduleId);
-        //dump($topicId);
-        //die();
         $course = Course::find($courseId);
         $module = Module::find($moduleId);
         $topic = Topic::find($topicId);
         $retDisplayText = 'Course: '.$course->description.' | '."Module: ".$module->description.' | '."Topic: ".$topic->header;
 
-        //dump($retDisplayText);
         return $retDisplayText;
     }
+
+    public function getTopicAttachments(Request $request, $topicId)
+    {
+        $qaarray = [];
+
+        return response()->json($qaarray);
+
+    }
+
+    public function updateCourseProgress(Request $request) {
+        $courseId = Input::get('courseId');
+        $topicId = Input::get('topicId');
+        $moduleId= Input::get('moduleId');
+        $topicHasAssessment = Input::get('topicHasAssessment');
+
+        $employeeId = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+//        $course = $this->contextObj::find($courseId);
+//
+//        $course_employee_module_topic_pivot[0] = [
+//            'employee_id' => $employeeId,
+//            'course_id' => $courseId,
+//            'module_id' => $moduleId,
+//            'topic_id' => $topicId,
+//            'is_completed' => true
+//        ];
+//
+//        $course->employeeProgress()->sync($course_employee_module_topic_pivot);
+
+
+//        $courseModTopics = $this->contextObj::where('id',$course_id)->with(['modules.topics','employees'])->get()->first();
+
+//        // Updating Course Progress Status
+//        $baseFilter = 'EmployeeId eq ' .$employeeid;
+//        $filter = $baseFilter .' and CourseId eq '.$courseId;
+//        // course Progress per course for the current employee
+//        $tempProgress = CourseProgress::select(['*'],$filter);
+//        if ($tempProgress != null && property_exists($tempProgress,'value')) {
+//            $tempProgress = $tempProgress->value;
+//            $total = sizeof($tempProgress);
+//            // check and avoid division by 0 if there are no CourseProgress records
+//            if ($total > 0) {
+//                $countCompleted = 0;
+//                foreach ($tempProgress as $progress) {
+//                    if ($progress->Completed) {
+//                        $countCompleted++;
+//                    }
+//                }
+//                $courseparticipantStatus = '';
+//                if($countCompleted/$total == 1)
+//                {
+//                    if($topicHasAssessment == "true")
+//                    {
+//                        $courseparticipantStatus = CourseParticipantStatus::CONST_IN_PROGRESS;
+//                    }
+//                    else
+//                    {
+//                        $courseparticipantStatus = CourseParticipantStatus::CONST_COMPLETED;
+//                    }
+//                }
+//                else
+//                {
+//                    $courseparticipantStatus = CourseParticipantStatus::CONST_IN_PROGRESS;
+//                }
+//                $coursepartObj = CourseParticipant::select(['*'],'CourseId eq ' .$courseId . ' and EmployeeId eq '.$employeeid);
+//                if ($coursepartObj != null && property_exists($coursepartObj,'value')) {
+//                    $coursepartObjArr = $coursepartObj->value;
+//                    if (is_array($coursepartObjArr)) {
+//                        $cparticipant = new CourseParticipant();
+//                        $cparticipant->Id = $coursepartObjArr[0]->Id;
+//                        $cparticipant->CourseParticipantStatusId = $courseparticipantStatus;
+//                        CourseParticipant::patch($coursepartObjArr[0]->Id, $cparticipant);
+//
+//                        if (empty(CourseParticipant::$last_error_type)) {
+//                            return response()->json(['response' => 'OK']);
+//                        }
+//                        return response()->json(['response' => 'KO'], 500);
+//                    }
+//                }
+//            }
+//        }
+
+    }
+
 }
