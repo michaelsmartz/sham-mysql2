@@ -140,9 +140,11 @@ class SSPMyCourseController extends CustomController
             $courses_count = 0;
             foreach ($courses as $course) {
                 $modules = [];
+                $all_topics_count = 0;
                 $topics_completed = 0;
                 $modules_count = 0;
                 foreach ($course->modules as $module) {
+                    $all_topics_count += $module->topics->count();
                     $topics_count = 0;
                     $modules[$modules_count]['Id'] = $module->id;
                     $modules[$modules_count]['Description'] = $module->description;
@@ -188,7 +190,7 @@ class SSPMyCourseController extends CustomController
                     $myCourses[$courses_count]['TopicsCompleted'] = $topics_completed;
                     $myCourses[$courses_count]['Modules'] = $modules;
                     $myCourses[$courses_count]['CourseParticipantStatus'] = $courseParticipantStatus;
-                    $myCourses[$courses_count]['ProgressPercentage'] = ($topics_completed/$topics_count) * 100;
+                    $myCourses[$courses_count]['ProgressPercentage'] = ($topics_completed/$all_topics_count) * 100;
                     $courses_count++;
                 }
             }
@@ -414,7 +416,7 @@ class SSPMyCourseController extends CustomController
             ->where('topic_id',$topicId)
             ->update(['is_completed'=>1]);
 
-        $courseModTopics = $this->contextObj::where('id',$courseId)->with(['modules.topics','employees', 'employeeProgress'])->get()->first();
+        $courseModTopics = $this->contextObj::where('id',$courseId)->with(['employeeProgress'])->get()->first();
 
         // Updating Course Progress Status
         $totalCourseProgress = $courseModTopics->employeeProgress->count();
