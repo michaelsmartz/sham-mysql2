@@ -10,9 +10,9 @@ class ShamPermission extends Model
 
     protected $casts = [
         'id'   => 'integer',
-        'Name' => 'string',
-        'Description' => 'string',
-        'Active'=>'boolean',
+        'name' => 'string',
+        'description' => 'string',
+        'is_active'=>'boolean',
     ];
 
     protected $guarded = [
@@ -20,9 +20,9 @@ class ShamPermission extends Model
     ];
 
     protected $fillable = [
-        'Name',
-        'Description',
-        'Active',
+        'name',
+        'description',
+        'is_active',
     ];
 
 
@@ -34,8 +34,8 @@ class ShamPermission extends Model
     public static function getSearcheableFields()
     {
         return array(
-            'Name'=>' Name',
-            'Description'=>' Description',
+            'name'=>' Name',
+            'description'=>' Description',
         );
     }
 
@@ -47,8 +47,8 @@ class ShamPermission extends Model
     public static function getListFields()
     {
         return array(
-            'Name'=>' Name',
-            'Description'=>' Description',
+            'name'=>' Name',
+            'description'=>' Description',
 
         );
     }
@@ -56,16 +56,16 @@ class ShamPermission extends Model
 //Mutators and Accessors
     public function setActiveAttribute($value)
     {
-    	$this->attributes['Active'] = $value ?: null;
+    	$this->attributes['is_active'] = $value ?: null;
     }
 
     //Custom function to retrieve list for combo box
     public static function getComboList(){
-        $arr = self::getList(['Name'], "" , "", "");
+        $arr = self::getList(['name'], "" , "", "");
         $ret = array();
         $key = self::getKeyId();
         foreach ($arr as $element) {
-            $ret[$element->$key]=$element->Name;
+            $ret[$element->$key]=$element->name;
         }
         return $ret;
     }
@@ -77,7 +77,7 @@ class ShamPermission extends Model
     public static function GetDescription($Id)
     {
         $item = static::find($Id);
-        if ($item!=null) return $item->Name;
+        if ($item!=null) return $item->name;
         else return "";
     }
 

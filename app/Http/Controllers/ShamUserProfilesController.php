@@ -191,8 +191,8 @@ class ShamUserProfilesController extends CustomController
                     foreach ($shamPermissions as $permission) {
                         $permissions[$count] = [
                             "Id" => $permission->id,
-                            "Alias" => $permission->alias,
-                            "Description" => $permission->description
+                            "alias" => $permission->alias,
+                            "description" => $permission->description
                         ];
 
                         $count++;
