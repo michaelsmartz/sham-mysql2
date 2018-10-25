@@ -400,55 +400,58 @@ class SSPMyCourseController extends CustomController
     }
 
     public function updateCourseProgress(Request $request) {
-        $courseId = Input::get('courseId');
-        $topicId = Input::get('topicId');
-        $moduleId= Input::get('moduleId');
-        $topicHasAssessment = Input::get('topicHasAssessment');
 
-        $employeeId = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+        try {
+            $courseId = Input::get('courseId');
+            $topicId = Input::get('topicId');
+            $moduleId= Input::get('moduleId');
+            $topicHasAssessment = Input::get('topicHasAssessment');
 
-        $course = $this->contextObj::find($courseId);
+            $employeeId = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
-        $course->employeeProgress()
-            ->where('employee_id',$employeeId)
-            ->where('course_id',$courseId)
-            ->where('module_id',$moduleId)
-            ->where('topic_id',$topicId)
-            ->update(['is_completed'=>1]);
+            $course = $this->contextObj::find($courseId);
 
-        $courseModTopics = $this->contextObj::where('id',$courseId)->with(['employeeProgress'])->get()->first();
+            if(!empty($course)) {
+                $course->employeeProgress()
+                    ->where('employee_id', $employeeId)
+                    ->where('course_id', $courseId)
+                    ->where('module_id', $moduleId)
+                    ->where('topic_id', $topicId)
+                    ->update(['is_completed' => 1]);
 
-        // Updating Course Progress Status
-        $totalCourseProgress = $courseModTopics->employeeProgress->count();
-        // check and avoid division by 0 if there are no CourseProgress records
-        if ($totalCourseProgress > 0) {
-            $countCompleted = 0;
-            foreach ($courseModTopics->employeeProgress as $employeeProgress) {
-                if ($employeeProgress->is_completed) {
-                    $countCompleted++;
+                $courseModTopics = $this->contextObj::where('id', $courseId)->with(['employeeProgress'])->get()->first();
+
+                // Updating Course Progress Status
+                $totalCourseProgress = $courseModTopics->employeeProgress->count();
+                // check and avoid division by 0 if there are no CourseProgress records
+                if ($totalCourseProgress > 0) {
+                    $countCompleted = 0;
+                    foreach ($courseModTopics->employeeProgress as $employeeProgress) {
+                        if ($employeeProgress->is_completed) {
+                            $countCompleted++;
+                        }
+                    }
+
+                    if ($countCompleted / $totalCourseProgress == 1) {
+                        if ($topicHasAssessment == "true") {
+                            $courseparticipantStatus = CourseParticipantStatusType::In_Progress;
+                        } else {
+                            $courseparticipantStatus = CourseParticipantStatusType::Completed;
+                        }
+                    } else {
+                        $courseparticipantStatus = CourseParticipantStatusType::In_Progress;
+                    }
+
+                     $course->courseEmployee()
+                        ->where('course_id', $courseId)
+                        ->where('employee_id', $employeeId)
+                        ->update(['courseparticipantstatus_id' => $courseparticipantStatus]);
                 }
             }
-
-            if ($countCompleted / $totalCourseProgress == 1) {
-                if ($topicHasAssessment == "true") {
-                    $courseparticipantStatus = CourseParticipantStatusType::In_Progress;
-                } else {
-                    $courseparticipantStatus = CourseParticipantStatusType::Completed;
-                }
-            } else {
-                $courseparticipantStatus = CourseParticipantStatusType::In_Progress;
-            }
-
-            $response = $course->courseEmployee()
-                ->where('course_id',$courseId)
-                ->where('employee_id',$employeeId)
-                ->update(['courseparticipantstatus_id'=>$courseparticipantStatus]);
+                return response()->json(['response' => 'OK']);
+        } catch (Exception $exception) {
+            return response()->json(['response' => 'KO'], 500);
         }
-
-        if ($response) {
-            return response()->json(['response' => 'OK']);
-        }
-        return response()->json(['response' => 'KO'], 500);
     }
 
 }
