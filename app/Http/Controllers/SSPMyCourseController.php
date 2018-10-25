@@ -153,8 +153,9 @@ class SSPMyCourseController extends CustomController
                             $topics_count++;
                         }
                     }else{
-                        $modules[$modules_count]['Topics'] = [];
+                        unset($modules[$modules_count]);
                     }
+                    $modules_count++;
                 }
 
                 foreach ($course->employeeProgress as $employeeProgress){
@@ -204,7 +205,7 @@ class SSPMyCourseController extends CustomController
         $topic = null;
         $assessmentData = null;
         $assessmentId = 0;
-        $topics = null;
+        $all_topics = [];
         $assessment_list = [];
 
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
@@ -219,19 +220,23 @@ class SSPMyCourseController extends CustomController
             })
             ->get()->first();
 
-        if ($course != null){
+        if ($course != null) {
             $isFirst = true;
             $prev_module_id = 0;
             $all_topic_counter = 0;
+            $all_topics_count = 0;
+
+            foreach ($course->modules as $module) {
+                $all_topics_count += $module->topics->count();
+            }
 
             foreach ($course->modules as $module) {
                 //count no of topics in modules
                 $topics_count = $module->topics->count();
                 //check if topics is not empty in modules i.e. present in pivot module_topic
-                if($topics_count != 0) {
+                if ($topics_count != 0) {
                     // Detect a change in moduleid...
                     $current_module_id = $module->id;
-                    $topics_counter = 0;
 
                     $topics = $module->topics;
 
@@ -239,26 +244,20 @@ class SSPMyCourseController extends CustomController
                         $topic_assessments = [];
                         $topic_assessments1 = [];
 
-                        if(!$isFirst && $current_module_id != $prev_module_id)
-                        {
+                        if (!$isFirst && $current_module_id != $prev_module_id) {
                             self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments, $course_id);
                             $topic->assessments = $topic_assessments;
                         }
 
-                        $topics_counter++;
-
-                        if($topics_count == $topics_counter)
-                        {
+                        if ($all_topic_counter + 1 == $all_topics_count) {
                             // Check if module has assemment and get ModuleAssessmentId and AssessmentData
                             // This check is being done on last topic of courses.
                             self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments1, $course_id);
-                            $topic->assessments =  $topic_assessments1;
+                            $topic->assessments = $topic_assessments1;
                             $topic->LastTopic = true;
-                        }
-                        else
-                        {
+                        } else {
                             $topic->LastTopic = false;
-                            $topic->assessments =  $topic_assessments1;
+                            $topic->assessments = $topic_assessments1;
                         }
 
 
@@ -268,8 +267,7 @@ class SSPMyCourseController extends CustomController
                         // Add forward slash  before closing tag of img and source html tag.
                         // The missing forward slash was raising an error when invoking the simplexml_load_string method.
 
-                        if(is_null($topic->data) || empty($topic->data) || $topic->data == "")
-                        {
+                        if (is_null($topic->data) || empty($topic->data) || $topic->data == "") {
                             $topic->data = "<section><p>No content to display.</p></section>";
                         }
 
@@ -284,74 +282,66 @@ class SSPMyCourseController extends CustomController
                         $counter = 1;
 
                         //to prevent loop again on course_progress, making use of a counter
-                        if(!$course->employeeProgress[$all_topic_counter]->is_completed)
-                        {
-                            $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
+                        if ($all_topic_counter < $course->employeeProgress->count()) {
+                            if (!$course->employeeProgress[$all_topic_counter]->is_completed) {
+                                $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
 
-                            foreach($xml as $item) {
-                                //$item['data-last'] = "0";
-                                $item['data-state'] = "";
-                                $item['data-course'] = $course_id;
-                                $item['data-assessment'] = "false";
-                                $item['data-assessmentid'] = "";
-                                $item['data-topic'] = $topic->id;
-                                $item['data-module'] = $topic->pivot->module_id;
-                                //$item['data-audio-advance'] = "-1";
-                                //$item['data-audio-text'] = "";
-                                $item['class'] = "topicsection scrollable";
-                                $item['data-topichasassessment'] = "false";
-                                $item['data-islasttopic'] = $topic->LastTopic;
-                                $item['data-displaynavtext'] = $displayText;
+                                foreach ($xml as $item) {
+                                    //dump($item);
+                                    //$item['data-last'] = "0";
+                                    $item['data-state'] = "";
+                                    $item['data-course'] = $course_id;
+                                    $item['data-assessment'] = "false";
+                                    $item['data-assessmentid'] = "";
+                                    $item['data-topic'] = $topic->id;
+                                    $item['data-module'] = $topic->pivot->module_id;
+                                    //$item['data-audio-advance'] = "-1";
+                                    //$item['data-audio-text'] = "";
+                                    $item['class'] = "topicsection scrollable";
+                                    $item['data-topichasassessment'] = "false";
+                                    $item['data-islasttopic'] = $topic->LastTopic;
+                                    $item['data-displaynavtext'] = $displayText;
 
-                                if($topic->LastTopic && $counter == $sectioncount)
-                                {
-                                    if(count($topic->assessments) > 0){
+                                    if ($topic->LastTopic && $counter == $sectioncount) {
+                                        if (count($topic->assessments) > 0) {
+                                            $item['data-lastslideofcourse'] = "0";
+                                        } else {
+                                            $item['data-lastslideofcourse'] = "1";
+                                        }
+                                    } else {
                                         $item['data-lastslideofcourse'] = "0";
                                     }
-                                    else{
-                                        $item['data-lastslideofcourse'] = "1";
-                                    }
-                                }
-                                else
-                                {
-                                    $item['data-lastslideofcourse'] = "0";
-                                }
 
-                                if($counter == $sectioncount)
-                                {
-                                    $item['data-lastslideoftopic'] = "1";
-                                    if(count($topic->assessments) > 0)
-                                    {
-                                        $item['data-topichasassessment']= "true";
+                                    if ($counter == $sectioncount) {
+                                        $item['data-lastslideoftopic'] = "1";
+                                        if (count($topic->assessments) > 0) {
+                                            $item['data-topichasassessment'] = "true";
+                                        } else {
+                                            $item['data-topichasassessment'] = "false";
+                                        }
+                                    } else {
+                                        $item['data-lastslideoftopic'] = "0";
+                                        $item['data-topichasassessment'] = "false";
                                     }
-                                    else
-                                    {
-                                        $item['data-topichasassessment']= "false";
-                                    }
-                                }
-                                else
-                                {
-                                    $item['data-lastslideoftopic'] = "0";
-                                    $item['data-topichasassessment']= "false";
-                                }
 
-                                $innerSection = substr($item->asXML(),8);
-                                $innerSection = substr($innerSection,0,strlen($innerSection)-10);
-                                $innerSection = str_replace("<section","<div",$innerSection);
-                                $innerSection = str_replace("</section","</div",$innerSection);
-                                $innerSection = "<section". $innerSection."</section>";
-                                $innerSection = str_replace('&amp;nbsp','&nbsp', $innerSection );
-                                $topic->sections = $innerSection;
-                                //$topic->sections[] = $item->asXML();
-                                $counter++;
+                                    $innerSection = substr($item->asXML(), 8);
+                                    $innerSection = substr($innerSection, 0, strlen($innerSection) - 10);
+                                    $innerSection = str_replace("<section", "<div", $innerSection);
+                                    $innerSection = str_replace("</section", "</div", $innerSection);
+                                    $innerSection = "<section" . $innerSection . "</section>";
+                                    $innerSection = str_replace('&amp;nbsp', '&nbsp', $innerSection);
+                                    $topic->sections = [$innerSection];
+                                    //$topic->sections[] = $item->asXML();
+                                    $counter++;
+                                }
                             }
                         }
 
                         $all_topic_counter++;
                     }
+                    $all_topics[] = $topics;
                 }
             }
-
         }
 
         // TODO: detect if this topic is an assessment
@@ -360,7 +350,7 @@ class SSPMyCourseController extends CustomController
             ->with('topic', $topic)
             ->with('assessmentId',$assessmentId)
             ->with('courseId',$course_id)
-            ->with('topics', $topics)
+            ->with('topics', $all_topics)
             //->with('assessmentlist',$assessment_list)
             ->render();
 
@@ -369,7 +359,7 @@ class SSPMyCourseController extends CustomController
             ->with('assessmentData', $assessmentData)
             ->with('assessmentId',$assessmentId)
             ->with('dyn', $returnHTML)
-            ->with('topics', $topics)
+            ->with('topics', $all_topics)
             //->with('assessmentlist',$assessmentlist)
             ->with('courseId',$course_id);
     }
