@@ -138,6 +138,7 @@ Auth::routes();
         #endregion
 
         #region E-Learning
+            Route::get('elearning', 'MiscController@elearningHelper');
             Route::resource('courses', 'CoursesController' );
             Route::resource('modules', 'ModulesController' );
 
