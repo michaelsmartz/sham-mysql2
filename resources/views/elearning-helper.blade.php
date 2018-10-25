@@ -53,7 +53,4 @@
         </div>
     </section>
 
-    <script src="{{URL::to('/')}}/plugins/hopscotch/hopscotch-0.3.1.min.js"></script>
-    <script src="{{URL::to('/')}}/plugins/hopscotch/e-learning-tour.js"></script>
-
 @stop
