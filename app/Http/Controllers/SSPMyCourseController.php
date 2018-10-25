@@ -405,71 +405,48 @@ class SSPMyCourseController extends CustomController
 
         $employeeId = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
-//        $course = $this->contextObj::find($courseId);
-//
-//        $course_employee_module_topic_pivot[0] = [
-//            'employee_id' => $employeeId,
-//            'course_id' => $courseId,
-//            'module_id' => $moduleId,
-//            'topic_id' => $topicId,
-//            'is_completed' => true
-//        ];
-//
-//        $course->employeeProgress()->sync($course_employee_module_topic_pivot);
+        $course = $this->contextObj::find($courseId);
 
+        $course->employeeProgress()
+            ->where('employee_id',$employeeId)
+            ->where('course_id',$courseId)
+            ->where('module_id',$moduleId)
+            ->where('topic_id',$topicId)
+            ->update(['is_completed'=>1]);
 
-//        $courseModTopics = $this->contextObj::where('id',$course_id)->with(['modules.topics','employees'])->get()->first();
+        $courseModTopics = $this->contextObj::where('id',$courseId)->with(['modules.topics','employees', 'employeeProgress'])->get()->first();
 
-//        // Updating Course Progress Status
-//        $baseFilter = 'EmployeeId eq ' .$employeeid;
-//        $filter = $baseFilter .' and CourseId eq '.$courseId;
-//        // course Progress per course for the current employee
-//        $tempProgress = CourseProgress::select(['*'],$filter);
-//        if ($tempProgress != null && property_exists($tempProgress,'value')) {
-//            $tempProgress = $tempProgress->value;
-//            $total = sizeof($tempProgress);
-//            // check and avoid division by 0 if there are no CourseProgress records
-//            if ($total > 0) {
-//                $countCompleted = 0;
-//                foreach ($tempProgress as $progress) {
-//                    if ($progress->Completed) {
-//                        $countCompleted++;
-//                    }
-//                }
-//                $courseparticipantStatus = '';
-//                if($countCompleted/$total == 1)
-//                {
-//                    if($topicHasAssessment == "true")
-//                    {
-//                        $courseparticipantStatus = CourseParticipantStatus::CONST_IN_PROGRESS;
-//                    }
-//                    else
-//                    {
-//                        $courseparticipantStatus = CourseParticipantStatus::CONST_COMPLETED;
-//                    }
-//                }
-//                else
-//                {
-//                    $courseparticipantStatus = CourseParticipantStatus::CONST_IN_PROGRESS;
-//                }
-//                $coursepartObj = CourseParticipant::select(['*'],'CourseId eq ' .$courseId . ' and EmployeeId eq '.$employeeid);
-//                if ($coursepartObj != null && property_exists($coursepartObj,'value')) {
-//                    $coursepartObjArr = $coursepartObj->value;
-//                    if (is_array($coursepartObjArr)) {
-//                        $cparticipant = new CourseParticipant();
-//                        $cparticipant->Id = $coursepartObjArr[0]->Id;
-//                        $cparticipant->CourseParticipantStatusId = $courseparticipantStatus;
-//                        CourseParticipant::patch($coursepartObjArr[0]->Id, $cparticipant);
-//
-//                        if (empty(CourseParticipant::$last_error_type)) {
-//                            return response()->json(['response' => 'OK']);
-//                        }
-//                        return response()->json(['response' => 'KO'], 500);
-//                    }
-//                }
-//            }
-//        }
+        // Updating Course Progress Status
+        $totalCourseProgress = $courseModTopics->employeeProgress->count();
+        // check and avoid division by 0 if there are no CourseProgress records
+        if ($totalCourseProgress > 0) {
+            $countCompleted = 0;
+            foreach ($courseModTopics->employeeProgress as $employeeProgress) {
+                if ($employeeProgress->is_completed) {
+                    $countCompleted++;
+                }
+            }
 
+            if ($countCompleted / $totalCourseProgress == 1) {
+                if ($topicHasAssessment == "true") {
+                    $courseparticipantStatus = CourseParticipantStatusType::In_Progress;
+                } else {
+                    $courseparticipantStatus = CourseParticipantStatusType::Completed;
+                }
+            } else {
+                $courseparticipantStatus = CourseParticipantStatusType::In_Progress;
+            }
+
+            $response = $course->courseEmployee()
+                ->where('course_id',$courseId)
+                ->where('employee_id',$employeeId)
+                ->update(['courseparticipantstatus_id'=>$courseparticipantStatus]);
+        }
+
+        if ($response) {
+            return response()->json(['response' => 'OK']);
+        }
+        return response()->json(['response' => 'KO'], 500);
     }
 
 }

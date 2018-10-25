@@ -161,7 +161,7 @@ if(count($coursesAvailable)>12)
                                 <div class="metro-tile-container">
                                     <?php $counter = 0; ?>
                                     @foreach($coursesAvailable as $index => $course)
-                                        <div class="metro-tile metro-tile-lg carousel slide" data-ride="carousel" id="myCarousel-{{$index}}" data-interval="false">
+                                        <div class="metro-tile metro-tile-lg carousel slide" data-ride="carousel" id="myCarousel-{{$counter}}" data-interval="false">
                                             <div class="hide tile-progressbar" title="" data-html="true" data-wenk="<h3 class='text-info'><b>65%</b></h3> completed">
                                                 <span style="width: 65%;"></span>
                                             </div>

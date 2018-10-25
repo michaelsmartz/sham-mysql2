@@ -67,11 +67,11 @@ $courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','b
                                     <a class="accordion-toggle" data-toggle="collapse"
                                        href="#TOC-{{$course['Id']}}">
                                         <span>{{$course['Description']}}</span>
-                                        <i class="text-primary fa fa-info-circle" data-wenk="{{$course['CourseParticipantStatus']['Description']}}"></i>
+                                        <i class="text-primary fa fa-info-circle" data-wenk-pos="right" data-wenk="{{$course['CourseParticipantStatus']['Description']}}"></i>
                                     </a>
                                 </td>
                                 <td class="course-progress">
-                                    <div class="progress" data-wenk="{{intval($course['ProgressPercentage'])}}%">
+                                    <div class="progress" data-wenk-pos="right" data-wenk="{{intval($course['ProgressPercentage'])}}%">
                                         <div class="progress-bar" style="width: {{intval($course['ProgressPercentage'])}}%; background-color: black; text-align: center; color:#5bc0de">
                                             {{intval($course['ProgressPercentage'])}}%
                                         </div>

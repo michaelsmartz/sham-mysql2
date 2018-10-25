@@ -53,6 +53,12 @@ class Course extends Model
                     ->select(['employee_id','module_id','topic_id','is_completed','completed_at']);
     }
 
+    public function courseEmployee()
+    {
+        return $this->belongsToMany('App\Employee', 'course_employee')
+            ->select(['course_id','employee_id','courseparticipantstatus_id']);
+    }
+
     public function trainingSessions()
     {
         return $this->hasMany(CourseTrainingSession::class);
