@@ -73,7 +73,7 @@ class AssessmentsController extends CustomController
 
             $data = $this->contextObj->addData($input);
 
-            $data->assessmentsAssessmentCategories()
+            $data->assessmentAssessmentCategory()
                 ->sync($assessmentcategories); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
@@ -98,7 +98,7 @@ class AssessmentsController extends CustomController
             $data = $this->contextObj->findData($id);
         }
         $assessmentcategories = AssessmentCategory::pluck('description', 'id');
-        $assessmentaAssessmentCategories = $data->assessmentsAssessmentCategories()->pluck('description', 'assessments_assessment_category.assessment_category_id');
+        $assessmentaAssessmentCategories = $data->assessmentCategories()->pluck('description', 'assessments_assessment_category.assessment_category_id');
 
         return view($this->baseViewPath .'.edit',
             compact('_mode','fullPageEdit','data','assessmentcategories','assessmentaAssessmentCategories'));
@@ -126,7 +126,7 @@ class AssessmentsController extends CustomController
             $this->contextObj->updateData($id, $input);
 
             $data = Assessment::find($id);
-            $data->assessmentsAssessmentCategories()
+            $data->assessmentAssessmentCategory()
                 ->sync($assessmentcategories); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');

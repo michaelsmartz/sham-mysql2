@@ -25,9 +25,10 @@ class Assessment extends Model
 
     public $searchable = [];
 
-    public function assessmentsAssessmentCategories()
+    public function assessmentAssessmentCategory()
     {
-        return $this->belongsToMany(AssessmentCategory::class,'assessments_assessment_category','assessment_id','assessment_category_id');
+        return $this->belongsToMany(AssessmentCategory::class,'assessments_assessment_category','assessment_id','assessment_category_id')
+            ->withPivot('is_active')->where('assessments_assessment_category.is_active',1);
     }
 
     public function evaluationResults()

@@ -2405,6 +2405,11 @@ CHANGE COLUMN `assessoremployee_id` `assessor_employee_id` INT(11) NOT NULL ,
 CHANGE COLUMN `assessmentcategory_id` `assessment_category_id` INT(11) NOT NULL ,
 CHANGE COLUMN `categoryquestion_id` `category_question_id` INT(11) NOT NULL ;
 
+
 #-- 25/10/2018
 ALTER TABLE `sham_permissions`
 	CHANGE COLUMN `Alias` `alias` VARCHAR(100) NULL DEFAULT NULL AFTER `is_active`;
+
+ALTER TABLE `evaluations`
+CHANGE COLUMN `feedback_date` `feedback_date` DATE NOT NULL ;
+

@@ -41,7 +41,7 @@ class EvaluationsController extends CustomController
      */
     public function index()
     {
-        $evaluations = $this->contextObj::filtered()->paginate(10);
+        $evaluations = $this->contextObj::filtered()->where('is_active',1)->paginate(10);
         return view($this->baseViewPath .'.index', compact('evaluations'));
     }
 
@@ -162,9 +162,47 @@ class EvaluationsController extends CustomController
 
     public function showinstances()
     {
-        $evaluations = $this->contextObj::filtered()->paginate(10);
+        $evaluations = $this->contextObj::filtered()->where('is_active',1)->paginate(10);
+        //$this->contextObj::with('users.employee')->filtered()->paginate(10);
         return view($this->baseViewPath .'.instancesindex', compact('evaluations'));
     }
-    
-    
+
+    public function attachment(Request $request, $Id)
+    {
+        $data = null;
+        $evaluationDetails = $this->contextObj->findData($Id);
+
+        $assessmentTotalScores = $this->getAssessmentTotalScore($evaluationDetails->assessment_id);
+
+        $assessors = $evaluationDetails->assessors;
+        foreach($assessors as $assessor){
+            $workingscore = $evaluationDetails->evaluationResults->where('assessor_employee_id',$assessor->employee_id)->where('is_active',1)
+                            ->sum('pivot.points');
+            $overallscore =  ($workingscore/$assessmentTotalScores)*100;
+
+            $assessor->overall_score = round($overallscore,0);
+        }
+        //https://laravel.io/forum/06-23-2014-eager-loading-with-multiple-relations
+        return view('partials.evaluationinstances', compact('evaluationDetails'));
+    }
+
+    private function getAssessmentTotalScore($assessmentid)
+    {
+        $assessment = Assessment::find($assessmentid);
+        $totalscores = $assessment->assessmentAssessmentCategory->where('is_active',1)
+                        ->sum('threshold');
+        return $totalscores;
+    }
+
+    public function loadAssessment(Request $request,$Id,$EvaluationId){
+
+        $evaluationDetails = $this->contextObj->findData($EvaluationId);
+        $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
+            ->find($EvaluationId);
+
+        foreach($assessment->assessmentAssessmentCategory as $assessmetCategory)
+        {
+            dump($assessmetCategory->assessmentCategoryCategoryQuestions);
+        }
+    }
 }

@@ -157,8 +157,9 @@ Auth::routes();
             Route::resource('assessments', 'AssessmentsController' );
             Route::resource('assessment_categories', 'AssessmentCategoriesController' );
             Route::resource('category_questions', 'CategoryQuestionsController');
-            Route::resource('evaluations', 'EvaluationsController');
+            Route::fileResource('evaluations', 'EvaluationsController');
             Route::any('instances', 'EvaluationsController@showInstances');
+            Route::get('evaluations/{id}/EvaluationId/{EvaluationId}/assess', 'EvaluationsController@loadAssessment')->name('evaluations.load_assessment');
         #endregion
   
     });

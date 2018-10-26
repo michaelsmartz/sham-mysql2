@@ -18,14 +18,16 @@ class AssessmentCategory extends Model
     protected $fillable = [
                   'name',
                   'description',
-                  'passmark_percentage'
+                  'passmark_percentage',
+                  'threshold'
               ];
 
     public $searchable = [];
 
     public function assessmentCategoryCategoryQuestions()
     {
-        return $this->belongsToMany(CategoryQuestion::class,'assessment_category_category_question','assessment_category_id','category_question_id');
+        return $this->belongsToMany(CategoryQuestion::class,'assessment_category_category_question','assessment_category_id','category_question_id')
+            ->withPivot('is_active')->where('assessment_category_category_question.is_active',1);;
     }
 
     public function assessmentsAssessmentCategories()

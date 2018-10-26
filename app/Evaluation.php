@@ -75,12 +75,13 @@ class Evaluation extends Model
 
     public function assessors()
     {
-        return $this->belongsToMany(Employee::class,'employee_evaluation','evaluation_id','employee_id');
+        return $this->belongsToMany(Employee::class,'employee_evaluation','evaluation_id','employee_id')->withPivot('is_completed','summary','comments','id');
     }
 
     public function evaluationResults()
     {
-        return $this->hasMany('App\EvaluationResult','evaluation_id','id');
+        return $this->belongsToMany(Employee::class,'evaluation_results','evaluation_id','assessor_employee_id')
+            ->withPivot('assessment_id','assessment_category_id','category_question_id','content','points','is_active');
     }
 
 }
