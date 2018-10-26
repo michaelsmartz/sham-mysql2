@@ -8,6 +8,8 @@ use App\Enums\CourseParticipantStatusType;
 use App\Http\Requests;
 use App\Module;
 use App\ModuleAssessment;
+use App\ModuleAssessmentResponse;
+use App\ModuleAssessmentResponseDetail;
 use App\Topic;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
@@ -454,4 +456,44 @@ class SSPMyCourseController extends CustomController
         }
     }
 
+    public function restartCourse(Request $request,$courseId)
+    {
+        $employeeId = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        $course = $this->contextObj::find($courseId);
+
+        if(!empty($course)) {
+            $course->courseEmployee()
+                ->where('course_id', $courseId)
+                ->where('employee_id', $employeeId)
+                ->update(['courseparticipantstatus_id' => CourseParticipantStatusType::Just_Enrolled]);
+
+            $course->employeeProgress()
+                ->where('employee_id', $employeeId)
+                ->where('course_id', $courseId)
+                ->update(['is_completed' => 0]);
+
+            $moduleAssessmentResponses = ModuleAssessmentResponse::select(['id','course_id','employee_id'])
+                ->where('course_id', $courseId)
+                ->where('employee_id', $employeeId)
+                ->get()->all();
+
+            if ($moduleAssessmentResponses != null) {
+                foreach ($moduleAssessmentResponses as $moduleAssessmentResponse) {
+
+                    $moduleAssessmentResponse->delete();
+                    $moduleAssessmentResponseDetails = ModuleAssessmentResponseDetail::select(['id', 'module_assessment_response_id'])
+                        ->where('module_assessment_response_id', $moduleAssessmentResponse->id)->get()->all();
+
+                    if($moduleAssessmentResponseDetails != null) {
+                        foreach ($moduleAssessmentResponseDetails as $moduleAssessmentResponseDetail) {
+                            $moduleAssessmentResponseDetail->delete();
+                        }
+                    }
+                }
+            }
+        }
+
+      return $this->renderTopic($courseId);
+    }
 }
