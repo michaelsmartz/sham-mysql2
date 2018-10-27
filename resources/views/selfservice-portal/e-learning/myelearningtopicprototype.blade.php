@@ -46,16 +46,12 @@
                     var status = el.getAttribute('data-lastelement');
 
                     var assessmentdata="";
-                    console.log(assessmentdata);
-
-                    //alert(assessmentdata);
                     //$.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
 
                     $('.assessment-audio').get(0).currentTime = 0;
                     $('.assessment-audio').get(0).play();
 
-                    var url = '{{url()->to('my-courses')}}/'+assessmentid+'/getAssessmentData';
-                    console.log(url);
+                    var url = '{{url()->to('my-courses')}}/'+assessmentid+'/getAssessmentData'
 
                     var data1  = "";
                     var request = jQuery.ajax({
@@ -68,19 +64,18 @@
                             $("#assessment-progress-info").removeClass('hide');
                         },
                         success: function (data) {
-                            console.log(data);
+                            //console.log(data);
                             assessment = data;
 
                             if (assessment != 'null' && assessment != '') {
-                                console.log("In...");
+                                var jsonObj = jQuery.parseJSON(assessment);
+                                //console.log(jsonObj);
+                                // alert('In iff');
 
-                                var jsonObj = assessment;//jQuery.parseJSON(assessment);
-                               // alert('In iff');
-
-                                console.log($('.present > div.assessment-container'));
+                                //console.log($('.present > div.assessment-container'));
 
                                 var frOptions = {
-                                    templateBasePath: '{{URL::to('/')}}/js/Formbuilder/v2/templates/runner',
+                                    templateBasePath: '{{URL::to('/')}}/plugins/Formbuilder/templates/runner',
                                     targets: $('.present > div.assessment-container'),
                                     form_id:  jsonObj.form_id,
                                     model: jsonObj.model,
@@ -92,6 +87,7 @@
                                 $("#assessment-progress-info").addClass('hide');
                                 // Create an instance of form builder
                                 myForm = new Formrunner(frOptions);
+                                //console.log(myForm);
                                 // formrunner fb-runner-rendered event will trigger when form is rendered
                             }
                         }

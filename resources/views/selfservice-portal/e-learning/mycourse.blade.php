@@ -68,6 +68,9 @@ $courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','b
                                        href="#TOC-{{$course['Id']}}">
                                         <span>{{$course['Description']}}</span>
                                         <i class="text-primary fa fa-info-circle" data-wenk-pos="right" data-wenk="{{$course['CourseParticipantStatus']['Description']}}"></i>
+                                        @if($course['CourseParticipantStatus']['Id'] == 3)
+                                            <span class="badge bg-green">Completed</span>
+                                        @endif
                                     </a>
                                 </td>
                                 <td class="course-progress">
@@ -80,7 +83,6 @@ $courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','b
                                 <td class="actions edit">
                                     <div class="settings-dropdown-group">
                                         @if($course['CourseParticipantStatus']['Id'] == 3)
-                                            <span class="btn btn-success" style="cursor: default !important;" data-id="{{$course['Id']}}"><span class="text-white">Complete</span></span>
                                             <span class="btn btn-info restart" data-id="{{$course['Id']}}">Restart</span>
                                         @elseif($course['ProgressPercentage']>0)
                                             <a class="btn btn-info resume" data-id="{{$course['Id']}}" href="#">Resume </a>

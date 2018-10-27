@@ -143,9 +143,6 @@ if(count($coursesAvailable)>12)
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#myAssessmentsTab">My assessments</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link"data-toggle="tab" href="#qAndATab">Questions & Answers</a>
-                </li>
             @endif
         </ul>
         <p></p>
@@ -232,14 +229,6 @@ if(count($coursesAvailable)>12)
                     <div class="loadMsg"><div><i class="fa fa-spin"></i> Loading...</div></div>
                     <div class="iframe-container">
                         <iframe src="" scrolling="no" frameborder="0"></iframe>
-                    </div>
-                </div>
-            </div>
-
-            <div id="qAndATab" class="tab-pane"  data-src="{{URL::to('/')}}/my-elearning/questions">
-                <div class="panel panel-default">
-                    <div class="iframe-container">
-                        <iframe id="qAndAFrame" src="" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>

@@ -50,32 +50,31 @@
         @foreach($topic->sections as $section)
             {!! $section !!}
         @endforeach
-        @if(!empty($topic->assessments))
+        <?php
+        $count = count($topic->assessments);
+        $counter = 0;
+        ?>
+        @foreach($topic->assessments as $key=>$assessment)
             <?php
-            $count = count($topic->assessments);
-            $counter = 0;
+            $counter = $counter+1;
             ?>
-            @foreach($topic->assessments as $key=>$assessment)
-                <?php
-                $counter = $counter+1;
-                ?>
-                @if($assessment)
-                    @if($topic->LastTopic && $counter == $count)
-                        <section data-state="slideCustomEvent" data-course="{{$courseId}}" data-module="" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
-                                 class="topicsection" data-topichasassessment=""  data-islasttopic="" data-lastelement="true" data-lastslideoftopic="1" data-displaynavtext="">
-                            <audio class="assessment-audio" data-src="{{url("/").'/audio/assessment.ogg'}}"></audio>
-                            <div class="assessment-container"></div>
-                        </section>
-                    @else
-                        <section data-state="slideCustomEvent"  data-course="{{$courseId}}" data-module="" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
-                                 class="topicsection" data-topichasassessment="" data-islasttopic="" data-lastelement="false" data-lastslideoftopic="1" data-displaynavtext="">
-                            <audio class="assessment-audio" data-src="{{url("/").'/audio/assessment.ogg'}}"></audio>
-                            <div class="assessment-container"></div>
-                        </section>
-                    @endif
+            @if($assessment)
+                @if($topic->LastTopic && $counter == $count)
+                    <section data-state="slideCustomEvent" data-course="{{$courseId}}" data-module="" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
+                             class="topicsection" data-topichasassessment=""  data-islasttopic="" data-lastelement="true" data-lastslideoftopic="1" data-displaynavtext="">
+                        <audio class="assessment-audio" data-src="{{url("/").'/audio/assessment.ogg'}}"></audio>
+                        <div class="assessment-container"></div>
+                    </section>
+                @else
+                    <section data-state="slideCustomEvent"  data-course="{{$courseId}}" data-module="" data-assessment="true" data-assessmentid="{{$key}}" data-topic=""
+                             class="topicsection" data-topichasassessment="" data-islasttopic="" data-lastelement="false" data-lastslideoftopic="1" data-displaynavtext="">
+                        <audio class="assessment-audio" data-src="{{url("/").'/audio/assessment.ogg'}}"></audio>
+                        <div class="assessment-container"></div>
+                    </section>
                 @endif
-            @endforeach
-        @endif
+            @endif
+        @endforeach
+
     @endforeach
 @endforeach
 <?php endif; ?>

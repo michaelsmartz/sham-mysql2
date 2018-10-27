@@ -10,6 +10,8 @@ use App\Module;
 use App\ModuleAssessment;
 use App\ModuleAssessmentResponse;
 use App\ModuleAssessmentResponseDetail;
+use App\ModuleQuestion;
+use App\ModuleQuestionChoice;
 use App\Topic;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
@@ -95,8 +97,6 @@ class SSPMyCourseController extends CustomController
         ];
 
         $course->employees()->sync($course_employee_pivot);
-
-        //TODO HistoryTraining
 
         $courseModTopics = $this->contextObj::where('id',$course_id)->with(['modules.topics','employees'])->get()->first();
 
@@ -249,14 +249,14 @@ class SSPMyCourseController extends CustomController
                         $topic_assessments1 = [];
 
                         if (!$isFirst && $current_module_id != $prev_module_id) {
-                            self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments, $course_id);
+                            $topic_assessments = self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments, $course_id);
                             $topic->assessments = $topic_assessments;
                         }
 
                         if ($all_topic_counter + 1 == $all_topics_count) {
                             // Check if module has assemment and get ModuleAssessmentId and AssessmentData
                             // This check is being done on last topic of courses.
-                            self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments1, $course_id);
+                            $topic_assessments1 = self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments1, $course_id);
                             $topic->assessments = $topic_assessments1;
                             $topic->LastTopic = true;
                         } else {
@@ -291,7 +291,6 @@ class SSPMyCourseController extends CustomController
                                 $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
 
                                 foreach ($xml as $item) {
-                                    //dump($item);
                                     //$item['data-last'] = "0";
                                     $item['data-state'] = "";
                                     $item['data-course'] = $course_id;
@@ -307,7 +306,7 @@ class SSPMyCourseController extends CustomController
                                     $item['data-displaynavtext'] = $displayText;
 
                                     if ($topic->LastTopic && $counter == $sectioncount) {
-                                        if (count($topic->assessments) > 0) {
+                                        if (in_array(true, $topic->assessments)) {
                                             $item['data-lastslideofcourse'] = "0";
                                         } else {
                                             $item['data-lastslideofcourse'] = "1";
@@ -318,7 +317,7 @@ class SSPMyCourseController extends CustomController
 
                                     if ($counter == $sectioncount) {
                                         $item['data-lastslideoftopic'] = "1";
-                                        if (count($topic->assessments) > 0) {
+                                        if (in_array(true, $topic->assessments)) {
                                             $item['data-topichasassessment'] = "true";
                                         } else {
                                             $item['data-topichasassessment'] = "false";
@@ -374,15 +373,193 @@ class SSPMyCourseController extends CustomController
      * @param $assessment_list
      * @param $topic_assessments
      * @param $course_id
+     * @return mixed
      */
-    private function extractModuleAssessmentDetails($employee_id, $module_id, &$assessment_list,&$topic_assessments,$course_id)
+    function extractModuleAssessmentDetails($employee_id, $module_id, $assessment_list,$topic_assessments,$course_id)
     {
-        $module_assessment = ModuleAssessment::find($module_id);
+        $module_assessments = ModuleAssessment::where('module_id',$module_id)->get()->all();
+        if ($module_assessments != null) {
+            if (is_array($module_assessments) && sizeof($module_assessments) > 0) {
+                foreach ($module_assessments as $module_assessment) {
+                    $assessmentId = $module_assessment->id;
+                    $data =  $module_assessment->data;
+                    $assessment_list[$assessmentId] = $data;
 
-        //dd($module_assessment);
+                    $moduleAssessmentResp = ModuleAssessmentResponse::where('module_assessment_id',$assessmentId)
+                        ->where('employee_id',$employee_id)
+                        ->where('course_id',$course_id)
+                        ->get()->all();
+
+                    if(empty($moduleAssessmentResp))
+                    {
+                        $topic_assessments[$assessmentId] = false;
+                    }
+                    else
+                    {
+                        $topic_assessments[$assessmentId] = true;
+                    }
+                }
+            }
+        }
+        return $topic_assessments;
+    }
+
+    /**
+     * @param Request $request
+     * @param $assessmentid
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAssessmentData(Request $request,$assessmentid)
+    {
+        $moduleAssessmentData = ModuleAssessment::select(['id','data'])
+            ->where('id',$assessmentid)->get()->first();
+
+        $retValue  = "";
+
+        if ($moduleAssessmentData!=null) {
+            $retValue = $moduleAssessmentData->data;
+        }
+
+        return response()->json($retValue);
+    }
+
+    /**
+     * @param Request $request
+     * @param $courseId
+     * @param $assessmentId
+     * @param $status
+     * @return mixed
+     */
+    public function manageAssessment(Request $request, $courseId, $assessmentId, $status) {
+        $assessmentObj = ModuleAssessment::find($assessmentId);
+        $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        if ($request->isMethod('post')) {
+
+            try {
+
+                $formArr = Input::all();
+                // remove the token; not needed for processing below
+                unset($formArr['_token']);
+
+                $obj = new ModuleAssessmentResponse();
+                $input = [
+                    'module_id' => $assessmentObj->module_id,
+                    'employee_id' => $employee_id,
+                    'date_completed' => Carbon::now()->toDateString(),
+                    'is_reviewed' => false,
+                    'module_assessment_id' => $assessmentObj->id,
+                    'course_id' => $courseId
+                ];
+
+                $obj = $obj->addData($input);
+
+                foreach ($formArr as $k => $value) {
+                    $arrChoice = explode('-', $k);
+                    if (is_array($value)) {
+                        //choices radio or checkbox
+                        foreach ($value as $choiceKey => $label) {
+                            //echo $choiceKey, ' ',$label, '<br>';
+                            $objQnChoice = ModuleQuestionChoice::find($choiceKey);
+                            $this->processResponseDetail($assessmentObj->module_id, $obj->id, $objQnChoice, $label, $assessmentObj->id, $arrChoice[2], $arrChoice[1], $arrChoice[0]);
+                        }
+
+                    } else {
+                        // textarea or text
+                        $objQn = ModuleQuestion::find($arrChoice[1]);
+                        // make a virtual property ModuleQuestionId to use the same method
+                        $objQn->module_question_type_id = $objQn->id;
+                        $this->processResponseDetail($assessmentObj->module_id, $obj->id, $objQn, $value, $assessmentObj->id, $arrChoice[2], $arrChoice[1], $arrChoice[0]);
+                    }
+                }
+
+                if ($status == "true") {
+
+                    $course = $this->contextObj::find($courseId);
+
+                    if ($course != null) {
+                        $course->courseEmployee()
+                            ->where('course_id', $courseId)
+                            ->where('employee_id', $employee_id)
+                            ->update(['courseparticipantstatus_id' => CourseParticipantStatusType::Completed]);
+                    }
+                }
+
+                Session::flash('success_msg', 'Assessment submitted successfully!');
+            }catch (Exception $exception) {
+                Session::flash('fail_msg', 'Failed to submit assessment!');
+            }
+
+            return Redirect::to('my-courses#mycourse');
+
+        } else {
+            return View::make($this->baseViewPath.'.partials.assessment-form')
+                ->with('assessmentId',$assessmentId)
+                ->with('Data', $assessmentObj->data);
+        }
 
     }
 
+    /**
+     * @param $moduleId
+     * @param $moduleAssessmentResponseId
+     * @param $objQnChoice
+     * @param $value
+     * @param $moduleAssessmentId
+     * @param $sequence
+     * @param $questionid
+     * @param $questiontype
+     * @return ModuleAssessmentResponseDetail
+     */
+    private function processResponseDetail($moduleId, $moduleAssessmentResponseId, $objQnChoice, $value, $moduleAssessmentId, $sequence,$questionid,$questiontype) {
+
+        if(!isset($objQnChoice))
+        {
+            $objQnChoice = new ModuleQuestionChoice();
+        }
+
+        if($questiontype == "radio" || $questiontype == "checkbox")
+        {
+            $oldQnChoicePoints = $objQnChoice->points;
+            $choicesobj = ModuleQuestionChoice::select(['id','choice_text','points'])
+                ->with(['moduleQuestion'])
+                ->where('module_question_id', $questionid)
+                ->get()->all();
+
+            if ($choicesobj!=null) {
+                $objQnChoice->points = 0;
+                foreach ($choicesobj as $choicesObjVal) {
+                    //$objQnChoice->Points = $choicesobjval[0]->Points;
+                    if($choicesObjVal->choice_text == $value)
+                    {
+                        $objQnChoice->points += $choicesObjVal->points;
+                    }
+                }
+            }
+            else
+            {
+                $objQnChoice->points = 0;
+            }
+        }
+        $objR = new ModuleAssessmentResponseDetail();
+        $input = ['module_id' => $moduleId,
+                'module_assessment_response_id' => $moduleAssessmentResponseId,
+                'module_question_id' => $questionid,
+                'content' => $value,
+                'points' => $objQnChoice->points,
+                'sequence' => $sequence,
+                'module_assessment_id' => $moduleAssessmentId
+        ];
+        $objR = $objR->addData($input);
+        return $objR;
+    }
+
+    /**
+     * @param $courseId
+     * @param $moduleId
+     * @param $topicId
+     * @return string
+     */
     private function getDisplayText($courseId,$moduleId,$topicId)
     {
         $course = Course::find($courseId);
@@ -393,14 +570,10 @@ class SSPMyCourseController extends CustomController
         return $retDisplayText;
     }
 
-    public function getTopicAttachments(Request $request, $topicId)
-    {
-        $qaarray = [];
-
-        return response()->json($qaarray);
-
-    }
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateCourseProgress(Request $request) {
 
         try {
@@ -456,6 +629,11 @@ class SSPMyCourseController extends CustomController
         }
     }
 
+    /**
+     * @param Request $request
+     * @param $courseId
+     * @return mixed
+     */
     public function restartCourse(Request $request,$courseId)
     {
         $employeeId = (\Auth::check()) ? \Auth::user()->employee_id : 0;
@@ -495,5 +673,18 @@ class SSPMyCourseController extends CustomController
         }
 
       return $this->renderTopic($courseId);
+    }
+
+    public function getTopicAttachments(Request $request, $topicId)
+    {
+        $qaarray = [];
+
+        return response()->json($qaarray);
+
+    }
+
+    public function download($Id)
+    {
+
     }
 }

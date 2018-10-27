@@ -61,7 +61,7 @@ var Formrunner = function(opts){
 
 // Sort field models by sortOrder
 var sortObject = function(obj){
-  console.log('sort');
+  //console.log('sort');
   var arr = [];
   for (var prop in obj){
     if (obj.hasOwnProperty(prop)){
@@ -78,7 +78,7 @@ var sortObject = function(obj){
     var key = arr[i].key;
     result.push(obj[key]);
   }
-  console.log('end-sort');
+  //console.log('end-sort');
   return result;
 };
 

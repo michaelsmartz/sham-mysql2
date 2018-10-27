@@ -49,8 +49,11 @@ Auth::routes();
             Route::post('my-elearning/enrol', 'SSPMyCourseController@enrol');
             Route::get('my-elearning/my-courses', 'SSPMyCourseController@myCourses');
             Route::get('my-course/{Id}','SSPMyCourseController@renderTopic');
-            Route::get('my-courses/{Id}/restart/', 'SSPMyCourseController@restartCourse');
+            Route::any('my-courses/{Id}/assessment/{assmId}', 'SSPMyCourseController@manageAssessment');
+            Route::any('my-courses/{Id}/assessment/{assmId}/post/{status}', 'SSPMyCourseController@manageAssessment');
+            Route::get('my-courses/{Id}/getAssessmentData/', 'SSPMyCourseController@getAssessmentData')->name('sspmycourses.getassessmentdata');
             Route::get('my-courses/{Id}/getattachments/', 'SSPMyCourseController@getTopicAttachments');
+            Route::get('my-courses/{Id}/restart/', 'SSPMyCourseController@restartCourse');
             Route::post('my-courses/progress', 'SSPMyCourseController@updateCourseProgress');
 
             Route::resource('my-courses', 'SSPMyCourseController',[
