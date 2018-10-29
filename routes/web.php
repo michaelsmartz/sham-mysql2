@@ -51,9 +51,11 @@ Auth::routes();
             Route::get('my-course/{Id}','SSPMyCourseController@renderTopic');
             Route::any('my-courses/{Id}/assessment/{assmId}', 'SSPMyCourseController@manageAssessment');
             Route::any('my-courses/{Id}/assessment/{assmId}/post/{status}', 'SSPMyCourseController@manageAssessment');
+            Route::get('topic-attachment/{Id}/download', 'SSPMyCourseController@download')->name('sspmycourses.download');
             Route::get('my-courses/{Id}/getAssessmentData/', 'SSPMyCourseController@getAssessmentData')->name('sspmycourses.getassessmentdata');
             Route::get('my-courses/{Id}/getattachments/', 'SSPMyCourseController@getTopicAttachments');
             Route::get('my-courses/{Id}/restart/', 'SSPMyCourseController@restartCourse');
+            Route::get('my-courses/{Id}/getattachments/', 'SSPMyCourseController@getTopicAttachments');
             Route::post('my-courses/progress', 'SSPMyCourseController@updateCourseProgress');
 
             Route::resource('my-courses', 'SSPMyCourseController',[

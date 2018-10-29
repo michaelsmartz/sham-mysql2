@@ -15,6 +15,7 @@ use App\ModuleQuestionChoice;
 use App\Topic;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
+use Plank\Mediable\Media;
 use View;
 use Redirect;
 use Illuminate\Http\Request;
@@ -677,14 +678,31 @@ class SSPMyCourseController extends CustomController
 
     public function getTopicAttachments(Request $request, $topicId)
     {
-        $qaarray = [];
+        $modelClass = 'App\Topic';
+        $data = [];
 
-        return response()->json($qaarray);
+        $relatedMedias = $modelClass::find($topicId);
+        if($relatedMedias) {
+            $topicAttachments = $relatedMedias->media()->get()->all();
+
+            if ($topicAttachments != null) {
+                foreach ($topicAttachments as $index => $topicAttachment) {
+                    $data[] = [
+                        'Id' => $topicAttachment->id,
+                        'TopicId' => $topicAttachment->pivot->mediable_id,
+                        'OriginalFileName' => $topicAttachment->filename,
+                    ];
+                }
+            }
+        }
+
+        return response()->json($data);
 
     }
 
-    public function download($Id)
+    public function download($mediaId)
     {
-
+        $media = Media::find($mediaId);
+        return response()->download($media->getAbsolutePath());
     }
 }
