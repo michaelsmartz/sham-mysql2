@@ -1,7 +1,4 @@
 <div class="fileUploader" id="one"></div>
-<p class="text-muted">{{ $desc or 'You can upload any related files' }}. 
-    <small>One file can be max {{ config('attachment.max_size', 10485760)/1000 }} MB</small>
-</p>
 
 @if(!Request::ajax())
 @section('post-body')
@@ -12,8 +9,8 @@
     var initializeFileUpload = function() {
         $('#one').fileUploader({
             useFileIcons: true,
-            fileMaxSize: 1.7,
-            totalMaxSize: 5,
+            fileMaxSize: {!! $uploader['fileMaxSize'] or '1.7' !!},
+            totalMaxSize: {!! $uploader['totalMaxSize'] or '5' !!},
             useLoadingBars: false,
             linkButtonContent: '',
             deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
@@ -22,8 +19,8 @@
             filenameTest: function(fileName, fileExt, $container) {
                 var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
                 
-                @if(!empty($acceptedFiles && sizeof($acceptedFiles)>0))
-                allowedExts = {!! $acceptedFiles !!};
+                @if(!empty($uploader['acceptedFiles'] && sizeof($uploader['acceptedFiles'])>0))
+                allowedExts = {!! $uploader['acceptedFiles'] !!};
                 @endif
 
                 var $info = $('<div class="errorLabel center"></div>');
@@ -56,13 +53,33 @@
             },
             langs: {
                 'en': {
-                    intro_msg: "{{$fieldLabel or 'Add attachments...' }}",
-                    dropZone_msg: '<span><strong>Drop</strong>&nbsp;your files here or <strong>click</strong>&nbsp;in this area</span>',
+                    intro_msg: "{{$uploader['fieldLabel'] or 'Add attachments...' }}",
+                    dropZone_msg: 
+                        '<p><strong>Drop</strong>&nbsp;your files here or <strong class="text-primary">click</strong>&nbsp;on this area' +
+                        '<br><small class="text-muted">{{ $uploader["restrictionMsg"] or "You can upload any related files" }}.\n' + 
+                        '   One file can be max {{ $uploader["fileMaxSize"] }} MB</small>\n' +
+                        '</p>',
                     maxSizeExceeded_msg: 'File too large',
                     totalMaxSizeExceeded_msg: 'Total size exceeded',
                     duplicated_msg: 'File duplicated (skipped)',
                     name_placeHolder: 'name',
                 }
+            },
+            HTMLTemplate: function() {
+                return [
+                    '<p class="introMsg"></p>',
+                    '<div>',
+                    '    <div class="inputContainer">',
+                    '        <input class="fileLoader" type="file" {!! $uploader['multiple'] or 'multiple' !!} />',
+                    '    </div>',
+                    '    <div class="dropZone"></div>',
+                    '    <div class="filesContainer filesContainerEmpty">',
+                    '        <div class="innerFileThumbs"></div>',
+                    '        <div style="clear:both;"></div>',
+                    '    </div>',
+                    '</div>',
+                    '<div class="result"></div>'
+                ].join("\n");
             }
         });
     };

@@ -128,23 +128,38 @@
                 </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::text('homeAddress[addr_line_3]', old('homeAddress[addr_line_3]', isset($employee->homeAddress->addr_line_3) ? $employee->homeAddress->addr_line_3 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 3', 'id'=>'homeaddr3', 'maxlength'=>'50', 'data-mirror'=>'#postaladdr3']) !!}
+                            <label for="homeAddress[addr_line_3]">Address Line 3</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::text('homeAddress[addr_line_4]', old('homeAddress[addr_line_4]', isset($employee->homeAddress->addr_line_4) ? $employee->homeAddress->addr_line_4 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 4', 'id'=>'homeaddr4', 'maxlength'=>'50', 'data-mirror'=>'#postaladdr4']) !!}
+                            <label for="homeAddress[addr_line_4]">Address Line 4</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
                     <div class="col-sm-3">
-                    <span class="field">
-                        {!! Form::text('homeAddress[city]', old('homeAddress[city]', isset($employee->homeAddress->city) ? $employee->homeAddress->city : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'City', 'id'=>'homecity', 'maxlength'=>'50', 'data-mirror'=>'#postalcity']) !!}
-                        <label for="homeAddress[city]">City</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('homeAddress[city]', old('homeAddress[city]', isset($employee->homeAddress->city) ? $employee->homeAddress->city : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'City', 'id'=>'homecity', 'maxlength'=>'50', 'data-mirror'=>'#postalcity']) !!}
+                            <label for="homeAddress[city]">City</label>
+                        </span>
                     </div>
                     <div class="col-sm-2">
-                    <span class="field">
-                        {!! Form::text('homeAddress[province]', old('homeAddress[province]', isset($employee->homeAddress->province) ? $employee->homeAddress->province : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Province', 'id'=>'homeprovince', 'maxlength'=>'50', 'data-mirror'=>'#postalprovince']) !!}
-                        <label for="homeAddress[province]">Province</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('homeAddress[province]', old('homeAddress[province]', isset($employee->homeAddress->province) ? $employee->homeAddress->province : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Province', 'id'=>'homeprovince', 'maxlength'=>'50', 'data-mirror'=>'#postalprovince']) !!}
+                            <label for="homeAddress[province]">Province</label>
+                        </span>
                     </div>
                     <div class="col-sm-2">
-                    <span class="field">
-                        {!! Form::text('homeAddress[zip_code]', old('homeAddress[zip_code]', isset($employee->homeAddress->zip_code) ? $employee->homeAddress->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'homezip', 'data-mirror'=>'#postalzip']) !!}
-                        <label for="homeAddress[zip_code]">Zip Code</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('homeAddress[zip_code]', old('homeAddress[zip_code]', isset($employee->homeAddress->zip_code) ? $employee->homeAddress->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'homezip', 'data-mirror'=>'#postalzip']) !!}
+                            <label for="homeAddress[zip_code]">Zip Code</label>
+                        </span>
                     </div>
                     <div class="col-sm-3">
                         {!! Form::select('homeAddress[country_id]', $countries, old('homeAddress[country_id]', isset($employee->homeAddress->country_id) ? $employee->homeAddress->country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Country..', 'id'=>'homecountry', 'data-mirror'=>'#postalcountry']) !!}
@@ -153,37 +168,52 @@
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Postal Address</label>
                     <div class="col-sm-5">
-                    <span class="field">
-                        {!! Form::text('postalAddress[addr_line_1]', old('postalAddress[addr_line_1]', isset($employee->postalAddress->addr_line_1) ? $employee->postalAddress->addr_line_1 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 1', 'maxlength'=>'50', 'id'=>'postaladdr1']) !!}
-                        <label for="postalAddress[addr_line_1]">Address Line 1</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('postalAddress[addr_line_1]', old('postalAddress[addr_line_1]', isset($employee->postalAddress->addr_line_1) ? $employee->postalAddress->addr_line_1 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 1', 'maxlength'=>'50', 'id'=>'postaladdr1']) !!}
+                            <label for="postalAddress[addr_line_1]">Address Line 1</label>
+                        </span>
                     </div>
                     <div class="col-sm-5">
-                    <span class="field">
-                        {!! Form::text('postalAddress[addr_line_2]', old('postalAddress[addr_line_2]', isset($employee->postalAddress->addr_line_2) ? $employee->postalAddress->addr_line_2 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 2', 'maxlength'=>'50', 'id'=>'postaladdr2']) !!}
-                        <label for="postalAddress[addr_line_2]">Address Line 2</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('postalAddress[addr_line_2]', old('postalAddress[addr_line_2]', isset($employee->postalAddress->addr_line_2) ? $employee->postalAddress->addr_line_2 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 2', 'maxlength'=>'50', 'id'=>'postaladdr2']) !!}
+                            <label for="postalAddress[addr_line_2]">Address Line 2</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"></label>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::text('postalAddress[addr_line_3]', old('postalAddress[addr_line_3]', isset($employee->postalAddress->addr_line_3) ? $employee->postalAddress->addr_line_3 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 3', 'maxlength'=>'50', 'id'=>'postaladdr3']) !!}
+                            <label for="postalAddress[addr_line_3]">Address Line 1</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::text('postalAddress[addr_line_4]', old('postalAddress[addr_line_4]', isset($employee->postalAddress->addr_line_4) ? $employee->postalAddress->addr_line_4 : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Address Line 4', 'maxlength'=>'50', 'id'=>'postaladdr4']) !!}
+                            <label for="postalAddress[addr_line_4]">Address Line 4</label>
+                        </span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label"></label>
                     <div class="col-sm-3">
-                    <span class="field">
-                        {!! Form::text('postalAddress[city]', old('postalAddress[city]', isset($employee->postalAddress->city) ? $employee->postalAddress->city : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'City', 'id'=>'postalcity', 'maxlength'=>'50']) !!}
-                        <label for="postalAddress[city]">City</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('postalAddress[city]', old('postalAddress[city]', isset($employee->postalAddress->city) ? $employee->postalAddress->city : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'City', 'id'=>'postalcity', 'maxlength'=>'50']) !!}
+                            <label for="postalAddress[city]">City</label>
+                        </span>
                     </div>
                     <div class="col-sm-2">
-                    <span class="field">
-                        {!! Form::text('postalAddress[province]', old('postalAddress[province]', isset($employee->postalAddress->province) ? $employee->postalAddress->province : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Province', 'id'=>'postalprovince', 'maxlength'=>'50']) !!}
-                        <label for="postalAddress[province]">Province</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('postalAddress[province]', old('postalAddress[province]', isset($employee->postalAddress->province) ? $employee->postalAddress->province : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Province', 'id'=>'postalprovince', 'maxlength'=>'50']) !!}
+                            <label for="postalAddress[province]">Province</label>
+                        </span>
                     </div>
                     <div class="col-sm-2">
-                    <span class="field">
-                        {!! Form::text('postalAddress[zip_code]', old('postalAddress[zip_code]', isset($employee->postalAddress->zip_code) ? $employee->postalAddress->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'postalzip']) !!}
-                        <label for="postalAddress[zip_code]">Zip Code</label>
-                    </span>
+                        <span class="field">
+                            {!! Form::text('postalAddress[zip_code]', old('postalAddress[zip_code]', isset($employee->postalAddress->zip_code) ? $employee->postalAddress->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'postalzip']) !!}
+                            <label for="postalAddress[zip_code]">Zip Code</label>
+                        </span>
                     </div>
                     <div class="col-sm-3">
                         {!! Form::select('postalAddress[country_id]', $countries, old('postalAddress[country_id]', isset($employee->postalAddress->country_id) ? $employee->postalAddress->country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Country..', 'id'=>'postalcountry']) !!}
@@ -403,11 +433,9 @@
                 <div class="form-group">
                     <div class="col-xs-2"></div>
                     <div class="col-xs-10 fileUploader" id="one">
-                        <p class="text-muted">{{ $desc or 'You can upload any related files' }}. 
-                            <small>One file can be max {{ config('attachment.max_size', 10485760)/1000 }} MB</small>
-                        </p>
                     </div>
                 </div>
+                <div class="form-group"></div>
             </div>
         </li>
     </ul>

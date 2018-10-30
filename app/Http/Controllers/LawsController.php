@@ -54,8 +54,15 @@ class LawsController extends CustomController
     {
         $countries = Country::pluck('description','id')->all();
         $lawCategories = LawCategory::pluck('description','id')->all();
-
-        return view($this->baseViewPath . '.create', compact('data','countries','lawCategories'));
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "1.2", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
+        return view($this->baseViewPath . '.create', compact('data','countries','lawCategories','uploader'));
     }
 
     /**
@@ -102,9 +109,17 @@ class LawsController extends CustomController
             $countries = Country::pluck('description','id')->all();
             $lawCategories = LawCategory::pluck('description','id')->all();
         }
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "1.2", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','countries','lawCategories'))
+            $view = view($this->baseViewPath . '.edit', compact('data','countries','lawCategories','uploader'))
                     ->renderSections();
 
             return response()->json([

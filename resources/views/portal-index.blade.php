@@ -82,7 +82,7 @@
             </div>
         </div>
 
-        <script src="{{asset('js/app.js')}}"></script>
+        <script src="{{asset('js/app.min.js')}}"></script>
 
         <!-- Custom Theme JavaScript -->
         <noscript id="deferred-styles"></noscript>

@@ -71,7 +71,14 @@ class EmployeesController extends CustomController
         list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
         $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
         $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
-        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "1.2", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
 
         $sfeCode = SysConfigValue::where('key','=', 'LATEST_SFE_CODE')->first();
         $this->contextObj->employee_code = $this->increment($sfeCode->value);
@@ -88,7 +95,7 @@ class EmployeesController extends CustomController
                     'countries','languages','ethnicGroups',
                     'immigrationStatuses','taxstatuses','departments',
                     'teams','employeeStatuses','jobTitles',
-                    'divisions','branches','skills','disabilities','lineManagers','employee','acceptedFiles'));        
+                    'divisions','branches','skills','disabilities','lineManagers','employee','uploader'));        
     }
 
      /**
@@ -106,7 +113,14 @@ class EmployeesController extends CustomController
         $_mode = 'edit';
         $fullPageEdit = true;
         $lineManagers = array();
-        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf']";
+        $uploader = [
+            "fieldLabel" => "Attach Files",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "1.2", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
 
         $id = Route::current()->parameter('employee');
 
@@ -148,7 +162,7 @@ class EmployeesController extends CustomController
                     'immigrationStatuses','taxstatuses','departments',
                     'teams','employeeStatuses','jobTitles',
                     'divisions','branches','skills','disabilities','lineManagers',
-                    'employeeSkills','employeeDisabilities','qualifications','acceptedFiles'));
+                    'employeeSkills','employeeDisabilities','qualifications','uploader'));
     }
 
     /**

@@ -10,7 +10,7 @@
                 @include ('topics.form', [
                     'topic' => $data,
                     'fullPageEdit' => 'true',
-                    'acceptedFiles' => $acceptedFiles
+                    'uploader' => $uploader
                 ])
             </div>
         </div>

@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\App;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class LocalEnvironmentServiceProvider extends ServiceProvider
 {
@@ -81,6 +82,7 @@ class LocalEnvironmentServiceProvider extends ServiceProvider
 
             if ($this->app->runningInConsole()) {
                 $this->registerConsoleServiceProviders();
+                Schema::defaultStringLength(191);
             }
         }
     }

@@ -10,9 +10,6 @@
 
     <div class="form-group col-xs-11 {{ $errors->has('attachment') ? 'has-error' : '' }}">
         <div class="fileUploader" id="one"></div>
-        <p class="text-muted">{{ $desc or 'You can upload any related files' }}. 
-            <small>One file can be max {{ config('attachment.max_size', 10485760)/1000 }} MB</small>
-        </p>
     </div>
 
     <div class="form-group col-xs-11 {{ $errors->has('data') ? 'has-error' : '' }}">
@@ -30,6 +27,8 @@
 <link href="{{URL::to('/')}}/plugins/keditor/1.1.4/css/keditor-1.1.4.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/keditor/1.1.4/css/keditor-components-1.1.4.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/fine-uploader/fine-uploader-new.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
+
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script src="{{URL::to('/')}}/plugins/ckeditor/4.7.3/ckeditor.js"></script>
 <script src="{{URL::to('/')}}/plugins/ckeditor/4.7.3//adapters/jquery.js"></script>
@@ -37,6 +36,7 @@
     // modified renderSnippets function to render user images within container
 </script>
 <script src="{{URL::to('/')}}/plugins/keditor/1.1.4/js/keditor-components-1.1.4.js"></script>
+<script src="{{url('/')}}/plugins/alerty/alerty.min.js"></script>
 <style>
     #keditor-sidebar {
         position: fixed;
@@ -95,23 +95,34 @@
         var initializeFileUpload = function() {
             $('#one').fileUploader({
                 useFileIcons: true,
-                fileMaxSize: 5,
-                totalMaxSize: 5,
+                fileMaxSize: {!! $uploader['fileMaxSize'] or '5' !!},
+                totalMaxSize: {!! $uploader['totalMaxSize'] or '15' !!},
                 useLoadingBars: false,
                 linkButtonContent: '',
                 deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
                 resultPrefix: "attachment",
                 duplicatesWarning: true,
-                langs: {
-                    "en": {
-                        intro_msg: "Add attchments..."
-                        }
+                HTMLTemplate: function() {
+                    return [
+                        '<p class="introMsg"></p>',
+                        '<div>',
+                        '    <div class="inputContainer">',
+                        '        <input class="fileLoader" type="file" {!! $uploader['multiple'] or 'multiple' !!} />',
+                        '    </div>',
+                        '    <div class="dropZone"></div>',
+                        '    <div class="filesContainer filesContainerEmpty">',
+                        '        <div class="innerFileThumbs"></div>',
+                        '        <div style="clear:both;"></div>',
+                        '    </div>',
+                        '</div>',
+                        '<div class="result"></div>'
+                    ].join("\n");
                 },
                 filenameTest: function(fileName, fileExt, $container) {
                     var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
                     
-                    @if(!empty($acceptedFiles && sizeof($acceptedFiles)>0))
-                    allowedExts = {!! $acceptedFiles !!};
+                    @if(!empty($uploader['acceptedFiles'] && sizeof($uploader['acceptedFiles'])>0))
+                    allowedExts = {!! $uploader['acceptedFiles'] !!};
                     @endif
 
                     var $info = $('<div class="errorLabel center"></div>');
@@ -145,7 +156,10 @@
                 langs: {
                     'en': {
                         intro_msg: "{{$fieldLabel or 'Add attachments...' }}",
-                        dropZone_msg: '<span><strong>Drop</strong>&nbsp;your files here or <strong>click</strong>&nbsp;in this area</span>',
+                        dropZone_msg: '<p class=text-center><strong>Drop</strong>&nbsp;your files here or <strong class="text-primary">click</strong>&nbsp;on this area' +
+                        '<br><small class="text-muted">{{ $uploader["restrictionMsg"] or "You can upload any related files" }}.\n' + 
+                        '   One file can be max {{ config("attachment.max_size", 10485760)/1000 }} MB</small>\n' +
+                        '</p>',
                         maxSizeExceeded_msg: 'File too large',
                         totalMaxSizeExceeded_msg: 'Total size exceeded',
                         duplicated_msg: 'File duplicated (skipped)',
@@ -227,10 +241,10 @@
             $('#one').html('');
             $('#one').data('fileUploader','');
             $('#one').fileUploader();
-            $.each(msg.response.snippets, function(i, item) {
-                $('.keditor-snippets-inner').append(item);
-                $(item).draggable();
-            });
+            alery.toasts('Changes were saved successfully. Please wait, this page will reload shortly',
+            {time: 5000}, function(){
+                window.location = '{{URL::to("topics.edit",' + msg.response.id ')}}';
+            })
         });
         request.fail(function (jqXHR, textStatus) {
             console.log('fail');

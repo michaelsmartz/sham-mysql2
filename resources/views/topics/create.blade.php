@@ -10,6 +10,7 @@
                     <div class="col-sm-12">
                         @include('topics.form', [
                             'topic' => null,
+                            'uploader' => $uploader
                         ])
                     </div>
                 </div>

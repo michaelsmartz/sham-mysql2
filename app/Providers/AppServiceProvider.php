@@ -37,9 +37,7 @@ class AppServiceProvider extends ServiceProvider
             return $app['auth']->user();
         });
 		
-		if ($this->app->runningInConsole()) {
-            Schema::defaultStringLength(191);
-		}
+
     }
 
     /**
@@ -49,34 +47,36 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Form::macro(
-            'groupRelationSelect', 
-            function ($name, $collection, $relation, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
-            {
-                $groups = [];
-                foreach ($collection as $model) {
-                    foreach($model->$relation as $rel) {
-                        $groups[$model->$groupName][$rel->$optValue] = $rel->$optName;
+        if (!$this->app->runningInConsole()) {
+            Form::macro(
+                'groupRelationSelect', 
+                function ($name, $collection, $relation, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
+                {
+                    $groups = [];
+                    foreach ($collection as $model) {
+                        foreach($model->$relation as $rel) {
+                            $groups[$model->$groupName][$rel->$optValue] = $rel->$optName;
+                        }
                     }
+
+                    return Form::select($name, $groups, $selected, $attributes);
                 }
+            );
 
-                return Form::select($name, $groups, $selected, $attributes);
-            }
-        );
+            Form::macro(
+                'groupSelect', 
+                function ($name, $collection, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
+                {
+                    $groups = [];
+                    foreach ($collection as $model) {
+                        $groups[$model->$groupName][$model->$optValue] = $model->$optName;
+                    }
 
-        Form::macro(
-            'groupSelect', 
-            function ($name, $collection, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
-            {
-                $groups = [];
-                foreach ($collection as $model) {
-                    $groups[$model->$groupName][$model->$optValue] = $model->$optName;
+                    return Form::select($name, $groups, $selected, $attributes);
                 }
-
-                return Form::select($name, $groups, $selected, $attributes);
-            }
-        );
-
+            );
+        
+        }
         Collection::macro('toAssoc', function () {
             return $this->reduce(function ($assoc, $keyValuePair) {
                 list($key, $value) = $keyValuePair;

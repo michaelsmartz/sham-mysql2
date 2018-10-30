@@ -5,6 +5,7 @@
     "/css/dropzone.css": "/css/dropzone.css",
     "/css/lifecycle.css": "/css/lifecycle.css",
     "/css/hopscotch.css": "/css/hopscotch.css",
+    "/css/import_steps.css": "/css/import_steps.css",
     "/js/employees.js": "/js/employees.js",
     "/js/tables.js": "/js/tables.js",
     "/js/uploader.js": "/js/uploader.js",
@@ -16,5 +17,6 @@
     "/css/employees.min.css": "/css/employees.min.css",
     "/css/dropzone.min.css": "/css/dropzone.min.css",
     "/css/lifecycle.min.css": "/css/lifecycle.min.css",
-    "/css/hopscotch.min.css": "/css/hopscotch.min.css"
+    "/css/hopscotch.min.css": "/css/hopscotch.min.css",
+    "/css/import_steps.min.css": "/css/import_steps.min.css"
 }

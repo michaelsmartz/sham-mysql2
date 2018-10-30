@@ -2082,9 +2082,9 @@ body {
 
 .sidebar .nav > li.has-sub.active > a {
   color: #fff !important;
-  font-size: 18px !important;
+  font-size: 17px !important;
   background-color: #1b1f24;
-  margin-left: -7px;
+  margin-left: -4px;
 }
 
 .sidebar .nav .sub-menu > li > a .caret {

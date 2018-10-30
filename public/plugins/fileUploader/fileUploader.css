@@ -7,7 +7,7 @@
   transition: all 1s;
   cursor: pointer;
   -webkit-transition: all 1s; }
-
+.fileUploader .dropZone p small { font-size: 75%; }
 .fileUploader {
   color: #333;
   font-weight: bold; }
@@ -20,7 +20,7 @@
   .fileUploader .dropZone {
     min-height: 100px;
     width: 100%;
-    margin-top: 25px;
+    margin-top: 11px;
     border: dotted 3px #ccc;
     display: flex;
     align-items: center;

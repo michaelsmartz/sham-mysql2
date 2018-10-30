@@ -9,9 +9,7 @@
                 @include('employees.form', [
                     'employee' => $employee,
                     '_mode' => 'create',
-                    'fieldLabel' => 'Attach Files',
-                    'desc' => 'Upload documents only',
-                    'acceptedFiles' => "['doc', 'docx', 'ppt', 'pptx', 'pdf']"
+                    'uploader' => $uploader
                 ])
             </div>
         </div>
@@ -112,8 +110,8 @@
     var initializeFileUpload = function() {
         $('#one').fileUploader({
             useFileIcons: true,
-            fileMaxSize: 1.7,
-            totalMaxSize: 5,
+            fileMaxSize: {!! $uploader['fileMaxSize'] or '1.7' !!},
+            totalMaxSize: {!! $uploader['totalMaxSize'] or '5' !!},
             useLoadingBars: false,
             linkButtonContent: '',
             deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
@@ -122,8 +120,8 @@
             filenameTest: function(fileName, fileExt, $container) {
                 var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
                 
-                @if(!empty($acceptedFiles && sizeof($acceptedFiles)>0))
-                allowedExts = {!! $acceptedFiles !!};
+                @if(!empty($uploader['acceptedFiles'] && sizeof($uploader['acceptedFiles'])>0))
+                allowedExts = {!! $uploader['acceptedFiles'] !!};
                 @endif
 
                 var $info = $('<div class="errorLabel center"></div>');
@@ -156,8 +154,12 @@
             },
             langs: {
                 'en': {
-                    intro_msg: "{{$fieldLabel or 'Add attachments...' }}",
-                    dropZone_msg: '<span><strong>Drop</strong>&nbsp;your files here or <strong>click</strong>&nbsp;in this area</span>',
+                    intro_msg: "{{$uploader['fieldLabel'] or 'Add attachments...' }}",
+                    dropZone_msg: 
+                        '<p><strong>Drop</strong>&nbsp;your files here or <strong class="text-primary">click</strong>&nbsp;on this area' +
+                        '<br><small class="text-muted">{{ $uploader["restrictionMsg"] or "You can upload any related files" }}.\n' + 
+                        '   One file can be max {{ $uploader["fileMaxSize"] }} MB</small>\n' +
+                        '</p>',
                     maxSizeExceeded_msg: 'File too large',
                     totalMaxSizeExceeded_msg: 'Total size exceeded',
                     duplicated_msg: 'File duplicated (skipped)',
@@ -171,5 +173,5 @@
     });
 
 </script>
-<script src="{{URL::to('/')}}/js/employees.js"></script>
+<script src="{{URL::to('/')}}/js/employees.min.js"></script>
 @endsection

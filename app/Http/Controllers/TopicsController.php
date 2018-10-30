@@ -47,6 +47,19 @@ class TopicsController extends CustomController
         return view($this->baseViewPath .'.index', compact('topics'));
     }
 
+    public function create()
+    {
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload documents, photos, audio and video files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf', 'jpg', 'png', 'mp3', 'mp4', 'wav']",
+            "fileMaxSize" => "5", // in MB
+            "totalMaxSize" => "15", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
+        return view($this->baseViewPath . '.create', compact('uploader'));
+    }
+
     /**
      * Store a new topic in the storage.
      *
@@ -77,11 +90,17 @@ class TopicsController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $acceptedFiles = "['doc', 'docx', 'ppt', 'pptx', 'pdf', 'mp3', 'mp4', 'wav']";
         $id = Route::current()->parameter('topic');
         $data = $this->contextObj->findData($id);
-
-        return view($this->baseViewPath . '.edit', compact('data', 'acceptedFiles'));
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload documents, photos, audio and video files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'jpg', 'png' ,'pdf', 'mp3', 'mp4', 'wav']",
+            "fileMaxSize" => "5", // in MB
+            "totalMaxSize" => "15", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
+        return view($this->baseViewPath . '.edit', compact('data', 'uploader'));
     }
 
     /**
