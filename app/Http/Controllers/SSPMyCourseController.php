@@ -391,17 +391,20 @@ class SSPMyCourseController extends CustomController
                         ->where('course_id',$course_id)
                         ->get()->all();
 
+                    //dd($moduleAssessmentResp);
+
                     if(empty($moduleAssessmentResp))
                     {
-                        $topic_assessments[$assessmentId] = false;
+                        $topic_assessments[$assessmentId] = true;
                     }
                     else
                     {
-                        $topic_assessments[$assessmentId] = true;
+                        $topic_assessments[$assessmentId] = false;
                     }
                 }
             }
         }
+        //dd($topic_assessments);
         return $topic_assessments;
     }
 
@@ -434,6 +437,8 @@ class SSPMyCourseController extends CustomController
     public function manageAssessment(Request $request, $courseId, $assessmentId, $status) {
         $assessmentObj = ModuleAssessment::find($assessmentId);
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        //dd($assessmentObj);
 
         if ($request->isMethod('post')) {
 
