@@ -48,6 +48,11 @@ class Evaluation extends Model
         return $this->belongsTo('App\Employee','createdby_employee_id','id');
     }
 
+    public function useremployee()
+    {
+        return $this->belongsTo('App\Employee','user_employee_id','id');
+    }
+
     public function department()
     {
         return $this->belongsTo('App\Department','department_id','id');
@@ -67,11 +72,6 @@ class Evaluation extends Model
     {
         return $this->belongsTo('App\EvaluationStatus','evaluation_status_id','id');
     }
-
-    //public function evaluationAssessors()
-    //{
-    //    return $this->hasMany('App\EvaluationAssessor','evaluation_id','id');
-    //}
 
     public function assessors()
     {

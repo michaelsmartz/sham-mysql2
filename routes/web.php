@@ -168,6 +168,7 @@ Auth::routes();
             Route::fileResource('evaluations', 'EvaluationsController');
             Route::any('instances', 'EvaluationsController@showInstances');
             Route::get('evaluations/{id}/EvaluationId/{EvaluationId}/assess', 'EvaluationsController@loadAssessment')->name('evaluations.load_assessment');
+            Route::post('evaluations/{id}/EvaluationId/{EvaluationId}/submitassessment', 'EvaluationsController@submitAssessment')->name('evaluations.submit_assessment');
         #endregion
   
     });

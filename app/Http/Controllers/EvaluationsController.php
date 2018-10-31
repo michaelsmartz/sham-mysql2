@@ -198,11 +198,183 @@ class EvaluationsController extends CustomController
 
         $evaluationDetails = $this->contextObj->findData($EvaluationId);
         $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
-            ->find($EvaluationId);
+            ->find($evaluationDetails->assessment_id);
+
+        $employeeDetails =   $evaluationDetails->useremployee->full_name;
+        $urlpath = $evaluationDetails->url_path;
+        $usecontent = $evaluationDetails->is_usecontent;
+        $assessmentid = $evaluationDetails->assessment_id;
+        $content = '';
+        $html = "";
+        $questionNo = 0;
+        $startDateTime = date('Y-m-d H:i:s');
 
         foreach($assessment->assessmentAssessmentCategory as $assessmetCategory)
         {
-            dump($assessmetCategory->assessmentCategoryCategoryQuestions);
+            $html .= "<div class = \"panel panel-default\">";
+            $html .= "<div class =\"panel-heading\">".$assessmetCategory->name."</div>";
+            $html .= "<div class = \"panel-body\">";
+
+            foreach($assessmetCategory->assessmentCategoryCategoryQuestions as $categoryquestion){
+
+                $questionNo++;
+                $questionbase = "question_id[".$categoryquestion->id."]";
+                $question_id = $questionbase."[Response][]";
+                $question_type = "";
+
+                $html.="<div class=\"form-group \">";
+                $html.="<div class=\"col - md - 12\" title=\"".$categoryquestion->description."\">"."<label class=\"required\">".$questionNo." ".$categoryquestion->title."</label>"."<span class=\"pull-right\">".$categoryquestion->points." Points</span></div>";
+
+                //Generate Text imput type
+                if($categoryquestion->category_question_type_id == 1)
+                {
+                    $html.= "<input class=\"form-control\" id=\""."ID"."\" name=\"".$question_id."\" type=\"text\" value=\"".""."\"> ".""."<br/>";
+                    $question_type = "Open Text";
+                }
+                else
+                {
+                        $counter = 0;
+                        $html.= "<div class=\"input-group \">";
+
+                        foreach($categoryquestion->categoryQuestionChoices as $choice)
+                        {
+                            $selectedValue = $choice->choice_text."|".$choice->points;
+                            if($categoryquestion->category_question_type_id == 2)
+                            {
+                                // Generate radio buttons
+                                $html.= "<input id=\""."ID"."\" name=\"".$question_id."\" type=\"radio\" value=\"".$selectedValue."\" class=\"required exclude-required-marker\" > ".$choice->choice_text."<br/>";
+                                //$html.= "<input id=\""."ID"."\" name=\"".$question_id."\" type=\"radio\" value=\"".$selectedValue."\" required > ".$result->ChoiceText;
+                                $question_type = "Select One";
+                            }
+                            else
+                            {
+                                // Generate Checkboxes
+                                $html.= "<input id=\""."ID"."\" name=\"".$question_id."\" type=\"checkbox\" value=\"".$selectedValue."\" class=\"required exclude-required-marker\" > ".$choice->choice_text."<br/>";
+                                $question_type = "Select Many";
+                            }
+                            $counter = $counter + 1;
+                        }
+                        $html.= "</div>";
+                }
+
+                // Popoulate hidden fields to pass on values on postback
+                $html.= "<div class=\"hide\">";
+                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[EvaluationId]"."\" type=\"hidden\" value=\"".$EvaluationId."\"> ".""."<br/>";
+                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[AssessmentId]"."\" type=\"hidden\" value=\"".$assessmentid."\"> ".""."<br/>";
+                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[AssessmentCategoryId]"."\" type=\"hidden\" value=\"".$assessmetCategory->id."\"> ".""."<br/>";
+                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[QuestionType]"."\" type=\"hidden\" value=\"".$question_type."\"> ".""."<br/>";
+                $html.= "</div>";
+                $html.= " </div>";
+            }
+
+            $html .= "</div>";
+            $html .= "</div>"; // End of tag for panel
         }
+
+        // Popoulate hidden fields to pass on values on postback
+        $html.= "<div class=\"hide\">";
+        $html.= "<input id=\""."ID"."\" name=\"EvaluationidTop\" type=\"hidden\" value=\"".$EvaluationId."\"> ".""."<br/>";
+        $html.= "<input id=\""."ID"."\" name=\"AssessmentIdTop\" type=\"hidden\" value=\"".$assessmentid."\"> ".""."<br/>";
+        $html.= "</div>";
+
+        $content = $html;
+        return view($this->baseViewPath .'.assess-assessment', compact('employeeDetails', 'urlpath', 'usecontent', 'content','Id','EvaluationId','startDateTime'));
+    }
+
+    public function submitAssessment(Request $request,$Id,$EvaluationId){
+
+        $messages = array();
+        $errors= array();
+        $uniquequestionids = array();
+        $containsDuplicateQuestion = false;
+        $html = "";
+
+        //dd($Id);
+
+        //return $request->all();
+
+        $evaluationid = $request['EvaluationidTop'];
+        $assessmentid = $request['AssessmentIdTop'];
+        $startdatetime = $request['starttime'];
+        //$enddatetime = $request['endtime'];
+        $enddatetime = date('Y-m-d H:i:s');
+
+        //dd(\Auth::user());
+        $assessorEmployeeId = \Auth::user()->employee->id;
+        //die;
+
+        foreach ($request['question_id'] as $questionID => $answerArray)
+        {
+            //$evaluationresultObj = new EvaluationResult();
+            $evaluationDetails = $this->contextObj->findData($Id);
+
+            if (array_key_exists("QuestionType", $answerArray))
+            {
+                // Open Text question will pickvalue from a textbox and store value in array Response at position 0 only
+                if($answerArray["QuestionType"]=="Open Text" && !empty($answerArray["Response"]))
+                {
+                    $evaluationDetails->evaluationResults()->attach($assessorEmployeeId,[
+                        'assessment_id'=> $answerArray["AssessmentId"],
+                        'assessment_category_id' => $answerArray["AssessmentCategoryId"],
+                        'category_question_id' => $questionID,
+                        'content' => $answerArray["Response"][0],
+                        'points' => 0,
+                        'is_active' => 1
+                    ]);
+                }
+                else
+                {
+                    // Pickvalue from Radio Button and Checboxes and store value in array Response.
+                    // Response array will store value in format e.g "Response":["Blue|20","Red|10"] where
+                    // Blue is the Selected Value and 20 is the selected value Points.
+                    // Implementaion below first Loop on array Response, Split on Pipe(|),Define Selected Value and Point,
+                    // and insert into EvaluationResults table.
+                    $responses = $answerArray["Response"];
+                    if(!empty($responses))
+                    {
+                        foreach ($responses as $response)
+                        {
+                            if($response)
+                            {
+                                $splitterposition = strripos($response,"|");
+                                $responselength = strlen($response);
+                                $selectedValue = substr($response, 0, $splitterposition);
+                                $points = substr($response, $splitterposition+1);
+
+                                $evaluationDetails->evaluationResults()->attach($assessorEmployeeId,[
+                                    'assessment_id'=> $answerArray["AssessmentId"],
+                                    'assessment_category_id' => $answerArray["AssessmentCategoryId"],
+                                    'category_question_id' => $questionID,
+                                    'content' => $selectedValue,
+                                    'points' => $points,
+                                    'is_active' => 1
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //die;
+        /*$evaluationAssessorObj = new EvaluationAssessor();
+        $evaluationAssessorObj->Id = $Id;
+        $evaluationAssessorObj->Comments = $request['Comments'];
+        $evaluationAssessorObj->Summary = $request['Summary'];
+        $evaluationAssessorObj->Completed = true;
+        $evaluationAssessorObj->StartTime = $startdatetime;
+        $evaluationAssessorObj->EndTime = $enddatetime;
+
+        $evaluationAssessorObj = EvaluationAssessor::patch($Id,$evaluationAssessorObj);*/
+
+        $evaluationDetails->assessors()->sync([$assessorEmployeeId => [
+            'comments' => $request['Comments'],
+            'summary' => $request['Summary'],
+            'start_time' => $startdatetime,
+            'end_time' => $enddatetime,
+            'is_completed' => 1,
+        ]]);
+
+        return Redirect::to('instances');
+
     }
 }
