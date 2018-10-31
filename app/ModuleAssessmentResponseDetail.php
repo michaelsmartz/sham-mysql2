@@ -49,6 +49,8 @@ class ModuleAssessmentResponseDetail extends Model
     {
         $query->select(['module_assessment_response_details.id as id',
                         'module_assessment_response_details.module_assessment_response_id',
+                        'module_assessment_response_details.module_assessment_id',
+                        'module_assessment_response_details.module_id',
                         'module_assessment_response_details.module_question_id',
                         'module_questions.module_question_type_id', 'module_questions.title', 
                         'module_questions.Points as question_points',

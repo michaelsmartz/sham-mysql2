@@ -10,7 +10,16 @@
     <link href="{{URL::to('/')}}/css/self-service-portal.css" rel="stylesheet">
 
     <!-- Custom CSS -->
+    {{-- TODO to remove for testing only --}}
     <link href="{{URL::to('/')}}/css/sb-admin-2.css" rel="stylesheet">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </head>
 
 <?php
@@ -23,7 +32,7 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
     <div class="row">
         <div class="col-md-12 col-sm-12">
             <div class="menu">
-                <div class="accordion" id="tree_accordion">
+                <div id="accordion">
                     @php $courseIdx = 0; @endphp
                     @foreach($myCourses as $index=>$course)
                         @if(!$course->HasAssessmentResponses) @continue @endif
@@ -38,7 +47,7 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
 @endif
                                         pull-right">{{$course['courseParticipantStatus']['description']}}</span>
                             </div>
-                            <div class="accordion-body collapse" id="{{$course->id}}">
+                            <div class="collapse" id="{{$course->id}}">
                                 <div class="accordion-inner">
                                     <div class="overall-statistics">
                                         <p>
@@ -47,15 +56,15 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                         </p>
                                     </div>
                                     <!-- each assessment is a page report -->
-                                    @foreach($course->moduleAssessment as $assessment)
+                                    @foreach($course->data as $assessment)
                                         <div class="page-report">
                                             <h3>{{$assessment->description}}</h3>
                                             <p class="page-statistics">
-                                                <strong>Pass mark</strong>: {{$assessment->pass_mark}}
+                                                <strong>Pass mark</strong>: {{$assessment->moduleAssessment->pass_mark}}
                                                 <span class="stat-spacer">|</span>
-                                                {{--<strong>Score</strong>: {{$assessment->StudentScore}} of {{$assessment->pass_mark}}--}}
+                                                <strong>Score</strong>: {{$assessment->points}} of {{$assessment->question_points}}
                                                 <span class="stat-spacer">|</span>
-                                                {{--<strong>Date</strong>: {{ \Carbon\Carbon::parse($assessment->Response->DateCompleted)->toDateString() }}--}}
+                                                <strong>Date</strong>: {{ \Carbon\Carbon::parse($assessment->moduleAssessmentResponse->date_completed)->toDateString() }}
                                             </p>
                                             <div class="table-responsive">
                                                 <table class="table">
@@ -68,32 +77,38 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-                                                    {{--@foreach($assessment->Questions as $question)--}}
-                                                        {{--<tr class="assessment-text">--}}
-                                                            {{--<td><p>{{$question->ModuleQuestion->Title}}</p></td>--}}
-                                                            {{--<td>--}}
-                                                                {{--@foreach($question->ResponseDetails as $studentResponse)--}}
-                                                                    {{--<p>{{$studentResponse->Content}}</p>--}}
-                                                                {{--@endforeach--}}
-                                                            {{--</td>--}}
-                                                            {{--<td><span>{{$question->SumPoints}}</span></td>--}}
-                                                            {{--<td>--}}
-                                                                {{--@if($question->ModuleQuestion->ModuleQuestionTypeId == \App\Enums\ModuleQuestionType::OpenText)--}}
-                                                                    {{--@if($assessment->Response->Reviewed)--}}
-                                                                        {{--<span>Reviewed by trainer</span>--}}
-                                                                    {{--@else--}}
-                                                                        {{--<span>Will be reviewed by trainer</span>--}}
-                                                                    {{--@endif--}}
-                                                                {{--@else--}}
-                                                                    {{--@foreach($question->ModuleQuestion->Choices as $choice)--}}
-                                                                        {{--@if($choice->CorrectAnswer)--}}
-                                                                            {{--<p>{{$choice->ChoiceText}}</p>--}}
-                                                                        {{--@endif--}}
-                                                                    {{--@endforeach--}}
-                                                                {{--@endif--}}
-                                                            {{--</td>--}}
-                                                        {{--</tr>--}}
-                                                    {{--@endforeach--}}
+                                                        <tr class="assessment-text">
+                                                            <td><p>{{$assessment->moduleQuestion->title}}</p></td>
+                                                            <td>
+                                                                <p>{{$assessment->response}}</p>
+                                                            </td>
+                                                            <td>
+                                                                @php
+                                                                    $choices = explode('|', $assessment->question_choices);
+                                                                    $choicePoints = explode('|', $assessment->question_choices_points);
+                                                                @endphp
+                                                                <p>{{$choicePoints[array_search($assessment->response, $choices)]}}</p>
+                                                            </td>
+                                                            <td>
+                                                                @if($assessment->moduleQuestion->module_question_type_id == \App\Enums\ModuleQuestionType::OpenText)
+                                                                    @if($assessment->moduleAssessmentResponse->is_reviewed)
+                                                                        <span>Reviewed by trainer</span>
+                                                                    @else
+                                                                        <span>Will be reviewed by trainer</span>
+                                                                    @endif
+                                                                @else
+                                                                    @php
+                                                                        $choices = explode('|', $assessment->question_choices);
+                                                                        $choicePoints = explode('|', $assessment->question_choices_points);
+                                                                    @endphp
+                                                                    @for($i = 0; $i < sizeof($choices); $i++)
+                                                                        @if($choicePoints[$i] > 0)
+                                                                            <p>{{$choices[$i]}}</p>
+                                                                        @endif
+                                                                    @endfor
+                                                                @endif
+                                                            </td>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>

@@ -37,11 +37,11 @@ class SSPMyCourseAssessmentsController extends CustomController
             $course->HasAssessmentResponses = false;
             if(!empty($course['data'])){
                 $course->HasAssessmentResponses = true;
-                $course->StudentScore = $this->computeAssessmentLevelPoints($course['data']);
+                //$course->StudentScore = $this->computeAssessmentLevelPoints($course['data']);
             }
         }
 
-        //dd($crs);
+        //dd($crs[0]);
 
         return View::make($this->baseViewPath .'.myassessments')
             ->with('myCourses',$crs);
@@ -74,12 +74,9 @@ class SSPMyCourseAssessmentsController extends CustomController
 
                         foreach ($course->modules as $module) {
                             $module->TotalStudentScore = 0;
-                            $course->moduleAssessment = ModuleAssessment::with('module','assessmentType')
-                                ->where('module_id',$module->id)
-                                ->get()->all();
 
                             $course->data = ModuleAssessmentResponseDetail::assessmentResponseSheet()
-                                ->with('moduleAssessmentResponse')
+                                ->with('moduleAssessmentResponse','moduleQuestion','moduleAssessment')
                                 ->where('module_id',$module->id)
                                 ->get()->all();
 
