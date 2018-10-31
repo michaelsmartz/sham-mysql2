@@ -90,7 +90,7 @@ CREATE  OR REPLACE VIEW `QAEvaluationsView`
 as
 	select ev.assessment_id, sum(points) as TotalPoints, ev.feedback_date as Feedbackdate,T.total_threshold as TotalThreshold,pc.description  from evaluations ev
        inner join evaluation_results er
-       on ev.id = er.evaluation_id and ev.createdbyemployee_id = er.assessoremployee_id
+       on ev.id = er.evaluation_id and ev.createdby_employee_id = er.assessor_employee_id
        inner join (
               SELECT aac.assessment_id as assessmentid, sum(threshold) as total_threshold from assessments_assessment_category aac inner join assessment_categories ac
               on aac.assessment_category_id = ac.id where aac.is_active = 1
@@ -106,13 +106,13 @@ as
 #--02-Views --------------------------------------------------------------------------------------- 	   
 CREATE OR REPLACE VIEW `QAEvaluationScoresView`
 as 
-select data.evaluation_id AS EvaluationId,data.assessment_id AS AssessmentId,data.assessoremployee_id AS AssessorEmployeeId,data.feedback_date AS Feedbackdate,data.points AS Points,round(cast(data.points as decimal(10,3))/cast(at.total_threshold as decimal(10,3))) as Percentage
+select data.evaluation_id AS EvaluationId,data.assessment_id AS AssessmentId,data.assessor_employee_id AS AssessorEmployeeId,data.feedback_date AS Feedbackdate,data.points AS Points,round(cast(data.points as decimal(10,3))/cast(at.total_threshold as decimal(10,3))) as Percentage
 from 
 (
-select evaluation_id,assessoremployee_id,sum(points) as Points,er.assessment_id,e.feedback_date from evaluation_results er
+select evaluation_id,assessor_employee_id,sum(points) as Points,er.assessment_id,e.feedback_date from evaluation_results er
 inner join evaluations e on e.id = er.evaluation_id
 where er.is_active = 1 and e.feedback_date between DATE_ADD(current_timestamp,Interval -370 DAY) and current_timestamp
-group by evaluation_id,assessoremployee_id,er.assessment_id,e.feedback_date
+group by evaluation_id,assessor_employee_id,er.assessment_id,e.feedback_date
 
 ) data
 inner join 
@@ -126,7 +126,7 @@ where aac.is_active = 1 and aac.assessment_id in (
 select distinct(er.assessment_id) from evaluation_results er
 inner join evaluations e on e.id = er.evaluation_id
 where er.is_active = 1 and e.feedback_date between DATE_ADD(current_timestamp,Interval -370 DAY) and current_timestamp
-group by evaluation_id,assessoremployee_id,er.assessment_id,e.feedback_date
+group by evaluation_id,assessor_employee_id,er.assessment_id,e.feedback_date
 
 )
 group by aac.assessment_id,aac.assessment_category_id,ac.threshold

@@ -2286,10 +2286,10 @@ ALTER TABLE `announcements` CHANGE `date_start` `start_date` DATE NOT NULL, CHAN
 
 #--- Added on 08/10/2018
 #--- Evaluations
-ALTER TABLE `evaluations`
-DROP FOREIGN KEY `FK_Evaluations_Employees`,
-DROP FOREIGN KEY `FK_Evaluations_Employees1`,
-DROP FOREIGN KEY `FK_Evaluations_EvaluationStatuses`;
+#---ALTER TABLE `evaluations`
+#---DROP FOREIGN KEY `FK_Evaluations_Employees`,
+#---DROP FOREIGN KEY `FK_Evaluations_Employees1`,
+#---DROP FOREIGN KEY `FK_Evaluations_EvaluationStatuses`;
 
 ALTER TABLE `evaluations`
 CHANGE COLUMN `useremployee_id` `user_employee_id` INT(11) NOT NULL ,
@@ -2354,10 +2354,11 @@ ALTER TABLE `disciplinary_actions`
 
 RENAME TABLE `history_joins_terminations` TO `history_join_terminations`;
 
-ALTER TABLE `history_join_terminations`
-	ALTER `date` DROP DEFAULT;
-ALTER TABLE `history_join_terminations`
-	CHANGE COLUMN `date` `date_occurred` DATETIME(6) NOT NULL AFTER `is_joined`;
+#--ALTER TABLE `history_join_terminations`
+#--	ALTER `date` DROP DEFAULT;
+    
+#--ALTER TABLE `history_join_terminations`
+#--	CHANGE COLUMN `date` `date_occurred` DATETIME(6) NOT NULL AFTER `is_joined`;
 
 ALTER TABLE `history_join_terminations` CHANGE `date_occurred` `date_occurred` DATE NOT NULL;
 
@@ -2392,13 +2393,13 @@ ALTER TABLE `module_assessment_responses`
 CHANGE COLUMN `date_start` `date_start` DATE NULL DEFAULT NULL AFTER `employee_id`,
 CHANGE COLUMN `date_end` `date_end` DATE NULL DEFAULT NULL AFTER `date_start`,
 CHANGE COLUMN `date_completed` `date_completed` DATE NULL DEFAULT NULL AFTER `date_end`,
-CHANGE COLUMN `is_reviewed` `is_reviewed` TINYINT(1) NULL DEFAULT '0' AFTER `date_completed`
+CHANGE COLUMN `is_reviewed` `is_reviewed` TINYINT(1) NULL DEFAULT '0' AFTER `date_completed`;
 
 #-- 22/10/2018
-ALTER TABLE `evaluation_results`
-DROP FOREIGN KEY `FK_EvaluationResults_AssessmentCategories`,
-DROP FOREIGN KEY `FK_EvaluationResults_CategoryQuestions`,
-DROP FOREIGN KEY `FK_EvaluationResults_Employees`;
+#--ALTER TABLE `evaluation_results`
+#--DROP FOREIGN KEY `FK_EvaluationResults_AssessmentCategories`,
+#--DROP FOREIGN KEY `FK_EvaluationResults_CategoryQuestions`,
+#--DROP FOREIGN KEY `FK_EvaluationResults_Employees`;
 
 ALTER TABLE `evaluation_results`
 CHANGE COLUMN `assessoremployee_id` `assessor_employee_id` INT(11) NOT NULL ,

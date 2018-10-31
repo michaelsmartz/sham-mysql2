@@ -519,17 +519,17 @@ ADD CONSTRAINT `FK_Evaluations_Departments`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_Evaluations_Employees`
-  FOREIGN KEY (`useremployee_id`)
+  FOREIGN KEY (`user_employee_id`)
   REFERENCES `employees` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_Evaluations_Employees1`
-  FOREIGN KEY (`createdbyemployee_id`)
+  FOREIGN KEY (`createdby_employee_id`)
   REFERENCES `employees` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_Evaluations_EvaluationStatuses`
-  FOREIGN KEY (`evaluationstatus_id`)
+  FOREIGN KEY (`evaluation_status_id`)
   REFERENCES `evaluation_statuses` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
@@ -545,7 +545,7 @@ ADD CONSTRAINT `FK_Evaluations_ProductCategories`
   ON UPDATE NO ACTION;  
   
   #---- evaluationassessors/evaluation_assessors
-  ALTER TABLE `evaluation_assessors` 
+  ALTER TABLE `employee_evaluation` 
 ADD CONSTRAINT `FK_EvaluationAssessors_Employees`
   FOREIGN KEY (`employee_id`)
   REFERENCES `employees` (`Id`)
@@ -560,7 +560,7 @@ ADD CONSTRAINT `FK_EvaluationAssessors_Evaluations`
   #---- evaluationresults/evaluation_results
   ALTER TABLE `evaluation_results` 
 ADD CONSTRAINT `FK_EvaluationResults_AssessmentCategories`
-  FOREIGN KEY (`assessmentcategory_id`)
+  FOREIGN KEY (`assessment_category_id`)
   REFERENCES `assessment_categories` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
@@ -570,12 +570,12 @@ ADD CONSTRAINT `FK_EvaluationResults_Assessments`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_EvaluationResults_CategoryQuestions`
-  FOREIGN KEY (`categoryquestion_id`)
+  FOREIGN KEY (`category_question_id`)
   REFERENCES `category_questions` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `FK_EvaluationResults_Employees`
-  FOREIGN KEY (`assessoremployee_id`)
+  FOREIGN KEY (`assessor_employee_id`)
   REFERENCES `employees` (`Id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION,
@@ -668,7 +668,7 @@ ADD CONSTRAINT `FK_HistoryJobTitles_JobTitles`
   ON UPDATE NO ACTION;
   
   #---- historyJoinsTerminations
-  ALTER TABLE `history_joins_terminations` 
+  ALTER TABLE `history_join_terminations` 
 ADD CONSTRAINT `FK_HistoryJoinsTerminations_Employees`
   FOREIGN KEY (`employee_id`)
   REFERENCES `employees` (`id`)
@@ -907,7 +907,7 @@ ADD CONSTRAINT `FK_ShamUserProfilesSubModulePermissions_SystemSubModules`
 #--- add index on evaluation_results
 #---- evaluation_results
 ALTER TABLE `evaluation_results` 
-ADD INDEX `IX_EvaluationResults_evaluation_accessor` (`evaluation_id` ASC, `assessoremployee_id` ASC);
+ADD INDEX `IX_EvaluationResults_evaluation_accessor` (`evaluation_id` ASC, `assessor_employee_id` ASC);
 
 #--- Added on 20-09-2018
 #---- laws
@@ -951,44 +951,10 @@ REFERENCES `employees` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
-#---- Added on 08/10/2018
-ALTER TABLE `evaluations`
-ADD CONSTRAINT `FK_Evaluations_Employees`
-  FOREIGN KEY (`user_employee_id`)
-  REFERENCES `shamdev`.`employees` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION,
-ADD CONSTRAINT `FK_Evaluations_Employees1`
-  FOREIGN KEY (`createdby_employee_id`)
-  REFERENCES `shamdev`.`employees` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION,
-ADD CONSTRAINT `FK_Evaluations_EvaluationStatuses`
-  FOREIGN KEY (`evaluation_status_id`)
-  REFERENCES `shamdev`.`evaluation_statuses` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
 
 #-----Added on 15.10.2018
 ALTER TABLE `history_job_titles`
 	ADD INDEX `IX_HistoryJobTitle_employee_id` (`employee_id`);
 ALTER TABLE `history_disciplinary_actions`
 	ADD INDEX `IX_HistoryDisciplinaryActions_employee_id` (`employee_id`);
-
-#---- Added on 22-10-2018
-ALTER TABLE `evaluation_results`
-ADD CONSTRAINT `FK_EvaluationResults_AssessmentCategories`
-  FOREIGN KEY (`assessment_category_id`)
-  REFERENCES assessment_categories` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION,
-ADD CONSTRAINT `FK_EvaluationResults_CategoryQuestions`
-  FOREIGN KEY (`category_question_id`)
-  REFERENCES category_questions` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION,
-ADD CONSTRAINT `FK_EvaluationResults_Employees`
-  FOREIGN KEY (`assessor_employee_id`)
-  REFERENCES `shamdev`.`employees` (`id`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
+    
