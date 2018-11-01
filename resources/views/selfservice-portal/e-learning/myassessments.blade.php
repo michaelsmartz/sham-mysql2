@@ -43,8 +43,8 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                 </a>
                                 <span class="badge
                                         @if($course['courseParticipantStatus']['id'] == \App\Enums\CourseParticipantStatusType::Completed)
-                                        bg-green
-@endif
+                                            bg-green
+                                        @endif
                                         pull-right">{{$course['courseParticipantStatus']['description']}}</span>
                             </div>
                             <div class="collapse" id="{{$course->id}}">
@@ -52,33 +52,38 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                     <div class="overall-statistics">
                                         <p>
                                             <strong>Overall Score</strong>:
-                                            <span class="badge {{--bg-green--}} score">{{$course->OverallScore}}</span>
+                                            <span class="badge {{--bg-green--}} score">{{$course->assessment_overall_points}}</span>
                                         </p>
                                     </div>
-                                    <!-- each assessment is a page report -->
-                                    @foreach($course->data as $assessment)
-                                        <div class="page-report">
-                                            <h3>{{$assessment->description}}</h3>
-                                            <p class="page-statistics">
-                                                <strong>Pass mark</strong>: {{$assessment->moduleAssessment->pass_mark}}
-                                                <span class="stat-spacer">|</span>
-                                                <strong>Score</strong>: {{$assessment->points}} of {{$assessment->question_points}}
-                                                <span class="stat-spacer">|</span>
-                                                <strong>Date</strong>: {{ \Carbon\Carbon::parse($assessment->moduleAssessmentResponse->date_completed)->toDateString() }}
-                                            </p>
-                                            <div class="table-responsive">
-                                                <table class="table">
-                                                    <thead>
-                                                    <tr>
-                                                        <th class="col-lg-3 col-md-3 col-sm-3">Question</th>
-                                                        <th class="col-lg-4 col-md-4 col-sm-4">Answer</th>
-                                                        <th class="col-lg-1 col-md-1 col-sm-1">Score</th>
-                                                        <th class="col-lg-4 col-md-4 col-sm-4">Expected</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
+                                    <div class="page-report">
+                                        <h3>{{$course->assessment_description}}</h3>
+                                        <p class="page-statistics">
+                                            <strong>Pass mark</strong>: {{$course->assessment_pass_mark}}
+                                            <span class="stat-spacer">|</span>
+                                            <strong>Score</strong>: {{$course->assessment_overall_points}} of {{$course->assessment_total_possible_points}}
+                                            <span class="stat-spacer">|</span>
+                                            <strong>Date</strong>: {{ \Carbon\Carbon::parse($course->assessment_date_completed)->toDateString() }}
+                                        </p>
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th class="col-lg-3 col-md-3 col-sm-3">Question</th>
+                                                    <th class="col-lg-4 col-md-4 col-sm-4">Answer</th>
+                                                    <th class="col-lg-1 col-md-1 col-sm-1">Score</th>
+                                                    <th class="col-lg-4 col-md-4 col-sm-4">Expected</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <!-- each assessment is a page report -->
+                                                @foreach($course->data as $assessment)
+                                                    @php
+                                                        $choices = explode('|', $assessment->question_choices);
+                                                        $choicePoints = explode('|', $assessment->question_choices_points);
+                                                    @endphp
+
                                                         <tr class="assessment-text">
-                                                            <td><p>{{$assessment->moduleQuestion->title}}</p></td>
+                                                            <td><p>{{$assessment->moduleQuestion['title']}}</p></td>
                                                             <td>
                                                                 <p>{{$assessment->response}}</p>
                                                             </td>
@@ -90,17 +95,13 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                                                 <p>{{$choicePoints[array_search($assessment->response, $choices)]}}</p>
                                                             </td>
                                                             <td>
-                                                                @if($assessment->moduleQuestion->module_question_type_id == \App\Enums\ModuleQuestionType::OpenText)
-                                                                    @if($assessment->moduleAssessmentResponse->is_reviewed)
+                                                                @if($assessment->moduleQuestion['module_question_type_id'] == \App\Enums\ModuleQuestionType::OpenText)
+                                                                    @if($assessment->moduleAssessmentResponse['is_reviewed'])
                                                                         <span>Reviewed by trainer</span>
                                                                     @else
                                                                         <span>Will be reviewed by trainer</span>
                                                                     @endif
                                                                 @else
-                                                                    @php
-                                                                        $choices = explode('|', $assessment->question_choices);
-                                                                        $choicePoints = explode('|', $assessment->question_choices_points);
-                                                                    @endphp
                                                                     @for($i = 0; $i < sizeof($choices); $i++)
                                                                         @if($choicePoints[$i] > 0)
                                                                             <p>{{$choices[$i]}}</p>
@@ -109,11 +110,11 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                                                 @endif
                                                             </td>
                                                         </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    @endforeach
+                                    </div>
                                 </div>
                             </div>
                         </div>
