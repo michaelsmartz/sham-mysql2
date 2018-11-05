@@ -183,11 +183,9 @@ class SSPController extends CustomController
 
         $temp = $employee->assetEmployee()->with('asset')->get()->all();
 
-        //dd($temp);
         if ($temp != null) {
             $count = 0;
             foreach($temp as $t) {
-              //$asset = Asset::find($t->asset_id)->first();
                 if (empty($t->date_in) ||
                     (!empty($t->date_in) && DateHelper::isTodayIncluded($t->date_in))) {
                     $assets[$count]['WarrantyExpiryDate'] = $t->asset->warrantyexpires_at;
