@@ -181,17 +181,19 @@ class SSPController extends CustomController
             return $assets;
         }
 
-        $temp = $employee->assetEmployee()->get()->all();
+        $temp = $employee->assetEmployee()->with('asset')->get()->all();
+
+        //dd($temp);
         if ($temp != null) {
             $count = 0;
             foreach($temp as $t) {
-              $asset = Asset::find($t->asset_id)->first();
+              //$asset = Asset::find($t->asset_id)->first();
                 if (empty($t->date_in) ||
                     (!empty($t->date_in) && DateHelper::isTodayIncluded($t->date_in))) {
-                    $assets[$count]['WarrantyExpiryDate'] = $asset->warrantyexpires_at;
+                    $assets[$count]['WarrantyExpiryDate'] = $t->asset->warrantyexpires_at;
                     $assets[$count]['DateOut'] = $t->date_out;
-                    $assets[$count]['PurchasePrice'] = $asset->purchase_price;
-                    $assets[$count]['Name'] = $asset->name;
+                    $assets[$count]['PurchasePrice'] = $t->asset->purchase_price;
+                    $assets[$count]['Name'] = $t->asset->name;
                     $count++;
                 }
             }
