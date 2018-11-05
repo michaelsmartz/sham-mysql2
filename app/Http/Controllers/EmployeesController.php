@@ -497,4 +497,11 @@ class EmployeesController extends CustomController
         $data->disabilities()->sync($disabilities);
         
     }
+
+    public function getEmployeeDepartmentId(Request $request)
+    {
+        $id = intval(Route::current()->parameter('employee'));
+        $employee = Employee::select(['id','department_id'])->find($id);
+        return Response()->json($employee);
+    }
 }

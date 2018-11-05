@@ -98,7 +98,7 @@ class AssessmentsController extends CustomController
             $data = $this->contextObj->findData($id);
         }
         $assessmentcategories = AssessmentCategory::pluck('description', 'id');
-        $assessmentaAssessmentCategories = $data->assessmentCategories()->pluck('description', 'assessments_assessment_category.assessment_category_id');
+        $assessmentaAssessmentCategories = $data->assessmentAssessmentCategory()->pluck('description', 'assessments_assessment_category.assessment_category_id');
 
         return view($this->baseViewPath .'.edit',
             compact('_mode','fullPageEdit','data','assessmentcategories','assessmentaAssessmentCategories'));

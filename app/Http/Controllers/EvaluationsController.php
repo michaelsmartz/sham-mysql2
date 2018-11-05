@@ -90,7 +90,7 @@ class EvaluationsController extends CustomController
             elseif($input['status'] == 'savepath')
             {
                 $input['is_usecontent'] = 0;
-                $input['url_path'] = $input['UrlPath'];
+                //$input['url_path'] = $input['UrlPath'];
             }
 
             $context = $this->contextObj->addData($input);
@@ -110,6 +110,32 @@ class EvaluationsController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
 
+    public function edit(Request $request)
+    {
+
+        $data = null;
+        $_mode = 'edit';
+        $fullPageEdit = true;
+        $id = Route::current()->parameter('evaluation');
+
+
+        if(!empty($id)) {
+            $data = $this->contextObj->findData($id);
+        }
+
+        $assessments = Assessment::pluck('name','id')->all();
+        $employees = Employee::pluck('full_name', 'id')->all();
+        $departments = Department::pluck('description','id')->all();
+        $productCategories = ProductCategory::pluck('description','id')->all();
+        $languages = Language::pluck('description','id')->all();
+        $evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
+
+        $selectecAssessors = $data->assessors()->pluck('full_name','employee_evaluation.employee_id');
+
+        return view($this->baseViewPath .'.edit',
+            compact('_mode','fullPageEdit','data','assessments','employees','departments','productCategories','languages','evaluationStatuses','selectecAssessors'));
+    }
+
     /**
      * Update the specified evaluation in the storage.
      *
@@ -121,17 +147,52 @@ class EvaluationsController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            //$this->validator($request);
             
             $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            
+
+            $selectedassessors = array_get($request->all(),'selectedassessors');
             $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
-            $this->contextObj->updateData($id, $input);
+            if($input['status'] == 'savecontent') {
+
+                $input['is_usecontent'] = 1;
+                if (Input::hasFile('attachment') && Input::file('attachment')->isValid()) {
+                    $filename = Input::file('attachment')->getClientOriginalName();
+                    $input['original_filename'] = $filename;
+                }
+                else
+                {
+                    unset($input['QaSample']);
+                }
+            }
+            elseif($input['status'] == 'savepath')
+            {
+                $input['is_usecontent'] = 0;
+                //$input['url_path'] = $input['UrlPath'];
+            }
+
+            unset($input['status']);
+            unset($input['q']);
+            unset($input['selectedassessors']);
+
+            $inputtosubmit = $input;
+            unset($inputtosubmit['attachment']);
+
+            $context = $this->contextObj->updateData($id, $inputtosubmit);
+
+            $data = Evaluation::find($id);
+
+            if(Input::hasFile('attachment')) {
+                $this->syncSingleFile($request, $data->id,'attachment');
+            }
+
+            $data->assessors()->sync($selectedassessors);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
@@ -355,16 +416,6 @@ class EvaluationsController extends CustomController
                 }
             }
         }
-        //die;
-        /*$evaluationAssessorObj = new EvaluationAssessor();
-        $evaluationAssessorObj->Id = $Id;
-        $evaluationAssessorObj->Comments = $request['Comments'];
-        $evaluationAssessorObj->Summary = $request['Summary'];
-        $evaluationAssessorObj->Completed = true;
-        $evaluationAssessorObj->StartTime = $startdatetime;
-        $evaluationAssessorObj->EndTime = $enddatetime;
-
-        $evaluationAssessorObj = EvaluationAssessor::patch($Id,$evaluationAssessorObj);*/
 
         $evaluationDetails->assessors()->sync([$assessorEmployeeId => [
             'comments' => $request['Comments'],
@@ -376,5 +427,98 @@ class EvaluationsController extends CustomController
 
         return Redirect::to('instances');
 
+    }
+
+    public function score($Id,$evaluationid)
+    {
+
+        $evaluations = $this->contextObj::where('id',$evaluationid)->first();
+
+        $summary = $evaluations->assessors->where('id',$Id)->first()->pivot->summary.PHP_EOL;
+        $comments = $evaluations->assessors->where('id',$Id)->first()->pivot->comments.PHP_EOL;
+        $assessorName = $evaluations->assessors->where('id',$Id)->first()->full_name;
+
+        $assessor_employee_id = $evaluations->assessors->where('id',$Id)->first()->employee_id;
+        $assessmentTotalScores = $this->getAssessmentTotalScore($evaluations->assessment_id);
+        $workingscore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)->where('is_active',1)
+            ->sum('pivot.points');
+
+        $overallscore =  ($workingscore/$assessmentTotalScores)*100;
+        $assessmentScore = round($overallscore,0);
+
+        $hearderdetails = array();
+        $hearderdetails['user'] = $evaluations->useremployee->full_name;
+        $hearderdetails['department'] = $evaluations->department->description;
+        $hearderdetails['feedbackdate'] = $evaluations->feedback_date;
+        $hearderdetails['referenceno'] = $evaluations->reference_no;
+        $hearderdetails['referencesource'] = $evaluations->source;
+        $hearderdetails['assessment'] = $evaluations->assessment->name;
+
+        $assessmentdetails = array();
+        $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
+            ->find($evaluations->assessment_id);
+
+        $totalThreshhold = 0;
+        foreach($assessment->assessmentAssessmentCategory as $assessmetCategory)
+        {
+            //threshold
+            $categoryinfodetails = array();
+            $categoryinfodetails["Id"]= $assessmetCategory->id;
+            $categoryinfodetails["Name"]= $assessmetCategory->name;
+            $categoryinfodetails["Threshold"]= $assessmetCategory->threshold;
+
+            $cateogoryscore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)
+                ->where('assessment_category_id',$assessmetCategory->id)
+                ->where('is_active',1)
+                ->sum('pivot.points');
+
+            $categoryinfodetails["TotalScores"]= $cateogoryscore;
+            $assessmentdetails[]  = $categoryinfodetails;
+        }
+
+        // Working
+        $mandatoryPassQuestionsids = array();
+        $mandatoryPassQuestionsScore = 0;
+        foreach($assessment->assessmentAssessmentCategory as $assessmentcategory)
+        {
+            foreach($assessmentcategory->assessmentCategoryCategoryQuestions as $categoryQuestion)
+            {
+                if($categoryQuestion->is_zeromark){
+                    $mandatoryPassQuestionsids[] = $categoryQuestion->id;
+                    $mandatoryPassQuestionsScore = $mandatoryPassQuestionsScore + $categoryQuestion->points;
+                }
+            }
+        }
+
+        $mandatoryPassQuestionsactualScore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)
+            ->where('is_active',1)
+            ->whereIn('category_question_id',$mandatoryPassQuestionsids)
+            ->sum('pivot.points');
+
+        $mandatoryPassQuestionsComment = 0;
+        if(count($mandatoryPassQuestionsids)> 0)
+        {
+            if($mandatoryPassQuestionsactualScore == $mandatoryPassQuestionsScore){
+                $mandatoryPassQuestionsComment = $assessmentScore;
+            }
+            else
+            {
+                $mandatoryPassQuestionsComment = 0;
+            }
+        }
+        else
+        {
+            $mandatoryPassQuestionsComment = $assessmentScore;
+        }
+
+        return view($this->baseViewPath .'.scores-instances')
+            ->with('Summary',$summary)
+            ->with('Comments',$comments)
+            ->with('AssessorName',$assessorName)
+            ->with('AssessmentScore',$assessmentScore)
+            ->with('HeaderDetails',$hearderdetails)
+            ->with('Evaluationid',$evaluationid)
+            ->with('MandatoryQuestionComment',$mandatoryPassQuestionsComment)
+            ->with('AssessmentDetails',$assessmentdetails);
     }
 }

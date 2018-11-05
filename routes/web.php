@@ -76,6 +76,7 @@ Auth::routes();
             Route::get('employees/{employee?}/check-id', 'EmployeesController@checkId')->name('check-id');
             Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
             Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
+            Route::any('employees/{employee?}/departmentid', 'EmployeesController@getEmployeeDepartmentId')->name('get-departmentid');
 
             Route::resource('announcements', 'AnnouncementsController');
             Route::fileResource('laws');
@@ -169,7 +170,7 @@ Auth::routes();
             Route::any('instances', 'EvaluationsController@showInstances');
             Route::get('evaluations/{id}/EvaluationId/{EvaluationId}/assess', 'EvaluationsController@loadAssessment')->name('evaluations.load_assessment');
             Route::post('evaluations/{id}/EvaluationId/{EvaluationId}/submitassessment', 'EvaluationsController@submitAssessment')->name('evaluations.submit_assessment');
+            Route::get('evaluations/{assessor}/score/{evaluationid}/show', 'EvaluationsController@score')->name('evaluations.score');
         #endregion
-  
     });
 #endregion
