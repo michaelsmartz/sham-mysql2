@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use App\Enums\CourseParticipantStatusType;
-use App\ModuleAssessment;
 use App\ModuleAssessmentResponse;
 use App\ModuleAssessmentResponseDetail;
-use App\ModuleQuestion;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
 use View;
 use Redirect;
@@ -49,7 +46,7 @@ class SSPMyCourseAssessmentsController extends CustomController
 
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
-        $myCourses = Course::with(['employees', 'modules'])
+        $myCourses = Course::with(['employees'])
             ->whereHas('employees', function ($query) use ($employee_id) {
                 $query->where('employee_id', $employee_id);
             })
@@ -69,12 +66,14 @@ class SSPMyCourseAssessmentsController extends CustomController
                             }
                         }
 
-                        foreach ($course->modules as $module) {
-                            $course->data = ModuleAssessmentResponseDetail::assessmentResponseSheet()
-                                ->with('moduleAssessmentResponse', 'moduleQuestion', 'moduleAssessment')
-                                ->where('module_id', $module->id)
-                                ->get()->all();
-                        }
+                        $course->data = ModuleAssessmentResponseDetail::assessmentResponseSheetByCourse()
+                            ->with(['moduleAssessmentResponse'=> function ($query) use ($course){
+                                $query->where('module_assessment_responses.course_id', $course->id);
+                            }])
+                            ->with('moduleQuestion')
+                            ->with('moduleAssessment')
+                            ->where('module_assessment_responses.course_id', $course->id)
+                            ->get()->all();
 
                         $course['assessment_total_possible_points'] = 0;
                         $course['assessment_overall_points'] = 0;
