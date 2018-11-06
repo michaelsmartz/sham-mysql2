@@ -152,7 +152,7 @@ Auth::routes();
             Route::resource('modules', 'ModulesController' );
 
             Route::get('topics/embed/{file}', 'TopicsController@embedMedia');
-            Route::get('topics/{topic}/snippets', 'TopicsController@getSnippets');
+            Route::get('topics/{topic?}/snippets', 'TopicsController@getSnippets');
             Route::resource('topics', 'TopicsController' );
 
             Route::resource('module_assessments', 'ModuleAssessmentsController' );
@@ -172,5 +172,12 @@ Auth::routes();
             Route::post('evaluations/{id}/EvaluationId/{EvaluationId}/submitassessment', 'EvaluationsController@submitAssessment')->name('evaluations.submit_assessment');
             Route::get('evaluations/{assessor}/score/{evaluationid}/show', 'EvaluationsController@score')->name('evaluations.score');
         #endregion
+
+        #region Imports
+            Route::get('import', 'ImportsController@getImport')->name('import');
+            Route::post('import_parse', 'ImportsController@parseImport')->name('import_parse');
+            Route::post('import_process', 'ImportsController@processImport')->name('import_process');
+        #endregion
+
     });
 #endregion

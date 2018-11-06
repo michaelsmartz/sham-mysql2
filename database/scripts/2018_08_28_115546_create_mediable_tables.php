@@ -13,7 +13,7 @@ class CreateMediableTables extends Migration
      */
     public function up()
     {
-        Schema::create('media', function (Blueprint $table) {
+        /*Schema::create('media', function (Blueprint $table) {
             $table->increments('id');
             $table->string('disk', 32);
             $table->string('directory');
@@ -27,9 +27,9 @@ class CreateMediableTables extends Migration
             $table->index(['disk', 'directory']);
             $table->unique(['disk', 'directory', 'filename', 'extension']);
             $table->index('aggregate_type');
-        });
+        });*/
 
-        Schema::create('mediables', function (Blueprint $table) {
+        /*Schema::create('mediables', function (Blueprint $table) {
             $table->integer('media_id')->unsigned();
             $table->string('mediable_type');
             $table->integer('mediable_id')->unsigned();
@@ -42,7 +42,7 @@ class CreateMediableTables extends Migration
             $table->index('order');
             $table->foreign('media_id')->references('id')->on('media')
                 ->onDelete('cascade');
-        });
+        });*/
     }
 
     /**
@@ -52,7 +52,7 @@ class CreateMediableTables extends Migration
      */
     public function down()
     {
-        Schema::drop('mediables');
-        Schema::drop('media');
+        /*Schema::drop('mediables');
+        Schema::drop('media');*/
     }
 }

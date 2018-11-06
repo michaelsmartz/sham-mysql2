@@ -3,13 +3,14 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
+/*
 use DB;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Illuminate\Support\Collection;
+*/
 use Collective\Html\FormBuilder as Form;
 use App\Macros\Routing\Router;
-use Illuminate\Support\Collection;
 use App\User;
 use App\Observers\UserObserver;
 
@@ -24,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
         
+        /*
         if( env('LOG_QUERIES') === true ){
             DB::listen(function($query) {
                 $logFile = storage_path('logs/query.log');
@@ -32,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
                 $monolog->info($query->sql, compact('bindings', 'time'));
             });
         }
+        */
 
         $this->app->singleton('current_user', function ($app) {
             return $app['auth']->user();
@@ -77,6 +80,7 @@ class AppServiceProvider extends ServiceProvider
             );
         
         }
+        /*
         Collection::macro('toAssoc', function () {
             return $this->reduce(function ($assoc, $keyValuePair) {
                 list($key, $value) = $keyValuePair;
@@ -87,6 +91,7 @@ class AppServiceProvider extends ServiceProvider
         Collection::macro('mapToAssoc', function ($callback) {
             return $this->map($callback)->toAssoc();
         });
+        */
 
         Router::registerMacros();
     }

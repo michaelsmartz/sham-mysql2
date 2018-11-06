@@ -180,11 +180,11 @@ return [
         /*
          * Dev Only Providers:
          */
-        App\Providers\SysConfigServiceProvider::class,
+        //App\Providers\SysConfigServiceProvider::class,
         App\Providers\LocalEnvironmentServiceProvider::class,
         //Arrilot\Widgets\ServiceProvider::class,
         //Clockwork\Support\Laravel\ClockworkServiceProvider::class,
-        Plank\Mediable\MediableServiceProvider::class
+        //Plank\Mediable\MediableServiceProvider::class
 
     ],
 
@@ -239,7 +239,7 @@ return [
         //'Widget' => Arrilot\Widgets\Facade::class,
         //'AsyncWidget' => Arrilot\Widgets\AsyncFacade::class,
         //'SearchTools' => \bnjns\SearchTools\Facades\SearchTools::class,
-        'MediaUploader' => Plank\Mediable\MediaUploaderFacade::class
+        //'MediaUploader' => Plank\Mediable\MediaUploaderFacade::class
     ],
 
 ];

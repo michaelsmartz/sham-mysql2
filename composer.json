@@ -24,6 +24,7 @@
         "plank/laravel-mediable": "^2.7",
         "san4io/eloquent-filter": "^0.2.0",
         "shiftonelabs/laravel-cascade-deletes": "^1.0",
+        "spatie/laravel-activitylog": "^3.1",
         "vlucas/phpdotenv": "^2.5"
     },
     "require-dev": {
