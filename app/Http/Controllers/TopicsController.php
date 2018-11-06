@@ -70,16 +70,9 @@ class TopicsController extends CustomController
     public function store(Request $request)
     {
         $this->validator($request);
-
-        $input = array_except($request->all(),array('_token'));
-
-        $context = $this->contextObj->addData($input);
-
-        $this->attach($request, $context->id);
-
-        \Session::put('success', $this->baseFlash . 'created Successfully!');
-
-        return redirect()->route($this->baseViewPath .'.index');
+        $input = array_except($request->all(),array('_token', '_method', 'id', 'redirectsTo'));
+        
+        return $this->saveTopic(0, $input);
     }
 
     /**
@@ -149,21 +142,33 @@ class TopicsController extends CustomController
             'description' => 'string|min:1|max:299|nullable',
             'data' => 'required|string|min:1',
         ];
+        $messages = [
+            'data.required' => 'The content is required'
+        ];
 
-        $this->validate($request, $validateFields);
+        $this->validate($request, $validateFields, $messages);
+    }
+
+    public function show(Request $request) {
+        // prevent Laravel from farting when no id is passed in topic create mode
+        return $this->getSnippets($request);
     }
 
     public function getSnippets(Request $request) {
 
         $id = Route::current()->parameter('topic');
         $dir = Storage::disk('uploads')->getAdapter()->getPathPrefix();
-
-        $obj = $this->contextObj->find($id);
-        $relatedMedia = $obj->media()->whereIn('aggregate_type', [Media::TYPE_AUDIO,Media::TYPE_VIDEO])->get();
         $filter = [];
-        if(sizeof($relatedMedia) > 0 ){
-            foreach($relatedMedia as $file) {
-                $filter[] = $file->filename . '.' .$file->extension;
+
+        if($id > 0) {
+            $obj = $this->contextObj->find($id);
+            $relatedMedia = $obj->media()->whereIn('aggregate_type', [Media::TYPE_AUDIO,Media::TYPE_VIDEO])->get();
+            
+            
+            if(sizeof($relatedMedia) > 0 ){
+                foreach($relatedMedia as $file) {
+                    $filter[] = $file->filename . '.' .$file->extension;
+                }
             }
         }
 

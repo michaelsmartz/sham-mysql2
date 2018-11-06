@@ -1,14 +1,16 @@
 @php
-    if(sizeof($errors) > 0){ dump($errors->bags->messages);}
+    //if(sizeof($errors) > 0){ dump($errors->bags);}
     $groups = [];
     foreach ($jobTitles as $model) {
         $groups[$model->description][$model->id] = ['name' => $model->full_name, 'manager_id' => $model->employee_id];
     }
     //dump($groups);
 @endphp
+
 {!! Form::hidden('redirectsTo', URL::previous()) !!}
+
 <div class="position-center" id="accordion-app">
-    <ul data-direction="vertical" data-multiple="true" data-initial-index="[0,1]" data-event="click" class="accordion accordion--box accordion--vertical">
+    <ul data-direction="vertical" data-multiple="true" data-initial-index="[0,1,2]" data-event="click" class="accordion accordion--box accordion--vertical">
         <li class="accordion__panel">
             <span class="accordion__heading">Personal<i class="-icon -icon--right" data-wenk-pos="left" data-wenk="Click to expand/collapse this section"></i></span>
             <div class="accordion__expander">
@@ -106,11 +108,51 @@
                         {!! Form::select('ethnic_group_id', $ethnicGroups, old('ethnic_group_id', isset($employee->ethnic_group_id) ? $employee->ethnic_group_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Ethnic Group..']) !!}
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Phones</label>
+                    <input type="hidden" name="homePhone[telephone_number_type_id]" value="1">
+                    <input type="hidden" name="mobilePhone[telephone_number_type_id]" value="2">
+                    <input type="hidden" name="workPhone[telephone_number_type_id]" value="3">
+                    <div class="col-sm-3">
+                        <span class="field">
+                            {!! Form::text('mobilePhone[tel_number]', old('mobilePhone[tel_number]', isset($employee->mobilePhone->tel_number) ? $employee->mobilePhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'cell', 'placeholder'=>'Mobile', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$", 'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)" ]) !!}
+                            <label for="mobilePhone[tel_number]">Mobile Phone</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-3">
+                        <span class="field">
+                            {!! Form::text('workPhone[tel_number]', old('workPhone[tel_number]', isset($employee->workPhone->tel_number) ? $employee->workPhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'emergency', 'placeholder'=>'Emergency Contact', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$", 'data-filter'=>'(\d\+\-\.\(\)\/\s)' ]) !!}
+                            <label for="workPhone[tel_number]">Emergency Contact</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="field">
+                            {!! Form::text('homePhone[tel_number]', old('homePhone[tel_number]', isset($employee->homePhone->tel_number) ? $employee->homePhone->tel_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'id'=>'phone', 'placeholder'=>'Home']) !!}
+                            <label for="homePhone[tel_number]">Home Phone</label>
+                        </span>
+                    </div>
+                </div>
             </div>
         </li>
         <li class="accordion__panel">
             <span class="accordion__heading">Address/Contact<i class="-icon -icon--right" data-wenk-pos="left" data-wenk="Click to expand/collapse this section"></i></span>
             <div class="accordion__expander">
+
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">Email Addresses</label>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::email('privateEmail[email_address]', old('privateEmail[email_address]', isset($employee->privateEmail->email_address) ? $employee->privateEmail->email_address : null), ['class'=>'form-control email', 'autocomplete'=>'off', 'placeholder'=>'Private Email']) !!}
+                            <label for="privateEmail[email_address]">Private Email</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-5">
+                        <span class="field">
+                            {!! Form::email('workEmail[email_address]', old('workEmail[email_address]', isset($employee->workEmail->email_address) ? $employee->workEmail->email_address : null), ['class'=>'form-control email', 'autocomplete'=>'off', 'placeholder'=>'Work Email']) !!}
+                            <label for="workEmail[email_address]">Work Email</label>
+                        </span>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Home Address</label>
                     <div class="col-sm-5">
@@ -220,45 +262,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-2 control-label">Phones</label>
-                    <input type="hidden" name="homePhone[telephone_number_type_id]" value="1">
-                    <input type="hidden" name="mobilePhone[telephone_number_type_id]" value="2">
-                    <input type="hidden" name="workPhone[telephone_number_type_id]" value="3">
-                    <div class="col-sm-3">
-                        <span class="field">
-                            {!! Form::text('homePhone[tel_number]', old('homePhone[tel_number]', isset($employee->homePhone->tel_number) ? $employee->homePhone->tel_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'id'=>'phone', 'placeholder'=>'Home']) !!}
-                            <label for="homePhone[tel_number]">Home Phone</label>
-                        </span>
-                    </div>
-                    <div class="col-sm-3">
-                        <span class="field">
-                            {!! Form::text('mobilePhone[tel_number]', old('mobilePhone[tel_number]', isset($employee->mobilePhone->tel_number) ? $employee->mobilePhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'cell', 'placeholder'=>'Mobile', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$"]) !!}
-                            <label for="mobilePhone[tel_number]">Mobile Phone</label>
-                        </span>
-                    </div>
-                    <div class="col-sm-4">
-                        <span class="field">
-                            {!! Form::text('workPhone[tel_number]', old('workPhone[tel_number]', isset($employee->workPhone->tel_number) ? $employee->workPhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'emergency', 'placeholder'=>'Emergency Contact', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$"]) !!}
-                            <label for="workPhone[tel_number]">Emergency Contact</label>
-                        </span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-xs-2 control-label">Email Addresses</label>
-                    <div class="col-sm-5">
-                        <span class="field">
-                            {!! Form::email('privateEmail[email_address]', old('privateEmail[email_address]', isset($employee->privateEmail->email_address) ? $employee->privateEmail->email_address : null), ['class'=>'form-control email', 'autocomplete'=>'off', 'placeholder'=>'Private Email']) !!}
-                            <label for="privateEmail[email_address]">Private Email</label>
-                        </span>
-                    </div>
-                    <div class="col-sm-5">
-                        <span class="field">
-                            {!! Form::email('workEmail[email_address]', old('workEmail[email_address]', isset($employee->workEmail->email_address) ? $employee->workEmail->email_address : null), ['class'=>'form-control email', 'autocomplete'=>'off', 'placeholder'=>'Work Email']) !!}
-                            <label for="workEmail[email_address]">Work Email</label>
-                        </span>
-                    </div>
-                </div>
-                <div class="form-group">
                     <label class="col-xs-2 control-label">Next Of Kin</label>
                     <div class="col-sm-5">
                         {!! Form::text('spouse_full_name', old('spouse_full_name', isset($employee->spouse_full_name) ? $employee->spouse_full_name : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Full Name', 'maxlength' => '50']) !!}
@@ -286,14 +289,7 @@
                 </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Identification</label>
-                    <div class="col-sm-2">
-                        <span class="field">
-                            {!! Form::text('physical_file_no', old('physical_file_no', isset($employee->physical_file_no) ? $employee->physical_file_no : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Physical File Number']) !!}
-                            <label for="physical_file_no">Physical File Number</label>
-                        </span>
-
-                    </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <span class="field">
                             {!! Form::text('employee_no', old('employee_no', isset($employee->employee_no) ? $employee->employee_no : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Employee No', 'required', 'title'=>'Required',
                                'data-parsley-trigger'=>'focusout',
@@ -303,6 +299,12 @@
                             <label for="employee_no">Employee Number</label>
                         </span>
                         {!! $errors->first('employee_no', '<p class="help-block">:message</p>') !!}
+                    </div>
+                    <div class="col-sm-3">
+                        <span class="field">
+                            {!! Form::text('physical_file_no', old('physical_file_no', isset($employee->physical_file_no) ? $employee->physical_file_no : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Physical File Number']) !!}
+                            <label for="physical_file_no">Physical File Number</label>
+                        </span>
                     </div>
                     <div class="col-sm-4">
                         <span class="field">
@@ -316,7 +318,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Reporting Line</label>
                     <div class="col-sm-10">
-                        <select name="job_title_id" id="job_title_id" class="selectpicker" required="required"  title="Job Title..." data-show-subtext="true" data-size="10" data-width="100%" data-dropup="false">
+                        <select name="job_title_id" id="job_title_id" class="select-bootstrap" title="Job Title..." data-show-subtext="true" data-size="10" data-width="100%" data-dropup="true">
                             @foreach ( $groups as $key => $attr )
                                 <optgroup label="{{$key}}">
                                     @foreach ( $attr as $id => $attrs )
@@ -420,7 +422,7 @@
                         </div>
                         <div class="col-sm-2">
                             <DatePicker v-model="qual.obtained_on" class="form-control"
-                                    name="qualifications[][obtained_on]" :date-format="yy-mm-dd" :change-month="true" :change-year="true"></DatePicker>
+                                    name="qualifications[][obtained_on]" date-format="yy-mm-dd" change-month="true" change-year="true"></DatePicker>
                         </div>
                     </div>
                 </div>

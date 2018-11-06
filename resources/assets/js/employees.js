@@ -2,10 +2,11 @@ require('jquery-asAccordion');
 require('parsleyjs');
 require('sumoselect');
 
-window.Vue = require('vue');
+//import Vue from 'vue/dist/vue.common.js';
+window.Vue = require('vue/dist/vue.common.js');
 
 Vue.config.devtools = false;
-Vue.config.performance = true;
+Vue.config.performance = false;
 
 import "jquery-ui/ui/widgets/datepicker";
 import DatePicker from './components/DatePicker.vue';

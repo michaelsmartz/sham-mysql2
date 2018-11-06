@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Support\Facades\Schema;
 use App\Traits\HasBaseModel;
 use Jedrzej\Searchable\SearchableTrait;
+use Jedrzej\Searchable\Constraint;
 use San4io\EloquentFilter\Traits\Filterable;
 use San4io\EloquentFilter\Filters\WhereFilter;
 use San4io\EloquentFilter\Filters\LikeFilter;

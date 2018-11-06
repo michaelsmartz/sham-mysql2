@@ -26,6 +26,7 @@
 <link href="{{URL::to('/')}}/css/post-bootstrap-admin-reset.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
 <link href="{{URL::to('/')}}/css/employees.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet">
 <style>
 
     .SumoSelect>.optWrapper { z-index: 1000; }
@@ -104,8 +105,36 @@
             transform: scale(1);
         }
     }
+    .bootstrap-select.show>.dropdown-menu>.dropdown-menu {
+        display: block;
+        
+    }
+    .bootstrap-select.show > .dropdown-menu, .bootstrap-select.show>.dropdown-menu{
+        opacity:1 !important;
+    }
+    .bootstrap-select .dropdown-menu.inner.show {
+        opacity:1 !important;
+    }
+
+    .bootstrap-select > .dropdown-menu > .dropdown-menu li.hidden{
+        display:none;
+    }
+
+    .bootstrap-select > .dropdown-menu > .dropdown-menu li a{
+        display: block;
+        width: 100%;
+        padding: 3px 1.5rem;
+        clear: both;
+        font-weight: 400;
+        color: #292b2c;
+        text-align: inherit;
+        white-space: nowrap;
+        background: 0 0;
+        border: 0;
+    }
 </style>
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
+<script src="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select-1.13.2.min.js"></script>
 <script>
     var initializeFileUpload = function() {
         $('#one').fileUploader({
@@ -170,6 +199,15 @@
     };
     $(function(){
         initializeFileUpload();
+        $.fn.selectpicker.Constructor.BootstrapVersion = '4';
+        $('.select-bootstrap').selectpicker({  
+            template: {
+                caret: '<span class="glyphicon glyphicon-chevron-down"></span>'
+            }
+        });
+        $('#job_title_id').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            //console.log(e,clickedIndex, isSelected, previousValue);
+        });
     });
 
 </script>

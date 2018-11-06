@@ -35,7 +35,7 @@
                             <td>{{ $announcement->description }}</td>
                             <td>{{ $announcement->start_date }}</td>
                             <td>{{ $announcement->end_date }}</td>
-                            <td>{{ App\Enums\AnnouncementType::getDescription($announcement->announcement_status_id) }}</td>
+                            <td>{!! App\Enums\AnnouncementType::getDescription($announcement->announcement_status_id) == 'Enabled' ? '<span class="badge badge-info">Enabled</span>' : '<span class="badge badge-default">Disabled</span>' !!}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

@@ -223,15 +223,6 @@ class ModuleAssessmentsController extends CustomController
             ModuleQuestionChoice::whereIn('id', $mqChoiceIds)->delete();
             $context->assessmentQuestions()->delete();
             ModuleQuestion::whereIn('id', $questionIds)->delete();
-            
-            /*
-            $context->load('questions')->toArray();
-
-            $existingModuleAssessmentKeyVal = $context->questions->mapToAssoc(function($assessment) {
-                return [$assessment['id'], $assessment['module_question_id']];    
-            });
-            $moduleAssessmentQuestionIds = $context->questions->pluck('module_question_id');
-            */
 
             // The following string replace is required as the builder returns a null for a deleted choice.
             // This results in an empty choice field when rendered. The replace function removes the null choices.

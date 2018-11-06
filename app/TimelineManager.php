@@ -78,7 +78,7 @@ class TimelineManager extends Model
 
         // Get last termination date from history table
         $arr = HistoryJoinTermination::where('employee_id','=', $id)->orderBy('id','desc')->get()->first();
-        if(!$arr->is_joined)
+        if($arr != null && !$arr->is_joined)
         {
             $selectedTerminationDate = date("Y-m-d", strtotime($arr->date_occurred));//$element->date_occurred;
         }

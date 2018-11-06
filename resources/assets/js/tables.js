@@ -1,4 +1,4 @@
-import * as jsPDF from 'jspdf';
+//import * as jsPDF from 'jspdf';
 
 require("bootstrap-table");
 require("tableexport.jquery.plugin");
@@ -11,7 +11,25 @@ require("bootstrap-table/src/extensions/export/bootstrap-table-export");
         $("#filter-sidebar").toggleClass("active");
         $(this).toggleClass("active");
     });
-
+    $('.search-column-chooser-btn').click(function() {
+        $('.search-column-list').slideToggle(100);
+    });
+    $('.search-column-list li').click(function() {
+        var target = $(this).html(),
+            filterColumn = $(this).data('filterColumn'),
+            toRemove = 'By ',
+            newTarget = target.replace(toRemove, '');
+        //remove spaces
+        newTarget = newTarget.replace(/\s/g, '');
+        $(".search-large").html(newTarget);
+        $('.search-column-list').hide();
+        //newTarget = newTarget.toLowerCase();
+        $('.submitable-column-name').prop('name', filterColumn);
+    });
+    $('.search-input').change(function(){
+        $('.submitable-column-name').val($(this).val());
+    });
+    
     $.extend($.fn.bootstrapTable.columnDefaults, {
           sortable: true
     });

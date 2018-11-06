@@ -19,10 +19,10 @@
 @endsection
 
 @section('post-body')
-<link href="{{URL::to('/')}}/css/post-bootstrap-admin-reset.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+<link href="{{URL::to('/')}}/css/post-bootstrap-admin-reset.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/css/employees.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
-<link href="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select-1.13.2.min.css" rel="stylesheet">
+<link href="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet">
 <style>
 
     .SumoSelect>.optWrapper { z-index: 1000; }
@@ -104,6 +104,7 @@
             transform: scale(1);
         }
     }
+    .open > .dropdown-menu { display: block; }
 </style>
 <script src="{{URL::to('/')}}/js/employees.min.js"></script>
 <script src="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select-1.13.2.min.js"></script>
@@ -173,12 +174,43 @@
     };
     $(function(){
         initializeFileUpload();
-        $.fn.selectpicker.Constructor.BootstrapVersion = '3';
-        $('.selectpicker').selectpicker();
+        $.fn.selectpicker.Constructor.BootstrapVersion = '4';
+        $('.bootstrap-select').selectpicker({  
+            template: {
+                caret: '<span class="glyphicon glyphicon-chevron-down"></span>'
+            }
+        });
         $('#job_title_id').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            console.log(e,clickedIndex, isSelected, previousValue);
+            //console.log(e,clickedIndex, isSelected, previousValue);
         });
     });
+    
+    // Apply filter to all inputs with data-filter:
+    var inputs = document.querySelectorAll('input[data-filter]');
+
+    for (var i = 0; i < inputs.length; i++) {
+        var input = inputs[i];
+        var state = {
+            value: input.value,
+            start: input.selectionStart,
+            end: input.selectionEnd,
+            pattern: RegExp('^' + input.dataset.filter + '$')
+        };
+        
+        input.addEventListener('input', function(event) {
+            if (state.pattern.test(input.value)) {
+                state.value = input.value;
+            } else {
+                input.value = state.value;
+                input.setSelectionRange(state.start, state.end);
+            }
+        });
+
+        input.addEventListener('keydown', function(event) {
+            state.start = input.selectionStart;
+            state.end = input.selectionEnd;
+        });
+    }
 
 </script>
 @endsection

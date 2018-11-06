@@ -43,7 +43,7 @@
 
 <div class="form-group col-xs-6 {{ $errors->has('date_in') ? 'has-error' : '' }}">
     <label for="date_in">Date In</label>
-        <input class="form-control datepicker" name="date_in" type="text" id="date_in" value="{{ old('date_in', optional($assetEmployee)->date_in) }}" placeholder="Enter date in">
+        <input class="form-control datepicker" name="date_in" type="text" id="date_in" value="{{ old('date_in', optional($assetEmployee)->date_in) }}" data-min-date="{{ old('date_out', optional($assetEmployee)->date_out) }}" placeholder="Enter date in">
         {!! $errors->first('date_in', '<p class="help-block">:message</p>') !!}
 </div>
 

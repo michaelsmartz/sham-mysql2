@@ -28,10 +28,17 @@ mix.autoload({
 
 mix
    .webpackConfig({
+    resolve: {
+      alias: {
+        'vue$': 'vue/dist/vue.esm.js'
+      }
+    },
+    devtool: "source-map",
     plugins: [
       new webpack.ProvidePlugin({
         $: 'jquery',
-        jQuery: 'jquery', 'window.jQuery': 'jquery'/*,
+        jQuery: 'jquery', 
+        'window.jQuery': 'jquery'/*,
         Popper: ['popper.js', 'default'],*/
       }),
       new CompressionPlugin({
@@ -73,6 +80,7 @@ mix/*.webpackConfig({
     }
 })*/.js('resources/assets/js/tables.js', 'public/js')
 
+
 mix.minify('public/js/app.js');
 mix.minify('public/js/tables.js');
 mix.minify('public/js/employees.js');
@@ -85,6 +93,7 @@ mix.minify('public/css/lifecycle.css');
 mix.minify('public/css/hopscotch.css');
 mix.minify('public/css/import_steps.css');
 
+/*
 mix.then(() => {
     minifier.minify('public/css/app.css');
     minifier.minify('public/css/employees.css');
@@ -96,4 +105,6 @@ mix.then(() => {
     minifier.minify('public/js/app.js');
     minifier.minify('public/js/tables.js');
     minifier.minify('public/js/uploader.js');
+    //minifier.minify('public/js/employees.js');
 });
+*/

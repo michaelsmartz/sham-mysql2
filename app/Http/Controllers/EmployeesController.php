@@ -55,8 +55,23 @@ class EmployeesController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        //dd($request);
+        $fullName = $request->get('name', null);
+        $department = $request->get('department:description', null);
+        $jobTitle = $request->get('jobtitle:description', null);
+
+        if(!empty($fullName)){
+            $request->merge(['name' => '%'.$fullName.'%']);
+        }
+        if(!empty($department)){
+            $request->merge(['department:description' => '%'.$department.'%']);
+        }
+        if(!empty($jobTitle)){
+            $request->merge(['jobtitle:description' => '%'.$jobTitle.'%']);
+        }
+
         //$employees = $this->contextObj::with('department','jobTitle')->filtered()->paginate(10);
         $employees = $this->contextObj::employeesList()->filtered()->paginate(10);
 
@@ -64,6 +79,9 @@ class EmployeesController extends CustomController
         if (Input::has('page') && $employees->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('employees'));
     }
 
@@ -130,8 +148,8 @@ class EmployeesController extends CustomController
 
             $data = $this->contextObj->findData($id);
 
-            if(!isset($data->picture)){
-                $data->picture = asset('/img/avatar.png');
+            if(!isset($data->picture) || sizeof($data->picture) < 10){
+                $data->picture = asset('img/avatar.png');
             }
             $data->load(['skills','disabilities']);
 
@@ -318,12 +336,18 @@ class EmployeesController extends CustomController
         $id = intval(Route::current()->parameter('employee'));
         $firstName = trim(request('firstName', false));
         $surname = trim(request('surname', false));
+        $passportNo = trim(request('passportNo', false));
+        $passportCountryId = trim(request('passportCountryId', false));
+
+        if($passportNo == '' && $passportCountryId == ''){
+            return Response()->json($result);
+        }
 
         $query = Employee::select(['id','first_name','surname']);
-        $query->when(request('passportNo', false), function ($q, $passportNo) { 
+        $query->when($passportNo != '', function ($q, $passportNo) { 
             return $q->where('passport_no', $passportNo);
         });
-        $query->when(request('passportCountryId', false), function ($q, $passportCountryId) { 
+        $query->when($passportCountryId != '', function ($q, $passportCountryId) { 
             return $q->where('passport_country_id', $passportCountryId);
         });
 
@@ -370,7 +394,7 @@ class EmployeesController extends CustomController
             'employee_no' => 'required|string|min:1|max:50',
             'employee_code' => 'nullable|string|min:1|max:50',
             'tax_status_id' => 'nullable',
-            'tax_number' => 'required_with:tax_status_id|string|min:0|max:50',
+            'tax_number' => 'required_if:tax_status_id,3|min:0|max:50',
             'date_joined' => 'nullable|string|min:0',
             'date_terminated' => 'nullable|string|min:0',
             'department_id' => 'required',
@@ -383,8 +407,13 @@ class EmployeesController extends CustomController
             'picture' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
             'line_manager_id' => 'nullable|numeric|min:0|max:4294967295'
         ];
+
+        $messages = [
+            'tax_number.required' => 'The tax number is required if the tax status is set to taxable',
+            'tax_number.required_if' => 'The tax number is required if the tax status is set to taxable'
+        ];
         
-        $this->validate($request, $validateFields);
+        $this->validate($request, $validateFields, $messages);
     }
 
     private function getDropdownsData() 
@@ -488,9 +517,11 @@ class EmployeesController extends CustomController
              ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>2],
                                 $postalAddress);
 
-        foreach($qualifications as $qual){
-            $data->qualifications()
-                 ->updateOrCreate(['employee_id'=>$data->id], $qual);
+        if(isset($qualifications)){
+            foreach($qualifications as $qual){
+                $data->qualifications()
+                     ->updateOrCreate(['employee_id'=>$data->id], $qual);
+            }
         }
 
         $data->skills()->sync($skills);

@@ -1,6 +1,6 @@
 {!! Form::hidden('redirectsTo', URL::previous()) !!}
 <div class="row">
-    {!! Form::hidden('id',$topic->id, ['id'=>'topicId', 'name'=>'id']) !!}
+    {!! Form::hidden('id',intval(optional($topic)->id), ['id'=>'topicId', 'name'=>'id']) !!}
     {!! Form::hidden('model', 'Topic') !!}
     <div class="form-group col-xs-11 {{ $errors->has('header') ? 'has-error' : '' }}">
         <label for="header">Topic Heading</label>
@@ -15,7 +15,7 @@
     <div class="form-group col-xs-11 {{ $errors->has('data') ? 'has-error' : '' }}">
         <label for="data">Content</label>
         <div id="content-area">
-            <div class="contentHolder" id="contentHolder">{!! $topic->data !!}</div>
+            <div class="contentHolder" id="contentHolder">{!! optional($topic)->data !!}</div>
         </div>
         {!! $errors->first('data', '<p class="help-block">:message</p>') !!}
     </div>
@@ -189,11 +189,9 @@
         initializeFileUpload();
 
         $('#content-area').keditor({
-            snippetsUrl: "{{URL::to('topics', $topic->id)}}/snippets",
+            snippetsUrl: "{{URL::to('topics', optional($topic)->id)}}/snippets",
             contentAreasSelector: '#contentHolder'
         });
-        //$('#Header').charcounter({placement: 'bottom-d'});
-
         $('#btnSave').click(function(){
             saveHandler(true, $(this));
         });
@@ -220,7 +218,7 @@
 
         var form = document.getElementById("topic_form");
         var fd = new FormData($('#topic_form')[0]);
-        fd.append('id', id);
+        //fd.append('id', id);
         fd.append('snippetsLength', snippetsLength);
         fd.append('data', content);
 
@@ -238,12 +236,10 @@
         });
         request.done(function (msg) {
             $('#topicId').val(msg.response.id);
-            $('#one').html('');
-            $('#one').data('fileUploader','');
-            $('#one').fileUploader();
-            alery.toasts('Changes were saved successfully. Please wait, this page will reload shortly',
+            alerty.toasts('Changes were saved successfully.<br>Please wait, this page will reload shortly',
             {time: 5000}, function(){
-                window.location = '{{URL::to("topics.edit",' + msg.response.id ')}}';
+                btnInstance.prop('disabled','disabled');
+                window.location = '{{URL::to("topics")}}/' + msg.response.id + '/edit';
             })
         });
         request.fail(function (jqXHR, textStatus) {
@@ -251,7 +247,7 @@
         });
 
         request.always(function() {
-            btnInstance.html(btnInstance.data('original-text'));
+            //btnInstance.html(btnInstance.data('original-text'));
         });
 
         return request;

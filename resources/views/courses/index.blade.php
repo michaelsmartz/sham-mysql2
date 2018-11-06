@@ -3,20 +3,45 @@
 @section('content')
     <div class="flex-wrapper">
         <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
-            <form action="" class="table-search-form">
-                <input type="search" value="" placeholder="Search" class="search-input">
-                <div class="search-option">
-                    <button type="reset" data-wenk="Reset all Criteria & reload the list" data-tootik-conf="left">
-                        <i class="fa fa-refresh"></i>
-                    </button>
-                </div>
+            <form action="" class="">
+                <ul style="margin-left:0;padding-left:0" class="list-unstyled">
+                    <li>
+                        <input type="hidden" name="" class="submitable-column-name" value="">
+                        <div class="table-search-form">
+                            <input type="search" name="" value="" placeholder="Search" class="search-input">
+                            <div class="search-option">
+                                <button type="submit" data-wenk="Do the Search">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <a href="{{route('courses.index')}}" role="button" data-wenk="Reset all Criteria & reload the list">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="table-search-form" style="height:50px">
+                            <button type="button" class="search-column-chooser-btn">
+                                <p class="search-small">Search by</p>
+                                <p class="search-large">Description</p>
+                            </button>
+                        </div>
+                        <ul class="search-column-list">
+                            <li>By Description</li>
+                            <li>By Name</li>
+                        </ul>
+                    </li>
+                    <hr>
+                    <li>
+                        <ul class="nav">
+                            <li><p class="menu-label">Quick Filters</p></li>
+                            <li><a href="{{route('courses.index')}}?is_public=1"><span class="icon circle info"></span>Public</a></li>
+                            <li><a href="{{route('courses.index')}}?is_public=0"><span class="icon circle default"></span>Private</a></li>
+                            <li><a href="{{route('courses.index')}}"><span class="icon circle"></span>Unfiltered</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </form>
-            <ul class="nav">
-                <li><p class="menu-label">Quick Filters</p></li>
-                <li><a href="{{route('courses.index')}}?is_public=1"><span class="icon circle info"></span>Public</a></li>
-                <li><a href="{{route('courses.index')}}?is_public=0"><span class="icon circle default"></span>Private</a></li>
-                <li><a href="{{route('courses.index')}}"><span class="icon circle"></span>Unfiltered</a></li>
-            </ul>
         </div>
         <div id="table-container">
             <div id="toolbar" class="shadow-eff1">
@@ -84,7 +109,4 @@
         </div>
     </div>
 
-@endsection
-@section('post-body')
-    
 @endsection

@@ -4,7 +4,7 @@
 @section('content')
     <div class="box box-primary">
         <div class="box-body">
-            <form method="POST" action="{{ route('topics.store') }}" accept-charset="UTF-8" id="create_topic_form" name="create_topic_form" class="form-horizontal">
+            <form method="POST" action="{{ route('topics.store') }}" accept-charset="UTF-8" id="topic_form" name="topic_form" accept-charset="UTF-8" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="row">
                     <div class="col-sm-12">
@@ -14,11 +14,12 @@
                         ])
                     </div>
                 </div>
-                <div class="box-footer">
-                    <input class="btn btn-primary pull-right" type="submit" value="Add">
-                    <a href="{{ route('topics.index') }}" class="btn btn-default pull-right" title="Show all Topics">
+                <div class="box-footer pull-right">
+                    <a href="{{ route('topics.index') }}" class="btn btn-default" title="Show all Topics">
                         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                     </a>
+                    <button class="btn btn-primary" type="button" id="btnSave" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Save</button>
+
                 </div>
             </form>
         </div>

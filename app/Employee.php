@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
+use Jedrzej\Searchable\Constraint;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Employee extends Model
 {
-    use Mediable;
-    use SoftDeletes;
+    use Mediable, LogsActivity, SoftDeletes;
 
     /**
      * Attributes that should be mass-assignable.
@@ -20,6 +21,7 @@ class Employee extends Model
     protected $fillable = [
                   'title_id', 'initials', 
                   'first_name', 'surname', 'known_as',
+                  'full_name',
                   'birth_date', 'marital_status_id',
                   'id_number',
                   'passport_country_id',
@@ -51,11 +53,26 @@ class Employee extends Model
 
     protected $dates = ['deleted_at'];
 
-    //protected $with = ['department', 'jobTitle'];
+    public $searchable = ['name', 'jobtitle:description', 'department:description'];
 
-    public $searchable = ['first_name', 'surname'];
+    protected static $logAttributes = ['title_id', 'initials', 
+        'first_name', 'surname', 'known_as',
+        'birth_date', 'marital_status_id',
+        'id_number', 'passport_country_id',
+        'nationality', 'language_id',
+        'gender_id', 'ethnic_group_id',
+        'immigration_status_id', 'time_group_id',
+        'passport_no', 'spouse_full_name',
+        'employee_no', 'employee_code',
+        'tax_number', 'tax_status_id',
+        'date_joined', 'date_terminated',
+        'department_id', 'team_id',
+        'employee_status_id', 'physical_file_no',
+        'job_title_id', 'division_id', 'branch_id'];
 
-    //protected $appends = ['emails'];
+    protected static $logFillable = true;
+
+    protected static $recordEvents = ['created', 'updated', 'deleted'];
 
     protected static function boot()
     {
@@ -78,7 +95,7 @@ class Employee extends Model
     {
         $query->leftJoin('departments','departments.id','=','employees.department_id')
               ->leftJoin('job_titles','job_titles.id','=','employees.job_title_id')
-              ->select('employees.id','employees.first_name','employees.surname', 
+              ->select('employees.id','employees.first_name','employees.surname',
                        'job_titles.description as job_title','departments.description as department')
               ;
     }
@@ -87,6 +104,22 @@ class Employee extends Model
     {
         $query->select(['job_title_id','first_name','surname','id'])
               ->whereNull('deleted_at');
+    }
+
+    protected function processNameFilter(Builder $builder, Constraint $constraint)
+    {
+        // this logic should happen for LIKE/EQUAL operators only
+        if ($constraint->getOperator() === Constraint::OPERATOR_LIKE || $constraint->getOperator() === Constraint::OPERATOR_EQUAL) {
+            $builder->where(function ($query) use ($constraint) {
+                $query->where('first_name', $constraint->getOperator(), $constraint->getValue())
+                    ->orWhere('surname', $constraint->getOperator(), $constraint->getValue());
+            });
+
+            return true;
+        }
+
+        // default logic should be executed otherwise
+        return false;
     }
 
     public function disabilities()
