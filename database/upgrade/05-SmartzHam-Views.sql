@@ -1,8 +1,8 @@
 #--------Views
-CREATE  OR REPLACE VIEW `HeadCountByDepartment_view` AS
+CREATE  OR REPLACE VIEW `headcountbydepartment_view` AS
     SELECT  e.id As Id,
             IFNULL(d.description, 'Unspecified') AS Department
-    FROM    Employees e
+    FROM    employees e
             LEFT OUTER JOIN departments d ON d.id = e.department_id
     WHERE   e.is_active = 1
             AND e.date_terminated IS NULL;
@@ -86,7 +86,7 @@ CREATE OR REPLACE VIEW `headcountbygender_view` AS
             and isnull(`e`.`date_terminated`));
             
 #--01-Views ---------------------------------------------------------------------------------------
-CREATE  OR REPLACE VIEW `QAEvaluationsView`
+CREATE  OR REPLACE VIEW `qaevaluationsview`
 as
 	select ev.assessment_id, sum(points) as TotalPoints, ev.feedback_date as Feedbackdate,T.total_threshold as TotalThreshold,pc.description  from evaluations ev
        inner join evaluation_results er
@@ -104,7 +104,7 @@ as
 	   
 
 #--02-Views --------------------------------------------------------------------------------------- 	   
-CREATE OR REPLACE VIEW `QAEvaluationScoresView`
+CREATE OR REPLACE VIEW `qaevaluationscoresview`
 as 
 select data.evaluation_id AS EvaluationId,data.assessment_id AS AssessmentId,data.assessor_employee_id AS AssessorEmployeeId,data.feedback_date AS Feedbackdate,data.points AS Points,round(cast(data.points as decimal(10,3))/cast(at.total_threshold as decimal(10,3))) as Percentage
 from 
