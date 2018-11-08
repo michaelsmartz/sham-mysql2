@@ -2414,3 +2414,7 @@ ALTER TABLE `sham_permissions`
 ALTER TABLE `evaluations`
 CHANGE COLUMN `feedback_date` `feedback_date` DATE NOT NULL ;
 
+ALTER TABLE `system_sub_modules`
+ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
+ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
+ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
