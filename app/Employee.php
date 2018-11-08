@@ -7,11 +7,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
 use Jedrzej\Searchable\Constraint;
-use Spatie\Activitylog\Traits\LogsActivity;
+use App\Traits\MyAuditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Employee extends Model
+class Employee extends Model implements AuditableContract
 {
-    use Mediable, LogsActivity, SoftDeletes;
+    use Mediable, MyAuditable, SoftDeletes;
 
     /**
      * Attributes that should be mass-assignable.
@@ -21,33 +22,19 @@ class Employee extends Model
     protected $fillable = [
                   'title_id', 'initials', 
                   'first_name', 'surname', 'known_as',
-                  'full_name',
-                  'birth_date', 'marital_status_id',
-                  'id_number',
-                  'passport_country_id',
-                  'nationality',
-                  'language_id',
-                  'gender_id',
-                  'ethnic_group_id',
-                  'immigration_status_id',
-                  'time_group_id',
-                  'passport_no',
-                  'spouse_full_name',
-                  'employee_no',
-                  'employee_code',
-                  'tax_number',
-                  'tax_status_id',
-                  'date_joined',
-                  'date_terminated',
-                  'department_id',
-                  'team_id',
-                  'employee_status_id',
-                  'physical_file_no',
-                  'job_title_id',
-                  'division_id',
-                  'branch_id',
-                  'picture',
-                  'line_manager_id',
+                  'full_name', 'birth_date', 'marital_status_id',
+                  'id_number', 'passport_country_id', 'nationality',
+                  'language_id', 'gender_id',
+                  'ethnic_group_id', 'immigration_status_id',
+                  'time_group_id', 'passport_no',
+                  'spouse_full_name', 'employee_no',
+                  'employee_code', 'tax_number',
+                  'tax_status_id', 'date_joined',
+                  'date_terminated', 'department_id',
+                  'team_id', 'employee_status_id',
+                  'physical_file_no', 'job_title_id',
+                  'division_id', 'branch_id',
+                  'picture', 'line_manager_id',
                   'leave_balance_at_start'
               ];
 
@@ -55,7 +42,7 @@ class Employee extends Model
 
     public $searchable = ['name', 'jobtitle:description', 'department:description'];
 
-    protected static $logAttributes = ['title_id', 'initials', 
+    protected $auditInclude = ['title_id', 'initials', 
         'first_name', 'surname', 'known_as',
         'birth_date', 'marital_status_id',
         'id_number', 'passport_country_id',
@@ -68,13 +55,15 @@ class Employee extends Model
         'date_joined', 'date_terminated',
         'department_id', 'team_id',
         'employee_status_id', 'physical_file_no',
-        'job_title_id', 'division_id', 'branch_id'];
+        'job_title_id', 'division_id', 'branch_id'
+    ];
+    protected $auditableEvents = [
+        'created', 'updated',
+        'deleted', 'restored'
+    ];
+    protected $auditRelatedProperties = ['mobilePhone', 'homePhone', 'workPhone'];
 
-    protected static $logFillable = true;
-
-    protected static $recordEvents = ['created', 'updated', 'deleted'];
-
-    protected static function boot()
+    public static function boot()
     {
         parent::boot();
     
@@ -354,8 +343,18 @@ class Employee extends Model
         return $this->hasMany('App\TelephoneNumber','employee_id','id')
                     ->whereIn('telephone_number_type_id', [1,2,3]);
     }
-    
-    /*
+
+    public function timelines()
+    {
+        return $this->hasMany('App\Timeline','employee_id','id')->orderBy('event_date');
+    }
+
+    public function trainingSessions()
+    {
+        return $this->belongsToMany(TrainingSession::class);
+    }
+
+    #region ActivityLog compatible relations
     public function homePhone()
     {
         return $this->hasOne('App\TelephoneNumber','employee_id','id')
@@ -373,16 +372,30 @@ class Employee extends Model
         return $this->hasOne('App\TelephoneNumber','employee_id','id')
                     ->where('telephone_number_type_id', '=', 3);
     }
-    */
 
-    public function timelines()
+    public function privateEmail()
     {
-        return $this->hasMany('App\Timeline','employee_id','id')->orderBy('event_date');
+        return $this->hasOne('App\EmailAddress','employee_id','id')
+                    ->where('email_address_type_id', '=', 1);
     }
 
-    public function trainingSessions()
+    public function workEmail()
     {
-        return $this->belongsToMany(TrainingSession::class);
+        return $this->hasOne('App\EmailAddress','employee_id','id')
+                    ->where('email_address_type_id', '=', 2);
     }
+
+    public function homeAddress()
+    {
+        return $this->hasOne('App\Address','employee_id','id')
+                    ->where('address_type_id', '=', 1);
+    }
+
+    public function postalAddress()
+    {
+        return $this->hasOne('App\Address','employee_id','id')
+                    ->where('address_type_id', '=', 2);
+    }
+    #endregion
 
 }

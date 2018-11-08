@@ -6,7 +6,7 @@
             <form action="" class="">
                 <ul style="margin-left:0;padding-left:0" class="list-unstyled">
                     <li>
-                        <input type="hidden" name="" class="submitable-column-name" value="">
+                        <input type="hidden" name="description" class="submitable-column-name" value="">
                         <div class="table-search-form">
                             <input type="search" name="" value="" placeholder="Search" class="search-input">
                             <div class="search-option">
@@ -27,8 +27,7 @@
                             </button>
                         </div>
                         <ul class="search-column-list">
-                            <li>By Description</li>
-                            <li>By Name</li>
+                            <li data-filter-column="description">By Description</li>
                         </ul>
                     </li>
                     <hr>
@@ -37,7 +36,6 @@
                             <li><p class="menu-label">Quick Filters</p></li>
                             <li><a href="{{route('courses.index')}}?is_public=1"><span class="icon circle info"></span>Public</a></li>
                             <li><a href="{{route('courses.index')}}?is_public=0"><span class="icon circle default"></span>Private</a></li>
-                            <li><a href="{{route('courses.index')}}"><span class="icon circle"></span>Unfiltered</a></li>
                         </ul>
                     </li>
                 </ul>

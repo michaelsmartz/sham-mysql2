@@ -26,7 +26,7 @@
 <style>
 
     .SumoSelect>.optWrapper { z-index: 1000; }
-    .bootstrap-select .dropdown-menu { opacity:1 !important; }
+    .bootstrap-select .dropdown-menu, .dropdown.show > .dropdown-menu.show { opacity:1 !important; }
     .bootstrap-select .dropdown-toggle .filter-option {
         background-color: whitesmoke;
     }
@@ -179,9 +179,9 @@
             template: {
                 caret: '<span class="glyphicon glyphicon-chevron-down"></span>'
             }
-        });
-        $('#job_title_id').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            //console.log(e,clickedIndex, isSelected, previousValue);
+        }).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            var managerId = $('#job_title_id option:selected').data('employeeId');
+            $('#line_manager_id').val(managerId);
         });
     });
     

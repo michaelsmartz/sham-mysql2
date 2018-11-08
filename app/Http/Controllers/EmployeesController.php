@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Address;
 use App\Team;
 use App\Title;
 use App\Branch;
@@ -27,6 +28,7 @@ use App\Skill;
 use App\SysConfigValue;
 use App\TimelineManager;
 use App\Traits\MediaFiles;
+use OwenIt\Auditing\Facades\Auditor;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -57,7 +59,6 @@ class EmployeesController extends CustomController
      */
     public function index(Request $request)
     {
-        //dd($request);
         $fullName = $request->get('name', null);
         $department = $request->get('department:description', null);
         $jobTitle = $request->get('jobtitle:description', null);
@@ -221,7 +222,7 @@ class EmployeesController extends CustomController
 
             $this->validator($request);
             $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-
+            //dd($request);
             $this->saveEmployee($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
@@ -256,6 +257,7 @@ class EmployeesController extends CustomController
 
         return Response()->json($result);
     }
+
     public function checkEmployee(Request $request) 
     {
         $result = false;
@@ -266,13 +268,13 @@ class EmployeesController extends CustomController
 
         $query = Employee::select(['id','first_name','surname','employee_no'])
                            ->whereNotNull('date_terminated');
-        $query->when(request('idNumber', false), function ($q, $idNumber) { 
+        $query->when(trim(request('idNumber', false)) != false, function ($q, $idNumber) { 
             return $q->where('id_number', $idNumber);
         });
-        $query->when(request('firstName', false), function ($q, $firstName) { 
+        $query->when(trim(request('firstName', false)) != false, function ($q, $firstName) { 
             return $q->where('first_name', 'like', '%'.$firstName.'%');
         });
-        $query->when(request('surName', false), function ($q, $surName) { 
+        $query->when(trim(request('surName', false)) != false, function ($q, $surName) { 
             return $q->where('surname', 'like', '%'.$surName.'%');
         });
 
@@ -280,6 +282,9 @@ class EmployeesController extends CustomController
             $query = $query->where('id', '!=', $id);
         }
 
+        $array = $query->get();
+        $result = $array->count() == 0;
+        
         return Response()->json($result); 
     }
     public function checkId(Request $request) 
@@ -289,11 +294,12 @@ class EmployeesController extends CustomController
 
         $firstName = trim(request('firstName', false));
         $surname = trim(request('surname', false));
+        $idNumber = trim(request('idNumber', false));
 
         $query = Employee::select(['id','first_name','surname']);
         // From Laravel 5.4 you can pass the same condition value as a parameter
         // https://laraveldaily.com/less-know-way-conditional-queries/
-        $query->when(request('idNumber', false), function ($q, $idNumber) { 
+        $query->when(trim(request('idNumber', false)) != false, function ($q, $idNo) use($idNumber) { 
             return $q->where('id_number', $idNumber);
         });
 
@@ -316,15 +322,19 @@ class EmployeesController extends CustomController
         $result = true;
         $id = intval(Route::current()->parameter('employee'));
 
+        $employeeNo = trim(request('employeeNo', false));
+
         $query = Employee::select(['id','first_name','surname','employee_no']);
-        $query->when(request('employeeNo', false), function ($q, $employeeNo) { 
+        $query->when(trim(request('employeeNo', false)) != false, function ($q, $eNo) use($employeeNo) { 
             return $q->where('employee_no', $employeeNo);
         });
 
         if ($id != 0) {
             $query = $query->where('id', '!=', $id);
         }
-        
+        //dump($query->toSql());
+        //dump($query->getBindings());
+
         $array = $query->get();
         $result = $array->count() == 0;
 
@@ -344,18 +354,18 @@ class EmployeesController extends CustomController
         }
 
         $query = Employee::select(['id','first_name','surname']);
-        $query->when($passportNo != '', function ($q, $passportNo) { 
+        $query->when(trim(request('passportNo', false)) != false, function ($q, $pNo) use($passportNo) {
             return $q->where('passport_no', $passportNo);
         });
-        $query->when($passportCountryId != '', function ($q, $passportCountryId) { 
+        $query->when(trim(request('passportCountryId', false)) != false, function ($q, $pCountryId) use($passportCountryId) { 
             return $q->where('passport_country_id', $passportCountryId);
         });
 
         if ($id != 0) {
             $query = $query->where('id', '!=', $id);
         }
-        
-        $array = $query->get();
+
+        $array = $query->get(); 
         $filtered = $array->filter(function ($employee, $key) use($firstName,$surname) {
             return ($employee->first_name != $firstName && $employee->surname != $surname);
         });
@@ -479,8 +489,8 @@ class EmployeesController extends CustomController
 
         $this->attach($request, $data->id);
 
-        if(empty($homePhone['tel_number'] || empty($mobilePhone['tel_number']) || 
-           empty($workPhone['tel_number']))) {
+        if(empty($homePhone['tel_number']) || empty($mobilePhone['tel_number']) || 
+           empty($workPhone['tel_number'])) {
             TelephoneNumber::where('employee_id', '=', $data->id)->delete();
         }
         if(!empty($homePhone['tel_number'])){

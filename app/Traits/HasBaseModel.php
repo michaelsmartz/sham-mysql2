@@ -11,11 +11,17 @@ namespace App\Traits;
 
 use Illuminate\Support\Facades\Schema;
 use App\Support\Collection;
+use Venturecraft\Revisionable\RevisionableTrait;
 
 trait HasBaseModel
 {
     public $excludedColumns = ['id', 'created_at', 'updated_at', 'deleted_at', 'password', 'remember_token', 'token'];
 
+    public static function boot()
+    {
+        parent::boot();
+    }
+    
     public function getData($sortColumns = ['id' => 'asc'])
     {
         $obj = $this->newQuery();
@@ -34,7 +40,8 @@ trait HasBaseModel
 
     public function updateData($id, $input)
     {
-        return static::where('id', $id)->update($input);
+        $o = static::find($id);
+        return $o->update($input);
     }
 
     public function destroyData($id)

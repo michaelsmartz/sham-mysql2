@@ -2,7 +2,6 @@
 
 namespace App;
 
-
 use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -10,8 +9,6 @@ class Skill extends Model
 {
     
     use SoftDeletes, UsesPredefinedValues;
-
-
 
     /**
      * Attributes that should be mass-assignable.

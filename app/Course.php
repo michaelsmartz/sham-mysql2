@@ -33,6 +33,9 @@ class Course extends Model
         'passmark_percentage' => WhereFilter::class,
         'is_public' => WhereFilter::class,
     ];
+    
+    protected static $logAttributes = ['description', 'overview', 'objectives', 'passmark_percentage', 'is_public'];
+    protected static $logOnlyDirty = true;
 
     public function modules()
     {

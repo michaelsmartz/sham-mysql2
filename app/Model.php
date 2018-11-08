@@ -16,8 +16,9 @@ use Jedrzej\Searchable\Constraint;
 use San4io\EloquentFilter\Traits\Filterable;
 use San4io\EloquentFilter\Filters\WhereFilter;
 use San4io\EloquentFilter\Filters\LikeFilter;
+use Fico7489\Laravel\Pivot\Traits\PivotEventTrait;
 
 class Model extends BaseModel
 {
-    use HasBaseModel, SearchableTrait, Filterable;
+    use HasBaseModel, SearchableTrait, Filterable, PivotEventTrait;
 }

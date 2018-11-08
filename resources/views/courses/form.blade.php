@@ -8,6 +8,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('is_public') ? 'has-error' : '' }}">
         <label for="is_public">Public <i class="fa fa-question-circle" data-wenk="Any employee can enrol on a Public course" data-wenk-pos="right"></i></label></label>
+        <input name="is_public" type="hidden" value="0">
         <div class="checkbox">
             <label for="is_public_1">
             	<input id="is_public_1" class="" name="is_public" type="checkbox" value="1" {{ old('is_public', isset($course->is_public) ? $course->is_public : null) == '1' ? 'checked' : '' }}>
@@ -19,7 +20,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('passmark_percentage') ? 'has-error' : '' }}">
         <label for="passmark_percentage">Passmark Percentage</label>
-        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($course->passmark_percentage) ? $course->passmark_percentage : null) }}" placeholder="Enter passmark percentage...">
+        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($course->passmark_percentage) ? $course->passmark_percentage : null) }}" placeholder="Enter passmark percentage..." oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
         {!! $errors->first('passmark_percentage', '<p class="help-block">:message</p>') !!}
     </div>
 

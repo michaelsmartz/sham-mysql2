@@ -295,7 +295,7 @@
                                'data-parsley-trigger'=>'focusout',
                                'data-parsley-remote',
                                'data-parsley-remote-validator'=>'checkEmployeeNo',
-                               'data-parsley-remote-message'=>'Employee No is already in use']) !!}
+                               'data-parsley-remote-message'=>'Employee Number is already in use']) !!}
                             <label for="employee_no">Employee Number</label>
                         </span>
                         {!! $errors->first('employee_no', '<p class="help-block">:message</p>') !!}
@@ -317,8 +317,9 @@
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Reporting Line</label>
+                    {!! Form::hidden('line_manager_id', old('line_manager_id', isset($employee->line_manager_id) ? $employee->line_manager_id : null), ['id'=>'line_manager_id']) !!}
                     <div class="col-sm-10">
-                        <select name="job_title_id" id="job_title_id" class="select-bootstrap" title="Job Title..." data-show-subtext="true" data-size="10" data-width="100%" data-dropup="true">
+                        <select name="job_title_id" id="job_title_id" class="bootstrap-select" title="Job Title..." data-show-subtext="true" data-size="10" data-width="100%" data-dropup="true">
                             @foreach ( $groups as $key => $attr )
                                 <optgroup label="{{$key}}">
                                     @foreach ( $attr as $id => $attrs )
@@ -355,7 +356,7 @@
                     </div>
                     <div class="col-sm-6">
                         <span class="field">
-                            {!! Form::text('tax_number', old('tax_number', isset($employee->tax_number) ? $employee->tax_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Tax No']) !!}
+                            {!! Form::text('tax_number', old('tax_number', isset($employee->tax_number) ? $employee->tax_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Tax Number']) !!}
                             <label for="tax_number">Tax Number</label>
                         </span>
                         {!! $errors->first('tax_number', '<p class="help-block">:message</p>') !!}

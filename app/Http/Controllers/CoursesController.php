@@ -30,14 +30,24 @@ class CoursesController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $description = $request->get('description', null);
+
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
         $courses = $this->contextObj::filtered()->paginate(10);
 
         // handle empty result bug
         if (Input::has('page') && $courses->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+        
         return view($this->baseViewPath .'.index', compact('courses'));
     }
 

@@ -2,15 +2,14 @@
 
 namespace App;
 
-
+use App\Traits\MyAuditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TelephoneNumber extends Model
+class TelephoneNumber extends Model implements AuditableContract
 {
     
-    use SoftDeletes;
-
-
+    use MyAuditable, SoftDeletes;
 
     /**
      * Attributes that should be mass-assignable.
@@ -23,6 +22,8 @@ class TelephoneNumber extends Model
                   'telephone_number_type_id'
               ];
 
+    protected $auditInclude = [];
+    
     public function employee()
     {
         return $this->belongsTo('App\Employee','employee_id','id');

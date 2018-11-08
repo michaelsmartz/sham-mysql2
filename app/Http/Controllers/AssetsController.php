@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class AssetsController extends CustomController
@@ -52,7 +53,7 @@ class AssetsController extends CustomController
     public function create()
     {
         $assetGroups = AssetGroup::pluck('name','id')->all();
-        $assetSuppliers = AssetSupplier::pluck('description','id')->all();
+        $assetSuppliers = AssetSupplier::pluck('name','id')->all();
         $assetConditions = AssetCondition::pluck('description','id')->all();
 
         return view($this->baseViewPath . '.create', compact('data','assetGroups','assetSuppliers','assetConditions'));
@@ -96,7 +97,7 @@ class AssetsController extends CustomController
         if(!empty($id)) {
             $data = $this->contextObj->findData($id);
             $assetGroups = AssetGroup::pluck('name','id')->all();
-            $assetSuppliers = AssetSupplier::pluck('description','id')->all();
+            $assetSuppliers = AssetSupplier::pluck('name','id')->all();
             $assetConditions = AssetCondition::pluck('description','id')->all();
         }
 
@@ -135,10 +136,11 @@ class AssetsController extends CustomController
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            dd($exception);
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->back();
     }
 
     /**
@@ -163,5 +165,30 @@ class AssetsController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
     
-    
+    /**
+     * Validate the given request with the defined rules.
+     *
+     * @param Request $request
+     */
+    protected function validator(Request $request)
+    {
+        $validateFields = [
+            'asset_supplier_id' => 'required',
+            'asset_group_id' => 'required',
+            'name' => 'required|string|min:1|max:100',
+            'tag' => 'required|string|min:1|max:50',
+            'po_number' => 'required|string|min:1|max:20',
+            'serial_no' => 'required|string|min:1|max:20',
+            'warranty_expiry_date' => 'required',
+            'asset_condition_id' => 'required',
+            'comments' => 'required|string|min:1|max:256'
+        ];
+
+        $validator = Validator::make($request->all(), $validateFields);
+        if($validator->fails()) {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors($validator);
+        }
+    }
 }

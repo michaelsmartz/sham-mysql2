@@ -2,15 +2,14 @@
 
 namespace App;
 
-
+use App\Traits\MyAuditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Address extends Model
+class Address extends Model implements AuditableContract
 {
-    
-    use SoftDeletes;
 
-
+    use MyAuditable,  SoftDeletes;
 
     /**
      * Attributes that should be mass-assignable.
@@ -32,6 +31,12 @@ class Address extends Model
                   'address_type_id',
                   'is_active'
               ];
+
+    protected $auditInclude = [];
+    protected $auditableEvents = [
+        'created', 'updated',
+        'deleted', 'restored'
+    ];
 
     public function employee()
     {

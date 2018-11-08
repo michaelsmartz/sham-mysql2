@@ -143,3 +143,12 @@ ALTER TABLE `users` CHANGE `Username` `username` VARCHAR(100) CHARACTER SET lati
 CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
 
 RENAME TABLE `employee_disability` TO `disability_employee`;
+
+create table `audits` (`id` int unsigned not null auto_increment primary key, `user_type` varchar(191) null, `user_id` bigint unsigned null, `event` varchar(191) not null, `auditable_id` int unsigned not null, `auditable_type` varchar(191) not null, `old_values` text null, `new_values` text null, `url` text null, `ip_address` varchar(45) null, `user_agent` varchar(191) null, `tags` varchar(191) null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate utf8mb4_unicode_ci;
+
+alter table `audits` add index `audits_auditable_id_auditable_type_index`(`auditable_id`, `auditable_type`);
+alter table `audits` add index `audits_user_id_user_type_index`(`user_id`, `user_type`);
+
+create table `audits_pivot` (`id` int unsigned not null auto_increment primary key, `event` varchar(191) not null, `auditable_id` int unsigned not null, `auditable_type` varchar(191) not null, `relation_id` int unsigned not null, `relation_type` varchar(191) not null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table `audits_pivot` add index `audits_pivot_auditable_id_auditable_type_index`(`auditable_id`, `auditable_type`);
+alter table `audits_pivot` add index `audits_pivot_relation_id_relation_type_index`(`relation_id`, `relation_type`);

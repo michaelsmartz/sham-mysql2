@@ -31,6 +31,8 @@
   min-width: 250px;
   max-width: 250px;
   transition: all 0.3s;
+  max-height: 300px;
+  height: auto;
 }
 
 #filter-sidebar a,
@@ -51,7 +53,7 @@
   position: relative;
   border-radius: 10px;
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-  transform: translate(5%, 20%);
+  transform: translate(5%, 40%);
   transition: all 0.3s ease;
   height: 40px;
   width: 90%;
@@ -189,7 +191,7 @@ ul.search-column-list {
 }
 #filter-sidebar hr {
   border-top: 5px dotted #F8f8f8 !important;
-  margin: 5px 10px;
+  margin: 40px 10px 10px 10px;
 }
 #filter-sidebar ul.nav li a{
   padding:5px 15px !important;

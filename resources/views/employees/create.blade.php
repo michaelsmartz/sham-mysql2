@@ -112,7 +112,7 @@
     .bootstrap-select.show > .dropdown-menu, .bootstrap-select.show>.dropdown-menu{
         opacity:1 !important;
     }
-    .bootstrap-select .dropdown-menu.inner.show {
+    .bootstrap-select .dropdown-menu.inner.show, .dropdown.show > .dropdown-menu.show {
         opacity:1 !important;
     }
 

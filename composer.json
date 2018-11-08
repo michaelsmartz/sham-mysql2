@@ -11,6 +11,7 @@
         "barryvdh/laravel-dompdf": "^0.8.2",
         "bensampo/laravel-enum": "^1.14",
         "bnjns/laravel-searchtools": "^1.3",
+        "fico7489/laravel-pivot": "^3.0",
         "fideloper/proxy": "~3.3",
         "itsgoingd/clockwork": "^2.2",
         "jedrzej/searchable": "^0.0.14",
@@ -20,11 +21,10 @@
         "laravelcollective/html": "^5.4",
         "lrgt/laravel-form-ajax-validation": "^5.1",
         "maatwebsite/excel": "3.1",
+        "owen-it/laravel-auditing": "^8.0",
         "phpoffice/phpspreadsheet": "^1.3",
         "plank/laravel-mediable": "^2.7",
         "san4io/eloquent-filter": "^0.2.0",
-        "shiftonelabs/laravel-cascade-deletes": "^1.0",
-        "spatie/laravel-activitylog": "^3.1",
         "vlucas/phpdotenv": "^2.5"
     },
     "require-dev": {
