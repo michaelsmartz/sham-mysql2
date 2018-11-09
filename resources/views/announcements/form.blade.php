@@ -14,13 +14,13 @@
 
 <div class="form-group col-xs-4 {{ $errors->has('start_date') ? 'has-error' : '' }}">
     <label for="start_date">Start Date</label>
-        <input class="form-control datepicker" name="start_date" type="text" id="start_date" value="{{ old('start_date', optional($announcement)->start_date) }}" minlength="1" required="true" placeholder="Enter start date" data-min-date="0">
+        <input class="form-control datepicker" name="start_date" type="text" id="start_date" value="{{ old('start_date', optional($announcement)->start_date) }}" minlength="1" required="true" data-pair-element-id="end_date" autocomplete="off" placeholder="Enter start date" data-min-date="0">
         {!! $errors->first('start_date', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-4 {{ $errors->has('end_date') ? 'has-error' : '' }}">
     <label for="end_date">End Date</label>
-        <input class="form-control datepicker" name="end_date" type="text" id="end_date" value="{{ old('end_date', optional($announcement)->end_date) }}" minlength="1" required="true" placeholder="Enter end date">
+        <input class="form-control datepicker" name="end_date" type="text" id="end_date" value="{{ old('end_date', optional($announcement)->end_date) }}" minlength="1" required="true" data-min-date="{{ old('end_date', optional($announcement)->start_date) }}" data-number-of-months="1" autocomplete="off" placeholder="Enter end date">
         {!! $errors->first('end_date', '<p class="help-block">:message</p>') !!}
 </div>
 

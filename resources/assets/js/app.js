@@ -40,20 +40,62 @@ $('[data-toggle=offcanvas]').click(function() {
     $('.row-offcanvas').toggleClass('active');
 });
 $(function() {
+    $.datepicker.setDefaults({
+        showButtonPanel: true,
+        dateFormat:'yy-mm-dd', changeMonth:true, changeYear:true 
+    });
     $("body").delegate("input.datepicker", "focusin", function () {
         if ($(this).attr('id')!='DateOfBirth') {
-            $(this).datepicker({ 
-                dateFormat:'yy-mm-dd',changeMonth:true, changeYear:true,
-                minDate: $(this).data('minDate') || null
-            }).prop('readonly', 'true');
+            var elem = $(this); 
+            var instnce = jQuery.datepicker._getInst(elem[0]);
+
+            if (typeof instnce == 'undefined') {
+                elem.datepicker({ 
+                    minDate: $(this).data('minDate') || null,
+                    numberOfMonths: $(this).data('numberOfMonths') || 1,
+                    beforeShow: function(input, inst)
+                    {
+                        setTimeout(function() { 
+                            $('.ui-datepicker-clear').bind('click', function() { $(input).val(''); });
+                        }, 0);
+                    },
+                    onSelect: function(dateStr) 
+                    {
+                        var target = $(this).data('pairElementId');
+
+                        if(typeof target != 'undefined') {
+                            $(`#${target}`).val(dateStr);
+                        }
+                    },
+                    onClose: function()
+                    {
+                        var d1 = $(this).datepicker("getDate"),
+                            targetId = $(this).data('pairElementId');
+
+                        if(typeof targetId != 'undefined') {
+                            var targetElem = $(`#${targetId}`); 
+                            var targetInstnce = jQuery.datepicker._getInst(targetElem[0]);
+
+                            d1.setDate(d1.getDate() + 0); // change to + 1 if necessary
+                            if(typeof targetInstnce == 'undefined'){
+                                targetElem.datepicker({minDate: d1});
+                            } else {
+                                targetElem.datepicker("option", "minDate", d1).datepicker("refresh");
+                            }
+                        }
+                    }
+                }).prop('readonly', 'true').keyup(function (e) {
+                    if(e.keyCode == 8 || e.keyCode == 46) {
+                        $.datepicker._clearDate(this);
+                    }
+                });
+            }
         }
     });
 
     $("body").delegate("input.timepicker", "focusin", function () {
         $(this).timepicker({
-            hourGrid: 3,
-            minuteGrid: 10,
-            timeInput: false,
+            hourGrid: 3, minuteGrid: 10, timeInput: false
         }).prop('readonly', 'true');
     });
 

@@ -37,13 +37,13 @@
 
 <div class="form-group col-xs-6 {{ $errors->has('date_out') ? 'has-error' : '' }}">
     <label for="date_out">Date Out</label>
-        <input class="form-control datepicker" name="date_out" type="text" id="date_out" value="{{ old('date_out', optional($assetEmployee)->date_out) }}" required="true" placeholder="Enter date out">
+        <input class="form-control datepicker" name="date_out" type="text" id="date_out" value="{{ old('date_out', optional($assetEmployee)->date_out) }}" required="true" data-pair-element-id="date_in" autocomplete="off" placeholder="Enter date out">
         {!! $errors->first('date_out', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-6 {{ $errors->has('date_in') ? 'has-error' : '' }}">
     <label for="date_in">Date In</label>
-        <input class="form-control datepicker" name="date_in" type="text" id="date_in" value="{{ old('date_in', optional($assetEmployee)->date_in) }}" data-min-date="{{ old('date_out', optional($assetEmployee)->date_out) }}" placeholder="Enter date in">
+        <input class="form-control datepicker" name="date_in" type="text" id="date_in" value="{{ old('date_in', optional($assetEmployee)->date_in) }}" data-min-date="{{ old('date_out', optional($assetEmployee)->date_out) }}" autocomplete="off" placeholder="Enter date in">
         {!! $errors->first('date_in', '<p class="help-block">:message</p>') !!}
 </div>
 

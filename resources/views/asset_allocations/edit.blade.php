@@ -38,21 +38,3 @@
         </div>
     </form>
 @endsection
-
-@section('post-body')
-    <script>
-    $(function(){
-        $("#date_out").datepicker({
-            dateFormat:'yy-mm-dd',
-            changeYear:true,
-            changeMonth: true,
-            onSelect: function(dateStr) 
-            {
-                $("#date_in").datepicker("destroy");
-                $("#date_in").val(dateStr);
-                $("#date_in").datepicker("option",{ minDate: new Date(dateStr)})
-            }
-        });
-    });
-    </script>
-@endsection

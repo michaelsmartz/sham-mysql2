@@ -6,7 +6,7 @@
 @section('subtitle','Add, edit and remove employees of your company')
 @section('content')
     <div class="flex-wrapper">
-        <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
+        <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation" style="height:170px">
             <form action="" class="">
                 <ul style="margin-left:0;padding-left:0" class="list-unstyled">
                     <li>

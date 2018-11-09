@@ -11062,6 +11062,7 @@ function Datepicker() {
 	this.regional = []; // Available regional settings, indexed by language code
 	this.regional[ "" ] = { // Default regional settings
 		closeText: "Done", // Display text for close link
+		clearText: "Clear", // Display text for close link
 		prevText: "Prev", // Display text for previous month link
 		nextText: "Next", // Display text for next month link
 		currentText: "Today", // Display text for current month link
@@ -12701,8 +12702,11 @@ $.extend( Datepicker.prototype, {
 		currentText = ( !navigationAsDateFormat ? currentText :
 			this.formatDate( currentText, gotoDate, this._getFormatConfig( inst ) ) );
 
-		controls = ( !inst.inline ? "<button type='button' class='ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all' data-handler='hide' data-event='click'>" +
-			this._get( inst, "closeText" ) + "</button>" : "" );
+		/*controls = ( !inst.inline ? "<button type='button' class='ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all' data-handler='hide' data-event='click'>" +
+			this._get( inst, "closeText" ) + "</button>" : "" );*/
+		controls = (!inst.inline ? "<button type='button' class='ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all' data-handler='hide' data-event='click'>" +
+			this._get(inst, "closeText") + "</button>" + "<button type='button' class='ui-datepicker-close ui-datepicker-clear ui-state-default ui-priority-primary ui-corner-all' data-handler='hide' data-event='click'>" +
+			this._get(inst, "clearText") + "</button>" : "");
 
 		buttonPanel = ( showButtonPanel ) ? "<div class='ui-datepicker-buttonpane ui-widget-content'>" + ( isRTL ? controls : "" ) +
 			( this._isInRange( inst, gotoDate ) ? "<button type='button' class='ui-datepicker-current ui-state-default ui-priority-secondary ui-corner-all' data-handler='today' data-event='click'" +
@@ -14554,7 +14558,7 @@ module.exports = __webpack_require__(36);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(global, __webpack_provided_window_dot_jQuery, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(14);
+/* WEBPACK VAR INJECTION */(function(global, __webpack_provided_window_dot_jQuery, $, jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__benjaminreid_ready_js__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__benjaminreid_ready_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__benjaminreid_ready_js__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_async_js__ = __webpack_require__(16);
@@ -14619,20 +14623,61 @@ $('[data-toggle=offcanvas]').click(function () {
     $('.row-offcanvas').toggleClass('active');
 });
 $(function () {
+    $.datepicker.setDefaults({
+        showButtonPanel: true,
+        dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true
+    });
     $("body").delegate("input.datepicker", "focusin", function () {
         if ($(this).attr('id') != 'DateOfBirth') {
-            $(this).datepicker({
-                dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true,
-                minDate: $(this).data('minDate') || null
-            }).prop('readonly', 'true');
+            var elem = $(this);
+            var instnce = jQuery.datepicker._getInst(elem[0]);
+
+            if (typeof instnce == 'undefined') {
+                elem.datepicker({
+                    minDate: $(this).data('minDate') || null,
+                    numberOfMonths: $(this).data('numberOfMonths') || 1,
+                    beforeShow: function beforeShow(input, inst) {
+                        setTimeout(function () {
+                            $('.ui-datepicker-clear').bind('click', function () {
+                                $(input).val('');
+                            });
+                        }, 0);
+                    },
+                    onSelect: function onSelect(dateStr) {
+                        var target = $(this).data('pairElementId');
+
+                        if (typeof target != 'undefined') {
+                            $('#' + target).val(dateStr);
+                        }
+                    },
+                    onClose: function onClose() {
+                        var d1 = $(this).datepicker("getDate"),
+                            targetId = $(this).data('pairElementId');
+
+                        if (typeof targetId != 'undefined') {
+                            var targetElem = $('#' + targetId);
+                            var targetInstnce = jQuery.datepicker._getInst(targetElem[0]);
+
+                            d1.setDate(d1.getDate() + 0); // change to + 1 if necessary
+                            if (typeof targetInstnce == 'undefined') {
+                                targetElem.datepicker({ minDate: d1 });
+                            } else {
+                                targetElem.datepicker("option", "minDate", d1).datepicker("refresh");
+                            }
+                        }
+                    }
+                }).prop('readonly', 'true').keyup(function (e) {
+                    if (e.keyCode == 8 || e.keyCode == 46) {
+                        $.datepicker._clearDate(this);
+                    }
+                });
+            }
         }
     });
 
     $("body").delegate("input.timepicker", "focusin", function () {
         $(this).timepicker({
-            hourGrid: 3,
-            minuteGrid: 10,
-            timeInput: false
+            hourGrid: 3, minuteGrid: 10, timeInput: false
         }).prop('readonly', 'true');
     });
 
@@ -14665,7 +14710,7 @@ window.Tab = __webpack_require__(29); // eslint-disable-line
 window.Collapse = __webpack_require__(30); // eslint-disable-line
 
 window.asyncJS = global.asyncJS = __WEBPACK_IMPORTED_MODULE_2_async_js___default.a;
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(0), __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(0), __webpack_require__(0), __webpack_require__(0)))
 
 /***/ }),
 /* 14 */

@@ -20,7 +20,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('passmark_percentage') ? 'has-error' : '' }}">
         <label for="passmark_percentage">Passmark Percentage</label>
-        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($course->passmark_percentage) ? $course->passmark_percentage : null) }}" placeholder="Enter passmark percentage..." oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+        <input class="form-control" name="passmark_percentage" type="number" id="passmark_percentage" value="{{ old('passmark_percentage', isset($course->passmark_percentage) ? $course->passmark_percentage : null) }}" placeholder="Enter passmark percentage..." pattern="[0-9]*" onkeypress="return validateDigitQty(event)" {{--oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"--}}>
         {!! $errors->first('passmark_percentage', '<p class="help-block">:message</p>') !!}
     </div>
 

@@ -99,7 +99,7 @@ return [
 
     'collectors' => [
         'phpinfo'         => false,  // Php version
-        'messages'        => true,  // Messages
+        'messages'        => false,  // Messages
         'time'            => true,  // Time Datalogger
         'memory'          => false,  // Memory usage
         'exceptions'      => true,  // Exception displayer
