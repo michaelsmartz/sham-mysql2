@@ -37,7 +37,7 @@ class LocalEnvironmentServiceProvider extends ServiceProvider
         //'Debugbar' => \Barryvdh\Debugbar\Facade::class,
     ];
 
-        /**
+    /**
      * Register Service Providers
      */
     protected function registerConsoleServiceProviders()

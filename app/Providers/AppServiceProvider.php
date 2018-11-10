@@ -24,7 +24,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
-        
+
+        $this->app->singleton('current_user', function ($app) {
+            return $app['auth']->user();
+        });
+
         /*
         if( env('LOG_QUERIES') === true ){
             DB::listen(function($query) {
@@ -36,11 +40,6 @@ class AppServiceProvider extends ServiceProvider
         }
         */
 
-        $this->app->singleton('current_user', function ($app) {
-            return $app['auth']->user();
-        });
-		
-
     }
 
     /**
@@ -50,6 +49,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        Router::registerMacros();
+
+        /*
         if (!$this->app->runningInConsole()) {
             Form::macro(
                 'groupRelationSelect', 
@@ -80,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
             );
         
         }
-        /*
+        
         Collection::macro('toAssoc', function () {
             return $this->reduce(function ($assoc, $keyValuePair) {
                 list($key, $value) = $keyValuePair;
@@ -93,6 +95,6 @@ class AppServiceProvider extends ServiceProvider
         });
         */
 
-        Router::registerMacros();
+        
     }
 }

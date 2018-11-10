@@ -162,6 +162,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        
         /*
          * Package Service Providers...
          */
@@ -174,14 +175,16 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        //App\Providers\ViewComposerServiceProvider::class,
+        //Collective\Html\HtmlServiceProvider::class,
 
-        App\Providers\ViewComposerServiceProvider::class,
-        Collective\Html\HtmlServiceProvider::class,
         /*
          * Dev Only Providers:
          */
+        App\Providers\ShamServiceProvider::class,
+
         //App\Providers\SysConfigServiceProvider::class,
-        App\Providers\LocalEnvironmentServiceProvider::class,
+        //App\Providers\LocalEnvironmentServiceProvider::class,
         //Arrilot\Widgets\ServiceProvider::class,
         //Clockwork\Support\Laravel\ClockworkServiceProvider::class,
         //Plank\Mediable\MediableServiceProvider::class
@@ -234,8 +237,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class,
+        //'Form' => Collective\Html\FormFacade::class,
+        //'Html' => Collective\Html\HtmlFacade::class,
         //'Widget' => Arrilot\Widgets\Facade::class,
         //'AsyncWidget' => Arrilot\Widgets\AsyncFacade::class,
         //'SearchTools' => \bnjns\SearchTools\Facades\SearchTools::class,
