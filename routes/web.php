@@ -100,7 +100,7 @@ Auth::routes();
                 'only' => ['show']
             ]);
             Route::employeeInResource('rewards');
-            Route::employeeInResource('disciplinaryactions', ['except'=>['destroy']]);
+            Route::employeeInResource('disciplinaryactions');
             
         #endregion
 

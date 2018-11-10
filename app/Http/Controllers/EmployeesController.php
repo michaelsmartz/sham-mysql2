@@ -149,7 +149,7 @@ class EmployeesController extends CustomController
 
             $data = $this->contextObj->findData($id);
 
-            if(!isset($data->picture) || sizeof($data->picture) < 10){
+            if (!isset($data->picture)) {
                 $data->picture = asset('img/avatar.png');
             }
             $data->load(['skills','disabilities']);
