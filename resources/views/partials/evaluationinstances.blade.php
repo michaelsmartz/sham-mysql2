@@ -50,6 +50,16 @@
         window.location = '{{url()->to('evaluations')}}/'+id+'/score/'+evaluationid+'/show';
     }
 
+    function summaryForm(id,evaluationid,assessorid,event) {
+        /*if (id) {
+            $('#md-content').empty().load('{{url()->to('evaluationassessors')}}/'+id+'/EvaluationId/'+evaluationid+'/AssessorId/'+assessorid+'/summary1' ,function(response, status){
+                statusModalToggle(status);
+            });
+        }*/
+
+        window.location = '{{url()->to('evaluations')}}/'+id+'/EvaluationId/'+evaluationid+'/AssessorId/'+assessorid+'/summary';
+    }
+
 </script>
 <div class="row">
     <div class="col-md-3" style="padding-left: 100px"><b>Assessor</b></div>

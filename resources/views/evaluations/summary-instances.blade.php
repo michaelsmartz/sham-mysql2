@@ -1,16 +1,19 @@
 @extends('portal-index')
-@section('title','Assesss')
+@section('title','Summary')
 @section('content')
 
     {!! Form::open(array('route' => array('evaluations.submit_assessment', $Evaluationid,$AssessorName),'method'=>'POST', 'files'=>true)) !!}
     {!! Form::hidden('htmlnode',null,['id'=>'htmlnode1']) !!}
     {!! Form::hidden('htmlnodeScore',null,['id'=>'htmlnodeScore']) !!}
 
-
     <div class="modal-header">
-        <h4 class="modal-title">Scores</h4>
+        @if($ContainsDuplicate)
+            <h5 style="color: red">*Assessment contains duplicate questions.</h5>
+        @endif
     </div>
     <div class="modal-body">
+
+        <!-- <p><b>Employee Name: </b>{{$EmployeeDetails}}</p> -->
         <div class="row">
             <div class="col-sm-2"><p><b>User: </b></p></div>
             <div class="col-sm-10">{{ isset($HeaderDetails) && key_exists("user",$HeaderDetails) ? $HeaderDetails['user'] : ' ' }}</div>
@@ -35,31 +38,26 @@
             <div class="col-sm-4">{{ isset($HeaderDetails) && key_exists("feedbackdate",$HeaderDetails) ? $HeaderDetails['feedbackdate'] : ' ' }}</div>
         </div>
 
-        <br>
+        @if($UseContent)
+            <p><b>Audio File: </b>
+                <button type="button" class="btn btn-default btn-sm file-download">Download</button>
+            </p>
+        @else
+            <p><b>QA Sample: </b>{{$UrlPath}}
+            </p>
+        @endif
 
+        <p><b>Status: </b>{{ $evaluationstatusid == 2 ? 'Closed' : 'Open' }}</p>
 
-        <div id="questionaireform">
-            <div id="form">
-                {!!  (isset($Content)?$Content:"") !!}
-            </div>
-
-            <div class="form-group">
-                {!! Form::label('Comments',' Comments:') !!}
-                {!! Form::textarea('Comments',$Comments,['class'=>'form-control', 'rows' => 3,'autocomplete'=>'off', 'placeholder'=>' Comment']) !!}
-            </div>
-
-            <div class="form-group">
-                {!! Form::label('Summary',' Summary:') !!}
-                {!! Form::textarea('Summary',$Summary,['class'=>'form-control','rows' => 3, 'autocomplete'=>'off', 'placeholder'=>' Summary']) !!}
-            </div>
-
+        <div class="form-group">
+            {!! Form::hidden('participants','yes') !!}
         </div>
 
-
+        <br>
 
         <div id="questionairescore">
-
             <div class="form-group">
+                <!--<h4>Assessment Score: <span class = "badge">{{$AssessmentScore}}%</span></h4> -->
                 <h4>Assessment Score: <span class = "badge">{{$MandatoryQuestionComment}}%</span> | Possible Score: <span class = "badge">{{$AssessmentScore}}%</span></h4>
             </div>
 
@@ -90,15 +88,33 @@
             </div>
         </div>
 
+        <div id="questionaireform">
+            <div id="form">
+                {!!  (isset($Content)?$Content:"") !!}
+            </div>
+
+            <div class="form-group">
+                {!! Form::label('Summary',' Summary:') !!}
+                {!! Form::textarea('Summary',$summary,['class'=>'form-control','rows' => 3, 'autocomplete'=>'off', 'placeholder'=>' Summary']) !!}
+            </div>
+
+            <div class="form-group">
+                {!! Form::label('Comments',' Comments:') !!}
+                {!! Form::textarea('Comments',$comments,['class'=>'form-control', 'rows' => 3,'autocomplete'=>'off', 'placeholder'=>' Comment']) !!}
+            </div>
+
+        </div>
+
+
     </div>
-
-
     <div class="modal-footer">
         <div class="form-group">
             <button type="submit" class="btn btn-primary pdf-download" name="Save">Download PDF</button>
             <button type="button" class="btn btn-primary " data-dismiss="modal">Close</button>
         </div>
     </div>
+
+
     {!! Form::close() !!}
 
 @endsection
@@ -106,6 +122,7 @@
 @section("post-body")
     <script>
 
+        $("form :input").attr("disabled",true);
         $('input[type="text"], textarea').attr('readonly','readonly');
 
         $('.file-download').click(function() {
