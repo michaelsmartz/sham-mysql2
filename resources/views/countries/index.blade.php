@@ -8,7 +8,7 @@
         <li class="active"><a href="#">Country</a></li>
         <li><a href="{{URL::to('/')}}/departments">Department</a></li>
         <li><a href="{{URL::to('/')}}/divisions">Division</a></li>
-        <li><a href="{{URL::to('/')}}/employee_attachment_types">Employee Attachment Types</a></li>
+        {{--<li><a href="{{URL::to('/')}}/employee_attachment_types">Employee Attachment Types</a></li>--}}
         <li><a href="{{URL::to('/')}}/employee_statuses">Employee Status</a></li>
         <li><a href="{{URL::to('/')}}/ethnic_groups">Ethnic Group</a></li>
         <li><a href="{{URL::to('/')}}/genders">Gender</a></li>
@@ -52,7 +52,7 @@
                         @foreach($countries as $country)
                         <tr id="tr{{$country->id}}">
                                                         <td>{{ $country->description }}</td>
-                            <td>{{ ($country->is_preferred) ? 'Yes' : 'No' }}</td>
+                            <td>{!! ($country->is_preferred) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

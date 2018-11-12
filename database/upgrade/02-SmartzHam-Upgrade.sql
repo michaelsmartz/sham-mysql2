@@ -2418,3 +2418,44 @@ ALTER TABLE `system_sub_modules`
 ADD COLUMN `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `is_active`,
 ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP() AFTER `created_at`,
 ADD COLUMN `deleted_at` DATETIME NULL AFTER `updated_at`;
+
+#--12/11/2018
+ALTER TABLE `branches`
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `is_system_predefined`;
+
+ALTER TABLE `countries`
+	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`;
+ALTER TABLE `countries`
+	CHANGE COLUMN `is_preferred` `is_preferred` TINYINT(1) NULL DEFAULT '0' AFTER `is_active`;
+
+ALTER TABLE `divisions`
+	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`;
+
+ALTER TABLE `ethnic_groups`
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`;
+
+ALTER TABLE `immigration_statuses`
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`;
+
+ALTER TABLE `job_titles`
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `is_system_predefined`;
+
+ALTER TABLE `languages`
+	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`,
+	CHANGE COLUMN `is_preferred` `is_preferred` TINYINT(1) NULL DEFAULT '0' AFTER `is_active`;
+
+ALTER TABLE `skills`
+	CHANGE COLUMN `Level` `Level` SMALLINT(6) NULL DEFAULT '1' AFTER `is_active`;
+
+ALTER TABLE `tax_statuses`
+	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`;
+
+ALTER TABLE `teams`
+	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`;
+
+ALTER TABLE `time_groups`
+	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `name`;
+
+ALTER TABLE `time_periods`
+	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `time_period_type`;
+

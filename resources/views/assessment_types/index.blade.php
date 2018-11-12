@@ -4,8 +4,8 @@
     <br>
     <ul class="nav nav-tabs">
         <li class="active"><a href="#">Module Assessment Type</a></li>
-        <li><a href="{{URL::to('/')}}/learning_material_types">Learning Material Type</a></li>
-        <li><a href="{{URL::to('/')}}/training_delivery_methods">Training Delivery Method</a></li>
+        {{--<li><a href="{{URL::to('/')}}/learning_material_types">Learning Material Type</a></li>
+        <li><a href="{{URL::to('/')}}/training_delivery_methods">Training Delivery Method</a></li>--}}
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">

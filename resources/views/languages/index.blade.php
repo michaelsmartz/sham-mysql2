@@ -8,7 +8,7 @@
         <li><a href="{{URL::to('/')}}/countries">Country</a></li>
         <li><a href="{{URL::to('/')}}/departments">Department</a></li>
         <li><a href="{{URL::to('/')}}/divisions">Division</a></li>
-        <li><a href="{{URL::to('/')}}/employee_attachment_types">Employee Attachment Types</a></li>
+        {{--<li><a href="{{URL::to('/')}}/employee_attachment_types">Employee Attachment Types</a></li>--}}
         <li><a href="{{URL::to('/')}}/employee_statuses">Employee Status</a></li>
         <li><a href="{{URL::to('/')}}/ethnic_groups">Ethnic Group</a></li>
         <li><a href="{{URL::to('/')}}/genders">Gender</a></li>
@@ -42,7 +42,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Description</th>
+                            <th data-sortable="true">Description</th>
                             <th data-sortable="true">Preferred</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
@@ -51,8 +51,8 @@
                     <tbody>
                         @foreach($languages as $language)
                         <tr id="tr{{$language->id}}">
-                                                        <td>{{ $language->description }}</td>
-                            <td>{{ ($language->is_preferred) ? 'Yes' : 'No' }}</td>
+                            <td>{{ $language->description }}</td>
+                            <td>{!! ($language->is_preferred) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
