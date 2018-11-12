@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SystemSubModule extends Model
 {
-
+    
+	use SoftDeletes;
+	
 	const CONST_EMPLOYEE_DATABASE = 1;
 	const CONST_WORKFLOWS = 2;
 	const CONST_CUSTOM_REPORTS = 3;

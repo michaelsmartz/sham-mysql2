@@ -103,6 +103,7 @@
 @endif
 
 @if (isset($allowedmodules[App\SystemModule::CONST_TODO_LIST]))
+    {{-- 
     <li id="admin-todolist-main-li" class="has-sub">
         <a href="javascript:;">
             <b class="caret pull-right"></b>
@@ -123,6 +124,7 @@
             @endif
         </ul>
     </li>
+    --}}
 @endif
 
 @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE]))
