@@ -1,16 +1,18 @@
 @extends('portal-index')
+@php
+    //dd($managers[0]->employees);
+@endphp
 @section('title','Organisation Charts')
 @section('subtitle', 'View, edit and download your organizational chart')
 @section('content')
     <p></p>
     {!! Form::open(array('name' => 'DynamicOrgCharForm', 'id' => 'DynamicOrgCharForm','url' => 'organisationcharts','method'=>'GET','class'=>'form-inline', 'files'=>true)) !!}
 
-    <div class="form-group col-md-4">
-        <label class="" for="exampleInputEmail2">Line Manager: </label>
-        {{ Form::groupSelect('ManagerEmployeeId', $managers, 'employees', 'description', 'full_name', 'id', null, ['class'=>'form-control', 'autocomplete'=>'off',  'placeholder'=>'Select Line Manager']) }}
-
-    </div>
-            {!! Form::submit('Generate Chart',['class'=>'btn btn-primary']) !!}
+        <div class="form-group col-md-4">
+            <label class="" for="exampleInputEmail2">Line Manager: </label>
+            {{ Form::groupRelationSelect('ManagerEmployeeId', $managers, 'employees', 'description', 'full_name', 'id', null, ['class'=>'form-control', 'autocomplete'=>'off',  'placeholder'=>'Select Line Manager']) }}
+        </div>
+        {!! Form::submit('Generate Chart',['class'=>'btn btn-primary']) !!}
         <a class="btn btn-primary" id="imgId" style="display:none">Download</a>
     {!! Form::close() !!}
 

@@ -97,7 +97,9 @@ class ShamServiceProvider extends ServiceProvider
                     $groups = [];
                     foreach ($collection as $model) {
                         foreach($model->$relation as $rel) {
-                            $groups[$model->$groupName][$rel->$optValue] = $rel->$optName;
+                            if(!empty($model->$groupName) && !empty($rel->$optValue)){
+                                $groups[$model->$groupName][$rel->$optValue] = $rel->$optName;
+                            }
                         }
                     }
 
@@ -106,11 +108,13 @@ class ShamServiceProvider extends ServiceProvider
             );
 
             Form::macro('groupSelect', 
-                function ($name, $collection, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
+                function ($name, $collection, $relation, $groupName = 'name', $optName = 'name', $optValue = 'id', $selected = null, $attributes = []) 
                 {
                     $groups = [];
                     foreach ($collection as $model) {
-                        $groups[$model->$groupName][$model->$optValue] = $model->$optName;
+                        if(!empty($model->$groupName) && !empty($model->$optValue)){
+                            $groups[$model->$groupName][$model->$optValue] = $model->$optName;
+                        }
                     }
 
                     return Form::select($name, $groups, $selected, $attributes);
