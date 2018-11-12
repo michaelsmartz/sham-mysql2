@@ -38,7 +38,7 @@
     .fileUploader .filesContainer .error .loadBar {
       border: solid 2px #aa00ff !important; }
       .fileUploader .filesContainer .error .loadBar .errorMsg {
-        color: #aa00ff !important;
+        color: #bf5329 !important;
         font-weight: bold;
         font-size: 18px;
         line-height: 40px;

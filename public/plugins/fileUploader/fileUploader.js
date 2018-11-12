@@ -439,7 +439,7 @@
                             }
                             $(this).remove();
                         });
-                    }, 2000);
+                    }, 5000);
 
                     var totalRejected = parseInt($('#debugRejected').html()) + 1;
                     $('#debugRejected').html(totalRejected);
@@ -460,7 +460,7 @@
                     $message.animate({opacity: 0}, 300, function() {
                         $(this).remove();
                     });
-                }, 2000);
+                }, 5000);
             }
 
             // create a new div containing thumb, delete button and title field for each target file

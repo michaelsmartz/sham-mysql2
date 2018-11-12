@@ -8,10 +8,11 @@
 <script>
     var initializeFileUpload = function() {
         $('#one').fileUploader({
+            lang: 'en',
             useFileIcons: true,
             fileMaxSize: {!! $uploader['fileMaxSize'] or '1.7' !!},
             totalMaxSize: {!! $uploader['totalMaxSize'] or '5' !!},
-            useLoadingBars: false,
+            useLoadingBars: true,
             linkButtonContent: '',
             deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
             resultPrefix: "attachment",

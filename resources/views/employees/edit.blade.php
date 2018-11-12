@@ -30,6 +30,18 @@
     .bootstrap-select .dropdown-toggle .filter-option {
         background-color: whitesmoke;
     }
+    .bootstrap-select > .dropdown-toggle::after {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: .255em;
+        vertical-align: .255em;
+        content: "";
+        border-top: .3em solid;
+        border-right: .3em solid transparent;
+        border-bottom: 0;
+        border-left: .3em solid transparent;
+    }
     .pic-holder {
         position: absolute;
         text-align: left;
@@ -106,7 +118,7 @@
     }
     .open > .dropdown-menu { display: block; }
 </style>
-<script src="{{URL::to('/')}}/js/employees.min.js"></script>
+<script src="{{URL::to('/')}}/js/employees.js"></script>
 <script src="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select-1.13.2.min.js"></script>
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script>
@@ -114,9 +126,10 @@
         
         $('#one').fileUploader({
             useFileIcons: true,
+            lang: 'en',
             fileMaxSize: {!! $uploader['fileMaxSize'] or '1.7' !!},
             totalMaxSize: {!! $uploader['totalMaxSize'] or '5' !!},
-            useLoadingBars: false,
+            useLoadingBars: true,
             linkButtonContent: '',
             deleteButtonContent: "<i class='text-danger fa fa-times' data-wenk='Remove file'></i>",
             resultPrefix: "attachment",

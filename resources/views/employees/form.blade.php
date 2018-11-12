@@ -27,7 +27,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                     <span class="field">
                         {!! Form::text('birth_date', old('birth_date', isset($employee->birth_date) ? $employee->birth_date : null), ['class'=>'form-control datepicker field-required', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
                         <label for="birth_date">Date of birth</label>
@@ -39,7 +39,7 @@
                     <div class="col-sm-2">
                         {!! Form::select('title_id', $titles, old('title_id', isset($employee->title_id) ? $employee->title_id : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Title..', 'data-field-name'=>'Title', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         {!! Form::select('marital_status_id', $maritalstatuses, old('marital_status_id', isset($employee->marital_status_id) ? $employee->marital_status_id : null), ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Marital Status..']) !!}
                     </div>
                 </div>
@@ -289,7 +289,7 @@
                 </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Identification</label>
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <span class="field">
                             {!! Form::text('employee_no', old('employee_no', isset($employee->employee_no) ? $employee->employee_no : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Employee No', 'required', 'title'=>'Required',
                                'data-parsley-trigger'=>'focusout',
@@ -300,7 +300,7 @@
                         </span>
                         {!! $errors->first('employee_no', '<p class="help-block">:message</p>') !!}
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <span class="field">
                             {!! Form::text('physical_file_no', old('physical_file_no', isset($employee->physical_file_no) ? $employee->physical_file_no : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Physical File Number']) !!}
                             <label for="physical_file_no">Physical File Number</label>
@@ -335,7 +335,7 @@
                     <label class="col-xs-2 control-label">Join/Termination Dates</label>
                     <div class="col-sm-3">
                         <span class="field">
-                            {!! Form::text('date_joined', old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null), ['class'=>'form-control datepicker', 'placeholder'=>'Joined Date', 'id'=>'JoinedDate']) !!}
+                            {!! Form::text('date_joined', old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null), ['class'=>'form-control datepicker', 'placeholder'=>'Joined Date', 'id'=>'JoinedDate', 'data-pair-elemeent-id'=>'TerminationDate' ]) !!}
                             <label for="date_joined">Date Joined</label>
                         </span>
                     </div>
