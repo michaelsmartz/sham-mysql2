@@ -480,7 +480,7 @@ class SSPMyDetailsController extends CustomController
                                 $timeline = new Timeline();
                                 $timeline->ShortcutType = 5;
                                 $timeline->MainClass = 'info';
-                                $timeline->Description = "Started as: " . $historyJobTitle->jobTitle->description;
+                                $timeline->Description = "Started as: " . optional($historyJobTitle->jobTitle)->description;
                                 $timeline->formattedDate = date("Y-m-d", strtotime($historyJobTitle->date_occurred));
                                 $timeCompileResults[] = $timeline;
                         }
@@ -497,7 +497,7 @@ class SSPMyDetailsController extends CustomController
                                 $timeline = new Timeline();
                                 $timeline->ShortcutType = 6;
                                 $timeline->MainClass = 'success';
-                                $timeline->Description = "Obtained: " . $historyQualification->qualification->description;
+                                $timeline->Description = "Obtained: " . optional($historyQualification->qualification)->description;
                                 $timeline->formattedDate = date("Y-m-d", strtotime($historyQualification->date_occurred));
                                 $timeCompileResults[] = $timeline;
                         }
