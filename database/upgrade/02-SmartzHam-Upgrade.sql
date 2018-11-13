@@ -2459,3 +2459,18 @@ ALTER TABLE `time_groups`
 ALTER TABLE `time_periods`
 	CHANGE COLUMN `is_active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `time_period_type`;
 
+#-- 13/11/2018
+ALTER TABLE `policies`
+	ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `is_active`,
+	ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`,
+	ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+
+ALTER TABLE `timelines`
+	ALTER `date_event` DROP DEFAULT;
+ALTER TABLE `timelines`
+	CHANGE COLUMN `date_event` `event_date` DATE NOT NULL AFTER `event_id`;
+
+ALTER TABLE `history_departments`
+	ALTER `updated_by` DROP DEFAULT;
+ALTER TABLE `history_departments`
+	CHANGE COLUMN `updated_by` `updated_by_employee_id` VARCHAR(50) NOT NULL AFTER `date_occurred`;
