@@ -1,3 +1,6 @@
+import "jquery-ui/ui/widgets/datepicker";
+import DatePicker from './components/DatePicker.vue';
+
 require('jquery-asAccordion');
 require('parsleyjs');
 require('sumoselect');
@@ -7,9 +10,6 @@ window.Vue = require('vue/dist/vue.common.js');
 
 Vue.config.devtools = false;
 Vue.config.performance = false;
-
-import "jquery-ui/ui/widgets/datepicker";
-import DatePicker from './components/DatePicker.vue';
 
 export function readURL(input) {
     if (input.files && input.files[0]) {
@@ -50,9 +50,9 @@ const app = new Vue({
                 });
             };
 
-            $("#birth_date,#TerminationDate,#JoinedDate").datepicker({
+            /*$("#birth_date").datepicker({
                 dateFormat: 'yy-mm-dd', changeMonth:true, changeYear: true
-            });
+            });*/
             $("#birth_date").datepicker("option","yearRange", "-65:-18");
     
             $(':input[data-mirror]').each(function () {
@@ -60,7 +60,7 @@ const app = new Vue({
             });
 
             $('.accordion').asAccordion();
-            $('.select-multiple').SumoSelect({csvDispCount: 10, up:true});
+            $('.select-multiple').SumoSelect({csvDispCount: 10, up:true, search:true});
 
             window.Parsley.addValidator('requiredIf', {
                 validateString: function (value, requirement) {

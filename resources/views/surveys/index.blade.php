@@ -22,7 +22,6 @@
                     <thead>
                         <tr>
                             <th data-sortable="true">Title</th>
-                            <th data-sortable="true">Status</th>
                             <th data-sortable="true">Author</th>
                             <th data-sortable="true">Start Date</th>
                             <th data-sortable="true">End Date</th>
@@ -34,7 +33,6 @@
                         @foreach($surveys as $survey)
                         <tr id="tr{{$survey->id}}">
                             <td>{{ $survey->title }}</td>
-                            <td>{{ App\Enums\SurveyStatusType::getDescription($survey->survey_status_id) }}</td>
                             <td>{{ (isset($survey->users->employee->full_name)) ? $survey->users->employee->full_name : '' }}</td>
                             <td>{{ $survey->date_start }}</td>
                             <td>{{ $survey->date_end }}</td>

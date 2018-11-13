@@ -33,13 +33,13 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('telephone') ? 'has-error' : '' }}">
     <label for="telephone">Telephone</label>
-        <input class="form-control" name="telephone" type="text" id="telephone" value="{{ old('telephone', optional($assetSupplier)->telephone) }}" maxlength="20" required="true" placeholder="Enter telephone">
+        <input class="form-control" name="telephone" type="tel" id="telephone" value="{{ old('telephone', optional($assetSupplier)->telephone) }}" maxlength="20" required="true" placeholder="Enter telephone">
         {!! $errors->first('telephone', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('email_address') ? 'has-error' : '' }}">
     <label for="email_address">Email Address</label>
-        <input class="form-control" name="email_address" type="text" id="email_address" value="{{ old('email_address', optional($assetSupplier)->email_address) }}" maxlength="512" placeholder="Enter email address">
+        <input class="form-control" name="email_address" type="email" id="email_address" value="{{ old('email_address', optional($assetSupplier)->email_address) }}" maxlength="512" placeholder="Enter email address">
         {!! $errors->first('email_address', '<p class="help-block">:message</p>') !!}
 </div>
 

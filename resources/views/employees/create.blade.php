@@ -23,118 +23,8 @@
 @endsection
 
 @section('post-body')
-<link href="{{URL::to('/')}}/css/post-bootstrap-admin-reset.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
 <link href="{{URL::to('/')}}/css/employees.min.css" rel="stylesheet">
-<link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
-<link href="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet">
-<style>
-
-    .SumoSelect>.optWrapper { z-index: 1000; }
-
-    .pic-holder {
-        position: absolute;
-        text-align: left;
-        padding: 0 0 0 -20px;
-        margin: 10px 0 20px -10px;
-    }
-
-    .pic-holder img {
-        padding: 0;
-        width: 160px;
-        height: 150px;
-        border-radius: 50%;
-        border: 10px solid #f1f2f7;
-        vertical-align: middle;
-        transition: opacity .5s ease;
-    }
-
-    .pic-holder button {
-        position: absolute;
-        display: none;
-        opacity: 0;
-        transition: opacity .5s;
-    }
-
-    .pic-holder button.delete-pic {
-        top: 0;
-        right: 0;
-        transition: top 0.4s,
-        right 0.4s;
-    }
-
-    .pic-holder:hover img {
-        opacity: 0.5;
-    }
-
-    .pic-holder:hover button {
-        display: block;
-        opacity: 1;
-    }
-
-    .v-spacer{
-        display: block
-    }
-    .v-spacer.h20 {
-        height: 20px;
-    }
-
-    .v-spacer.h30 {
-        height: 30px;
-    }
-    .v-spacer.h40 {
-        height: 40px;
-    }
-    .v-spacer.h50 {
-        height: 55px;
-    }
-    @keyframes popIn {
-        from {
-            opacity: 0;
-            transform: scale(0.4);
-        }
-        25% {
-            opacity: 0;
-            transform: scale(2.25);
-        }
-        60% {
-            opacity: 0;
-            transform: scale(0.5);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .bootstrap-select.show>.dropdown-menu>.dropdown-menu {
-        display: block;
-        
-    }
-    .bootstrap-select.show > .dropdown-menu, .bootstrap-select.show>.dropdown-menu{
-        opacity:1 !important;
-    }
-    .bootstrap-select .dropdown-menu.inner.show, .dropdown.show > .dropdown-menu.show {
-        opacity:1 !important;
-    }
-
-    .bootstrap-select > .dropdown-menu > .dropdown-menu li.hidden{
-        display:none;
-    }
-
-    .bootstrap-select > .dropdown-menu > .dropdown-menu li a{
-        display: block;
-        width: 100%;
-        padding: 3px 1.5rem;
-        clear: both;
-        font-weight: 400;
-        color: #292b2c;
-        text-align: inherit;
-        white-space: nowrap;
-        background: 0 0;
-        border: 0;
-    }
-</style>
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
-<script src="{{URL::to('/')}}/plugins/bootstrap-select/bootstrap-select-1.13.2.min.js"></script>
 <script>
     var initializeFileUpload = function() {
         $('#one').fileUploader({
@@ -200,17 +90,8 @@
     };
     $(function(){
         initializeFileUpload();
-        $.fn.selectpicker.Constructor.BootstrapVersion = '4';
-        $('.select-bootstrap').selectpicker({  
-            template: {
-                caret: '<span class="glyphicon glyphicon-chevron-down"></span>'
-            }
-        });
-        $('#job_title_id').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            //console.log(e,clickedIndex, isSelected, previousValue);
-        });
     });
 
 </script>
-<script src="{{URL::to('/')}}/js/employees.min.js"></script>
+<script src="{{URL::to('/')}}/js/employees.js"></script>
 @endsection

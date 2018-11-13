@@ -439,7 +439,7 @@ class EmployeesController extends CustomController
         $departments = Department::pluck('description','id')->all();
         $teams = Team::pluck('description','id')->all();
         $employeeStatuses = EmployeeStatus::pluck('description','id')->all();
-        $jobTitles = JobTitle::jobReportingLines();
+        $jobTitles = JobTitle::orderBy('description')->pluck('description','id')->all();
 
         $divisions = Division::pluck('description','id')->all();
         $branches = Branch::pluck('description','id')->all();

@@ -146,7 +146,7 @@ class AssetSuppliersController extends CustomController
             'address3' => 'nullable|string|min:1|max:100',
             'address4' => 'nullable|string|min:1|max:100',
             'telephone' => 'required|string|min:1|max:20',
-            'email_address' => 'nullable|string|min:1|max:100'
+            'email_address' => 'nullable|email|min:1|max:100'
         ];
 
         $this->validate($request, $validateFields);

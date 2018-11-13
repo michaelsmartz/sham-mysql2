@@ -73,7 +73,8 @@ class TimelineManager extends Model
         $terminationDate = $employee->date_terminated;
         $departmentid = $employee->department_id;
         $jobtitleid = $employee->job_title_id;
-
+        $selectedTerminationDate = "";
+        
         $id = $employee->id;
 
         // Get last termination date from history table

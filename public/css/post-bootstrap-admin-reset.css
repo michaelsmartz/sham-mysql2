@@ -174,13 +174,13 @@ select.field-required, select:required, select.required {
 
 /*  Show label instead of placeholder */
 .field input:focus,
-/*.field input:valid,*/
+.field input:hover,
 .field select:focus/*,
 .field select:valid*/ {
     padding-top: 2px;
 }
 .field input:focus ~ label,
-/*.field input:valid ~ label,*/
+.field input:hover ~ label,
 .field select:focus ~ label {
     padding-top: 1px;
     color: #555;

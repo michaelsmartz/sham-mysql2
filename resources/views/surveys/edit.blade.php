@@ -18,7 +18,7 @@
             </div>
             <div class="box-footer">
                 <div class="pull-right">
-                    <a href="{{ route('surveys.index') }}" class="btn btn-primary" title="Show all Surveys">
+                    <a href="{{ route('surveys.index') }}" class="btn" class="btn" data-close="Close" data-dismiss="modal" title="Show all Surveys">
                         Cancel
                     </a>
                     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
