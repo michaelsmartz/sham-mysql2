@@ -119,7 +119,7 @@
         // file type identificator
         this._fileType = function(fileName) {
             var ext = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length);
-            var icons = ['pdf', 'jpg', 'png'];
+            var icons = ['pdf', 'jpg', 'png', 'doc', 'docx', 'xls', 'xlsx'];
 
             if (icons.indexOf(ext) >= 0) {
                 return ext;

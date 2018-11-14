@@ -29,6 +29,9 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
+                                        <a href="#light-modal" data-wenk="Edit" class="user-profile item-edit" onclick="editForm('2', event, 'users')">
+                                            <i class="fa fa-user fa-fw"></i> User Profile
+                                        </a>
                                         <a href="javascript: void 0;" class="user-profile" ><i class="fa fa-user fa-fw"></i> User Profile</a>
                                     </li>
                                     <li class="divider"></li>

@@ -6,6 +6,8 @@ use App\Http\Requests\CsvImportRequest;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
+use App\Imports\UsersImport;
+use App\CsvData;
 
 class ImportsController extends Controller
 {
@@ -35,32 +37,42 @@ class ImportsController extends Controller
         return view($this->baseViewPath .'.import', compact('uploader'));
     }
 
-    public function parseImport(CsvImportRequest $request)
+    public function parseImport(Request $request)
     {
+        if (!is_null($request->request->get('attachment'))) {
+            try {
+                $file = $request->request->get('attachment')[0];
 
-        $path = $request->file('attachment')->getRealPath();
-        dump($path);
-        die;
-        
+                $thefile = $file['title'];
+                $content = $file['value'];
+                $path = \Storage::disk('uploads')->getAdapter()->getPathPrefix(). $thefile;
+                $savedPath = $this->base64ToFile($content, $path);
+
+            } catch (Exception $e) {
+                Session::put('error', $e->getMessage());
+            }
+        }
+
         if ($request->has('header')) {
-            $data = Excel::load($path, function($reader) {})->get()->toArray();
-        } else {
-            $data = array_map('str_getcsv', file($path));
+            $data = (new UsersImport)->toArray($thefile,'uploads');
+            //$data = Excel::load($savedPath, function($reader) {})->get()->toArray();
         }
 
         if (count($data) > 0) {
             if ($request->has('header')) {
                 $csv_header_fields = [];
-                foreach ($data[0] as $key => $value) {
-                    $csv_header_fields[] = $key;
+                foreach ($data[0][0] as $key => $value) {
+                    if($key != "") {
+                        $csv_header_fields[] = $key;
+                    }
                 }
             }
-            $csv_data = array_slice($data, 0, 2);
+            $csv_data = array_slice($data[0], 0, 2);
 
             $csv_data_file = CsvData::create([
-                'csv_filename' => $request->file('csv_file')->getClientOriginalName(),
+                'csv_filename' => $thefile,
                 'csv_header' => $request->has('header'),
-                'csv_data' => json_encode($data)
+                'csv_data' => json_encode($csv_data)
             ]);
         } else {
             return redirect()->back();
@@ -87,6 +99,17 @@ class ImportsController extends Controller
         }*/
 
         return view($this->baseViewPath .'.\Dompdf\Positioner\Absoluteimport_success');
+    }
+
+    protected function base64ToFile($base64String, $outputFile) {
+        $ifp = fopen($outputFile, "wb"); 
+    
+        $data = explode(',', $base64String);
+    
+        fwrite($ifp, base64_decode($data[1])); 
+        fclose($ifp); 
+    
+        return $outputFile; 
     }
 
 }

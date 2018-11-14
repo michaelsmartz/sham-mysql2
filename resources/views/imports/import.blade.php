@@ -2,6 +2,7 @@
 @section('title','Import data')
 
 @section('content')
+    {{-- 
     <div class="row">
 
         <div class="col-xs-12">
@@ -97,6 +98,7 @@
             </section>
         </div>
     </div>
+    --}}
 
     <div class="row">
         <div class="col-xs-12">
@@ -120,26 +122,28 @@
         <div class="col-xs-12">
             <form role="form" name="import_form" id="import_form" role="form" method="POST" action="{{ route('import_parse') }}" enctype="multipart/form-data" >
                 {{ csrf_field() }}
+                <input name="header" type="hidden" value="1">
                 <div class="panel panel-primary setup-content" id="step-1">
                     <div class="panel-heading">
                         <h3 class="panel-title"><i class="fa fa-download"></i> Step <span>1</span>: <span>Download the Template</span></h3>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
-                            <p>You may click <a href="#" class="text-primary">here</a> to download the Excel template file.</p>
+                            <p>You may click <a href="{{asset('Sham_Employees_Import_Template.xlsx')}}" class="text-primary">here</a> to download the Excel template file.</p>
                             <p><strong class="text-danger">Note: </strong>Required columns are marked with an <label class="text-danger">&lowast;</label>.Please fill a copy of the above template file with the data to import and upload it when you are ready</p>
                         </div>
                         <div class="form-group {{ $errors->has('attachment') ? 'has-error' : '' }}">
                             @include('partials.uploader',[
                                 'route' => 'import.store',
-                                'uploader' => $uploader
-                                
+                                'uploader' => $uploader,
+                                'multiple' => ''
                             ])
                         </div>
-                        <button class="btn btn-primary nextBtn pull-right" type="submit">Next</button>
+                        <button class="btn btn-primary pull-right" type="submit">Next</button>
                     </div>
                 </div>
-                
+            </form>
+
                 <div class="panel panel-primary setup-content" id="step-2">
                     <div class="panel-heading">
                         <h3 class="panel-title">Destination</h3>
@@ -175,7 +179,7 @@
                         <button class="btn btn-success pull-right" type="submit">Finish!</button>
                     </div>
                 </div>
-            </form>
+            
         </div>
     </div>
 
@@ -185,14 +189,14 @@
 <link rel="stylesheet" type="text/css" href="{{url('/')}}/css/import_steps.min.css">
 <script>
     $(document).ready(function () {
-
+        
         var navListItems = $('div.setup-panel div a'),
             allWells = $('.setup-content'),
             allPrevBtn = $('.prevBtn'),
             allNextBtn = $('.nextBtn');
 
         allWells.hide();
-
+        
         navListItems.click(function (e) {
             e.preventDefault();
             var $target = $($(this).attr('href')),
@@ -206,8 +210,9 @@
                 $target.find('input:eq(0)').focus();
             }
         });
-
+        
         allNextBtn.click(function () {
+            /*
             var curStep = $(this).closest(".setup-content"),
                 curStepBtn = curStep.attr("id"),
                 nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a"),
@@ -223,7 +228,9 @@
             }
 
             if (isValid) nextStepWizard.removeAttr('disabled').trigger('click');
+            */
         });
+        
 
         allPrevBtn.click(function(){
             var curStep = $(this).closest(".setup-content"),
@@ -232,9 +239,10 @@
 
             prevStepWizard.removeAttr('disabled').trigger('click');
         });
+        
 
         $('div.setup-panel div a.btn-success').trigger('click');
-
+        
     });
 
 </script>

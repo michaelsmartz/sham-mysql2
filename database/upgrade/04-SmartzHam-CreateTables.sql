@@ -152,3 +152,5 @@ alter table `audits` add index `audits_user_id_user_type_index`(`user_id`, `user
 create table `audits_pivot` (`id` int unsigned not null auto_increment primary key, `event` varchar(191) not null, `auditable_id` int unsigned not null, `auditable_type` varchar(191) not null, `relation_id` int unsigned not null, `relation_type` varchar(191) not null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table `audits_pivot` add index `audits_pivot_auditable_id_auditable_type_index`(`auditable_id`, `auditable_type`);
 alter table `audits_pivot` add index `audits_pivot_relation_id_relation_type_index`(`relation_id`, `relation_type`);
+
+create table `csv_data` (`id` int unsigned not null auto_increment primary key, `csv_filename` varchar(255) not null, `csv_header` tinyint(1) not null default '0', `csv_data` longtext not null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate utf8mb4_unicode_ci;
