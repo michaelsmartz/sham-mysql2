@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use App\Imports\UsersImport;
-use App\CsvData;
+use App\CsvDatum;
 
 class ImportsController extends Controller
 {
@@ -55,21 +55,26 @@ class ImportsController extends Controller
 
         if ($request->has('header')) {
             $data = (new UsersImport)->toArray($thefile,'uploads');
-            //$data = Excel::load($savedPath, function($reader) {})->get()->toArray();
         }
 
         if (count($data) > 0) {
             if ($request->has('header')) {
                 $csv_header_fields = [];
                 foreach ($data[0][0] as $key => $value) {
-                    if($key != "") {
-                        $csv_header_fields[] = $key;
+                    if(\strlen($key) < 1) {
+                        continue;
                     }
+                    $csv_header_fields[] = $key;
                 }
             }
+
             $csv_data = array_slice($data[0], 0, 2);
 
-            $csv_data_file = CsvData::create([
+            foreach ($csv_data as &$value) {
+                $value = array_filter($value);
+            }
+
+            $csv_data_file = CsvDatum::create([
                 'csv_filename' => $thefile,
                 'csv_header' => $request->has('header'),
                 'csv_data' => json_encode($csv_data)
@@ -84,21 +89,40 @@ class ImportsController extends Controller
 
     public function processImport(Request $request)
     {
-        /*$data = CsvData::find($request->csv_data_file_id);
+        $data = CsvDatum::find($request->csv_data_file_id);
         $csv_data = json_decode($data->csv_data, true);
+        $skippedColumns = [];
+
+        foreach($request->fields as $column => $value){
+            if(trim(strtoupper($value)) === 'SKIP') {
+                $skippedColumns[] = $column;
+            }
+        }
+
         foreach ($csv_data as $row) {
-            $contact = new Contact();
-            foreach (config('app.db_fields') as $index => $field) {
-                if ($data->csv_header) {
+
+            $contact = new \stdClass();
+            foreach (CsvDatum::$dbFields as $index => $field) {
+                //dump($index); dump($field);
+
+                try{
+                    if(in_array($field, $skippedColumns) ){
+                        continue;
+                    }
+                    //if ($data->csv_header) {
                     $contact->$field = $row[$request->fields[$field]];
-                } else {
-                    $contact->$field = $row[$request->fields[$index]];
+                    //} else {
+                    //    $contact->$field = $row[$request->fields[$index]];
+                    //}
+                } catch(Exception $e) {
+
                 }
             }
-            $contact->save();
-        }*/
+            dump($contact);
+            //$contact->save();
+        }
 
-        return view($this->baseViewPath .'.\Dompdf\Positioner\Absoluteimport_success');
+        return view($this->baseViewPath .'.import_success');
     }
 
     protected function base64ToFile($base64String, $outputFile) {

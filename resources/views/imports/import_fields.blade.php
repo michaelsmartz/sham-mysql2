@@ -7,8 +7,8 @@
             <div class="stepwizard">
                 <div class="stepwizard-row setup-panel">
                     <div class="stepwizard-step col-xs-4"> 
-                        <a href="#step-1" type="button" class="btn btn-default btn-circle" disabled="disabled"><i class="fa fa-download"></i></a>
-                        <p><small>Step <span>1</span>: <span>Download the Template</span></small></p>
+                        <a href="{{route('import')}}" type="button" class="btn btn-default btn-circle"><i class="fa fa-download"></i></a>
+                        <p><small><span>Download the Template</span></small></p>
                     </div>
                     <div class="stepwizard-step col-xs-4"> 
                         <a href="#step-2" type="button" class="btn btn-success btn-circle"><i class="fa fa-clone"></i></a>
@@ -23,7 +23,7 @@
         </div>
         <div class="col-xs-12">
                 <div class="panel panel-primary setup-content">
-                    <div class="panel-heading">Map Columns</div>
+                    <div class="panel-heading"><i class="fa fa-clone"></i> Map Columns</div>
 
                     <div class="panel-body">
                         <form class="form-horizontal" method="POST" action="{{ route('import_process') }}">
@@ -49,8 +49,8 @@
                                 <tr>
                                     @foreach ($csv_data[0] as $key => $value)
                                         <td>
-                                            <select name="fields[{{ $key }}]">
-                                                @foreach (\App\CsvData::$dbFields as $db_field)
+                                            <select name="fields[{{ $key }}]" placeholder="Skip">
+                                                @foreach (\App\CsvDatum::$dbFields as $db_field)
                                                     <option value="{{ (\Request::has('header')) ? $db_field : $loop->index }}"
                                                         @if ($key === $db_field) selected @endif>{{ $db_field }}</option>
                                                 @endforeach
@@ -61,9 +61,7 @@
                                 
                             </table>
 
-                            <button type="submit" class="btn btn-primary">
-                                Import Data
-                            </button>
+                            <button type="submit" class="btn btn-primary pull-right">Import Data</button>
                         </form>
                     </div>
                 </div>

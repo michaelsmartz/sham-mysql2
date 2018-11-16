@@ -106,7 +106,7 @@
                 <div class="stepwizard-row setup-panel">
                     <div class="stepwizard-step col-xs-4"> 
                         <a href="#step-1" type="button" class="btn btn-success btn-circle"><i class="fa fa-download"></i></a>
-                        <p><small>Step <span>1</span>: <span>Download the Template</span></small></p>
+                        <p><small><span>Download the Template</span></small></p>
                     </div>
                     <div class="stepwizard-step col-xs-4"> 
                         <a href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled"><i class="fa fa-clone"></i></a>
@@ -125,7 +125,7 @@
                 <input name="header" type="hidden" value="1">
                 <div class="panel panel-primary setup-content" id="step-1">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-download"></i> Step <span>1</span>: <span>Download the Template</span></h3>
+                        <h3 class="panel-title"><i class="fa fa-download"></i> <span>Download the Template</span></h3>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">

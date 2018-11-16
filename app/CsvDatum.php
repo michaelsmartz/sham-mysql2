@@ -2,9 +2,9 @@
 
 namespace App;
 
-class CsvData extends Model
+class CsvDatum extends Model
 {
-    protected $table = 'csv_data';
+    //protected $table = 'csv_data';
     
     protected $fillable = ['csv_filename', 'csv_header', 'csv_data'];
 
