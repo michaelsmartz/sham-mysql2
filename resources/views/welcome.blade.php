@@ -51,7 +51,7 @@
             .links > a {
                 color: #636b6f;
                 padding: 0 25px;
-                font-size: 12px;
+                font-size: 14px;
                 font-weight: 600;
                 letter-spacing: .1rem;
                 text-decoration: none;
@@ -80,7 +80,7 @@
 
             <div class="">
                 <div class="text-center">
-                    <picture>
+                    <a href="{{ url('/home') }}"><picture >
                         <source
                         media="(max-width: 767px)"
                         sizes="(max-width: 200px) 100vw, 200px"
@@ -102,7 +102,7 @@
                         /dist/img/logo-gold-login_dy8gg5_c_scale,w_200.png 200w"
                         src="/dist/img/logo-gold-login_dy8gg5_c_scale,w_200.png"
                         alt="">
-                    </picture>
+                    </picture></a>
                 </div>
             </div>
         </div>

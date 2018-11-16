@@ -128,7 +128,7 @@ class SystemSubModule extends Model
 	const CONST_LEAVE_TYPES = 118;
 	const CONST_PRODUCTS = 119;
 	const CONST_REPORT_TEMPLATES = 120;
-	const CONST_TOPICS = 121;
+	const CONST_TOPICS = 120;
 	const CONST_TODOLIST_INSTANCES = 122;
 	const CONST_MY_DOCUMENTS = 123;
 	const CONST_MY_TODOLISTS = 124;

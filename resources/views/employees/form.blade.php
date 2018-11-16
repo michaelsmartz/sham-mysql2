@@ -311,12 +311,11 @@
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Job Title/Reporting Line</label>
-                    {!! Form::hidden('line_manager_id', old('line_manager_id', isset($employee->line_manager_id) ? $employee->line_manager_id : null), ['id'=>'line_manager_id']) !!}
                     <div class="col-sm-5">
                         {!! Form::select('job_title_id', $jobTitles, old('job_title_id', isset($employee->job_title_id) ? $employee->job_title_id : null), ['placeholder' => 'Job Title..', 'class' => 'form-control select-multiple']) !!}
                     </div>
                     <div class="col-sm-5">
-                        {!! Form::select('line_manager_id', $jobTitles, old('line_manager_id', isset($employee->line_manager_id) ? $employee->line_manager_id : null), ['placeholder' => 'Line Manager..', 'class' => 'form-control select-multiple']) !!}
+                        {!! Form::groupSelect('line_manager_id', $lineManagers, '', 'description', 'full_name','employee_id', old('line_manager_id', isset($employee->line_manager_id) ? $employee->line_manager_id : null), ['placeholder' => 'Line Manager..', 'class' => 'form-control select-multiple']) !!}
                     </div>
                 </div>
                 <div class="form-group">

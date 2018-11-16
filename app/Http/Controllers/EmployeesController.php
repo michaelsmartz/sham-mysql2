@@ -168,7 +168,7 @@ class EmployeesController extends CustomController
 
             list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
                  $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
-                 $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
+                 $jobTitles, $lineManagers, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
 
         }
 
@@ -440,7 +440,7 @@ class EmployeesController extends CustomController
         $teams = Team::pluck('description','id')->all();
         $employeeStatuses = EmployeeStatus::pluck('description','id')->all();
         $jobTitles = JobTitle::orderBy('description')->pluck('description','id')->all();
-
+        $lineManagers = JobTitle::jobReportingLines()->all();
         $divisions = Division::pluck('description','id')->all();
         $branches = Branch::pluck('description','id')->all();
         $skills = Skill::pluck('description','id')->all();
@@ -448,7 +448,7 @@ class EmployeesController extends CustomController
 
         $results = array($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups, 
                          $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses, 
-                         $jobTitles, $divisions, $branches, $skills, $disabilities
+                         $jobTitles, $lineManagers, $divisions, $branches, $skills, $disabilities
         );
 
         return $results;
