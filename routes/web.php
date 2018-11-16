@@ -164,7 +164,7 @@ Auth::routes();
 
         #region Quality
             Route::resource('assessments', 'AssessmentsController' );
-            Route::resource('assessment_categories', 'AssessmentCategoriesController' );
+            Route::resource('assessment_categories', 'AssessmentCategoriesController');
             Route::resource('category_questions', 'CategoryQuestionsController');
             Route::fileResource('evaluations', 'EvaluationsController');
             Route::any('instances', 'EvaluationsController@showInstances');
@@ -172,6 +172,7 @@ Auth::routes();
             Route::post('evaluations/{id}/EvaluationId/{EvaluationId}/submitassessment', 'EvaluationsController@submitAssessment')->name('evaluations.submit_assessment');
             Route::get('evaluations/{assessor}/score/{evaluationid}/show', 'EvaluationsController@score')->name('evaluations.score');
             Route::any('evaluations/{Id}/EvaluationId/{EvaluationId}/AssessorId/{AssessorId}/summary', 'EvaluationsController@summary')->name('evaluationassessor.summary');
+            Route::get('getaudio', 'EvaluationsController@getaudio');
         #endregion
 
         #region Imports

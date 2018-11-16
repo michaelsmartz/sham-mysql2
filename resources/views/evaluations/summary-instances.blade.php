@@ -122,7 +122,8 @@
 @section("post-body")
     <script>
 
-        $("form :input").attr("disabled",true);
+        //$("form :input").attr("disabled",true);
+        $("#questionaireform :input").attr("disabled", true);
         $('input[type="text"], textarea').attr('readonly','readonly');
 
         $('.file-download').click(function() {

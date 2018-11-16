@@ -115,6 +115,7 @@
             {{ Form::label('QA Sample','QA Sample',array('id'=>'','class'=>'')) }}
             {{ Form::radio('status','savecontent',true,['id'=>'savecontent']) }} Upload Sample File
             {{ Form::radio('status','savepath',false,['id'=>'savepath']) }} Save Path Only
+            {{ Form::radio('status','chatsaudio',false,['id'=>'chatsaudio']) }} SmartzChats Audio
         </div>
 
         <div id="contentcontainer">
@@ -132,6 +133,17 @@
         <div class="form-group col-xs-12" id="filecontainer">
                 {{ Form::label('QA File Path','QA File Path',array('id'=>'','class'=>'')) }}
                 {!! Form::text('url_path', old('url_path', optional($evaluation)->url_path),($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'QA File Path', 'id'=>'UrlPath']) !!}
+        </div>
+
+        <div id="smartzchatcontainer">
+            <div class="col-sm-3">
+                <div class="input-group input-group-sm">
+                    {!! Form::text('filename', old('filename', optional($evaluation)->url_path),($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Filename', 'id'=>'smartzrecordingreference']) !!}
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-sm" type="button" data-toggle="modal" data-target="#myModal">Search</button>
+                      </span>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -171,9 +183,59 @@
 
 </div>
 
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Smartz Chats Audio</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-7">
+                        <div class="input-group input-group-sm">
+                            {!! Form::text('audiodate', null,($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Choose Date', 'id'=>'recordingdate']) !!}
+                            <span class="input-group-btn">
+                                <button class="btn btn-info btn-sm" type="button" id="searchaudio">Search</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-xs-12" style="overflow: auto;">
+                        <table class="table table-striped table-bordered table-hover" id="datatable">
+                            <tr>
+                                <th>Filename</th>
+                                <th>Disposition</th>
+                                <th>Duration</th>
+                                <th>use</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="selectAudioFromModal" name="selectAudioFromModal">Select</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@component('partials.index')
+@endcomponent
+
 @section('post-body')
+
     <script src="{{url('/')}}/js/tables.min.js"></script>
     <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <script>
 
         $(function () {
@@ -220,6 +282,7 @@
             //$('#contentcontainer').hide();
             //$('#filecontainer').show(200);
             $('#contentcontainer').slideUp(300);
+            $('#smartzchatcontainer').slideUp(300);
             $('#filecontainer').slideDown(300);
             $('#UrlPath').addClass("required");
             $('#QaSample').removeClass("required");
@@ -230,6 +293,7 @@
             //$('#filecontainer').hide();
 
             $('#contentcontainer').slideDown(300);
+            $('#smartzchatcontainer').slideUp(300);
             $('#filecontainer').slideUp(300);
 
             mode = '{{$mode}}';
@@ -241,8 +305,26 @@
             }
         });
 
-        $(document).ready(function(){
+        $('#chatsaudio').click(function() {
+            //$('#contentcontainer').show(200);
+            //$('#filecontainer').hide();
 
+            $('#contentcontainer').slideUp(300);
+
+            $('#filecontainer').slideUp(300);
+            $('#smartzchatcontainer').slideDown(300);
+
+            mode = '{{$mode}}';
+            $('#UrlPath').removeClass("required");
+
+            if(mode == 'create')
+            {
+                $('#QaSample').addClass("required");
+            }
+        });
+
+        $(document).ready(function(){
+            var recordingfilereference;
             mode = '{{$mode}}';
             //alert(mode);
             if(mode == 'create')
@@ -250,6 +332,42 @@
                 //$('#QaSample').addClass("required");
                 $( "#savecontent" ).click();
             }
+
+            $("#searchaudio").click(function(){
+
+                var data = {"apiUsername": "Development", "apiPassword" : "D3velop%m3Nt", "dateFrom": "2018-10-01","dateTo":"2018-11-04"};
+                $.post("https://chats-development.smartz-solutions.com/APIV1/CallRecords", data, function(result){
+                    //$("span").html(result);
+                    //console.log(result);
+
+                    $('#datatable tr').not(':first').not(':last').remove();
+                    var html = '';
+                    for(var i = 0; i < result.length; i++){
+
+                        if(result[i].recording_filename.length > 0){
+                            var dateofrecording = result[i].call_start_date.split(' ')[0];
+                            html += '<tr>'+
+                                    '<td class="recordingfile">' + dateofrecording + '/' +result[i].recording_filename + '</td>' +
+                                    '<td>' + result[i].disposition + '</td>' +
+                                    '<td>' + result[i].duration + '</td>' +
+                                    '<td> <input type="radio"  value="1" name="selectedaudio" /></label> </td>' +
+                                    '</tr>';
+                        }
+                    }
+                    $('#datatable tr').first().after(html);
+                })
+            });
+
+            $("#selectAudioFromModal").click(function(){
+                console.log('Test');
+                $("#smartzrecordingreference").val(recordingfilereference);
+                $('#myModal').modal("hide");
+            });
+
+
+            $("#datatable").on('click', "input[name=selectedaudio]:radio", function() {
+                recordingfilereference = $(this).closest('tr').find('.recordingfile').text();
+            });
 
             if(mode == 'edit')
             {
@@ -262,10 +380,21 @@
                 else if(usecontent == "-1"){
 
                 }
+                if(usecontent == "2")
+                {
+                    $( "#chatsaudio" ).click();
+                }
                 else {
                     $( "#savepath" ).click();
                 }
             }
         });
     </script>
+    <style>
+
+        .modal-body{
+            height: 350px;
+            overflow-y: auto;
+        }
+    </style>
 @endsection

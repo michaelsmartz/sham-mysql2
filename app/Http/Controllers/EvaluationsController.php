@@ -93,6 +93,12 @@ class EvaluationsController extends CustomController
                 //$input['url_path'] = $input['UrlPath'];
             }
 
+            elseif($input['status'] == 'chatsaudio')
+            {
+                $input['is_usecontent'] = 2;
+                $input['url_path'] = $input['filename'];
+            }
+
             $context = $this->contextObj->addData($input);
             $this->attachSingleFile($request, $context->id,'attachment');
 
@@ -171,6 +177,11 @@ class EvaluationsController extends CustomController
                 $input['is_usecontent'] = 0;
                 //$input['url_path'] = $input['UrlPath'];
             }
+            elseif($input['status'] == 'chatsaudio')
+            {
+                $input['is_usecontent'] = 2;
+                $input['url_path'] = $input['filename'];
+            }
 
             unset($input['status']);
             unset($input['q']);
@@ -239,10 +250,17 @@ class EvaluationsController extends CustomController
         foreach($assessors as $assessor){
             $workingscore = $evaluationDetails->evaluationResults->where('assessor_employee_id',$assessor->employee_id)->where('is_active',1)
                             ->sum('pivot.points');
-            $overallscore =  ($workingscore/$assessmentTotalScores)*100;
 
-            $assessor->overall_score = round($overallscore,0);
+            if($assessmentTotalScores > 0){
+                $overallscore =  ($workingscore/$assessmentTotalScores)*100;
+                $assessor->overall_score = round($overallscore,0);
+            }
+            else{
+                $assessor->overall_score = "";
+            }
+
         }
+
         //https://laravel.io/forum/06-23-2014-eager-loading-with-multiple-relations
         return view('partials.evaluationinstances', compact('evaluationDetails'));
     }
@@ -766,6 +784,35 @@ class EvaluationsController extends CustomController
             ->with('Evaluationid',$evaluationid)
             ->with('MandatoryQuestionComment',$mandatoryPassQuestionsComment)
             ->with('AssessmentDetails',$assessmentdetails);
+    }
+
+    public function getaudio(Request $request)
+    {
+
+        //https://laracasts.com/discuss/channels/requests/streaming-audio
+        //https://stackoverflow.com/questions/45125656/convert-binary-to-file-using-php
+        // Binary file Response
+
+        $post = [
+            "apiUsername"=> "Development",
+            "apiPassword" => "D3velop%m3Nt",
+            "callDate" => "2018-10-26 13:52:30",
+            "recordingFilename" => "1540554779.152.wav"
+        ];
+
+        $ch = curl_init("https://chats-development.smartz-solutions.com/APIV1/CallRecordByFilename");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        $response = curl_exec($ch);
+
+        dump($response);
+
+        return($response);
+
+        //return (new Response($response, 206))
+        //   ->header('Content-Range', 'bytes');
     }
 
 }

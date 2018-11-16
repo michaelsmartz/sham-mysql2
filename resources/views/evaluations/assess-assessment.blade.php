@@ -14,10 +14,14 @@
                 </div>
 
                 <p><b>Employee Name: </b>{{$employeeDetails}}</p>
-                @if($usecontent)
+                @if($usecontent == 1)
                     <p><b>Audio File: </b>
                         <button type="button" class="btn btn-default btn-sm file-download">Download</button>
                     </p>
+                @elseif($usecontent == 2)
+                    <p><b>Audio File: </b></p>
+                    <audio src="/getaudio/" controls="true"  type="audio/mpeg" ></audio>
+
                 @else
                     <p><b>QA Sample: </b>{{$urlpath}}
                     </p>
