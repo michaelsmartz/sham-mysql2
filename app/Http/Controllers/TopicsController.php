@@ -292,7 +292,6 @@ class TopicsController extends CustomController
             }
 
         } catch (Exception $exception) {
-            dump($exception);
             $response['status'] = 'KO';
             $responseCode = 500;
         }

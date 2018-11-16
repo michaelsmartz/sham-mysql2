@@ -2483,3 +2483,6 @@ ALTER TABLE `assets`
 	ALTER `warrantyexpires_at` DROP DEFAULT;
 ALTER TABLE `assets`
 	CHANGE COLUMN `warrantyexpires_at` `warranty_expiry_date` DATE NOT NULL AFTER `po_number`;
+
+ALTER TABLE `companies`
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `name`;	

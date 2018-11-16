@@ -243,11 +243,12 @@
             })
         });
         request.fail(function (jqXHR, textStatus) {
-            console.log('fail');
+            alerty.toasts('Could not save changes. <br>Please ensure that required fields have been filled!',
+            {bgColor:'#b94a48',time:5000});
         });
 
         request.always(function() {
-            //btnInstance.html(btnInstance.data('original-text'));
+            btnInstance.html(btnInstance.data('original-text'));
         });
 
         return request;

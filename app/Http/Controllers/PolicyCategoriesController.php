@@ -110,12 +110,11 @@ class PolicyCategoriesController extends CustomController
             $input = array_except($request->all(),array('_token','_method','attachment','redirectsTo'));
 
             $this->contextObj->updateData($id, $input);
-            $this->attach($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
-            \Session::put('error', 'could not create '. $this->baseFlash . '!');
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
         return Redirect::to($redirectsTo);
