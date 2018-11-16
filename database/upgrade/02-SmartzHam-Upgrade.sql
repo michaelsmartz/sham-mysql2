@@ -2474,3 +2474,12 @@ ALTER TABLE `history_departments`
 	ALTER `updated_by` DROP DEFAULT;
 ALTER TABLE `history_departments`
 	CHANGE COLUMN `updated_by` `updated_by_employee_id` VARCHAR(50) NOT NULL AFTER `date_occurred`;
+
+#-- 16/11/2018
+ALTER TABLE `asset_suppliers`
+	CHANGE COLUMN `Comments` `comments` VARCHAR(256) NULL DEFAULT NULL AFTER `email_address`;
+
+ALTER TABLE `assets`
+	ALTER `warrantyexpires_at` DROP DEFAULT;
+ALTER TABLE `assets`
+	CHANGE COLUMN `warrantyexpires_at` `warranty_expiry_date` DATE NOT NULL AFTER `po_number`;

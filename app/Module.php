@@ -22,6 +22,8 @@ class Module extends Model
         'passmark_percentage',
     ];
 
+    public $searchable = ['description', 'overview', 'objectives', 'passmark_percentage', 'is_public'];
+
     public function topics()
     {
         return $this->belongsToMany(Topic::class);

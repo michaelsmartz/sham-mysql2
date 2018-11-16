@@ -61,7 +61,7 @@
 
 <div class="form-group col-xs-4 {{ $errors->has('warranty_expiry_date') ? 'has-error' : '' }}">
     <label for="warranty_expiry_date">Warranty Expiry Date</label>
-        <input class="form-control" name="warranty_expiry_date" type="text" id="warranty_expiry_date" value="{{ old('warranty_expiry_date', optional($asset)->warranty_expiry_date) }}" required="true" placeholder="Enter warranty expiry date">
+        <input class="form-control datepicker" name="warranty_expiry_date" type="text" id="warranty_expiry_date" value="{{ old('warranty_expiry_date', optional($asset)->warranty_expiry_date) }}" required="true" placeholder="Enter warranty expiry date">
         {!! $errors->first('warranty_expiry_date', '<p class="help-block">:message</p>') !!}
 </div>
 

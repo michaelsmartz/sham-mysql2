@@ -89,7 +89,7 @@ class EmployeesController extends CustomController
     public function create(){
         list($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups,
         $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses,
-        $jobTitles, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
+        $jobTitles, $lineManagers, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
         $uploader = [
             "fieldLabel" => "Add attachments...",
             "restrictionMsg" => "Upload document files",
