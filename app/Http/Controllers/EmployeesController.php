@@ -100,8 +100,11 @@ class EmployeesController extends CustomController
         ];
 
         $sfeCode = SysConfigValue::where('key','=', 'LATEST_SFE_CODE')->first();
-        $this->contextObj->employee_code = $this->increment($sfeCode->value);
-        $sfeCode->value = $this->contextObj->employee_code;
+
+        if($sfeCode !== null) {
+            $this->contextObj->employee_code = $this->increment($sfeCode->value);
+            $sfeCode->value = $this->contextObj->employee_code;
+        }
         $sfeCode->save();
 
         if(!isset($this->contextObj->picture)){

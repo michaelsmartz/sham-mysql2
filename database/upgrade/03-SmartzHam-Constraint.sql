@@ -957,4 +957,6 @@ ALTER TABLE `history_job_titles`
 	ADD INDEX `IX_HistoryJobTitle_employee_id` (`employee_id`);
 ALTER TABLE `history_disciplinary_actions`
 	ADD INDEX `IX_HistoryDisciplinaryActions_employee_id` (`employee_id`);
-    
+
+#----- surveys
+ALTER TABLE `surveys` DROP FOREIGN KEY `FK_Surveys_ShamUsers`
