@@ -9,6 +9,7 @@ use App\Department;
 
 use App\DateHelper;
 use App\Employee;
+use App\Enums\DayType;
 use App\Http\Requests;
 use App\TimeGroup;
 use Carbon\Carbon;
@@ -73,31 +74,28 @@ class SSPController extends CustomController
         if(sizeof($timeGroup) > 0) {
             $tg = TimeGroup::find($timeGroup['id']);
 
-            $tgDays = $tg->days()->get(['name', 'day_id', 'day_number'])->all();
             $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time', 'time_period_type'])->all();
 
-            if (!empty($timeGroup) && $tgTimePeriods != null && $tgDays != null) {
+            if (!empty($timeGroup) && $tgTimePeriods != null) {
+                $counter_days = 0;
                 foreach ($tgTimePeriods as $tgTimePeriod) {
-                    $counter_days = 0;
-                    foreach ($tgDays as $tgDay) {
+                    $day = DayType::getDescription($tgTimePeriods[$counter_days]->pivot->day_id);
                         //if TimePeriodType 1:  is for working hours
                         if ($tgTimePeriod->time_period_type == 1) {
-                        $timeGroup['time_period'][$tgDay->name]['description'] = $tgTimePeriod->description;
-                        $timeGroup['time_period'][$tgDay->name]['start_time'] = $tgTimePeriod->start_time;
-                        $timeGroup['time_period'][$tgDay->name]['end_time'] = $tgTimePeriod->end_time;
-                        $timeGroup['time_period'][$tgDay->name]['day_count'] = $counter_days;
+                        $timeGroup['time_period'][$day]['description'] = $tgTimePeriod->description;
+                        $timeGroup['time_period'][$day]['start_time'] = $tgTimePeriod->start_time;
+                        $timeGroup['time_period'][$day]['end_time'] = $tgTimePeriod->end_time;
+                        $timeGroup['time_period'][$day]['day_count'] = $counter_days;
                         }
                         //if TimePeriodType 2: add lunch hours to array
                         else if ($tgTimePeriod->time_period_type == 2) {
-                            $timeGroup['time_period'][$tgDay->name]['breaks'][$tgTimePeriod->description]
+                            $timeGroup['time_period'][$day]['breaks'][$tgTimePeriod->description]
                                 = self::getLunchHours($tgTimePeriod);
                         }
                         $counter_days++;
-                    }
                 }
             }
         }
-
         return $timeGroup;
     }
 
