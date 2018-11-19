@@ -83,9 +83,9 @@ class SSPMyCourseAssessmentsController extends CustomController
                             $choicePoints = explode('|', $assessment->question_choices_points);
                             $course['assessment_total_possible_points'] += $assessment->question_points;
                             $course['assessment_overall_points'] +=$choicePoints[array_search($assessment->response, $choices)];
-                            $course['assessment_date_completed'] = $assessment->moduleAssessmentResponse->date_completed;
-                            $course['assessment_description'] = $assessment->moduleAssessment->description;
-                            $course['assessment_pass_mark'] = $assessment->moduleAssessment->pass_mark;
+                            $course['assessment_date_completed'] = optional($assessment->moduleAssessmentResponse)->date_completed;
+                            $course['assessment_description'] = optional($assessment->moduleAssessment)->description;
+                            $course['assessment_pass_mark'] = optional($assessment->moduleAssessment)->pass_mark;
                         }
                     }
                 }
