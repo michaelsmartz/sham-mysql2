@@ -277,28 +277,28 @@ class SSPMyDetailsController extends CustomController
             $employeeObject->formatted_date_joined = date("d-m-Y", strtotime($employeeObject->date_joined));
         }
 
-        if(empty($employeeObject->picture) || strlen($employeeObject->picture) < 10){
+        if(!isset($employeeObject->picture)){
             $employeeObject->picture = "/img/avatar.png";
         }
 
         if (isset($employeeObject->jobTitle)) {
-            $employeeObject->job = $employeeObject->jobTitle->description;
+            $employeeObject->job = optional($employeeObject->jobTitle)->description;
         }
 
         if (isset($employeeObject->team)) {
-            $employeeObject->team = $employeeObject->team->description;
+            $employeeObject->team = optional($employeeObject->team)->description;
         }
 
         if (isset($employeeObject->department)) {
-            $employeeObject->department = $employeeObject->department->description;
+            $employeeObject->department = optional($employeeObject->department)->description;
         }
 
         if (isset($employeeObject->branch)) {
-            $employeeObject->branch = $employeeObject->branch->description;
+            $employeeObject->branch = optional($employeeObject->branch)->description;
         }
 
         if (isset($employeeObject->division)) {
-            $employeeObject->division = $employeeObject->division->description;
+            $employeeObject->division = optional($employeeObject->division)->description;
         }
 
         if ($employeeObject != null) {
@@ -400,7 +400,7 @@ class SSPMyDetailsController extends CustomController
                                 $timeline = new Timeline();
                                 $timeline->ShortcutType = 1;
                                 $timeline->MainClass = 'info';
-                                $timeline->Description = "Joined Department: " . $historyDepartment->department->description;
+                                $timeline->Description = "Joined Department: " . optional($historyDepartment->department)->description;
                                 $timeline->EventType = $timelineEventType;
                                 $timeline->formattedDate = date("Y-m-d", strtotime($historyDepartment->date_occurred));
                                 $timeCompileResults[] = $timeline;
@@ -417,7 +417,7 @@ class SSPMyDetailsController extends CustomController
                                 $timeline = new Timeline();
                                 $timeline->ShortcutType = 2;
                                 $timeline->MainClass = 'success';
-                                $timeline->Description = "Reward: " . $historyReward->reward->description;
+                                $timeline->Description = "Reward: " . optional($historyReward->reward)->description;
                                 $timeline->EventType = $timelineEventType;
                                 $timeline->formattedDate = date("Y-m-d", strtotime($historyReward->date_occurred));
                                 $timeline->icon = 'fa fa-certificate';
