@@ -6,9 +6,9 @@
             <form action="" class="">
                 <ul style="margin-left:0;padding-left:0" class="list-unstyled">
                     <li>
-                        <input type="hidden" name="description" class="submitable-column-name" value="">
+                        <input type="hidden" name="description" class="submitable-column-name" id="submitable-column-name" value="">
                         <div class="table-search-form">
-                            <input type="search" name="" value="" placeholder="Search" class="search-input">
+                            <input type="search" name="search-term" value="{{old('search-term', null)}}" placeholder="Search" class="search-input" data-mirror="#submitable-column-name">
                             <div class="search-option">
                                 <button type="submit" data-wenk="Do the Search">
                                     <i class="fa fa-search"></i>

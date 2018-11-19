@@ -1,7 +1,5 @@
-@php
-    //if(sizeof($errors->bag) > 0){ dump($errors);}
-@endphp
 @extends('portal-index')
+
 @section('title','Employees')
 @section('subtitle','Add, edit and remove employees of your company')
 @section('content')
@@ -10,9 +8,9 @@
             <form action="" class="">
                 <ul style="margin-left:0;padding-left:0" class="list-unstyled">
                     <li>
-                        <input type="hidden" name="" class="submitable-column-name" value="">
+                        <input type="hidden" name="name" class="submitable-column-name" id="submitable-column-name" value="">
                         <div class="table-search-form">
-                            <input type="search" name="search-term" value="{{old('search-term', null)}}" placeholder="Search" class="search-input">
+                            <input type="search" name="search-term" value="{{old('search-term', null)}}" placeholder="Search" class="search-input" data-mirror="#submitable-column-name">
                             <div class="search-option">
                                 <button type="submit" data-wenk="Do the Search">
                                     <i class="fa fa-search"></i>
@@ -103,4 +101,14 @@
             @endcomponent
         </div>
     </div>
+@endsection
+
+@section('post-body')
+    <script>
+        $(function(){
+            $(':input[data-mirror]').each(function () {
+                $(this).mirror($(this).data('mirror'));
+            });
+        });
+    </script>
 @endsection

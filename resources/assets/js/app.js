@@ -36,6 +36,16 @@ function validateDigitQty(e) {
     } else return true;
 };
 
+$.fn.mirror = function (selector) {
+    return this.each(function () {
+        var $this = $(this);
+        var $selector = $(selector);
+        $this.bind('keyup change', function () {
+            $selector.val($this.val());
+        });
+    });
+};
+
 $('[data-toggle=offcanvas]').click(function() {
     $('.row-offcanvas').toggleClass('active');
 });
