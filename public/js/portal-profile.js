@@ -60,10 +60,29 @@ $(document).ready(function () {
             return data.job + ', joined on: ' + data.formatted_date_joined;
         });
 
-        self.Team = ko.observable(data.team.description);
-        self.Department = ko.observable(data.department.description);
-        self.Branch = ko.observable(data.branch.description);
-        self.Division = ko.observable(data.division.description);
+        if (data.team != null) {
+            self.Team = ko.observable(data.team.description);
+        }else{
+            self.Team = null;
+        }
+
+        if (data.department != null) {
+            self.Department = ko.observable(data.department.description);
+        }else{
+            self.Department = null;
+        }
+
+        if (data.branch != null) {
+            self.Branch = ko.observable(data.branch.description);
+        }else{
+            self.Branch = null;
+        }
+
+        if (data.division != null) {
+            self.Division = ko.observable(data.division.description);
+        }else{
+            self.Division = null;
+        }
 
         self.marital_status_id = ko.observable(data.marital_status_id);
         self.spouse_full_name = ko.observable(data.spouse_full_name);
