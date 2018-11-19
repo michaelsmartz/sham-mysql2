@@ -184,7 +184,7 @@
                 <!-- <li> <a href="{{URL::to('/')}}/buildings">Training Venue Management</a></li> -->
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_TRAINING_SESSION_MANAGEMENT]))
-                <li class="{{ (Request::is('training_sessions/*') || Request::is('training_sessions') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/training_sessions">Training Sessions</a></li>
+                <li class="{{ (Request::is('course_training_sessions/*') || Request::is('course_training_sessions') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/course_training_sessions">Training Sessions</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_TRAINING][App\SystemSubModule::CONST_TRAINING_REPORTS]))
                 <li> <a href="{{URL::to('/')}}/trainingreports">Training Reports</a></li>

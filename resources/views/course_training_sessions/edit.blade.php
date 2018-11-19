@@ -14,7 +14,7 @@
 @endif
 
 @section('postModalUrl') 
-    {{ optional($data)->is_final == 1 ? '' : route('training_sessions.update', $data->id) }}
+    {{ optional($data)->is_final == 1 ? '' : route('course_training_sessions.update', $data->id) }}
 @endsection
 
 @section('modalContent')
@@ -33,7 +33,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{route('training_sessions.update', $data->id)}}" id="edit_course_training_session_form" name="edit_course_training_session_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{route('course_training_sessions.update', $data->id)}}" id="edit_course_training_session_form" name="edit_course_training_session_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">

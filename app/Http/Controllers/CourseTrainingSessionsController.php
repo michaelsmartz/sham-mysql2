@@ -71,7 +71,7 @@ class CourseTrainingSessionsController extends CustomController
             $employees = array_get($request->all(), 'employees.id');
             $input = array_except($request->all(), array('_token','employees'));
 
-            $this->contextObj->addData($input);
+            $data = $this->contextObj->addData($input);
             // sync employee<--->training_session
             $data->employees()->sync($employees); //sync what has been selected
 
@@ -93,9 +93,11 @@ class CourseTrainingSessionsController extends CustomController
     public function edit(Request $request)
     {
         $data = $countries = null;
-        $id = Route::current()->parameter('training_session');
+        $id = Route::current()->parameter('course_training_session');
         if(!empty($id)) {
-            $data = $this->contextObj->findData($id);
+            $data = $this->contextObj::with('employees')->get()->where('id', $id)->first();
+//            $data = $this->contextObj->findData($id);
+            //dd($data);
             list($courses, $temp) = $this->createEditCommon($data->is_final);
             if($data->is_final == TRUE){
                 $employees = $data->employees->pluck('full_name','id');
@@ -105,6 +107,8 @@ class CourseTrainingSessionsController extends CustomController
                 $employees = $temp;
             }
         }
+
+        //dd($employees);
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit', compact('data','courses','participants','employees'))
@@ -118,7 +122,7 @@ class CourseTrainingSessionsController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath . '.edit', compact('data','courses','participants'));
+        return view($this->baseViewPath . '.edit', compact('data','courses','participants','employees'));
     }
 
     /**
@@ -167,7 +171,7 @@ class CourseTrainingSessionsController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('training_session');
+            $id = Route::current()->parameter('course_training_session');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');

@@ -2485,4 +2485,6 @@ ALTER TABLE `assets`
 	CHANGE COLUMN `warrantyexpires_at` `warranty_expiry_date` DATE NOT NULL AFTER `po_number`;
 
 ALTER TABLE `companies`
-	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `name`;	
+	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `name`
+
+ALTER TABLE `training_sessions` CHANGE `training_delivery_method_id` `training_delivery_method_id` INT(11) NULL DEFAULT NULL;

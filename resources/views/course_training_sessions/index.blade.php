@@ -55,7 +55,7 @@ Training Sessions are for <strong class="text-danger">non-public</strong> course
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'training_sessions.destroy'])
+            @component('partials.index', ['routeName'=> 'course_training_sessions.destroy'])
             @endcomponent
         </div>
     </div>
