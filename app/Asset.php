@@ -31,6 +31,17 @@ class Asset extends Model
                   'is_available'
               ];
 
+    public $searchable = [
+        'name',
+        'tag',
+        'serial_no',
+        'purchase_price',
+        'po_number',
+        'warranty_expiry_date',
+        'comments',
+        'is_available'
+        ];
+
     public function assetGroup()
     {
         return $this->belongsTo('App\AssetGroup','asset_group_id','id');
