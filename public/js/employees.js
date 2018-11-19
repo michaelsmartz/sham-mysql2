@@ -26965,9 +26965,10 @@ var app = new Vue({
                 });
             };
 
-            /*$("#birth_date").datepicker({
-                dateFormat: 'yy-mm-dd', changeMonth:true, changeYear: true
-            });*/
+            $("#birth_date").datepicker({
+                showButtonPanel: true,
+                dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true
+            });
             $("#birth_date").datepicker("option", "yearRange", "-65:-18");
 
             $(':input[data-mirror]').each(function () {
@@ -27274,6 +27275,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     mounted: function mounted() {
         $(this.$el).datepicker({
+            showButtonPanel: true,
             changeMonth: this.changeMonth,
             changeYear: this.changeYear,
             dateFormat: this.dateFormat,

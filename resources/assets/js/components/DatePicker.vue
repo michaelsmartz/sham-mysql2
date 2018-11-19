@@ -22,6 +22,7 @@ export default {
     },
     mounted: function () {
         $(this.$el).datepicker({
+            showButtonPanel: true,
             changeMonth: this.changeMonth,
             changeYear: this.changeYear,
             dateFormat: this.dateFormat,

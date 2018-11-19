@@ -50,9 +50,10 @@ const app = new Vue({
                 });
             };
 
-            /*$("#birth_date").datepicker({
+            $("#birth_date").datepicker({
+                showButtonPanel: true,
                 dateFormat: 'yy-mm-dd', changeMonth:true, changeYear: true
-            });*/
+            });
             $("#birth_date").datepicker("option","yearRange", "-65:-18");
     
             $(':input[data-mirror]').each(function () {
