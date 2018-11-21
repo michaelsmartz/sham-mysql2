@@ -53,19 +53,15 @@
 
     <script>
 
-        $(function(){
-            var $table3 = $('#table3');
+        $(document).ready(function(){
+            var $table = $('#table');
 
-            $('#table3').on('expand-row.bs.table', function(e, index, row, $detail) {
-                e.preventDefault();
-                alert('Test...');
-                console.log('called invoked..');
+            $table.find('tr td:first-child').each(function () {
+                $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk', 'Show Assessors');
+                $(this).children('a.detail-icon').children('i.glyphicon.glyphicon-plus.icon-plus').attr('data-wenk-pos', 'right');
+                //alert('row');
             });
-
-            $table3.on('click-row.bs.table', function (e, row, $element) {
-                e.preventDefault();
-                alert('Hi');
-            });
+            //alert('Document Ready');
         });
 
     </script>

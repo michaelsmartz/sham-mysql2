@@ -41,7 +41,10 @@ class EvaluationsController extends CustomController
      */
     public function index()
     {
-        $evaluations = $this->contextObj::filtered()->where('is_active',1)->paginate(10);
+        $evaluations = $this->contextObj::filtered()->where('is_active',1)
+            ->where('createdby_employee_id',$employeeid = \Auth::user()->employee->id)
+            ->orderBy('feedback_date', 'desc')
+            ->paginate(10);
         return view($this->baseViewPath .'.index', compact('evaluations'));
     }
 
@@ -53,8 +56,9 @@ class EvaluationsController extends CustomController
         $productCategories = ProductCategory::pluck('description','id')->all();
         $languages = Language::pluck('description','id')->all();
         $evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
+        $feedbackdate = \Carbon\Carbon::now()->toDateString();
 
-        return view($this->baseViewPath . '.create', compact('data','assessments','employees','departments','productCategories','languages','evaluationStatuses'));
+        return view($this->baseViewPath . '.create', compact('data','assessments','employees','departments','productCategories','languages','evaluationStatuses','feedbackdate'));
     }
 
     /**
@@ -67,7 +71,8 @@ class EvaluationsController extends CustomController
     public function store(Request $request)
     {
         try {
-
+            //selectedemployee linemanager
+            //dump($request->all());die;
             $employeeid = \Auth::user()->employee->id;
 
             $selectedassessors = array_get($request->all(),'selectedassessors');
@@ -99,8 +104,38 @@ class EvaluationsController extends CustomController
                 $input['url_path'] = $input['filename'];
             }
 
+            $input['evaluation_status_id'] = '1';
+
             $context = $this->contextObj->addData($input);
             $this->attachSingleFile($request, $context->id,'attachment');
+
+            if($selectedassessors == null){
+                $selectedassessors = array();
+            }
+
+            // Assign login user and selected employee as assessor
+            if($request->has('selectedemployee'))
+            {
+                //user_employee_id
+                if (!in_array($input['user_employee_id'], $selectedassessors))
+                {
+                    $selectedassessors[] = $input['user_employee_id'];
+                }
+                if ($employeeid != null && !in_array($employeeid, $selectedassessors))
+                {
+                    $selectedassessors[] = $employeeid;
+                }
+            }
+            //dump($selectedassessors);
+            //die;
+            if($request->has('linemanager'))
+            {
+                $linemanagerid = \Auth::user()->employee->line_manager_id;
+                if ($linemanagerid != null && !in_array($linemanagerid, $selectedassessors))
+                {
+                    $selectedassessors[] = $linemanagerid;
+                }
+            }
 
             $context->assessors()
                 ->attach($selectedassessors); //sync what has been selected
@@ -234,8 +269,17 @@ class EvaluationsController extends CustomController
 
     public function showinstances()
     {
-        $evaluations = $this->contextObj::filtered()->where('is_active',1)->paginate(10);
+        $employeeid = \Auth::user()->employee->id;
+
+        $evaluations = $this->contextObj::filtered()->where('is_active',1)
+                     ->orderBy('feedback_date', 'desc')
+                     ->whereHas('assessors', function($q) use($employeeid){
+                        $q->where('employee_id',$employeeid);
+                    })
+                    ->paginate(10);
+
         //$this->contextObj::with('users.employee')->filtered()->paginate(10);
+        // Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
         return view($this->baseViewPath .'.instancesindex', compact('evaluations'));
     }
 
@@ -357,7 +401,14 @@ class EvaluationsController extends CustomController
         $html.= "</div>";
 
         $content = $html;
-        return view($this->baseViewPath .'.assess-assessment', compact('employeeDetails', 'urlpath', 'usecontent', 'content','Id','EvaluationId','startDateTime'));
+        $medias = $evaluationDetails->media()->orderBy('id', 'desc')->get();
+        $mediaid = "";
+
+        if(count($medias) > 0){
+            $mediaid = $medias[0]->id;
+        }
+        //dump($mediaid);die;
+        return view($this->baseViewPath .'.assess-assessment', compact('employeeDetails', 'urlpath', 'usecontent', 'content','Id','EvaluationId','startDateTime','mediaid'));
     }
 
     public function submitAssessment(Request $request,$Id,$EvaluationId){

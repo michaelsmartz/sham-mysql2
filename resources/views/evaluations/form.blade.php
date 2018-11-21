@@ -84,16 +84,16 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('feedback_date') ? 'has-error' : '' }}">
         <label for="feedback_date">Feedback Date</label>
-            <input class="form-control datepicker" name="feedback_date" type="text" id="feedback_date" value="{{ old('feedback_date', optional($evaluation)->feedback_date) }}" minlength="1" required="true" placeholder="Enter feedback date">
+            <input class="form-control datepicker" name="feedback_date" type="text" id="feedback_date" value="{{ isset($feedbackdate)? $feedbackdate:old('feedback_date', optional($evaluation)->feedback_date)}}" minlength="1" required="true" placeholder="Enter feedback date" >
             {!! $errors->first('feedback_date', '<p class="help-block">:message</p>') !!}
     </div>
 
     <div class="form-group col-xs-6 {{ $errors->has('evaluation_status_id') ? 'has-error' : '' }}">
         <label for="evaluation_status_id">Evaluation Status</label>
-        <select class="form-control" id="evaluation_status_id" name="evaluation_status_id" required="true">
+        <select class="form-control readonly" id="evaluation_status_id" name="evaluation_status_id" required="true" disabled>
             <option value="" style="display: none;" {{ old('evaluation_status_id', optional($evaluation)->evaluation_status_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select evaluation status</option>
             @foreach ($evaluationStatuses as $key => $evaluationStatus)
-                <option value="{{ $key }}" {{ old('evaluation_status_id', optional($evaluation)->evaluation_status_id) == $key ? 'selected' : '' }}>
+                <option value="{{ $key }}" {{ old('evaluation_status_id', optional($evaluation)->evaluation_status_id) == $key || ($mode == 'create' && $key == 1)? 'selected' : '' }}>
                     {{ $evaluationStatus }}
                 </option>
             @endforeach
@@ -127,7 +127,7 @@
             <?php endif; ?>
             <div class="form-group col-xs-12">
                 {!! Form::label('QaSample','Audio File New:') !!}
-                {{ Form::file('attachment', ($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke','accept'=>'audio/*', 'autocomplete'=>'off', 'placeholder'=>'Audio File', 'id'=>'attachment']) }}
+                {{ Form::file('attachment', ($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke','accept'=>'audio/*', 'autocomplete'=>'off', 'placeholder'=>'Audio File', 'id'=>'attachment', 'required'=>"true"]) }}
             </div>
         </div>
         <div class="form-group col-xs-12" id="filecontainer">
@@ -145,7 +145,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <hr style="border-color: #2a88bd">
@@ -180,8 +179,19 @@
             {!! $errors->first('selectedassessors[]', '<p class="help-block">:message</p>') !!}
         </div>
     </div>
+    @if($mode == 'create')
+        <div class="col-xs-12 pull-left">
+            <div class="checkbox">
+                <label><input type="checkbox" name="selectedemployee" value="1">Add selected employee and you as assessor</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="linemanager" value="1">Add line manager as assessor</label>
+            </div>
+        </div>
+    @endif
 
 </div>
+<br>
 
 <div id="myModal" class="modal fade">
     <div class="modal-dialog">
@@ -279,48 +289,38 @@
         });
 
         $('#savepath').click(function() {
-            //$('#contentcontainer').hide();
-            //$('#filecontainer').show(200);
+
             $('#contentcontainer').slideUp(300);
             $('#smartzchatcontainer').slideUp(300);
             $('#filecontainer').slideDown(300);
-            $('#UrlPath').addClass("required");
-            $('#QaSample').removeClass("required");
+            $('#UrlPath').prop("required",true);
+            $('#attachment').prop("required",false);
+            $('#smartzrecordingreference').prop("required",false);
         });
 
         $('#savecontent').click(function() {
-            //$('#contentcontainer').show(200);
-            //$('#filecontainer').hide();
-
             $('#contentcontainer').slideDown(300);
             $('#smartzchatcontainer').slideUp(300);
             $('#filecontainer').slideUp(300);
 
             mode = '{{$mode}}';
-            $('#UrlPath').removeClass("required");
-
+            $('#UrlPath').prop("required",false);
+            $('#smartzrecordingreference').prop("required",false);
             if(mode == 'create')
             {
-                $('#QaSample').addClass("required");
+               $('#attachment').prop("required",true);
             }
         });
 
         $('#chatsaudio').click(function() {
-            //$('#contentcontainer').show(200);
-            //$('#filecontainer').hide();
 
             $('#contentcontainer').slideUp(300);
-
             $('#filecontainer').slideUp(300);
             $('#smartzchatcontainer').slideDown(300);
 
-            mode = '{{$mode}}';
-            $('#UrlPath').removeClass("required");
-
-            if(mode == 'create')
-            {
-                $('#QaSample').addClass("required");
-            }
+            $('#smartzrecordingreference').prop("required",true);
+            $('#UrlPath').prop("required",false);
+            $('#attachment').prop("required",false);
         });
 
         $(document).ready(function(){

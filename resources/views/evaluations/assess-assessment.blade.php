@@ -61,5 +61,12 @@
         $(document).ready(function () {
             $('#starttime').val('{{$startDateTime}}');
         });
+
+        $('.file-download').click(function() {
+            var evaluationid = {{$EvaluationId}};
+            var mediaid = {{$mediaid}};
+            window.location = '{{url()->to('evaluations')}}/'+evaluationid+'/attachment/'+mediaid;
+        });
     </script>
+
 @endsection
