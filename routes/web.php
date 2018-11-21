@@ -36,6 +36,8 @@ Auth::routes();
             Route::get('getQALastFiveDaysData', 'HomeController@getQALastFiveDaysData')->name('getQALastFiveDaysData');
             Route::get('getQAEvaluationScoresData', 'HomeController@getQAEvaluationScoresData')->name('getQAEvaluationScoresData');
             Route::get('getTotalAssessmentData', 'HomeController@getTotalAssessmentData')->name('getTotalAssessmentData');
+
+            Route::resource('reports', 'ReportController' );
         #endregion
 
         #region MyPortal

@@ -13,16 +13,17 @@ $mysql_pwd = "";
 $mysql_databaseName = "ShamDev";
 //in order of foreign key
 $tables = [
-    'Assessments',
+    //'Assessments',
     //'Employees',
-    "LawDocuments",
-    "LawCategories",
-    'Laws',
-    "PolicyDocuments",
-    "PolicyCategories",
-    'Policies',
-    'Topics',
-    "ShamUsers",
+    //"LawDocuments",
+    //"LawCategories",
+    //'Laws',
+    //"PolicyDocuments",
+    //"PolicyCategories",
+    //'Policies',
+    //'Topics',
+    //"ShamUsers",
+    "ReportTemplates"
 ];
 
 
@@ -198,13 +199,17 @@ function insertData($conn_mysql, $datas, $table){
                 $key = 'is_active';
             if($key === 'ExpiryDate')
                 $key = 'expires_on';
+            if($key === 'Source')
+                $key = '`source`';
+            if($key === 'Order')
+                $key = '`order`';
             if($key === 'ShamUserProfileId' || $key ==='LawId') {
                 $fields .= $key.',';
             }else{
                 $fields .= ltrim(strtolower(preg_replace('/([A-Z]+)/', "_$1", $key)), '_') . ',';
             }
 
-            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' ||
+            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' || $key === '`order`' ||
                         $key === 'ShamUserProfileId' || $key === 'is_public')?'null'.',':"'".$value."'".',';
         }
 
