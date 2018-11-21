@@ -68,7 +68,7 @@ Auth::routes();
 
             Route::resource('my-surveys', 'SSPMySurveysController');
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');
-        #endRegion
+        #endregion
 
         #region Central HR
             Route::resource('employees', 'EmployeesController');
@@ -102,7 +102,7 @@ Auth::routes();
                 'only' => ['show']
             ]);
             Route::employeeInResource('rewards');
-            Route::employeeInResource('disciplinaryactions');
+            Route::employeeInResource('disciplinary_actions');
             
         #endregion
 
@@ -183,5 +183,8 @@ Auth::routes();
             Route::post('import_process', 'ImportsController@processImport')->name('import_process');
         #endregion
 
+        #region Recruitment
+        Route::resource('recruitment', 'RecruitmentsController');
+        #endregion
     });
 #endregion

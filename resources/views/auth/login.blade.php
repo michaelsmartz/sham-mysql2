@@ -46,21 +46,21 @@
                         @if(env('USE_C4_AUTH',0) == 0)
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                                 <label class="control-label">@lang('auth.E-mail')</label>
-                                <input type="email" class="form-control bg-whitesmoke field-required" name="email" value="{{ Request::has('email')? request('email') : old('email')  }}">
+                                <input type="email" class="form-control field-required" name="email" value="{{ Request::has('email')? request('email') : old('email')  }}">
                             </div>
                             <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                                 <label class="control-label">@lang('auth.Password')</label>
-                                <input type="password" class="form-control bg-whitesmoke" autocomplete="off" name="password" value="{{ Request::has('password')? request('password') : old('password') }}">
+                                <input type="password" class="form-control" autocomplete="off" name="password" value="{{ Request::has('password')? request('password') : old('password') }}">
                             </div>
                         @else
                             <p><b><i>Please use your C4 credentials to login..</i></b></p>
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                                 <label class="control-label">C4 Username</label>
-                                <input type="text" class="form-control bg-whitesmoke field-required" name="email" value="{{ old('email') }}">
+                                <input type="text" class="form-control field-required" name="email" value="{{ old('email') }}">
                             </div>
                             <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                                 <label class="control-label">C4 Password</label>
-                                <input type="password" class="form-control bg-whitesmoke" autocomplete="off" name="password">
+                                <input type="password" class="form-control" autocomplete="off" name="password">
                             </div>
                         @endif
 

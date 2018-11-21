@@ -40,7 +40,7 @@ class Router
         if (!DefaultRouter::hasMacro('employeeInResource')) {
             DefaultRouter::macro('employeeInResource', function ($module, $options = []) {
 
-                $url        = str_replace('.', '', Str::plural($module));
+                $url        = str_replace(array('.','-','_'), '', Str::plural($module));
                 $name       = Str::singular($module);
                 $controller = Str::studly(str_replace('.', ' ', $module)) . 'Controller';
                 $except =  !empty($options['except']) ? $options['except'] : [];

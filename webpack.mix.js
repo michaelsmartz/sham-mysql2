@@ -75,6 +75,9 @@ mix.sass('resources/assets/sass/hopscotch.scss', 'public/css', {
 mix.sass('resources/assets/sass/import_steps.scss', 'public/css', {
   outputStyle: 'nested'
 });
+mix.sass('resources/assets/sass/nav-wizard.scss', 'public/css', {
+  outputStyle: 'nested'
+});
 
 mix/*.webpackConfig({
     externals:{
@@ -98,7 +101,7 @@ mix.minify('public/css/dropzone.css');
 mix.minify('public/css/lifecycle.css');
 mix.minify('public/css/hopscotch.css');
 mix.minify('public/css/import_steps.css');
-
+mix.minify('public/css/nav-wizard.css');
 
 mix.then(() => {
     minifier.minify('public/css/app.css');
@@ -107,6 +110,7 @@ mix.then(() => {
     minifier.minify('public/css/lifecycle.css');
     minifier.minify('public/css/hopscotch.css');
     minifier.minify('public/css/import_steps.css');
+    minifier.minify('public/css/nav-wizard.css');
 
     minifier.minify('public/js/app.js');
     minifier.minify('public/js/tables.js');
