@@ -83,9 +83,9 @@
         <div class="col-md-4" data-id="{{$assessor->id}}" data-evaluationid='{{$assessor->evaluation_id}}'  data-assessorid='{{$assessor->employee_id}}'>
             <button type="button" title="Review" class="b-n b-n-r bg-transparent  item-summary tooltips" onclick="summaryForm($(this).closest('div').data('id'),$(this).closest('div').data('evaluationid'),$(this).closest('div').data('assessorid'), event)"><i class="glyphicon glyphicon-blackboard text-bootstrap-primary"></i></button>
             <button type="button" title="Score" class="b-n b-n-r bg-transparent item-assessoredit tooltips" onclick="assessorEditForm($(this).closest('div').data('id'), $(this).closest('div').data('evaluationid'), event)"><i class="glyphicon glyphicon-hand-right text-bootstrap-primary"></i></button>
-            <button type="button" title="Complete Evaluation" class="b-n b-n-r bg-transparent item-assess tooltips" onclick="assessForm($(this).closest('div').data('id'),$(this).closest('div').data('evaluationid'), event)"><i class="glyphicon glyphicon-play-circle text-bootstrap-primary"></i></button>
-            @if(\Auth::user()->employee->id == $assessor->employee_id && $assessor->is_completed == '0')
 
+            @if(\Auth::user()->employee->id == $assessor->employee_id && $assessor->is_completed == '0')
+                <button type="button" title="Complete Evaluation" class="b-n b-n-r bg-transparent item-assess tooltips" onclick="assessForm($(this).closest('div').data('id'),$(this).closest('div').data('evaluationid'), event)"><i class="glyphicon glyphicon-play-circle text-bootstrap-primary"></i></button>
             @endif
         </div>
     </div>

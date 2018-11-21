@@ -23,7 +23,7 @@ class Assessment extends Model
                   'passmark_percentage'
               ];
 
-    public $searchable = [];
+    public $searchable = ['name','description'];
 
     public function assessmentAssessmentCategory()
     {

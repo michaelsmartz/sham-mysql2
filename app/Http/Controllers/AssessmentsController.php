@@ -31,14 +31,28 @@ class AssessmentsController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $name = $request->get('name', null);
+        $description = $request->get('description', null);
+
+        if(!empty($name)){
+            $request->merge(['name' => '%'.$name.'%']);
+        }
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
         $assessments = $this->contextObj::filtered()->paginate(10);
 
         // handle empty result bug
         if (Input::has('page') && $assessments->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('assessments'));
     }
 
