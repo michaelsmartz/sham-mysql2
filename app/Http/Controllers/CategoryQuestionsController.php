@@ -32,9 +32,23 @@ class CategoryQuestionsController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $title = $request->get('title', null);
+        $description = $request->get('description', null);
+
+        if(!empty($title)){
+            $request->merge(['title' => '%'.$title.'%']);
+        }
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
         $categoryQuestions = $this->contextObj::filtered()->paginate(10);
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('categoryQuestions'));
     }
 

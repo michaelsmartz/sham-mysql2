@@ -25,7 +25,7 @@ class CategoryQuestion extends Model
                   'is_zeromark'
               ];
 
-    public $searchable = [];
+    public $searchable = ['title','description'];
 
     public function categoryQuestionType()
     {

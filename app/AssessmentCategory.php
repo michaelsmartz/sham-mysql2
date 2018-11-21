@@ -22,7 +22,7 @@ class AssessmentCategory extends Model
                   'threshold'
               ];
 
-    public $searchable = [];
+    public $searchable = ['name','description'];
 
     public function assessmentCategoryCategoryQuestions()
     {
