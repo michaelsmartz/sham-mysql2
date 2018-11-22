@@ -7,6 +7,10 @@
     <link href="{{URL::to('/')}}/css/todolist.css" rel="stylesheet">
 
     <style>
+        #page-container #content .row{
+            margin-right: 0px;!important;
+        }
+
         #icons-container .icon{
            height: 60px;
            width: 60px;
