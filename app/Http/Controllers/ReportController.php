@@ -50,17 +50,32 @@ class ReportController extends CustomController
     {
         $reportMenu = $submenu = [];
 
-        $reportTemplates = $this->contextObj::select(['id','source','title','system_module_id'])->get()->all();
+        $reportTemplatesCentralHr = $this->contextObj::select(['id','source','title','system_module_id'])
+            ->where('system_module_id',SystemModule::CONST_CENTRAL_HR)->get()->all();
 
-        // Main and SubMenus for CentralHR Reports
-        $reportMenu[] = self::reportMenu($reportTemplates, SystemModule::CONST_CENTRAL_HR, "Central HR", "Smartz-Ham");
+        if(!empty($reportTemplatesCentralHr)) {
+            // Main and SubMenus for CentralHR Reports
+            $reportMenu[] = self::reportMenu($reportTemplatesCentralHr, SystemModule::CONST_CENTRAL_HR, "Central HR", "Smartz-Ham");
 
-        // Main and SubMenus for Quality Assurance Reports
-        $reportMenu[] = self::reportMenu($reportTemplates, SystemModule::CONST_QUALITY_ASSURANCE, "Quality Assurance", "Smartz-Ham");
+        }
 
-        // Main and SubMenus for Elearning Reports
-        $reportMenu[] = self::reportMenu($reportTemplates, SystemModule::CONST_TRAINING, "Elearning", "Smartz-Ham");
+        $reportTemplatesQA = $this->contextObj::select(['id','source','title','system_module_id'])
+            ->where('system_module_id',SystemModule::CONST_QUALITY_ASSURANCE)->get()->all();
 
+        if(!empty($reportTemplatesQA)){
+            // Main and SubMenus for Quality Assurance Reports
+            $reportMenu[] = self::reportMenu($reportTemplatesQA, SystemModule::CONST_QUALITY_ASSURANCE, "Quality Assurance", "Smartz-Ham");
+
+        }
+
+        $reportTemplatesTraining = $this->contextObj::select(['id','source','title','system_module_id'])
+            ->where('system_module_id',SystemModule::CONST_TRAINING)->get()->all();
+
+        if(!empty($reportTemplatesTraining)) {
+            // Main and SubMenus for Elearning Reports
+            $reportMenu[] = self::reportMenu($reportTemplatesTraining, SystemModule::CONST_TRAINING, "Elearning", "Smartz-Ham");
+
+        }
         $this->sArr = serialize($reportMenu);
         $str = $this->encrypt($this->sArr,$this->cipher, $this->key, $this->bit_check);
 
