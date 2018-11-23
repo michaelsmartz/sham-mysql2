@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Department;
+use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,17 +34,7 @@ class DepartmentsController extends CustomController
     {
         $departments = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_DEPARTMENT,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_DEPARTMENT];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Department')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_DEPARTMENT);
 
         return view($this->baseViewPath .'.index', compact('departments','allowedActions'));
     }

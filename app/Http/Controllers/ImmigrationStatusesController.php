@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ImmigrationStatus;
+use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,17 +34,7 @@ class ImmigrationStatusesController extends CustomController
     {
         $immigrationStatuses = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_IMMIGRATION_STATUS,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_IMMIGRATION_STATUS];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Immigration Status')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_IMMIGRATION_STATUS);
 
         return view($this->baseViewPath .'.index', compact('immigrationStatuses','allowedActions'));
     }

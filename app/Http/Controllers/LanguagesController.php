@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Language;
+use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,17 +34,7 @@ class LanguagesController extends CustomController
     {
         $languages = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_LANGUAGE,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_LANGUAGE];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Language')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_LANGUAGE);
 
         // handle empty result bug
         if (Input::has('page') && $languages->isEmpty()) {

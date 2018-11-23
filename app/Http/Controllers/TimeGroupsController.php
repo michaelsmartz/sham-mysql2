@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\DayType;
+use App\Support\Helper;
 use App\SystemSubModule;
 use App\TimeGroup;
 use App\TimePeriod;
@@ -36,17 +37,7 @@ class TimeGroupsController extends CustomController
     {
         $timeGroups = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_TIME_GROUP,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_TIME_GROUP];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Time Group')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_TIME_GROUP);
 
         // handle empty result bug
         if (Input::has('page') && $timeGroups->isEmpty()) {

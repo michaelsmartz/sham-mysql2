@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Skill;
+use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,17 +34,7 @@ class SkillsController extends CustomController
     {
         $skills = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_SKILLS,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_SKILLS];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Skill')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_SKILLS);
 
         // handle empty result bug
         if (Input::has('page') && $skills->isEmpty()) {

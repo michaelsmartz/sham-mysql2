@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\EthnicGroup;
+use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,17 +34,7 @@ class EthnicGroupsController extends CustomController
     {
         $ethnicGroups = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_ETHNIC_GROUP,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ETHNIC_GROUP];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Ethnic Group')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_ETHNIC_GROUP);
 
         return view($this->baseViewPath .'.index', compact('ethnicGroups', 'allowedActions'));
     }

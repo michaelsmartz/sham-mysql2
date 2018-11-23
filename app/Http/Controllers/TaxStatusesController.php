@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Helper;
 use App\SystemSubModule;
 use App\TaxStatus;
 use Illuminate\Http\Request;
@@ -33,17 +34,7 @@ class TaxStatusesController extends CustomController
     {
         $taxStatuses = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_TAX_STATUS,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_TAX_STATUS];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Tax Status')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_TAX_STATUS);
 
         // handle empty result bug
         if (Input::has('page') && $taxStatuses->isEmpty()) {
