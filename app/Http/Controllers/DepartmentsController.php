@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Department;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -31,7 +32,9 @@ class DepartmentsController extends CustomController
     public function index()
     {
         $departments = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('departments'));
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_DEPARTMENT];
+
+        return view($this->baseViewPath .'.index', compact('departments','allowedActions'));
     }
 
     /**

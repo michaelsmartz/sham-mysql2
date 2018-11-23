@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Gender;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,11 +33,13 @@ class GendersController extends CustomController
     {
         $genders = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_GENDER];
+
         // handle empty result bug
         if (Input::has('page') && $genders->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }        
-        return view($this->baseViewPath .'.index', compact('genders'));
+        return view($this->baseViewPath .'.index', compact('genders','allowedActions'));
     }
 
     /**

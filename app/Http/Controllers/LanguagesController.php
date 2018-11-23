@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Language;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,11 +33,13 @@ class LanguagesController extends CustomController
     {
         $languages = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_LANGUAGE];
+
         // handle empty result bug
         if (Input::has('page') && $languages->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('languages'));
+        return view($this->baseViewPath .'.index', compact('languages','allowedActions'));
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ImmigrationStatus;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -31,7 +32,9 @@ class ImmigrationStatusesController extends CustomController
     public function index()
     {
         $immigrationStatuses = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('immigrationStatuses'));
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_IMMIGRATION_STATUS];
+
+        return view($this->baseViewPath .'.index', compact('immigrationStatuses','allowedActions'));
     }
 
     /**

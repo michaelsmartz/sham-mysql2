@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Branch;
 use App\Company;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -33,11 +34,13 @@ class BranchesController extends CustomController
     {
         $branches = $this->contextObj::with(['company'])->filtered()->paginate(10);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_BRANCH];
+
         // handle empty result bug
         if (Input::has('page') && $branches->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('branches'));
+        return view($this->baseViewPath .'.index', compact('branches','allowedActions'));
     }
 
     public function create() {

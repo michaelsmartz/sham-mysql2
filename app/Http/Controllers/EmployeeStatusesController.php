@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\EmployeeStatus;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -31,7 +32,9 @@ class EmployeeStatusesController extends CustomController
     public function index()
     {
         $employeeStatuses = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('employeeStatuses'));
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_EMPLOYEE_STATUS];
+
+        return view($this->baseViewPath .'.index', compact('employeeStatuses','allowedActions'));
     }
 
     /**

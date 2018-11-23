@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Country;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -31,7 +32,9 @@ class CountriesController extends CustomController
     public function index()
     {
         $countries = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('countries'));
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_COUNTRY];
+
+        return view($this->baseViewPath .'.index', compact('countries','allowedActions'));
     }
 
     /**

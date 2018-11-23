@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\JobTitle;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,11 +33,13 @@ class JobTitlesController extends CustomController
     {
         $jobTitles = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_JOB_TITLE];
+
         // handle empty result bug
         if (Input::has('page') && $jobTitles->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('jobTitles'));
+        return view($this->baseViewPath .'.index', compact('jobTitles','allowedActions'));
     }
 
     /**

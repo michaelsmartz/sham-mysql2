@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Division;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -31,7 +32,9 @@ class DivisionsController extends CustomController
     public function index()
     {
         $divisions = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('divisions'));
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_DIVISION];
+
+        return view($this->baseViewPath .'.index', compact('divisions','allowedActions'));
     }
 
     /**
