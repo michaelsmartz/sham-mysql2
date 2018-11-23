@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use Exception;
+use App\SystemSubModule;
 
 class CategoryQuestionsController extends CustomController
 {
@@ -34,9 +35,20 @@ class CategoryQuestionsController extends CustomController
      */
     public function index(Request $request)
     {
-
         $title = $request->get('title', null);
         $description = $request->get('description', null);
+
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_CATEGORY_QUESTIONS,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_CATEGORY_QUESTIONS];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Category Questions')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         if(!empty($title)){
             $request->merge(['title' => '%'.$title.'%']);
@@ -51,7 +63,7 @@ class CategoryQuestionsController extends CustomController
         //resend the previous search data
         session()->flashInput($request->input());
 
-        return view($this->baseViewPath .'.index', compact('categoryQuestions'));
+        return view($this->baseViewPath .'.index', compact('categoryQuestions','allowedActions'));
     }
 
     /**

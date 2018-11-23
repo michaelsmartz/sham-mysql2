@@ -38,20 +38,24 @@
             @if(count($categoryQuestions) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
-                    <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
-                        <i class="glyphicon glyphicon-align-left"></i>
-                        <span>Filters</span>
-                    </button>
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
-                        <i class="glyphicon glyphicon-plus"></i> Add New
-                    </button>
+                    @if($allowedActions->contains('List'))
+                        <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
+                            <i class="glyphicon glyphicon-align-left"></i>
+                            <span>Filters</span>
+                        </button>
+                    @endif
+                    @if($allowedActions->contains('Create'))
+                        <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
+                            <i class="glyphicon glyphicon-plus"></i> Add New
+                        </button>
+                    @endif
                 </div>
             </div>
             @endif
             <div class="table-responsive">
             @if(count($categoryQuestions) == 0)
                 <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new category question</h4>
-            @else
+            @elseif($allowedActions->contains('List'))
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
@@ -71,12 +75,16 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$categoryQuestion->id}}', event)">
-                                        <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </a>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$categoryQuestion->id}}')">
-                                        <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </button>
+                                    @if($allowedActions->contains('Write'))
+                                        <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$categoryQuestion->id}}', event)">
+                                            <i class="glyphicon glyphicon-edit text-primary"></i>
+                                        </a>
+                                    @endif
+                                    @if($allowedActions->contains('Delete'))
+                                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$categoryQuestion->id}}')">
+                                            <i class="glyphicon glyphicon-remove text-danger"></i>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
