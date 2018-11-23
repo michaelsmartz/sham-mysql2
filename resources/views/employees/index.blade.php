@@ -4,6 +4,7 @@
 @section('subtitle','Add, edit and remove employees of your company')
 @section('content')
     <div class="flex-wrapper">
+        @if($allowedActions->contains('List'))
         <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation" style="height:170px">
             <form action="" class="">
                 <ul style="margin-left:0;padding-left:0" class="list-unstyled">
@@ -37,24 +38,33 @@
                 </ul>
             </form>
         </div>
+        @endif
         <div id="table-container">
             @if(count($employees) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
+                    @if($allowedActions->contains('List'))
                     <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
                         <i class="glyphicon glyphicon-align-left"></i> 
                         <span>Filters</span>
                     </button>
+                    @endif
+                    @if($allowedActions->contains('Create'))
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
+                    @endif
                 </div>
             </div>
             @endif
             <div class="table-responsive">
             @if(count($employees) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a to add a new employee</h4>
-            @else
+                <h4 class="text-center">Its a bit empty here. 
+                @if($allowedActions->contains('Create'))
+                You may click <a href="javascript:;" class="text-primary item-create">here</a to add a new employee
+                @endif
+                </h4>
+            @elseif($allowedActions->contains('List'))
                 <table id="table" data-toggle="table" data-detail-view="true">
                     <thead>
                         <tr>
@@ -77,15 +87,19 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
+                                 @if($allowedActions->contains('Write'))
                                     <button type="button" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$employee->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </button>
+                                @endif
                                     <button type="button" class="b-n b-n-r bg-transparent" data-wenk="Show Timeline" onclick="showTimeline('{{$employee->id}}', event)">
                                         <i class="glyphicon glyphicon-film text-primary"></i>
                                     </button>
+                                @if($allowedActions->contains('Delete'))
                                     <button type="button" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$employee->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
+                                @endif
                                 </div>
                             </td>
                         </tr>

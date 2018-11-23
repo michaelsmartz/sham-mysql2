@@ -6,6 +6,7 @@ use App\Asset;
 use App\AssetGroup;
 use App\AssetSupplier;
 use App\AssetCondition;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
@@ -38,11 +39,13 @@ class AssetsController extends CustomController
     {
         $assets = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSETS_MANAGEMENT];
+
         // handle empty result bug
         if (Input::has('page') && $assets->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('assets'));
+        return view($this->baseViewPath .'.index', compact('assets','allowedActions'));
     }
 
     /**

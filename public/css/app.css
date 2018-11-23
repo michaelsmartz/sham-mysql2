@@ -1549,7 +1549,7 @@ body {
   }
 
   h2 + small:empty {
-    height: 0;
+    display: none;
   }
 
   /* red color override for progress bar vsibility */
@@ -2335,6 +2335,10 @@ body {
 
 .breadcrumb > li a {
   color: #333;
+}
+
+.title-row::after {
+  margin-bottom: 8px;
 }
 
 .footer {

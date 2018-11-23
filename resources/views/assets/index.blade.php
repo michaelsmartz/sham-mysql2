@@ -14,9 +14,11 @@
             @if(count($assets) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
+                    @if($allowedActions->contains('Create'))
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
+                    @endif
                 </div>
             </div>
             @endif
@@ -49,12 +51,16 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
+                                 @if($allowedActions->contains('Write'))
                                     <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$asset->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
+                                @endif
+                                @if($allowedActions->contains('Delete'))
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$asset->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
+                                @endif
                                 </div>
                             </td>
                         </tr>

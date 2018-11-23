@@ -122,7 +122,9 @@ class ShamUserProfile extends Model
             ->select(['system_module_id','system_sub_module_id','sham_permission_id'])
             ->where('sham_user_profile_id', '=', $this->id)
             ->get();
+
         $toReturn = array();
+
         foreach($temp as $item){
             if(!isset($toReturn[$item['system_module_id']])){
                 $toReturn[$item['system_module_id']] = array();
@@ -132,6 +134,7 @@ class ShamUserProfile extends Model
             }
             $toReturn[$item['system_module_id']][$item['system_sub_module_id']] = 1;
         }
+        
         return $toReturn;
     }
     //TODO: TO BE REVIEWED WHEN IMPLEMENTING SERVICE

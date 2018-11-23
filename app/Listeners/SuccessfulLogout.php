@@ -28,5 +28,6 @@ class SuccessfulLogout
     {
         //
         session()->forget('allowedModules');
+        session()->forget('modulePermissions');
     }
 }

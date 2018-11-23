@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AssetGroup;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -33,11 +34,13 @@ class AssetGroupsController extends CustomController
     {
         $assetGroups = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSETS_MANAGEMENT];
+
         // handle empty result bug
         if (Input::has('page') && $assetGroups->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }        
-        return view($this->baseViewPath .'.index', compact('assetGroups'));
+        return view($this->baseViewPath .'.index', compact('assetGroups','allowedActions'));
     }
 
     /**

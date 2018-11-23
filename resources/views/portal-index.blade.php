@@ -53,7 +53,7 @@
             </div>
             <div class="sidebar-bg"></div>
             <div id="content" class="content">
-                <div class="row">
+                <div class="row title-row">
                     <div class="col-lg-12 col-md-12 col-xs-12">
                         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                             <h2 class="page-header">@yield('title')</h2>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\AssetEmployee;
 use App\Asset;
 use App\Employee;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -33,11 +34,13 @@ class AssetAllocationsController extends CustomController
         // /jedrzej/searchable
         $assetEmployees =  $this->contextObj::with(['asset','employee'])->filtered()->paginate(10);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSETS_MANAGEMENT];
+
         // handle empty result bug
         if (Input::has('page') && $assetEmployees->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('assetEmployees'));
+        return view($this->baseViewPath .'.index', compact('assetEmployees','allowedActions'));
     }
 
     public function create() {

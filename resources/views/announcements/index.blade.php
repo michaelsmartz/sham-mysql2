@@ -6,16 +6,22 @@
             @if(count($announcements) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
+                    @if($allowedActions->contains('Create'))
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
+                    @endif
                 </div>
             </div>
             @endif
             <div class="table-responsive">
             @if(count($announcements) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new announcement</h4>
-            @else
+                <h4 class="text-center">Its a bit empty here. 
+                @if($allowedActions->contains('Create'))
+                You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new announcement
+                @endif
+                </h4>
+            @elseif($allowedActions->contains('List'))
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>

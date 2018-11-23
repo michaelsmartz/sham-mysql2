@@ -25,6 +25,7 @@ use App\EmployeeStatus;
 use App\ImmigrationStatus;
 use App\Qualification;
 use App\Skill;
+use App\SystemSubModule;
 use App\SysConfigValue;
 use App\TimelineManager;
 use App\Traits\MediaFiles;
@@ -63,6 +64,8 @@ class EmployeesController extends CustomController
         $department = $request->get('department:description', null);
         $jobTitle = $request->get('jobtitle:description', null);
 
+        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_EMPLOYEE_DATABASE];
+
         if(!empty($fullName)){
             $request->merge(['name' => '%'.$fullName.'%']);
         }
@@ -83,7 +86,7 @@ class EmployeesController extends CustomController
         //resend the previous search data
         session()->flashInput($request->input());
 
-        return view($this->baseViewPath .'.index', compact('employees'));
+        return view($this->baseViewPath .'.index', compact('employees','allowedActions'));
     }
 
     public function create(){
