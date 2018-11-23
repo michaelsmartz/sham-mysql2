@@ -37,12 +37,13 @@ class AssessmentsController extends CustomController
         $name = $request->get('name', null);
         $description = $request->get('description', null);
 
-        $allowedActions = array();
-        if(array_key_exists(SystemSubModule::CONST_ASSESSMENTS,session('modulePermissions'))){
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_ASSESSMENTS,$modulePermissionsToArray)){
             $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSESSMENTS];
         }
-
-        if (!in_array("List",$allowedActions)) {
+        if ($allowedActions == null || !$allowedActions->contains('List')){
             return View('not-allowed')
                 ->with('title', 'Assessments')
                 ->with('warnings', array('You do not have permissions to access this page.'));
