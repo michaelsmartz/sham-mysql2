@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use App\AssessmentCategory;
 use Exception;
 use App\SystemSubModule;
+use App\Support\Helper;
 
 class AssessmentsController extends CustomController
 {
@@ -37,18 +38,7 @@ class AssessmentsController extends CustomController
         $name = $request->get('name', null);
         $description = $request->get('description', null);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_ASSESSMENTS,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSESSMENTS];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Assessments')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
-
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_ASSESSMENTS);
 
         if(!empty($name)){
             $request->merge(['name' => '%'.$name.'%']);

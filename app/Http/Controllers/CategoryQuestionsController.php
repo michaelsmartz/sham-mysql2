@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use Exception;
 use App\SystemSubModule;
+use App\Support\Helper;
 
 class CategoryQuestionsController extends CustomController
 {
@@ -38,17 +39,7 @@ class CategoryQuestionsController extends CustomController
         $title = $request->get('title', null);
         $description = $request->get('description', null);
 
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_CATEGORY_QUESTIONS,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_CATEGORY_QUESTIONS];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Category Questions')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_CATEGORY_QUESTIONS);
 
         if(!empty($title)){
             $request->merge(['title' => '%'.$title.'%']);

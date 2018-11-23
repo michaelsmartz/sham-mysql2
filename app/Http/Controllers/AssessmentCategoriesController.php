@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use App\CategoryQuestion;
 use Exception;
 use App\SystemSubModule;
+use App\Support\Helper;
 
 class AssessmentCategoriesController extends CustomController
 {
@@ -37,18 +38,7 @@ class AssessmentCategoriesController extends CustomController
         $name = $request->get('name', null);
         $description = $request->get('description', null);
 
-
-        $allowedActions = null;
-        $modulePermissionsToArray = session('modulePermissions')->toArray();
-
-        if(array_key_exists(SystemSubModule::CONST_ASSESSMENT_CATEGORIES,$modulePermissionsToArray)){
-            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSESSMENT_CATEGORIES];
-        }
-        if ($allowedActions == null || !$allowedActions->contains('List')){
-            return View('not-allowed')
-                ->with('title', 'Assessment Categories')
-                ->with('warnings', array('You do not have permissions to access this page.'));
-        }
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_ASSESSMENT_CATEGORIES);
 
         if(!empty($name)){
             $request->merge(['name' => '%'.$name.'%']);
