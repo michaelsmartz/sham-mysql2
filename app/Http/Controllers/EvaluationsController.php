@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Traits\MediaFiles;
 use Exception;
+use App\SystemSubModule;
 
 class EvaluationsController extends CustomController
 {
@@ -47,6 +48,18 @@ class EvaluationsController extends CustomController
         $department = $request->get('department:description', null);
         $referenceno = $request->get('reference_no', null);
 
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_EVALUATIONS,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_EVALUATIONS];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Evaluations')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
         if(!empty($fullName)){
             $request->merge(['name' => '%'.$fullName.'%']);
         }
@@ -71,7 +84,7 @@ class EvaluationsController extends CustomController
         //resend the previous search data
         session()->flashInput($request->input());
 
-        return view($this->baseViewPath .'.index', compact('evaluations'));
+        return view($this->baseViewPath .'.index', compact('evaluations','allowedActions'));
     }
 
     public function create()
