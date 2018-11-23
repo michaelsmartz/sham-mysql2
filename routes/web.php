@@ -169,7 +169,7 @@ Auth::routes();
             Route::resource('assessment_categories', 'AssessmentCategoriesController');
             Route::resource('category_questions', 'CategoryQuestionsController');
             Route::fileResource('evaluations', 'EvaluationsController');
-            Route::any('instances', 'EvaluationsController@showInstances');
+            Route::any('instances', 'EvaluationsController@showInstances')->name('evaluations.instances');
             Route::get('evaluations/{id}/EvaluationId/{EvaluationId}/assess', 'EvaluationsController@loadAssessment')->name('evaluations.load_assessment');
             Route::post('evaluations/{id}/EvaluationId/{EvaluationId}/submitassessment', 'EvaluationsController@submitAssessment')->name('evaluations.submit_assessment');
             Route::get('evaluations/{assessor}/score/{evaluationid}/show', 'EvaluationsController@score')->name('evaluations.score');

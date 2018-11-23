@@ -39,12 +39,38 @@ class EvaluationsController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $evaluations = $this->contextObj::filtered()->where('is_active',1)
+        $fullName = $request->get('name', null);
+        $asssessmentname = $request->get('assessment:name', null);
+        $referencesource = $request->get('reference_source', null);
+        $department = $request->get('department:description', null);
+        $referenceno = $request->get('reference_no', null);
+
+        if(!empty($fullName)){
+            $request->merge(['name' => '%'.$fullName.'%']);
+        }
+        if(!empty($referencesource)){
+            $request->merge(['reference_source' => '%'.$referencesource.'%']);
+        }
+        if(!empty($asssessmentname)){
+            $request->merge(['assessment:name' => '%'.$asssessmentname.'%']);
+        }
+        if(!empty($department)){
+            $request->merge(['department:description' => '%'.$department.'%']);
+        }
+        if(!empty($referenceno)){
+            $request->merge(['reference_no' => '%'.$referenceno.'%']);
+        }
+
+        $evaluations = $this->contextObj::with('assessment','useremployee','department','evaluationStatus')->filtered()->where('is_active',1)
             ->where('createdby_employee_id',$employeeid = \Auth::user()->employee->id)
             ->orderBy('feedback_date', 'desc')
             ->paginate(10);
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('evaluations'));
     }
 
@@ -267,16 +293,41 @@ class EvaluationsController extends CustomController
         return redirect()->back();
     }
 
-    public function showinstances()
+    public function showinstances(Request $request)
     {
+        $fullName = $request->get('name', null);
+        $asssessmentname = $request->get('assessment:name', null);
+        $referencesource = $request->get('reference_source', null);
+        $department = $request->get('department:description', null);
+        $referenceno = $request->get('reference_no', null);
+
+        if(!empty($fullName)){
+            $request->merge(['name' => '%'.$fullName.'%']);
+        }
+        if(!empty($referencesource)){
+            $request->merge(['reference_source' => '%'.$referencesource.'%']);
+        }
+        if(!empty($asssessmentname)){
+            $request->merge(['assessment:name' => '%'.$asssessmentname.'%']);
+        }
+        if(!empty($department)){
+            $request->merge(['department:description' => '%'.$department.'%']);
+        }
+        if(!empty($referenceno)){
+            $request->merge(['reference_no' => '%'.$referenceno.'%']);
+        }
+
         $employeeid = \Auth::user()->employee->id;
 
-        $evaluations = $this->contextObj::filtered()->where('is_active',1)
+        $evaluations = $this->contextObj::with('assessment','useremployee','department','evaluationStatus')->filtered()->where('is_active',1)
                      ->orderBy('feedback_date', 'desc')
                      ->whereHas('assessors', function($q) use($employeeid){
                         $q->where('employee_id',$employeeid);
                     })
                     ->paginate(10);
+
+        //resend the previous search data
+        session()->flashInput($request->input());
 
         //$this->contextObj::with('users.employee')->filtered()->paginate(10);
         // Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')

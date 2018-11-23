@@ -5,6 +5,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
+use Illuminate\Database\Eloquent\Builder;
+use Jedrzej\Searchable\Constraint;
+use Illuminate\Support\Facades\DB;
+
 
 class Evaluation extends Model
 {
@@ -36,7 +40,23 @@ class Evaluation extends Model
                   'url_path'
               ];
 
-    public $searchable = [];
+    public $searchable = ['reference_source','name','assessment:name','department:description','reference_no'];
+
+    protected function processNameFilter(Builder $builder, Constraint $constraint)
+    {
+        // this logic should happen for LIKE/EQUAL operators only
+        if ($constraint->getOperator() === Constraint::OPERATOR_LIKE || $constraint->getOperator() === Constraint::OPERATOR_EQUAL) {
+
+            $builder->with('useremployee')
+                ->whereHas('useremployee',function ($q) use ($constraint){
+                    $q->where('employees.first_name', $constraint->getOperator(), $constraint->getValue())
+                    ->orWhere('employees.surname', $constraint->getOperator(), $constraint->getValue());
+                });
+
+            return true;
+        }
+        return false;
+    }
 
     public function assessment()
     {

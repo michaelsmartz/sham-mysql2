@@ -44,7 +44,9 @@ class CategoryQuestionsController extends CustomController
         if(!empty($description)){
             $request->merge(['description' => '%'.$description.'%']);
         }
-        $categoryQuestions = $this->contextObj::filtered()->paginate(10);
+
+        $categoryQuestions = $this->contextObj::with('categoryQuestionType')
+            ->filtered()->paginate(10);
 
         //resend the previous search data
         session()->flashInput($request->input());
