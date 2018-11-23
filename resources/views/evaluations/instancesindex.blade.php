@@ -42,10 +42,12 @@
             @if(count($evaluations) > 0)
                 <div id="toolbar" class="shadow-eff1">
                     <div class="btn-group">
-                        <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
-                            <i class="glyphicon glyphicon-align-left"></i>
-                            <span>Filters</span>
-                        </button>
+                        @if($allowedActions->contains('List'))
+                            <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
+                                <i class="glyphicon glyphicon-align-left"></i>
+                                <span>Filters</span>
+                            </button>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -53,7 +55,7 @@
             <div class="table-responsive">
                 @if(count($evaluations) == 0)
                     <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new evaluation</h4>
-                @else
+                @elseif($allowedActions->contains('List'))
                     <table id="table" data-toggle="table" data-detail-view="true">
                         <thead>
                         <tr>

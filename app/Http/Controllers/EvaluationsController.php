@@ -314,6 +314,18 @@ class EvaluationsController extends CustomController
         $department = $request->get('department:description', null);
         $referenceno = $request->get('reference_no', null);
 
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_QA_INSTANCES,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_QA_INSTANCES];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Evaluations')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
         if(!empty($fullName)){
             $request->merge(['name' => '%'.$fullName.'%']);
         }
@@ -344,7 +356,7 @@ class EvaluationsController extends CustomController
 
         //$this->contextObj::with('users.employee')->filtered()->paginate(10);
         // Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
-        return view($this->baseViewPath .'.instancesindex', compact('evaluations'));
+        return view($this->baseViewPath .'.instancesindex', compact('evaluations','allowedActions'));
     }
 
     public function attachment(Request $request, $Id)
