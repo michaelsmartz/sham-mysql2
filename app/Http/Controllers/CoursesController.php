@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use App\Module;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -39,6 +40,8 @@ class CoursesController extends CustomController
         }
 
         $courses = $this->contextObj::filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_COURSES);
 
         // handle empty result bug
         if (Input::has('page') && $courses->isEmpty()) {
@@ -48,7 +51,7 @@ class CoursesController extends CustomController
         //resend the previous search data
         session()->flashInput($request->input());
         
-        return view($this->baseViewPath .'.index', compact('courses'));
+        return view($this->baseViewPath .'.index', compact('courses','allowedActions'));
     }
 
     public function create() {

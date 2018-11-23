@@ -8,6 +8,7 @@ use App\ModuleAssessment;
 use App\ModuleAssessmentQuestion;
 use App\ModuleQuestion;
 use App\ModuleQuestionChoice;
+use App\SystemSubModule;
 use App\Enums\ModuleQuestionType;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Request;
@@ -52,12 +53,14 @@ class ModuleAssessmentsController extends CustomController
     public function index()
     {
         $moduleAssessments = $this->contextObj::with(['module','assessmentType'])->filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_MODULE_ASSESSMENT);
 
         // handle empty result bug
         if (Input::has('page') && $moduleAssessments->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('moduleAssessments'));
+        return view($this->baseViewPath .'.index', compact('moduleAssessments','allowedActions'));
     }
 
     public function create() {

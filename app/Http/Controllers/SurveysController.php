@@ -7,6 +7,7 @@ use App\Enums\NotificationRecurrenceType;
 use App\Form;
 use App\Survey;
 use App\SurveyResponse;
+use App\SystemSubModule;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -38,12 +39,14 @@ class SurveysController extends CustomController
     public function index()
     {
         $surveys = $this->contextObj::with('users.employee')->filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_SURVEYS);
 
         // handle empty result bug
         if (Input::has('page') && $surveys->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('surveys'));
+        return view($this->baseViewPath .'.index', compact('surveys','allowedActions'));
     }
 
     /**

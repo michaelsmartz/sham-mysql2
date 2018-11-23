@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Law;
 use App\Country;
 use App\LawCategory;
+use App\SystemSubModule;
 use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -37,12 +38,14 @@ class LawsController extends CustomController
     public function index()
     {
         $laws = $this->contextObj::with(['country','lawCategory'])->filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_COMPLIANCE_MANAGEMENT);
 
         // handle empty result bug
         if (Input::has('page') && $laws->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('laws'));
+        return view($this->baseViewPath .'.index', compact('laws','allowedActions'));
     }
 
     /**

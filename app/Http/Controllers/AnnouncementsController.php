@@ -35,7 +35,7 @@ class AnnouncementsController extends CustomController
     {
         $announcements = $this->contextObj->getData(['announcement_status_id' => 'asc', 'end_date' => 'asc']);
 
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ANNOUNCEMENTS];
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_ANNOUNCEMENTS);
 
         // handle empty result bug
         if (Input::has('page') && $announcements->isEmpty()) {

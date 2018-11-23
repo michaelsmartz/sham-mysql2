@@ -34,7 +34,7 @@ class AssetAllocationsController extends CustomController
         // /jedrzej/searchable
         $assetEmployees =  $this->contextObj::with(['asset','employee'])->filtered()->paginate(10);
 
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSETS_MANAGEMENT];
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_ASSETS_MANAGEMENT);
 
         // handle empty result bug
         if (Input::has('page') && $assetEmployees->isEmpty()) {

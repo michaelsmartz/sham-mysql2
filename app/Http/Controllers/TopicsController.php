@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Topic;
 use App\AttachmentHelper;
+use App\SystemSubModule;
 use App\Traits\MediaFiles;
 use App\VideoStream;
 use Illuminate\Http\Request;
@@ -39,12 +40,14 @@ class TopicsController extends CustomController
     public function index()
     {
         $topics = $this->contextObj::filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_TOPICS);
 
         // handle empty result bug
         if (Input::has('page') && $topics->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('topics'));
+        return view($this->baseViewPath .'.index', compact('topics','allowedActions'));
     }
 
     public function create()

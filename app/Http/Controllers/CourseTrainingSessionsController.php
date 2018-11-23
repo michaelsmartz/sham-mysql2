@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Course;
 use Illuminate\Http\Request;
 use App\TrainingSession;
+use App\SystemSubModule;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -36,12 +37,14 @@ class CourseTrainingSessionsController extends CustomController
     public function index()
     {
         $courseTrainingSessions = $this->contextObj::filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_TRAINING_SESSION_MANAGEMENT);
 
         // handle empty result bug
         if (Input::has('page') && $courseTrainingSessions->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('courseTrainingSessions'));
+        return view($this->baseViewPath .'.index', compact('courseTrainingSessions','allowedActions'));
     }
 
     /**

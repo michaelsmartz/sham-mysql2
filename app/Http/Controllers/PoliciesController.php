@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Policy;
 use App\PolicyCategory;
+use App\SystemSubModule;
 use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,12 +34,14 @@ class PoliciesController extends CustomController
     public function index()
     {
         $policies = $this->contextObj::with('policyCategory')->filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_COMPLIANCE_MANAGEMENT);
 
         // handle empty result bug
         if (Input::has('page') && $policies->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }        
-        return view($this->baseViewPath .'.index', compact('policies'));
+        return view($this->baseViewPath .'.index', compact('policies','allowedActions'));
     }
 
     /**

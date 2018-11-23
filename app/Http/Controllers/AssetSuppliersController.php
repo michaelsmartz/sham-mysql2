@@ -31,7 +31,7 @@ class AssetSuppliersController extends CustomController
         // /jedrzej/searchable
         $assetSuppliers =  $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_ASSETS_MANAGEMENT];
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_ASSETS_MANAGEMENT);
 
         // handle empty result bug
         if (Input::has('page') && $assetSuppliers->isEmpty()) {

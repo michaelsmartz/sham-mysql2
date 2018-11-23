@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Module;
+use App\SystemSubModule;
 use App\Topic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,12 +34,14 @@ class ModulesController extends CustomController
     public function index()
     {
         $modules = $this->contextObj::filtered()->paginate(10);
+        
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_MODULES);
 
         // handle empty result bug
         if (Input::has('page') && $modules->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('modules'));
+        return view($this->baseViewPath .'.index', compact('modules','allowedActions'));
     }
 
     public function create() {
