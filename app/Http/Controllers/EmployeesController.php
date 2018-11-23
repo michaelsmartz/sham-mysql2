@@ -29,6 +29,7 @@ use App\SystemSubModule;
 use App\SysConfigValue;
 use App\TimelineManager;
 use App\Traits\MediaFiles;
+use App\Support\Helper;
 use OwenIt\Auditing\Facades\Auditor;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -63,8 +64,8 @@ class EmployeesController extends CustomController
         $fullName = $request->get('name', null);
         $department = $request->get('department:description', null);
         $jobTitle = $request->get('jobtitle:description', null);
-
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_EMPLOYEE_DATABASE];
+        
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_EMPLOYEE_DATABASE);
 
         if(!empty($fullName)){
             $request->merge(['name' => '%'.$fullName.'%']);

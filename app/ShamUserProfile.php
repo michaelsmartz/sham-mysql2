@@ -117,7 +117,7 @@ class ShamUserProfile extends Model
     {
         $temp = $this->
         join('sham_permission_sham_user_profile_system_sub_module', 'sham_user_profiles.id', '=', 'sham_permission_sham_user_profile_system_sub_module.sham_user_profile_id')
-            ->join('system_sub_modules', 'sham_permission_sham_user_profile_system_sub_module.system_sub_module_id', '=', 'system_sub_modules.id')
+            ->leftJoin('system_sub_modules', 'sham_permission_sham_user_profile_system_sub_module.system_sub_module_id', '=', 'system_sub_modules.id')
             ->join('system_modules', 'system_sub_modules.system_module_id', '=', 'system_modules.id')
             ->select(['system_module_id','system_sub_module_id','sham_permission_id'])
             ->where('sham_user_profile_id', '=', $this->id)
