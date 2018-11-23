@@ -33,7 +33,17 @@ class LanguagesController extends CustomController
     {
         $languages = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_LANGUAGE];
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_LANGUAGE,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_LANGUAGE];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Language')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         // handle empty result bug
         if (Input::has('page') && $languages->isEmpty()) {

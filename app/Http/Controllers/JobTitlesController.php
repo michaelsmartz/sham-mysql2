@@ -33,7 +33,17 @@ class JobTitlesController extends CustomController
     {
         $jobTitles = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_JOB_TITLE];
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_JOB_TITLE,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_JOB_TITLE];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Job Title')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         // handle empty result bug
         if (Input::has('page') && $jobTitles->isEmpty()) {

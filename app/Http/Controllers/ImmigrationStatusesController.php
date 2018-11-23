@@ -32,7 +32,18 @@ class ImmigrationStatusesController extends CustomController
     public function index()
     {
         $immigrationStatuses = $this->contextObj::filtered()->paginate(10);
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_IMMIGRATION_STATUS];
+
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_IMMIGRATION_STATUS,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_IMMIGRATION_STATUS];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Immigration Status')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         return view($this->baseViewPath .'.index', compact('immigrationStatuses','allowedActions'));
     }

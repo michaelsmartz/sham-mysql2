@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\SystemSubModule;
 use App\Team;
 use App\TimeGroup;
 use Illuminate\Http\Request;
@@ -34,12 +35,24 @@ class TeamsController extends CustomController
     {
         $teams = $this->contextObj::with(['timeGroup','products'])->filtered()->paginate(10);
 
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_TEAM,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_TEAM];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Team')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
         // handle empty result bug
         if (Input::has('page') && $teams->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
 
-        return view($this->baseViewPath .'.index', compact('teams', 'products'));
+        return view($this->baseViewPath .'.index', compact('teams', 'products','allowedActions'));
     }
 
     public function create() {

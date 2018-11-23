@@ -32,7 +32,18 @@ class DivisionsController extends CustomController
     public function index()
     {
         $divisions = $this->contextObj::filtered()->paginate(10);
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_DIVISION];
+
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_DIVISION,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_DIVISION];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Division')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         return view($this->baseViewPath .'.index', compact('divisions','allowedActions'));
     }

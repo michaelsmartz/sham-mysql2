@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\MaritalStatus;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,11 +33,23 @@ class MaritalStatusesController extends CustomController
     {
         $maritalStatuses = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_MARITAL_STATUS,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_MARITAL_STATUS];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Marital Status')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
         // handle empty result bug
         if (Input::has('page') && $maritalStatuses->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('maritalStatuses'));
+        return view($this->baseViewPath .'.index', compact('maritalStatuses','allowedActions'));
     }
 
     /**

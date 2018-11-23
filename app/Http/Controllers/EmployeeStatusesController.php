@@ -32,7 +32,18 @@ class EmployeeStatusesController extends CustomController
     public function index()
     {
         $employeeStatuses = $this->contextObj::filtered()->paginate(10);
-        $allowedActions = session('modulePermissions')[SystemSubModule::CONST_EMPLOYEE_STATUS];
+
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_EMPLOYEE_STATUS,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_EMPLOYEE_STATUS];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Employee Status')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         return view($this->baseViewPath .'.index', compact('employeeStatuses','allowedActions'));
     }

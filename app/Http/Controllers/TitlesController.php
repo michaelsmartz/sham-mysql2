@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\SystemSubModule;
 use App\Title;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -32,11 +33,23 @@ class TitlesController extends CustomController
     {
         $titles = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_TITLE,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_TITLE];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Title')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
         // handle empty result bug
         if (Input::has('page') && $titles->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('titles'));
+        return view($this->baseViewPath .'.index', compact('titles','allowedActions'));
     }
 
     /**

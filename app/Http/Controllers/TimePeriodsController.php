@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TimePeriodType;
+use App\SystemSubModule;
 use App\TimePeriod;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -33,11 +34,23 @@ class TimePeriodsController extends CustomController
     {
         $timePeriods = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = null;
+        $modulePermissionsToArray = session('modulePermissions')->toArray();
+
+        if(array_key_exists(SystemSubModule::CONST_TIMEPERIODS,$modulePermissionsToArray)){
+            $allowedActions = session('modulePermissions')[SystemSubModule::CONST_TIMEPERIODS];
+        }
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Time Period')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
         // handle empty result bug
         if (Input::has('page') && $timePeriods->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('timePeriods'));
+        return view($this->baseViewPath .'.index', compact('timePeriods', 'allowedActions'));
     }
 
     /**
