@@ -11,6 +11,8 @@ use App\DateHelper;
 use App\Employee;
 use App\Enums\DayType;
 use App\Http\Requests;
+use App\Support\Helper;
+use App\SystemSubModule;
 use App\TimeGroup;
 use Carbon\Carbon;
 use DateTime;
@@ -48,9 +50,20 @@ class SSPController extends CustomController
         $announcements = $this->getAnnouncements($employeeObject);
         $assets = $this->getAllocatedAssets($employeeObject);
 
+        $allowedActions = getAllowedActions(SystemSubModule::CONST_MY_PORTAL);
+
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'My Portal')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
+        $allowedActionsAnnouncements = getAllowedActions(SystemSubModule::CONST_ANNOUNCEMENTS);
+        $allowedActionsAssets = getAllowedActions(SystemSubModule::CONST_ASSETS_MANAGEMENT);
+
         // load the view and pass the parameters
         return view($this->baseViewPath .'.index',
-            compact('warnings', 'announcements', 'assets','workingHours'));
+            compact('warnings', 'announcements', 'assets','workingHours', 'allowedActionsAssets', 'allowedActionsAnnouncements'));
     }
 
     private function getWorkingHours($employee){

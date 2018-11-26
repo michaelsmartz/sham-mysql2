@@ -130,6 +130,7 @@ if(count($coursesAvailable)>12)
         <div id="message"></div>
     </div>
 
+    @if($allowedActions->contains('List')))
     <section id="elearning">
         <br>
         <ul class="nav nav-tabs" id="myTabs">
@@ -234,4 +235,5 @@ if(count($coursesAvailable)>12)
             </div>
         </div>
     </section>
+    @endif
 @stop

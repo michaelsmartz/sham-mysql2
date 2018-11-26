@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\DateHelper;
 use App\ServiceModel;
 use App\Http\Requests;
+use App\Support\Helper;
 use App\Survey;
 use App\SurveyResponse;
 use App\Form;
+use App\SystemSubModule;
 use Illuminate\Support\Facades\Input;
 use Symfony\Component\HttpFoundation\Response;
 use View;
@@ -37,6 +39,14 @@ class SSPMySurveysController extends CustomController
     public function index()
     {
         $userId = (\Auth::check()) ? \Auth::user()->id : 0;
+
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_MY_SURVEYS);
+
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'My Surveys')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         $date = Carbon::today();
         $date = DateHelper::adjustCarbonObjTimeZone($date);

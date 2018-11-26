@@ -7,6 +7,8 @@ use App\Enums\TimelineEventType;
 use App\MaritalStatus;
 use App\Employee;
 
+use App\Support\Helper;
+use App\SystemSubModule;
 use App\TelephoneNumber;
 use App\Timeline;
 use App\Violation;
@@ -39,6 +41,14 @@ class SSPMyDetailsController extends CustomController
     {
         $warnings = [];
         $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_MY_DETAILS);
+
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'Profile')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
 
         if ($id == 0) {
             $warnings[] = 'Please check whether your profile is associated to an employee!';

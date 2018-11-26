@@ -400,7 +400,7 @@
 <section id="employeedir">
     <br>
     <div class='row'>
-
+        @if ($allowedActionsAssets->contains('List'))
         <!-- assets -->
         <div class="col1 col-lg-8">
             <main class="main-container">
@@ -441,6 +441,7 @@
                 </div>
             </main>
         </div>
+        @endif
         <!-- end of assets -->
 
         <!-- working hours -->
@@ -512,7 +513,7 @@
         <!-- end of working hours -->
 
         <!-- announcements -->
-        @if(count($announcements)>0)
+        @if(count($announcements)>0 &&  $allowedActionsAnnouncements->contains('List'))
             <div class="col1 col-lg-8 col-md-8">
                 <main class="main-container">
                     <header class="portal-help-header">

@@ -12,6 +12,8 @@ use App\ModuleAssessmentResponse;
 use App\ModuleAssessmentResponseDetail;
 use App\ModuleQuestion;
 use App\ModuleQuestionChoice;
+use App\Support\Helper;
+use App\SystemSubModule;
 use App\Topic;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
@@ -46,6 +48,14 @@ class SSPMyCourseController extends CustomController
         $coursesAvailable = [];
         $warnings = [];
 
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_MY_COURSES);
+
+        if ($allowedActions == null || !$allowedActions->contains('List')){
+            return View('not-allowed')
+                ->with('title', 'E-learning')
+                ->with('warnings', array('You do not have permissions to access this page.'));
+        }
+
         $id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
         if ($id == 0) {
@@ -77,7 +87,7 @@ class SSPMyCourseController extends CustomController
         }
 
         // load the view and pass the coursesAvailable
-        return View::make($this->baseViewPath .'.available', compact('coursesAvailable', 'warnings'));
+        return View::make($this->baseViewPath .'.available', compact('coursesAvailable', 'warnings', 'allowedActions'));
     }
 
     /**
