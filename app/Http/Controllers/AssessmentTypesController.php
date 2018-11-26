@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\AssessmentType;
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,11 +34,13 @@ class AssessmentTypesController extends CustomController
     {
         $assessmentTypes = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_ASSESSMENT_TYPE);
+
         // handle empty result bug
         if (Input::has('page') && $assessmentTypes->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }        
-        return view($this->baseViewPath .'.index', compact('assessmentTypes'));
+        return view($this->baseViewPath .'.index', compact('assessmentTypes','allowedActions'));
     }
 
     /**

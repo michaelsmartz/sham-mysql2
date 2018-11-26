@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\LawCategory;
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,11 +38,13 @@ class LawCategoriesController extends CustomController
     {
         $lawCategories = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_LAW_CATEGORY);
+
         // handle empty result bug
         if (Input::has('page') && $lawCategories->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('lawCategories'));
+        return view($this->baseViewPath .'.index', compact('lawCategories','allowedActions'));
     }
 
     /**

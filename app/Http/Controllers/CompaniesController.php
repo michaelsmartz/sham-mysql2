@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,11 +34,13 @@ class CompaniesController extends CustomController
     {
         $companies = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_COMPANY);
+
         // handle empty result bug
         if (Input::has('page') && $companies->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('companies'));
+        return view($this->baseViewPath .'.index', compact('companies','allowedActions'));
     }
 
     /**

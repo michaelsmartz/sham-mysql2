@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\PolicyCategory;
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,11 +39,13 @@ class PolicyCategoriesController extends CustomController
     {
         $policyCategories = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_POLICY_CATEGORY);
+
         // handle empty result bug
         if (Input::has('page') && $policyCategories->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('policyCategories'));
+        return view($this->baseViewPath .'.index', compact('policyCategories', 'allowedActions'));
     }
 
     /**

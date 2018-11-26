@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\ProductCategory;
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,11 +34,13 @@ class ProductCategoriesController extends CustomController
     {
         $productCategories = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_PRODUCT_CATEGORIES);
+
         // handle empty result bug
         if (Input::has('page') && $productCategories->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('productCategories'));
+        return view($this->baseViewPath .'.index', compact('productCategories', 'allowedActions'));
     }
 
     /**

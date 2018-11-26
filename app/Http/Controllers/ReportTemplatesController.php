@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\ReportTemplate;
+use App\Support\Helper;
 use App\SystemModule;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -32,7 +34,10 @@ class ReportTemplatesController extends CustomController
     public function index()
     {
         $reportTemplates = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('reportTemplates'));
+
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_REPORT_TEMPLATES);
+
+        return view($this->baseViewPath .'.index', compact('reportTemplates','allowedActions'));
     }
 
 

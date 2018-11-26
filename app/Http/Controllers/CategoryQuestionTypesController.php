@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\CategoryQuestionType;
 use App\Http\Controllers\CustomController;
@@ -31,7 +33,10 @@ class CategoryQuestionTypesController extends CustomController
     public function index()
     {
         $categoryQuestionTypes = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('categoryQuestionTypes'));
+
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_CATEGORY_QUESTION_TYPE);
+
+        return view($this->baseViewPath .'.index', compact('categoryQuestionTypes', 'allowedActions'));
     }
 
     /**

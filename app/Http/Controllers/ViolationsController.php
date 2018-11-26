@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Helper;
+use App\SystemSubModule;
 use App\Violation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -32,11 +34,13 @@ class ViolationsController extends CustomController
     {
         $violations = $this->contextObj::filtered()->paginate(10);
 
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_VIOLATION);
+
         // handle empty result bug
         if (Input::has('page') && $violations->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('violations'));
+        return view($this->baseViewPath .'.index', compact('violations','allowedActions'));
     }
 
     /**
