@@ -437,7 +437,7 @@ class EmployeesController extends CustomController
         $titles = Title::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $genders = Gender::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $maritalstatuses = Maritalstatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
-        $countries = Country::pluck('description','id')->all();
+        $countries = Country::orderBy('is_preferred','desc')->pluck('description','id')->all();
         $languages = Language::pluck('description','id')->all();
         $ethnicGroups = EthnicGroup::pluck('description','id')->all();
         $immigrationStatuses = ImmigrationStatus::pluck('description','id')->all();
