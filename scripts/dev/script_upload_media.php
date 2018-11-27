@@ -9,8 +9,7 @@ $dot->load(); //Load the configuration (Not override, for override use overload(
 
 //disk and directories where all medias from sql server are saved, path configured in .env
 $disk = getenv('UPLOADS_STORAGE_PATH');
-
-$directories = explode(',', getenv('UPLOADS_STORAGE_DIRECTORIES'));
+$config = getenv('UPLOADS_STORAGE_CONFIG_PATH');
 
 //increase php script exec time
 ini_set('max_execution_time', 0); //0 value disable the time limit
@@ -20,19 +19,6 @@ ini_set('pdo_odbc.client_buffer_max_kb_size','524288');
 ini_set('odbc.defaultlrl', '15M');
 ini_set('mssql.textlimit', '15M');
 ini_set('mssql.textsize', '15M');
-
-
-// Create sql server connection
-try{
-    $conn_mssql = new PDO(sprintf("odbc:DRIVER=freetds;SERVERNAME=%s;DATABASE=%s", $mssql_serverName, $mssql_databaseName), $mssql_uid, $mssql_pwd); 
-}
-catch(PDOException $e){
-    echo $e->getMessage();
-}
-
-if (!$conn_mssql) {
-    die("Connection failed: " . $conn_mssql->connect_error);
-}
 
 // Create mysql connection
 $conn_mysql = new mysqli($mysql_serverName, $mysql_uid, $mysql_pwd, $mysql_databaseName);
@@ -45,121 +31,62 @@ if ($conn_mysql->connect_error) {
 truncateResetAutoincrementMediaMediables($conn_mysql);
 
 //create table media and mediables
-updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, 'create');
+updateCreateMedias($conn_mysql, $disk, $config, 'create');
+updateCreateMedias($conn_mysql, $disk, $config, 'update');
 
-//update table media
-updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, 'update');
+function updateCreateMedias($conn_mysql, $disk, $config, $type){
 
-
-function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $type){
-	
     //to be inserted in mediables as autoincrement media_id
     $media_id = 1;
-    $varbinary = false;
-	$mssql = '';
+
+    $allFiles = scandir($disk);
+    $directories = array_diff($allFiles, array('.', '..'));
 
     foreach($directories as $directory){
 
-        switch ($directory){
-			case 'Assessment':
-                $mssql = "select AssessmentId as mediableId,
-                    OriginalFileName as filename
-                    from Evaluations
-                    where Active !=0
-                    and OriginalFileName is not null
-                    and QaSample is not null
-                    order by OriginalFileName Asc;
-                    ";
-                break;
-            case 'Employee':
-                $mssql = "select EmployeeId as mediableId, 
-                      OriginalFileName as filename,
-                      Comment as comment,
-                      EmployeeAttachmentTypeId  as employeeAttachmentTypeId
-                    from EmployeeAttachments
-                    where Active !=0
-                    and OriginalFileName is not null
-                    and Content is not null
-                    order by OriginalFileName Asc;
-                    ";
-                break;
-            case 'Law':
-                $mssql = "select LawId as mediableId,
-                    Name as filename
-                    from LawDocuments
-                    where Name is not null
-                    and Content is not null
-                    order by Name Asc;
-                    ";
-                break;
-            case 'Policy':
-                $mssql = "select PolicyId as mediableId,
-                    Name as filename
-                    from PolicyDocuments 
-                    where Name is not null
-                    and Content is not null
-                    order by Name Asc;
-                    ";
-                break;
-            case 'Topic':
-                $mssql = "select TopicId as mediableId,
-                    OriginalFileName as filename
-                    from TopicAttachments
-                    where Active !=0
-                    and OriginalFileName is not null
-                    and Content is not null
-                    order by OriginalFileName Asc;
-                    ";
-                break;
+        $file = $config.DIRECTORY_SEPARATOR."$directory.txt";
+        if(file_exists($file)) {
+            $order = 1;
+            $handle = fopen($file, "r");
+
+            if ($handle) {
+                $rows = [];
+                $header = fgetcsv($handle);
+                while ($row = fgetcsv($handle)) {
+                    $rows[] = array_combine($header, $row);
+                }
+                fclose($handle);
+
+            } else {
+                // error opening the file.
+                die("Error opening the file $directory.txt");
+            }
+
+            if($rows) {
+                foreach($rows as $row) {
+                    $mediable_id = $row["mediableid"];
+
+                    //to increment to insert in mediable to simulate media_id
+                    if ($directory == "Employee" && $type === "update") {
+                        $comment = $row["comment"];
+                        $employeeAttachmentTypeId = $row["employeeAttachmentTypeId"];
+                        updateMedias($conn_mysql, $media_id, $comment, $employeeAttachmentTypeId);
+                    } else if ($type === "create") {
+                        insertMediables($conn_mysql, $media_id, $mediable_id, $directory, $order);
+                    }
+                    $media_id++;
+                    $order++;
+                }
+            }
         }
-		
-		//$conn_mssql->setAttribute(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE, 1024*1024*256);
-		$conn_mssql->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
-		
-		/* Execute the query. */
-		$pdo = $conn_mssql->prepare($mssql);
-		$pdo->execute();
-		
-		//fetching data from mssql
-		$datas = $pdo->fetchAll(PDO::FETCH_ASSOC);
-	
-		//to increment to insert in mediable to simulate media_id
-		$order = 1;
-
-		/* Iterate through the result set printing a row of data upon each iteration.*/
-		//var_dump($datas);
-	
-		if($datas){
-			foreach($datas as $data){
-				//$string = $data["content"];
-				$mediable_id = $data["mediableId"];
-				$filename = $data["filename"];
-
-				 if($directory == "Employee" && $type === "update"){
-					 $comment = $data["comment"];
-					 $employeeAttachmentTypeId = $data["employeeAttachmentTypeId"];
-					 updateMedias($conn_mysql, $media_id, $comment, $employeeAttachmentTypeId);
-				 }
-				 else if($type === "create"){
-					 $filename = checkFileExist($disk, $directory, $filename);
-					 
-					 var_dump($directory);
-
-					 $file = $disk.$directory.DIRECTORY_SEPARATOR.$filename;
-
-					 insertMediables($conn_mysql, $media_id, $mediable_id, $directory, $order);
-				 }
-
-				$order++;
-				$media_id++;
-			}
-		}
     }
+
 
     //insert in media table
     if($type === "create"){
         //EXEC "php artisan media:import uploads" when uploads of files is completed
         //cd on project root NB: one directory back since script on same project
+		exec("cd ..");
 		exec("cd ..");
         $command = "php artisan media:sync uploads";
         exec($command, $output);
@@ -260,48 +187,6 @@ function insertMediables($conn_mysql, $mediaId, $mediableId, $directory, $order)
         echo "New mediables record ID:$mediaId created successfully<br><br>";
     } else {
         echo "Error: " . $mysql . "<br>" . $conn_mysql->error;
-    }
-}
-
-/**
- * check if file already exist in folder
- * if already exist add incrementing number
- * and return filename to be added in database
- * @param $disk
- * @param $directory
- * @param $filename
- * @return string
- */
-function checkFileExist($disk, $directory, $filename)
-{
-    $files = glob($disk.$directory.DIRECTORY_SEPARATOR.$filename);
-    if (count($files) > 0){
-        $tmp = explode(".", $filename);
-        $file_ext = end($tmp);
-        $file_name = str_replace(('.'.$file_ext),"",$filename);
-        return $file_name.'('.count(glob($disk.$directory.DIRECTORY_SEPARATOR."$file_name*.$file_ext")).').'.$file_ext;
-    }
-    else{
-        return $filename;
-    }
-}
-
-/**
- * remove uploads disk folder if already exist
- * @param $dir
- */
-function rrmdir($dir) {
-    if (is_dir($dir)) {
-        $objects = scandir($dir);
-        foreach ($objects as $object) {
-            if ($object != "." && $object != "..") {
-                if (filetype($dir."/".$object) == "dir")
-                    rrmdir($dir."/".$object);
-                else unlink   ($dir."/".$object);
-            }
-        }
-        reset($objects);
-        rmdir($dir);
     }
 }
 
