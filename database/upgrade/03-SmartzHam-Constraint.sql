@@ -960,3 +960,13 @@ ALTER TABLE `history_disciplinary_actions`
 
 #----- surveys
 ALTER TABLE `surveys` DROP FOREIGN KEY `FK_Surveys_ShamUsers`
+
+#--- 27/11/2018
+ALTER TABLE `addresses`
+	DROP FOREIGN KEY `FK_Addresses_AddressTypes`;
+
+ALTER TABLE `email_addresses`
+	DROP FOREIGN KEY `FK_EmailAddresses_EmailAddressTypes`;
+
+ALTER TABLE `telephone_numbers`
+	DROP FOREIGN KEY `FK_TelephoneNumbers_TelephoneNumberTypes`;
