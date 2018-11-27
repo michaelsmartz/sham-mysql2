@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 60);
+/******/ 	return __webpack_require__(__webpack_require__.s = 62);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -9887,7 +9887,7 @@ return jQuery;
 
 /***/ }),
 
-/***/ 2:
+/***/ 1:
 /***/ (function(module, exports) {
 
 var g;
@@ -9915,24 +9915,24 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 60:
+/***/ 62:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(61);
+module.exports = __webpack_require__(63);
 
 
 /***/ }),
 
-/***/ 61:
+/***/ 63:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery, $) {//import * as jsPDF from 'jspdf';
 
-__webpack_require__(62);
-__webpack_require__(63);
+__webpack_require__(64);
+__webpack_require__(65);
 //window.jsPDF = global.jsPDF = jsPDF;
 //require("jspdf-autotable");
-__webpack_require__(64);
+__webpack_require__(66);
 
 +function ($) {
     $("#sidebarCollapse").on("click", function () {
@@ -10018,7 +10018,7 @@ $(window).load(function () {
 
 /***/ }),
 
-/***/ 62:
+/***/ 64:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**
@@ -13321,7 +13321,7 @@ $(window).load(function () {
 
 /***/ }),
 
-/***/ 63:
+/***/ 65:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, jQuery) {/*
@@ -13406,11 +13406,11 @@ a.textPos.y=b;sa(a,c.kids,f)}else sa(a,{},f);return!1});f.headerrows=[];q=c(this
 e=0<f.columns.length?-1:e-1;var g=0;r=[];r=u(c(this));c(r).each(function(){var a=[];b=0;B(this,"td,th",m,q.length+r.length,function(d,e,h){if("undefined"===typeof f.columns[b]){var k={title:"",key:b,style:{hidden:!0}};f.columns.push(k)}"undefined"!==typeof d&&null!==d?(k=ta(d),k.kids=c(d).children()):(k=c.extend(!0,{},f.rowoptions[g+":"+(b-1)]),k.colspan=-1);f.rowoptions[g+":"+b++]=k;a.push(z(d,e,h))});a.length&&(f.rows.push(a),g++);m++});if("function"===typeof f.onBeforeAutotable)f.onBeforeAutotable(c(this),
 f.columns,f.rows,d);f.doc.autoTable(f.columns,f.rows,d);if("function"===typeof f.onAfterAutotable)f.onAfterAutotable(c(this),d);a.jspdf.autotable.startY=f.doc.autoTableEndPosY()+d.margin.top});na(f.doc,"undefined"!==typeof f.images&&!1===jQuery.isEmptyObject(f.images));"undefined"!==typeof f.headerrows&&(f.headerrows.length=0);"undefined"!==typeof f.columns&&(f.columns.length=0);"undefined"!==typeof f.rows&&(f.rows.length=0);delete f.doc;f.doc=null})}return this}})(jQuery);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(0)))
 
 /***/ }),
 
-/***/ 64:
+/***/ 66:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**

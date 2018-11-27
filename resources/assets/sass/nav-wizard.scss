@@ -1,89 +1,146 @@
-.steps {
-    margin: 0 40px 0 0;
-    padding: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-    flex-wrap:wrap;
-  }
-  .steps a {
-    color: #000;
-    text-decoration: none;
-  }
-  .steps em {
-    display: block;
-    font-size: 1.1em;
-    font-weight: bold;
-  }
   .steps li {
     float: left;
     margin-left: 0;
-    /*width: 16%;*/ /* 100 / number of steps */
-    height: 70px; /* total height */
     list-style-type: none;
-    padding: 5px 5px 5px 30px; /* padding around text, last should include arrow width */
-    border-right: 3px solid white; /* width: gap between arrows, color: background of document */
+    padding: 5px 0px 5px 0px; /* padding around text, last should include arrow width */
     position: relative;
-    flex: 1 0 16%;
+  }
+  
+  .steps {
+    color: #000;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap:wrap;
+    align-items: center;
+    border: 1px solid #ddd;
 
-    a {
+    .tab-item {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      flex: 1 0 16%;
+      border-top: 2px solid #d68a3a;
+      border-bottom: 1px solid #ddd;
+
+      &.orange {
+        border-top: 2px solid #d68a3a;
+
+        .tab-link {
+          text-decoration: none;
+          display:flex;
+          flex-direction: column;
+          align-content: center;
+
+          > *{
+            color:inherit;
+            margin:0;
+          }
+
+          &.active{
+            background-color: #d68a3a;
+            &.show{
+              display: inherit !important;
+            }
+            & +.arrow {
+              background-color: #d68a3a;
+            }
+          }
+        }
+      }
+
+      &.blue {
+        border-top: 2px solid #3097D1;
+        .tab-link {
+          &.active{
+            background-color: #3097D1;
+            & +.arrow {
+              background-color: #3097D1;
+            }
+          }
+        }
+      }
+
+      &.green {
+        border-top: 2px solid green;
+        .tab-link {
+          &.active{
+            background-color: green;
+            & +.arrow {
+              background-color: green;
+            }
+          }
+        }
+      }
+
+      .tab-link {
+        text-decoration: none;
+        flex: 1;
+        padding-left: 16px;
+        text-align: center;
         display:flex;
         flex-direction: column;
         align-content: center;
+        margin:0;
 
-        :hover {background-color: #3097D1}
+        :hover {color: #3097D1; background-color: initial; }
 
-        > *{
-            margin:0;
+        * {
+          color:inherit;
+          margin: 0;
         }
+        
+      }
+
+      .arrow {
+        border: solid #ddd;
+        display: inline-block;
+        padding: 10px;
+        border-width: 0 1px 1px 0;
+        transform: translateY(-15px) rotate(-45deg) skew(-15deg, -15deg) translateX(-20px);
+        background-color: transparent;
+      }
+
+      &.active {
+        background-color: #d68a3a;
+        .bx-pager-link {
+          color: white;
+        }
+        .arrow {
+          background-color: #d68a3a;
+        }
+      }
+
     }
   }
-  /* remove extra padding on the first object since it doesn't have an arrow to the left */
-  .steps li:first-child {
-    padding-left: 5px;
+
+  .people-list {
+    background-color:#FFF;
+    display: flex;
+    flex-direction:column;
+    align-content: center;
+    width: 30%;
+
+    li {
+      list-style-type: none;
+      align-items:stretch;
+      border-radius: 6px;
+      box-shadow: 0 0 2px 2px rgba(0,0,0,0.5);
+      padding: 10px 15px;
+      width:90%;
+      margin: 10px 0;
+    }
   }
-  /* white arrow to the left to "erase" background (starting from the 2nd object) */
-  .steps li:nth-child(n+2)::before {
-    position: absolute;
-    top:0;
-    left:0;
-    display: block;
-    border-left: 25px solid white; /* width: arrow width, color: background of document */
-    border-top: 35px solid transparent; /* width: half height */
-    border-bottom: 40px solid transparent; /* width: half height */
-    width: 0;
-    height: 0;
-    content: " ";
+
+  #recruitment{
+    .tab-content{
+      margin-top: 15px;
+      background-color: #f8f8f8;
+      width:100%;
+    }
+
+    .tab-detail{
+      width: 70%;
+    }
   }
-  /* colored arrow to the right */
-  .steps li::after {
-    z-index: 1; /* need to bring this above the next item */
-    position: absolute;
-    top: 0;
-    right: -25px; /* arrow width (negated) */
-    display: block;
-    border-left: 25px solid #7c8437; /* width: arrow width */
-    border-top: 35px solid transparent; /* width: half height */
-    border-bottom: 35px solid transparent; /* width: half height */
-    width:0;
-    height:0;
-    content: " ";
-  }
-  
-  /* Setup colors (both the background and the arrow) */
-  
-  /* Completed */
-  .steps li { background-color: #fff; }
-  .steps li::after { border-left-color: #fff; }
-  
-  /* Current */
-  .steps li.current { background-color: #C36615; }
-  .steps li.current::after { border-left-color: #C36615; }
-  
-  /* Following */
-  .steps li.current ~ li { background-color: #EBEBEB; }
-  .steps li.current ~ li::after {	border-left-color: #EBEBEB; }
-  
-  /* Hover for completed and current */
-  .steps li:hover {background-color: #3097D1}
-  .steps li:hover::after {border-left-color: #3097D1}
