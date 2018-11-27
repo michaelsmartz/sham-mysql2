@@ -1,16 +1,7 @@
 <?php
-/* parameters SQL SERVER*/
-$mysql_serverName = 'LAPTOP-ASTV8JLD';
-$mssql_databaseName = 'ShamTest';
-$mssql_connection_string = 'DRIVER={SQL Server};SERVER='.$mysql_serverName.';DATABASE='.$mssql_databaseName;
-$mssql_uid = 'sa12345';
-$mssql_pwd = '12345678';
 
-/* parameters MYSQL*/
-$mysql_serverName = "localhost";
-$mysql_uid = "root";
-$mysql_pwd = "";
-$mysql_databaseName = "ShamDev";
+include 'conn.php';
+
 //in order of foreign key
 $tables = [
     //'Assessments',
@@ -23,12 +14,11 @@ $tables = [
     //'Policies',
     //'Topics',
     //"ShamUsers",
-    "ReportTemplates"
 ];
 
 
 // Create sql server connection
-$conn_mssql = odbc_connect($mssql_connection_string, $mssql_uid, $mssql_pwd);
+$conn_mssql = new PDO(sprintf("odbc:DRIVER=freetds;SERVERNAME=%s;DATABASE=%s", $mssql_serverName, $mssql_databaseName), $mssql_uid, $mssql_pwd);
 if (!$conn_mssql) {
     die("Connection failed: " . $conn_mssql->connect_error);
 }
@@ -40,14 +30,14 @@ if ($conn_mysql->connect_error) {
     die("Connection failed: " . $conn_mysql->connect_error);
 }
 
-renameTables($conn_mysql);
+//renameTables($conn_mysql);
 
 //TODO initially truncate tables
-truncateResetAutoincrement($conn_mysql, $tables);
+//truncateResetAutoincrement($conn_mysql, $tables);
 
-addMissingColumns($conn_mysql);
+//addMissingColumns($conn_mysql);
 
-copyData($conn_mysql, $conn_mssql, $tables);
+//copyData($conn_mysql, $conn_mssql, $tables);
 
 //setForeignKey($conn_mysql);
 
@@ -147,40 +137,15 @@ function copyData($conn_mysql, $conn_mssql, $tables){
         $mssql = "select * from $table";
 
         /* Execute the query. */
-        $rs = odbc_exec($conn_mssql, $mssql);
-
-        if (!$rs) {
-            die("Error in SQL");
-        }
+        $pdo = $conn_mssql->query($mssql);
+        $pdo->execute();
 
         //fetching data from mssql
-        $datas = fetch2DArray($rs);
-        insertData($conn_mysql, $datas, $table);
+        $data = $pdo->fetchAll(PDO::FETCH_ASSOC);
+
+        //fetching data from mssql
+        insertData($conn_mysql, $data, $table);
     }
-}
-
-/**
- * obtain mssql in form of an array
- * @param $res
- * @return array
- */
-function fetch2DArray($res){
-    $i = 0;
-    $ar = [];
-    $toReturn = [];
-
-    while(odbc_fetch_row($res))
-    {
-        for ($j = 1; $j <= odbc_num_fields($res); $j++)
-        {
-            $field_name = odbc_field_name($res, $j);
-            $ar[$field_name] = odbc_result($res, $field_name);
-        }
-
-        $toReturn[$i] = $ar;
-        $i++;
-    }
-    return $toReturn;
 }
 
 function insertData($conn_mysql, $datas, $table){
@@ -199,17 +164,13 @@ function insertData($conn_mysql, $datas, $table){
                 $key = 'is_active';
             if($key === 'ExpiryDate')
                 $key = 'expires_on';
-            if($key === 'Source')
-                $key = '`source`';
-            if($key === 'Order')
-                $key = '`order`';
             if($key === 'ShamUserProfileId' || $key ==='LawId') {
                 $fields .= $key.',';
             }else{
                 $fields .= ltrim(strtolower(preg_replace('/([A-Z]+)/', "_$1", $key)), '_') . ',';
             }
 
-            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' || $key === '`order`' ||
+            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' ||
                         $key === 'ShamUserProfileId' || $key === 'is_public')?'null'.',':"'".$value."'".',';
         }
 

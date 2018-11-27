@@ -1,28 +1,20 @@
 <?php
-/* parameters SQL SERVER*/
-$mysql_serverName = 'LAPTOP-ASTV8JLD';
-$mssql_databaseName = 'ShamTest';
-$mssql_connection_string = 'DRIVER={SQL Server};SERVER='.$mysql_serverName.';DATABASE='.$mssql_databaseName;
-$mssql_uid = 'sa12345';
-$mssql_pwd = '12345678';
 
-/* parameters MYSQL*/
-$mysql_serverName = "localhost";
-$mysql_uid = "root";
-$mysql_pwd = "";
-$mysql_databaseName = "ShamDev";
+include 'conn.php';
 
 //to access .env
-require __DIR__.'/../vendor/autoload.php'; //Load composer autoload
-$dot = new \Dotenv\Dotenv(__DIR__.'/../'); //Location of .env
+require __DIR__.'/../../vendor/autoload.php'; //Load composer autoload
+$dot = new \Dotenv\Dotenv(__DIR__.'/../../'); //Location of .env
 $dot->load(); //Load the configuration (Not override, for override use overload() method
 
 //disk and directories where all medias from sql server are saved, path configured in .env
 $disk = getenv('UPLOADS_STORAGE_PATH');
+
 $directories = explode(',', getenv('UPLOADS_STORAGE_DIRECTORIES'));
 
 //increase php script exec time
 ini_set('max_execution_time', 0); //0 value disable the time limit
+ini_set('pdo_odbc.client_buffer_max_kb_size','524288');
 
 //to read bigger files
 ini_set('odbc.defaultlrl', '15M');
@@ -31,7 +23,13 @@ ini_set('mssql.textsize', '15M');
 
 
 // Create sql server connection
-$conn_mssql = odbc_connect($mssql_connection_string, $mssql_uid, $mssql_pwd);
+try{
+    $conn_mssql = new PDO(sprintf("odbc:DRIVER=freetds;SERVERNAME=%s;DATABASE=%s", $mssql_serverName, $mssql_databaseName), $mssql_uid, $mssql_pwd); 
+}
+catch(PDOException $e){
+    echo $e->getMessage();
+}
+
 if (!$conn_mssql) {
     die("Connection failed: " . $conn_mssql->connect_error);
 }
@@ -42,12 +40,6 @@ $conn_mysql = new mysqli($mysql_serverName, $mysql_uid, $mysql_pwd, $mysql_datab
 if ($conn_mysql->connect_error) {
     die("Connection failed: " . $conn_mysql->connect_error);
 }
-
-//remove disk base folder exist else create a new one
-if (file_exists($disk)) {
-    rrmdir($disk);
-}
-mkdir($disk, 0777, true);
 
 //initially truncate both media and mediables tables
 truncateResetAutoincrementMediaMediables($conn_mysql);
@@ -60,25 +52,28 @@ updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, 'update');
 
 
 function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $type){
+	
     //to be inserted in mediables as autoincrement media_id
     $media_id = 1;
     $varbinary = false;
+	$mssql = '';
 
     foreach($directories as $directory){
 
-        //remove disk directory if exist else create a new one and only on create
-        if($type ==="create"){
-            if (file_exists($disk.$directory)) {
-                rrmdir($disk.$directory);
-            }
-            mkdir($disk.$directory, 0777, true);
-        }
-
         switch ($directory){
+			case 'Assessment':
+                $mssql = "select AssessmentId as mediableId,
+                    OriginalFileName as filename
+                    from Evaluations
+                    where Active !=0
+                    and OriginalFileName is not null
+                    and QaSample is not null
+                    order by OriginalFileName Asc;
+                    ";
+                break;
             case 'Employee':
                 $mssql = "select EmployeeId as mediableId, 
                       OriginalFileName as filename,
-                      Content as content, 
                       Comment as comment,
                       EmployeeAttachmentTypeId  as employeeAttachmentTypeId
                     from EmployeeAttachments
@@ -87,103 +82,86 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $type
                     and Content is not null
                     order by OriginalFileName Asc;
                     ";
-                $varbinary = true;
-                break;
-            case 'Assessment':
-                $mssql = "select AssessmentId as mediableId,
-                    OriginalFileName as filename,
-                    QaSample as content
-                    from Evaluations
-                    where Active !=0
-                    and OriginalFileName is not null
-                    and QaSample is not null
-                    order by OriginalFileName Asc;
-                    ";
-                $varbinary = true;
                 break;
             case 'Law':
                 $mssql = "select LawId as mediableId,
-                    Name as filename,
-                    Content as content
+                    Name as filename
                     from LawDocuments
                     where Name is not null
                     and Content is not null
                     order by Name Asc;
                     ";
-                $varbinary = false;
                 break;
             case 'Policy':
                 $mssql = "select PolicyId as mediableId,
-                    Name as filename,
-                    Content as content
+                    Name as filename
                     from PolicyDocuments 
                     where Name is not null
                     and Content is not null
                     order by Name Asc;
                     ";
-                $varbinary = false;
                 break;
             case 'Topic':
                 $mssql = "select TopicId as mediableId,
-                    OriginalFileName as filename,
-                    Content as content
+                    OriginalFileName as filename
                     from TopicAttachments
                     where Active !=0
                     and OriginalFileName is not null
                     and Content is not null
                     order by OriginalFileName Asc;
                     ";
-                $varbinary = false;
                 break;
         }
+		
+		//$conn_mssql->setAttribute(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE, 1024*1024*256);
+		$conn_mssql->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+		
+		/* Execute the query. */
+		$pdo = $conn_mssql->prepare($mssql);
+		$pdo->execute();
+		
+		//fetching data from mssql
+		$datas = $pdo->fetchAll(PDO::FETCH_ASSOC);
+	
+		//to increment to insert in mediable to simulate media_id
+		$order = 1;
 
-        /* Execute the query. */
-        $rs = odbc_exec($conn_mssql, $mssql);
+		/* Iterate through the result set printing a row of data upon each iteration.*/
+		//var_dump($datas);
+	
+		if($datas){
+			foreach($datas as $data){
+				//$string = $data["content"];
+				$mediable_id = $data["mediableId"];
+				$filename = $data["filename"];
 
-        if (!$rs)
-        {
-            die("Error in SQL");
-        }
+				 if($directory == "Employee" && $type === "update"){
+					 $comment = $data["comment"];
+					 $employeeAttachmentTypeId = $data["employeeAttachmentTypeId"];
+					 updateMedias($conn_mysql, $media_id, $comment, $employeeAttachmentTypeId);
+				 }
+				 else if($type === "create"){
+					 $filename = checkFileExist($disk, $directory, $filename);
+					 
+					 var_dump($directory);
 
-        //to increment to insert in mediable to simulate media_id
-        $order = 1;
+					 $file = $disk.$directory.DIRECTORY_SEPARATOR.$filename;
 
-        /* Iterate through the result set printing a row of data upon each iteration.*/
-        while(odbc_fetch_row($rs)) {
-            $string = odbc_result($rs,"content");
-            $mediable_id = odbc_result($rs,"mediableId");
-            $filename = odbc_result($rs,"filename");
+					 insertMediables($conn_mysql, $media_id, $mediable_id, $directory, $order);
+				 }
 
-             if($directory == "Employee" && $type === "update"){
-                 $comment = odbc_result($rs,"comment");
-                 $employeeAttachmentTypeId = odbc_result($rs,"employeeAttachmentTypeId");
-                 updateMedias($conn_mysql, $media_id, $comment, $employeeAttachmentTypeId);
-             }
-             else if($type === "create"){
-                 $filename = checkFileExist($disk, $directory, $filename);
-
-                 $file = $disk.$directory.DIRECTORY_SEPARATOR.$filename;
-
-                 insertMediables($conn_mysql, $media_id, $mediable_id, $directory, $order);
-
-                 if (base64ToFile($string, $file, $varbinary)) {
-                     echo "***SUCCESS*** ". $filename. " was successfully saved to <b>". $file. "</b><br><br>\n";
-                 } else {
-                     echo "***ERROR*** ". $file. " was not saved to <b>". $file. "</b><br><br>\n";
-                 }
-             }
-
-            $order++;
-            $media_id++;
-        }
+				$order++;
+				$media_id++;
+			}
+		}
     }
 
     //insert in media table
     if($type === "create"){
         //EXEC "php artisan media:import uploads" when uploads of files is completed
         //cd on project root NB: one directory back since script on same project
-        chdir("..");
-        $command = "php artisan media:import uploads";
+		exec("cd ..");
+        $command = "php artisan media:sync uploads";
         exec($command, $output);
         print_r($output);
         echo '<br>';
@@ -195,6 +173,13 @@ function updateCreateMedias($conn_mssql, $conn_mysql, $directories, $disk, $type
  * @param $conn_mysql
  */
 function truncateResetAutoincrementMediaMediables($conn_mysql){
+	
+	$mysql = "SET FOREIGN_KEY_CHECKS=0;";
+    if ($conn_mysql->query($mysql) === TRUE) {
+        echo "<b>FOREIGN KEY CHECK DISABLED</b><br>";
+    } else {
+        echo "Error: " . $mysql . "<br>" . $conn_mysql->error;
+    }
 
     $tables = [
         'media',
@@ -216,6 +201,21 @@ function truncateResetAutoincrementMediaMediables($conn_mysql){
         } else {
             echo "Error: " . $mysql . "<br>" . $conn_mysql->error;
         }
+    }
+	
+	
+	$mysql = "SET GLOBAL FOREIGN_KEY_CHECKS=1;";
+    if ($conn_mysql->query($mysql) === TRUE) {
+        echo "<b>FOREIGN KEY CHECK ENABLED</b><br>";
+    } else {
+        echo "Error: " . $mysql . "<br>" . $conn_mysql->error;
+    }
+	
+	$mysql = "Alter table media DROP INDEX media_disk_directory_filename_extension_unique;";
+    if ($conn_mysql->query($mysql) === TRUE) {
+        echo "<b>FOREIGN KEY CHECK ENABLED</b><br>";
+    } else {
+        echo "Error: " . $mysql . "<br>" . $conn_mysql->error;
     }
 }
 
@@ -264,30 +264,6 @@ function insertMediables($conn_mysql, $mediaId, $mediableId, $directory, $order)
 }
 
 /**
- * convert data in database to file
- * @param $data
- * @param $output_file
- * @param $varbinary
- * @return bool|int|null
- */
-function base64ToFile($data, $output_file, $varbinary) {
-    $decoded = "";
-    $result = null;
-
-    //if column data is in varbinary we must base64_encode it first
-    if($varbinary)
-        $data = base64_encode($data);
-
-    //if large file
-    for ($i=0; $i < ceil(strlen($data)/256); $i++)
-        $decoded = $decoded . base64_decode(substr($data,$i*256,256));
-
-    $result = file_put_contents($output_file, $decoded);
-
-    return $result;
-}
-
-/**
  * check if file already exist in folder
  * if already exist add incrementing number
  * and return filename to be added in database
@@ -303,7 +279,7 @@ function checkFileExist($disk, $directory, $filename)
         $tmp = explode(".", $filename);
         $file_ext = end($tmp);
         $file_name = str_replace(('.'.$file_ext),"",$filename);
-        return $file_name.'_'.count(glob($disk.$directory.DIRECTORY_SEPARATOR."$file_name*.$file_ext")).'.'.$file_ext;
+        return $file_name.'('.count(glob($disk.$directory.DIRECTORY_SEPARATOR."$file_name*.$file_ext")).').'.$file_ext;
     }
     else{
         return $filename;
@@ -330,5 +306,4 @@ function rrmdir($dir) {
 }
 
 /* Free statement and connection resources. */
-odbc_close($conn_mssql);
 $conn_mysql->close();
