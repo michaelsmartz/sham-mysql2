@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\CategoryQuestion;
 use Illuminate\Http\Request;
-use App\CategoryQuestionType;
+//use App\CategoryQuestionType;
 use App\CategoryQuestionChoice;
+use App\Enums\CategoryQuestionType;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -64,7 +65,8 @@ class CategoryQuestionsController extends CustomController
      */
     public function create()
     {
-        $categoryQuestionTypes = CategoryQuestionType::pluck('description','id')->all();
+        //$categoryQuestionTypes = CategoryQuestionType::pluck('description','id')->all();
+        $categoryQuestionTypes = CategoryQuestionType::ddList();
         return view($this->baseViewPath . '.create', compact('data','categoryQuestionTypes'));
     }
 
@@ -125,7 +127,8 @@ class CategoryQuestionsController extends CustomController
         if(!empty($id)) {
             $data = $this->contextObj->findData($id);
         }
-        $categoryQuestionTypes = CategoryQuestionType::pluck('description','id')->all();
+        //$categoryQuestionTypes = CategoryQuestionType::pluck('description','id')->all();
+        $categoryQuestionTypes = CategoryQuestionType::ddList();
 
         $categoryquestionchoices = CategoryQuestionChoice::where('category_question_id',$id)->get();
 

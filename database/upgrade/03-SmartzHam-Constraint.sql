@@ -970,3 +970,24 @@ ALTER TABLE `email_addresses`
 
 ALTER TABLE `telephone_numbers`
 	DROP FOREIGN KEY `FK_TelephoneNumbers_TelephoneNumberTypes`;
+
+#--- 28/11/2018
+ALTER TABLE `category_questions`
+DROP FOREIGN KEY `FK_CategoryQuestions_CategoryQuestionTypes`;
+
+ALTER TABLE `category_questions`
+DROP INDEX `FK_CategoryQuestions_CategoryQuestionTypes` ;
+
+ALTER TABLE `category_questions`
+CHANGE COLUMN `category_question_type_id` `category_question_type_id` ENUM('1', '2', '3') NOT NULL DEFAULT '1' ;
+
+ALTER TABLE `evaluations`
+DROP FOREIGN KEY `FK_Evaluations_EvaluationStatuses`;
+
+ALTER TABLE `evaluations`
+DROP INDEX `FK_Evaluations_EvaluationStatuses` ;
+
+ALTER TABLE `evaluations`
+CHANGE COLUMN `evaluation_status_id` `evaluation_status_id` ENUM('1', '2') NOT NULL DEFAULT '1' ;
+
+

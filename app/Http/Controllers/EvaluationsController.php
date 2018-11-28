@@ -8,7 +8,8 @@ use App\Evaluation;
 use App\Assessment;
 use App\Department;
 use App\ProductCategory;
-use App\EvaluationStatus;
+//use App\EvaluationStatus;
+use App\Enums\EvaluationStatusType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
@@ -85,7 +86,8 @@ class EvaluationsController extends CustomController
         $departments = Department::pluck('description','id')->all();
         $productCategories = ProductCategory::pluck('description','id')->all();
         $languages = Language::pluck('description','id')->all();
-        $evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
+        //$evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
+        $evaluationStatuses = EvaluationStatusType::ddList();
         $feedbackdate = \Carbon\Carbon::now()->toDateString();
 
         return view($this->baseViewPath . '.create', compact('data','assessments','employees','departments','productCategories','languages','evaluationStatuses','feedbackdate'));
@@ -199,8 +201,8 @@ class EvaluationsController extends CustomController
         $departments = Department::pluck('description','id')->all();
         $productCategories = ProductCategory::pluck('description','id')->all();
         $languages = Language::pluck('description','id')->all();
-        $evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
-
+        //$evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
+        $evaluationStatuses = EvaluationStatusType::ddList();
         $selectecAssessors = $data->assessors()->pluck('full_name','employee_evaluation.employee_id');
 
         return view($this->baseViewPath .'.edit',
