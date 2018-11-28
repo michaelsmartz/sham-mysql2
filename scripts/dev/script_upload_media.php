@@ -69,7 +69,7 @@ function updateCreateMedias($conn_mysql, $disk, $config, $type){
                     //to increment to insert in mediable to simulate media_id
                     if ($directory == "Employee" && $type === "update") {
                         $comment = $row["comment"];
-                        $employeeAttachmentTypeId = $row["employeeAttachmentTypeId"];
+                        $employeeAttachmentTypeId = $row["extrable_id"];
                         updateMedias($conn_mysql, $media_id, $comment, $employeeAttachmentTypeId);
                     } else if ($type === "create") {
                         insertMediables($conn_mysql, $media_id, $mediable_id, $directory, $order);
