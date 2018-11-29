@@ -12,8 +12,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------------------------------------------------------
 -- Schema 
 -- ----------------------------------------------------------------------------
-DROP SCHEMA IF EXISTS `Shamdev` ;
-CREATE SCHEMA IF NOT EXISTS `Shamdev` ;
+DROP SCHEMA IF EXISTS `Shamuat` ;
+CREATE SCHEMA IF NOT EXISTS `Shamuat` ;
 
 USE `Shamdev`;
 -- ----------------------------------------------------------------------------
