@@ -13,8 +13,8 @@ SET GLOBAL FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------------------------------------------------------
 -- Schema
 -- ----------------------------------------------------------------------------
-DROP SCHEMA IF EXISTS `Shamdev` ;
-CREATE SCHEMA IF NOT EXISTS `Shamdev` ;
+DROP SCHEMA IF EXISTS `Shamuat` ;
+CREATE SCHEMA IF NOT EXISTS `Shamuat` ;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `shamdev`
+-- Database: `shamuat`
 --
 
 -- --------------------------------------------------------
