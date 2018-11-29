@@ -6145,7 +6145,7 @@ ALTER TABLE `commentdetails`
 --
 ALTER TABLE `companydocuments`
   ADD CONSTRAINT `FK_CompanyDocuments_DocumentCategories` FOREIGN KEY (`DocumentCategoryId`) REFERENCES `document_categories` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `FK_CompanyDocuments_DocumentTypes` FOREIGN KEY (`DocumentTypeId`) REFERENCES `documenttypes` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_CompanyDocuments_DocumentTypes` FOREIGN KEY (`DocumentTypeId`) REFERENCES `document_types` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `FK_CompanyDocuments_ShamUsers` FOREIGN KEY (`UploadedByShamUserId`) REFERENCES `sham_users` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
@@ -6559,14 +6559,6 @@ ALTER TABLE `roles`
 --
 ALTER TABLE `shamsessions`
   ADD CONSTRAINT `FK_ShamSessions_ShamUsers` FOREIGN KEY (`ShamUserId`) REFERENCES `sham_users` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Constraints for table `sham_permission_sham_user_profile_system_sub_module`
---
-ALTER TABLE `sham_permission_sham_user_profile_system_sub_module`
-  ADD CONSTRAINT `FK_ShamUserProfilesSubModulePermissions_ShamPermissions` FOREIGN KEY (`sham_permission_id`) REFERENCES `sham_permissions` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `FK_ShamUserProfilesSubModulePermissions_ShamUserProfiles` FOREIGN KEY (`sham_user_profile_id`) REFERENCES `sham_user_profiles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `FK_ShamUserProfilesSubModulePermissions_SystemSubModules` FOREIGN KEY (`system_sub_module_id`) REFERENCES `system_sub_modules` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `sham_users`
