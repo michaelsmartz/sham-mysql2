@@ -50,12 +50,20 @@ class SSPMyDetailsController extends CustomController
                 ->with('warnings', array('You do not have permissions to access this page.'));
         }
 
-        if ($id == 0) {
+        // get the employee
+        $employee = $this->contextObj::find($id);
+
+        $warnings = array();
+
+        if (empty($employee)) {
             $warnings[] = 'Please check whether your profile is associated to an employee!';
         }
 
-        // get the employee
-        $employee = $this->contextObj::find($id);
+        if (empty($employee)) {
+            return View('not-allowed')
+                ->with('title', 'My Details')
+                ->with('warnings', array('Please check whether your profile is associated to an employee!'));
+        }
 
         $attachments = [];
 
