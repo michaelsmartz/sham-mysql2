@@ -24,7 +24,7 @@
             @endif
             <div class="table-responsive">
             @if(count($assetEmployees) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new asset employee</h4>
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new asset allocation</h4>
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>

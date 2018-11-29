@@ -24,7 +24,7 @@
             @if(count($assessmentTypes) == 0)
                 <h4 class="text-center">Its a bit empty here.
                     @if($allowedActions->contains('Create'))
-                        You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new branch
+                        You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new assessment type
                     @endif
                 </h4>
             @elseif($allowedActions->contains('List'))

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 28, 2018 at 01:02 PM
+-- Generation Time: Nov 29, 2018 at 04:54 AM
 -- Server version: 5.7.21
 -- PHP Version: 7.1.16
 
@@ -3087,6 +3087,17 @@ CREATE TABLE IF NOT EXISTS `sham_permissions` (
   `alias` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `sham_permissions`
+--
+
+INSERT INTO `sham_permissions` (`id`, `name`, `description`, `is_active`, `alias`) VALUES
+(1, 'getList', 'Permission to retrieve a listing on the main view and perform filtering search', 1, 'List'),
+(2, 'get', 'Permission to retrieve one record in read mode', 1, 'Read'),
+(3, 'modify', 'General permission to alter data on the concerned entify', 1, 'Write'),
+(4, 'remove', 'General permission to delete or deactivate the relevant entity', 1, 'Delete'),
+(5, 'add', 'General permission to add new records', 1, 'Create');
 
 -- --------------------------------------------------------
 
