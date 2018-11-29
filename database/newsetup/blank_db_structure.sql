@@ -5985,6 +5985,9 @@ CREATE TABLE IF NOT EXISTS `workflowtransitions` (
   KEY `FK_WorkflowTransitions_WorkflowSteps1` (`TargetWorkflowStepId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+INSERT INTO `sys_config_values` (`key`, `value`) VALUES ('LATEST_SFE_CODE', 'SG0001');
+
 -- --------------------------------------------------------
 
 --
