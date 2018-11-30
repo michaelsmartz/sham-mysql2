@@ -11,6 +11,7 @@
                 </a>
                 <div class="arrow"></div>
             </li>
+
             <li class="tab-item orange">
                 <a class="tab-link" href="#review" data-toggle="tab" @click="selectedCategory='review'">
                     <h2>4</h2>
@@ -21,11 +22,12 @@
 
             <li class="tab-item blue">
                 <a class="tab-link" href="#interviewing" data-toggle="tab" @click="selectedCategory='interviewing'">
-                    <h3>3</h3>
+                    <h2>3</h2>
                     <small>Interviewing</small>
                 </a>
                 <div class="arrow"></div>
             </li>
+
             <li class="tab-item blue">
                 <a class="tab-link" href="#offer" data-toggle="tab" @click="selectedCategory='offer'">
                     <h2>2</h2>
@@ -33,6 +35,7 @@
                 </a>
                 <div class="arrow"></div>
             </li>
+
             <li class="tab-item green">
                 <a class="tab-link" href="#contract" data-toggle="tab" @click="selectedCategory='contract'">
                     <h2>1</h2>
@@ -40,40 +43,30 @@
                 </a>
                 <div class="arrow"></div>
             </li>
+
             <li class="tab-item green">
                 <a class="tab-link" href="#hired" data-toggle="tab" @click="selectedCategory='hired'">
                     <h2>1</h2>
                     <small>Hired</small>
                 </a>
             </li>
+
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane" id="applied">
-                <ul class="people-list">
-                    <li v-for="person in filteredPeople" v-on:click="setCurrent(person)">
-                        <div class="img">
-                        </div>
-                        <div>
-                            <div>@{{ person.name }}</div>
-                            <div>@{{ person.jobTitle }}</div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="tab-detail" v-show="current !== null">@{{ current.name }}</div>
+                @component('recruitments.step', ['step' => [
+                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve for review'],
+                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Reject applicant']
+                ] ])
+                @endcomponent
             </div>
             <div class="tab-pane" id="review">
-                <ul class="people-list">
-                    <li v-for="person in filteredPeople">
-                        <div class="img">
-                        </div>
-                        <div>
-                            <div>@{{ person.name }}</div>
-                            <div>@{{ person.jobTitle }}</div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="tab-detail"></div>
+                @component('recruitments.step', ['step' => [
+                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Schedule interview'],
+                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                ] ])
+                @endcomponent
             </div>
             <div class="tab-pane" id="interviewing">
                 <ul class="people-list">
@@ -130,7 +123,8 @@
         </div>
     </section>
 @endsection
+
 @section('post-body')
-<link href="{{URL::to('/')}}/css/nav-wizard.min.css" rel="stylesheet">
-<script src="{{URL::to('/')}}/js/recruitment.min.js"></script>
+    <link href="{{URL::to('/')}}/css/nav-wizard.min.css" rel="stylesheet">
+    <script src="{{URL::to('/')}}/js/recruitment.min.js"></script>
 @endsection

@@ -11147,8 +11147,35 @@ window.Vue = __webpack_require__(5);
 var vm = new Vue({
 	el: "#recruitment",
 	data: {
-		people: [{ name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut" }, { name: "Steve Jobs", status: "applied", picture: "", jobTitle: "Chief Marketing Officer" }, { name: "Jeff Bezos", status: "applied", picture: "", jobTitle: "Operator" }, { name: "George Clooney", status: "review", picture: "", jobTitle: "Web Developer" }, { name: "Meryl Streep", status: "review", picture: "", jobTitle: "" }, { name: "Amy Poehler", status: "interviewing", picture: "", jobTitle: "" }, { name: "Lady of Lórien", status: "interviewing", picture: "", jobTitle: "" }, { name: "BB8", status: "offer", picture: "", jobTitle: "" }, { name: "Michael Scott", status: "contract", picture: "", jobTitle: "" }],
-		selectedCategory: "All",
+		people: [{
+			name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut",
+			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }]
+		}, {
+			name: "Steve Jobs", status: "applied", picture: "", jobTitle: "Chief Marketing Officer",
+			documents: []
+		}, {
+			name: "Jeff Bezos", status: "applied", picture: "", jobTitle: "Operator",
+			documents: []
+		}, {
+			name: "George Clooney", status: "review", picture: "", jobTitle: "Web Developer",
+			documents: []
+		}, {
+			name: "Meryl Streep", status: "review", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "Amy Poehler", status: "interviewing", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "Lady of Lórien", status: "interviewing", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "BB8", status: "offer", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "Michael Scott", status: "contract", picture: "", jobTitle: "",
+			documents: []
+		}],
+		selectedCategory: "applied",
 		current: {}
 	},
 	computed: {

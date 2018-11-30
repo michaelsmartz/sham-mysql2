@@ -1,8 +1,7 @@
   .steps li {
     float: left;
     margin-left: 0;
-    list-style-type: none;
-    padding: 5px 0px 5px 0px; /* padding around text, last should include arrow width */
+    padding: 0px; /* padding around text, last should include arrow width */
     position: relative;
   }
   
@@ -26,18 +25,7 @@
 
       &.orange {
         border-top: 2px solid #d68a3a;
-
         .tab-link {
-          text-decoration: none;
-          display:flex;
-          flex-direction: column;
-          align-content: center;
-
-          > *{
-            color:inherit;
-            margin:0;
-          }
-
           &.active{
             background-color: #d68a3a;
             &.show{
@@ -55,6 +43,9 @@
         .tab-link {
           &.active{
             background-color: #3097D1;
+            &.show{
+              display: inherit !important;
+            }
             & +.arrow {
               background-color: #3097D1;
             }
@@ -67,6 +58,9 @@
         .tab-link {
           &.active{
             background-color: green;
+            &.show{
+              display: inherit !important;
+            }
             & +.arrow {
               background-color: green;
             }
@@ -76,21 +70,18 @@
 
       .tab-link {
         text-decoration: none;
-        flex: 1;
-        padding-left: 16px;
-        text-align: center;
         display:flex;
         flex-direction: column;
         align-content: center;
+        flex: 1;
+        padding-left: 16px;
         margin:0;
-
-        :hover {color: #3097D1; background-color: initial; }
 
         * {
           color:inherit;
           margin: 0;
         }
-        
+
       }
 
       .arrow {
@@ -116,24 +107,36 @@
   }
 
   .people-list {
-    background-color:#FFF;
+    background-color:#F8F8F8;
     display: flex;
     flex-direction:column;
-    align-content: center;
-    width: 30%;
+    align-items: center;
+    width: 20%;
+    box-shadow: 0 0 3px 0 rgba(0,0,0,0.2);
+    padding-left: 0;
 
     li {
-      list-style-type: none;
       align-items:stretch;
       border-radius: 6px;
-      box-shadow: 0 0 2px 2px rgba(0,0,0,0.5);
+      box-shadow: 0 0 3px 0 rgba(0,0,0,0.2);
       padding: 10px 15px;
-      width:90%;
+      width: 90%;
       margin: 10px 0;
+      background-color: #fff;
+      cursor: pointer;
+
+      &.active{
+        box-shadow: 0 0 3px 0 rgba(255,0,0,0.5);
+      }
+
     }
   }
 
   #recruitment{
+    ul {
+      list-style-type: none;
+    }
+
     .tab-content{
       margin-top: 15px;
       background-color: #f8f8f8;
@@ -141,6 +144,41 @@
     }
 
     .tab-detail{
-      width: 70%;
+      width: 80%;
+      margin-left:15px;
     }
+
+    .tab-pane{
+      &.show{
+        display:flex !important;
+      }
+    }
+
+    .tabbable {
+      .nav{
+        border-bottom: 1px solid #ddd;
+
+        li{
+          display:inline-block !important;
+  
+          a.active {
+            &.show, &.active>a:focus, &.active>a:hover{
+              border-top: none;
+              border-left: none;
+              border-right: none;
+              border-bottom: 3px solid #e9a39c !important;
+              font-weight: bold;
+              display: inline-block !important;
+            }
+          }
+  
+          a:hover {
+            border: 1px solid transparent;
+          }
+        }
+
+      }
+
+    }
+
   }
