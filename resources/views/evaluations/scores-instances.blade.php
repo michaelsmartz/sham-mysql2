@@ -2,7 +2,7 @@
 @section('title','Assesss')
 @section('content')
 
-    {!! Form::open(array('route' => array('evaluations.submit_assessment', $Evaluationid,$AssessorName),'method'=>'POST', 'files'=>true)) !!}
+    {!! Form::open(array('route' => array('evaluations.pdfscores', $Evaluationid,$AssessorName),'method'=>'POST', 'files'=>true)) !!}
     {!! Form::hidden('htmlnode',null,['id'=>'htmlnode1']) !!}
     {!! Form::hidden('htmlnodeScore',null,['id'=>'htmlnodeScore']) !!}
 

@@ -173,7 +173,8 @@ Auth::routes();
             Route::get('evaluations/{id}/EvaluationId/{EvaluationId}/assess', 'EvaluationsController@loadAssessment')->name('evaluations.load_assessment');
             Route::post('evaluations/{id}/EvaluationId/{EvaluationId}/submitassessment', 'EvaluationsController@submitAssessment')->name('evaluations.submit_assessment');
             Route::get('evaluations/{assessor}/score/{evaluationid}/show', 'EvaluationsController@score')->name('evaluations.score');
-            Route::any('evaluations/{Id}/EvaluationId/{EvaluationId}/AssessorId/{AssessorId}/summary', 'EvaluationsController@summary')->name('evaluationassessor.summary');
+            Route::any('evaluations/{Id}/name/{name}/downloadscorepdf', 'EvaluationsController@downloadScorePdf' )->name('evaluations.pdfscores');
+            Route::any('evaluations/{Id}/EvaluationId/{EvaluationId}/AssessorId/{AssessorId}/summary', 'EvaluationsController@summary')->name('evaluations.summary');
             Route::get('getaudio', 'EvaluationsController@getaudio');
         #endregion
 

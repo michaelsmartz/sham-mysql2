@@ -21,6 +21,7 @@ use App\Traits\MediaFiles;
 use Exception;
 use App\SystemSubModule;
 use App\Support\Helper;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class EvaluationsController extends CustomController
 {
@@ -326,6 +327,7 @@ class EvaluationsController extends CustomController
         }
 
         $employeeid = \Auth::user()->employee->id;
+        //$employeeid  = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
         $evaluations = $this->contextObj::with('assessment','useremployee','department')->filtered()->where('is_active',1)
                      ->orderBy('feedback_date', 'desc')
@@ -341,6 +343,76 @@ class EvaluationsController extends CustomController
         // Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
         return view($this->baseViewPath .'.instancesindex', compact('evaluations','allowedActions'));
     }
+
+    public function downloadScorePdf(Request $request,$id,$name)
+    {
+        $evaluations = $this->contextObj::with('assessment','useremployee','department')
+            ->where('id', $id)->get()->first();
+
+        // Gettting Header details to display on form
+        $HeaderDetails = [];
+        if ($evaluations!=null) {
+            $HeaderDetails['user'] = $evaluations->useremployee->first_name.' '.$evaluations->useremployee->surname;
+            $HeaderDetails['department'] = $evaluations->department->description;
+            $HeaderDetails['feedbackdate'] =  date('Y-m-d', strtotime($evaluations->feedback_date));;
+            $HeaderDetails['referenceno'] = $evaluations->reference_no;
+            $HeaderDetails['referencesource'] = $evaluations->reference_source;
+            $HeaderDetails['assessment'] = $evaluations->assessment->name;
+        }
+
+        $htmnode = Input::get('htmlnode','');
+        $htmlnodescore = Input::get('htmlnodeScore','');
+        $data =array(
+            'htmlnode' => $htmnode,
+            'htmlnodescore' => $htmlnodescore,
+            'HeaderDetails' => $HeaderDetails,
+            'assessorname' => $name,
+        );
+
+        $pdf = PDF::loadView('evaluations.print-scores', $data)
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('Scores.pdf');
+    }
+
+
+    public function downloadQuestionairePdf(Request $request,$id,$evaluationId,$assessorId)
+    {
+        $assessorName = "";
+        $assessordetails = Employee::select(['first_name','surname'])->where("id",$assessorId)->get()->first();
+
+        if ($assessordetails!=null) {
+            $assessorName = $assessordetails->surname .' '. $assessordetails->first_name;
+        }
+
+        $evaluations = $this->contextObj::with('assessment','useremployee','department')
+            ->where('id', $evaluationId)->get()->first();
+
+        // Gettting Header details to display on form
+        $HeaderDetails = [];
+        if ($evaluations!=null) {
+            $HeaderDetails['user'] = $evaluations->useremployee->first_name.' '.$evaluations->useremployee->surname;
+            $HeaderDetails['department'] = $evaluations->department->description;
+            $HeaderDetails['feedbackdate'] =  date('Y-m-d', strtotime($evaluations->feedback_date));;
+            $HeaderDetails['referenceno'] = $evaluations->reference_no;
+            $HeaderDetails['referencesource'] = $evaluations->reference_source;
+            $HeaderDetails['assessment'] = $evaluations->assessment->name;
+        }
+
+        $htmnode = Input::get('htmlnode','');
+        $htmlnodescore = Input::get('htmlnodeScore','');
+        $data =array(
+            'htmlnode' => $htmnode,
+            'htmlnodescore' => $htmlnodescore,
+            'HeaderDetails' =>$HeaderDetails,
+            'assessorname' => $assessorName,
+        );
+
+        $pdf = PDF::loadView('evaluations.print-questionaire', $data)
+            ->setPaper('a4', 'portrait');
+        return $pdf->download('Questionaire.pdf');
+    }
+
 
     public function attachment(Request $request, $Id)
     {
@@ -478,7 +550,8 @@ class EvaluationsController extends CustomController
         $containsDuplicateQuestion = false;
         $html = "";
 
-        //dd($Id);
+        //dump($Id);
+        //dd($EvaluationId);
 
         //return $request->all();
 
@@ -495,7 +568,7 @@ class EvaluationsController extends CustomController
         foreach ($request['question_id'] as $questionID => $answerArray)
         {
             //$evaluationresultObj = new EvaluationResult();
-            $evaluationDetails = $this->contextObj->findData($Id);
+            $evaluationDetails = $this->contextObj->findData($EvaluationId);
 
             if (array_key_exists("QuestionType", $answerArray))
             {
@@ -663,237 +736,245 @@ class EvaluationsController extends CustomController
         $categoriesid = array();
         $questionsid = array();
 
-        $evaluationObj = $this->contextObj::with('evaluationResults')->where('id',$EvaluationId)->first();
-
-        $assessmentid = $evaluationObj->assessment_id;
-        $qasample = $evaluationObj->qa_sample;
-        $useremployeeId = $evaluationObj->user_employee_id;
-        $useremployeeObj = $evaluationObj->useremployee;
-        $evaluationStatusid = $evaluationObj->evaluation_status_id;
-        $usecontent = $evaluationObj->is_usecontent;
-        $urlpath = $evaluationObj->url_path;
-
-        $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
-            ->find($evaluationObj->assessment_id);
-
-        $questionNo = 0;
-        foreach($assessment->assessmentAssessmentCategory as $assessmetCategory)
+        if ($request->isMethod('post'))
         {
-            $html .= "<div class = \"panel panel-default\">";
-            $html .= "<div class =\"panel-heading\">".$assessmetCategory->name."</div>";
-            $html .= "<div class = \"panel-body\">";
-            foreach($assessmetCategory->assessmentCategoryCategoryQuestions as $categoryquestion){
+            $evaluations = $this->contextObj::with('assessment','useremployee','department')
+                ->where('id', $EvaluationId)->get()->first();
 
-                $questionNo++;
-                $questionid = $categoryquestion->id;
+            // Gettting Header details to display on form
+            $HeaderDetails = [];
+            if ($evaluations!=null) {
+                $HeaderDetails['user'] = $evaluations->useremployee->first_name.' '.$evaluations->useremployee->surname;
+                $HeaderDetails['department'] = $evaluations->department->description;
+                $HeaderDetails['feedbackdate'] =  date('Y-m-d', strtotime($evaluations->feedback_date));;
+                $HeaderDetails['referenceno'] = $evaluations->reference_no;
+                $HeaderDetails['referencesource'] = $evaluations->reference_source;
+                $HeaderDetails['assessment'] = $evaluations->assessment->name;
+            }
 
-                $questionbase = "question_id[".$questionid."]";
-                $question_id = $questionbase."[Response][]";
-                $question_type = "";
+            $htmnode = Input::get('htmlnode','');
+            $htmlnodescore = Input::get('htmlnodeScore','');
+            $data =array(
+                'htmlnode' => $htmnode,
+                'htmlnodescore' => $htmlnodescore,
+                'HeaderDetails' =>$HeaderDetails,
+                'assessorname' => $assessorid,
+            );
 
-                $html.="<div class=\"form-group \">";
-                $totalscores = $evaluationObj->evaluationResults->where('assessor_employee_id',$assessorid)
-                        ->where('is_active',1)
-                        ->where('assessment_category_id',$assessmetCategory->id)
-                        ->where('category_question_id',$categoryquestion->id)
+            $pdf = PDF::loadView('evaluations.print-questionaire', $data)
+                ->setPaper('a4', 'portrait');
+            return $pdf->download('Questionaire.pdf');
+        } else {
+
+            $evaluationObj = $this->contextObj::with('evaluationResults')->where('id', $EvaluationId)->first();
+
+            $assessmentid = $evaluationObj->assessment_id;
+            $qasample = $evaluationObj->qa_sample;
+            $useremployeeId = $evaluationObj->user_employee_id;
+            $useremployeeObj = $evaluationObj->useremployee;
+            $evaluationStatusid = $evaluationObj->evaluation_status_id;
+            $usecontent = $evaluationObj->is_usecontent;
+            $urlpath = $evaluationObj->url_path;
+
+            $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
+                ->find($evaluationObj->assessment_id);
+
+            $questionNo = 0;
+            foreach ($assessment->assessmentAssessmentCategory as $assessmetCategory) {
+                $html .= "<div class = \"panel panel-default\">";
+                $html .= "<div class =\"panel-heading\">" . $assessmetCategory->name . "</div>";
+                $html .= "<div class = \"panel-body\">";
+                foreach ($assessmetCategory->assessmentCategoryCategoryQuestions as $categoryquestion) {
+
+                    $questionNo++;
+                    $questionid = $categoryquestion->id;
+
+                    $questionbase = "question_id[" . $questionid . "]";
+                    $question_id = $questionbase . "[Response][]";
+                    $question_type = "";
+
+                    $html .= "<div class=\"form-group \">";
+                    $totalscores = $evaluationObj->evaluationResults->where('assessor_employee_id', $assessorid)
+                        ->where('is_active', 1)
+                        ->where('assessment_category_id', $assessmetCategory->id)
+                        ->where('category_question_id', $categoryquestion->id)
                         ->sum('pivot.points');
 
-                $choices = $evaluationObj->evaluationResults->where('assessor_employee_id',$assessorid)
-                    ->where('is_active',1)
-                    ->where('assessment_category_id',$assessmetCategory->id)
-                    ->where('category_question_id',$categoryquestion->id);
+                    $choices = $evaluationObj->evaluationResults->where('assessor_employee_id', $assessorid)
+                        ->where('is_active', 1)
+                        ->where('assessment_category_id', $assessmetCategory->id)
+                        ->where('category_question_id', $categoryquestion->id);
 
-                $html.="<div class=\"col - md - 12\" title=\"".$categoryquestion->description."\">"."<label>".$questionNo." ".$categoryquestion->title."</label>"."<span class=\"pull-right\">".$totalscores.'/'.$categoryquestion->points." Points</span></div>";
+                    $html .= "<div class=\"col - md - 12\" title=\"" . $categoryquestion->description . "\">" . "<label>" . $questionNo . " " . $categoryquestion->title . "</label>" . "<span class=\"pull-right\">" . $totalscores . '/' . $categoryquestion->points . " Points</span></div>";
 
-                if($categoryquestion->category_question_type_id == 1)
-                {
-                    $choicetext = '';
-                    if(count($choices) > 0)
-                    {
-                        $choicetext = $choices[0]->content;
-                    }
-                    $html.= "<input class=\"form-control\" id=\""."ID"."\" name=\"".$question_id."\" type=\"text\" value=\"".$choicetext."\"> ".""."<br/>";
-                    $question_type = "Open Text";
-                }
-                else
-                {
-                    //dump($categoryquestion->categoryQuestionChoices);
-                    $counter = 0;
-                    $html.= "<div class=\"input-group \">";
-
-                    foreach($categoryquestion->categoryQuestionChoices as $result)
-                    {
-                        $selectedValue = $result->choice_text."|".$result->points;
-
-                        if($categoryquestion->category_question_type_id == 2){
-
-                            // Generate radio buttons
-                            if(in_array($result->choice_text,$choices->pluck('content')->toArray()))
-                            {
-                                $html.= "<input id=\""."ID"."\" name=\"".$question_id."\" type=\"radio\" checked=\"checked\"  value=\"".$selectedValue."\" required > ".$result->choice_text."<br/>";
-                            }
-                            else
-                            {
-                                $html.= "<input id=\""."ID"."\" name=\"".$question_id."\" type=\"radio\" value=\"".$selectedValue."\" required > ".$result->choice_text."<br/>";
-                            }
-                            $question_type = "Select One";
+                    if ($categoryquestion->category_question_type_id == 1) {
+                        $choicetext = '';
+                        if (count($choices) > 0) {
+                            $choicetext = $choices[0]->content;
                         }
-                        else
-                        {
-                            if(in_array($result->choice_text,$choices->pluck('content')->toArray()))
-                            {
-                                $html.= "<input id=\""."ID"."\" name=\"".$question_id."\" type=\"checkbox\" checked=\"checked\" value=\"".$selectedValue."\" required > ".$result->choice_text."<br/>";
+                        $html .= "<input class=\"form-control\" id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"text\" value=\"" . $choicetext . "\"> " . "" . "<br/>";
+                        $question_type = "Open Text";
+                    } else {
+                        //dump($categoryquestion->categoryQuestionChoices);
+                        $counter = 0;
+                        $html .= "<div class=\"input-group \">";
+
+                        foreach ($categoryquestion->categoryQuestionChoices as $result) {
+                            $selectedValue = $result->choice_text . "|" . $result->points;
+
+                            if ($categoryquestion->category_question_type_id == 2) {
+
+                                // Generate radio buttons
+                                if (in_array($result->choice_text, $choices->pluck('content')->toArray())) {
+                                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"radio\" checked=\"checked\"  value=\"" . $selectedValue . "\" required > " . $result->choice_text . "<br/>";
+                                } else {
+                                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"radio\" value=\"" . $selectedValue . "\" required > " . $result->choice_text . "<br/>";
+                                }
+                                $question_type = "Select One";
+                            } else {
+                                if (in_array($result->choice_text, $choices->pluck('content')->toArray())) {
+                                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"checkbox\" checked=\"checked\" value=\"" . $selectedValue . "\" required > " . $result->choice_text . "<br/>";
+                                } else {
+                                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"checkbox\" value=\"" . $selectedValue . "\" required > " . $result->choice_text . "<br/>";
+                                }
+                                $question_type = "Select Many";
                             }
-                            else
-                            {
-                                $html.= "<input id=\""."ID"."\" name=\"".$question_id."\" type=\"checkbox\" value=\"".$selectedValue."\" required > ".$result->choice_text."<br/>";
-                            }
-                            $question_type = "Select Many";
+                            $counter = $counter + 1;
                         }
-                        $counter = $counter + 1;
+                        $html .= "</div>";
                     }
-                    $html.= "</div>";
+
+                    // Popoulate hidden fields to pass on values on postback
+                    $html .= "<div class=\"hide\">";
+                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $questionbase . "[EvaluationId]" . "\" type=\"hidden\" value=\"" . $EvaluationId . "\"> " . "" . "<br/>";
+                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $questionbase . "[AssessmentId]" . "\" type=\"hidden\" value=\"" . $assessmentid . "\"> " . "" . "<br/>";
+                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $questionbase . "[AssessmentCategoryId]" . "\" type=\"hidden\" value=\"" . $assessmetCategory->id . "\"> " . "" . "<br/>";
+                    $html .= "<input id=\"" . "ID" . "\" name=\"" . $questionbase . "[QuestionType]" . "\" type=\"hidden\" value=\"" . $question_type . "\"> " . "" . "<br/>";
+                    $html .= "</div>";
+                    $html .= " </div>";
                 }
 
-                // Popoulate hidden fields to pass on values on postback
-                $html.= "<div class=\"hide\">";
-                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[EvaluationId]"."\" type=\"hidden\" value=\"".$EvaluationId."\"> ".""."<br/>";
-                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[AssessmentId]"."\" type=\"hidden\" value=\"".$assessmentid."\"> ".""."<br/>";
-                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[AssessmentCategoryId]"."\" type=\"hidden\" value=\"".$assessmetCategory->id."\"> ".""."<br/>";
-                $html.= "<input id=\""."ID"."\" name=\"".$questionbase."[QuestionType]"."\" type=\"hidden\" value=\"".$question_type."\"> ".""."<br/>";
-                $html.= "</div>";
-                $html.= " </div>";
+                $html .= "</div>";
+                $html .= "</div>"; // End of tag for panel
             }
 
+            // Popoulate hidden fields to pass on values on postback
+            $html .= "<div class=\"hide\">";
+            $html .= "<input id=\"" . "ID" . "\" name=\"EvaluationidTop\" type=\"hidden\" value=\"" . $EvaluationId . "\"> " . "" . "<br/>";
+            $html .= "<input id=\"" . "ID" . "\" name=\"AssessmentIdTop\" type=\"hidden\" value=\"" . $assessmentid . "\"> " . "" . "<br/>";
             $html .= "</div>";
-            $html .= "</div>"; // End of tag for panel
-        }
 
-        // Popoulate hidden fields to pass on values on postback
-        $html.= "<div class=\"hide\">";
-        $html.= "<input id=\""."ID"."\" name=\"EvaluationidTop\" type=\"hidden\" value=\"".$EvaluationId."\"> ".""."<br/>";
-        $html.= "<input id=\""."ID"."\" name=\"AssessmentIdTop\" type=\"hidden\" value=\"".$assessmentid."\"> ".""."<br/>";
-        $html.= "</div>";
+            $data = "";
+            $pathToFile = "";
+            $qafilepresent = false;
 
-        $data = "";
-        $pathToFile = "";
-        $qafilepresent = false;
+            if (!empty($qasample)) {
+                //$data = base64_decode($qasample);
+                $qafilepresent = true;
+            }
 
-        if(!empty($qasample))
-        {
-            //$data = base64_decode($qasample);
-            $qafilepresent = true;
-        }
+            $evaluationid = $evaluationObj->assessors->where('id', $Id)->first()->evaluation_id;
+            $assessorId = $evaluationObj->assessors->where('id', $Id)->first()->employee_id;
+            $summary = $evaluationObj->assessors->where('id', $Id)->first()->pivot->summary . PHP_EOL;
+            $comments = $evaluationObj->assessors->where('id', $Id)->first()->pivot->comments . PHP_EOL;
+            $categoryid = "";
+            $totalThreshhold = 0;
+            $totalfinalScore = 0;
+            $assessorName = $evaluationObj->assessors->where('id', $Id)->first()->full_name;
 
-        $evaluationid = $evaluationObj->assessors->where('id',$Id)->first()->evaluation_id;
-        $assessorId = $evaluationObj->assessors->where('id',$Id)->first()->employee_id;
-        $summary = $evaluationObj->assessors->where('id',$Id)->first()->pivot->summary.PHP_EOL;
-        $comments = $evaluationObj->assessors->where('id',$Id)->first()->pivot->comments.PHP_EOL;
-        $categoryid = "";
-        $totalThreshhold = 0;
-        $totalfinalScore = 0;
-        $assessorName = $evaluationObj->assessors->where('id',$Id)->first()->full_name;
-
-        $assessmentid = $evaluationObj->assessment_id;
+            $assessmentid = $evaluationObj->assessment_id;
 
 
-        /****************************/
-        $evaluations = $evaluationObj;
-        $assessor_employee_id = $evaluations->assessors->where('id',$Id)->first()->employee_id;
-        $assessmentTotalScores = $this->getAssessmentTotalScore($evaluations->assessment_id);
-        $workingscore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)->where('is_active',1)
-            ->sum('pivot.points');
-
-        $overallscore =  ($workingscore/$assessmentTotalScores)*100;
-        $assessmentScore = round($overallscore,0);
-
-        $hearderdetails = array();
-        $hearderdetails['user'] = $evaluations->useremployee->full_name;
-        $hearderdetails['department'] = $evaluations->department->description;
-        $hearderdetails['feedbackdate'] = $evaluations->feedback_date;
-        $hearderdetails['referenceno'] = $evaluations->reference_no;
-        $hearderdetails['referencesource'] = $evaluations->source;
-        $hearderdetails['assessment'] = $evaluations->assessment->name;
-
-        $assessmentdetails = array();
-        $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
-            ->find($evaluations->assessment_id);
-
-        $totalThreshhold = 0;
-        foreach($assessment->assessmentAssessmentCategory as $assessmetCategory)
-        {
-            //threshold
-            $categoryinfodetails = array();
-            $categoryinfodetails["Id"]= $assessmetCategory->id;
-            $categoryinfodetails["Name"]= $assessmetCategory->name;
-            $categoryinfodetails["Threshold"]= $assessmetCategory->threshold;
-
-            $cateogoryscore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)
-                ->where('assessment_category_id',$assessmetCategory->id)
-                ->where('is_active',1)
+            /****************************/
+            $evaluations = $evaluationObj;
+            $assessor_employee_id = $evaluations->assessors->where('id', $Id)->first()->employee_id;
+            $assessmentTotalScores = $this->getAssessmentTotalScore($evaluations->assessment_id);
+            $workingscore = $evaluations->evaluationResults->where('assessor_employee_id', $assessor_employee_id)->where('is_active', 1)
                 ->sum('pivot.points');
 
-            $categoryinfodetails["TotalScores"]= $cateogoryscore;
-            $assessmentdetails[]  = $categoryinfodetails;
-        }
+            $overallscore = ($workingscore / $assessmentTotalScores) * 100;
+            $assessmentScore = round($overallscore, 0);
 
-        // Working
-        $mandatoryPassQuestionsids = array();
-        $mandatoryPassQuestionsScore = 0;
-        foreach($assessment->assessmentAssessmentCategory as $assessmentcategory)
-        {
-            foreach($assessmentcategory->assessmentCategoryCategoryQuestions as $categoryQuestion)
-            {
-                if($categoryQuestion->is_zeromark){
-                    $mandatoryPassQuestionsids[] = $categoryQuestion->id;
-                    $mandatoryPassQuestionsScore = $mandatoryPassQuestionsScore + $categoryQuestion->points;
+            $hearderdetails = array();
+            $hearderdetails['user'] = $evaluations->useremployee->full_name;
+            $hearderdetails['department'] = $evaluations->department->description;
+            $hearderdetails['feedbackdate'] = $evaluations->feedback_date;
+            $hearderdetails['referenceno'] = $evaluations->reference_no;
+            $hearderdetails['referencesource'] = $evaluations->source;
+            $hearderdetails['assessment'] = $evaluations->assessment->name;
+
+            $assessmentdetails = array();
+            $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
+                ->find($evaluations->assessment_id);
+
+            $totalThreshhold = 0;
+            foreach ($assessment->assessmentAssessmentCategory as $assessmetCategory) {
+                //threshold
+                $categoryinfodetails = array();
+                $categoryinfodetails["Id"] = $assessmetCategory->id;
+                $categoryinfodetails["Name"] = $assessmetCategory->name;
+                $categoryinfodetails["Threshold"] = $assessmetCategory->threshold;
+
+                $cateogoryscore = $evaluations->evaluationResults->where('assessor_employee_id', $assessor_employee_id)
+                    ->where('assessment_category_id', $assessmetCategory->id)
+                    ->where('is_active', 1)
+                    ->sum('pivot.points');
+
+                $categoryinfodetails["TotalScores"] = $cateogoryscore;
+                $assessmentdetails[] = $categoryinfodetails;
+            }
+
+            // Working
+            $mandatoryPassQuestionsids = array();
+            $mandatoryPassQuestionsScore = 0;
+            foreach ($assessment->assessmentAssessmentCategory as $assessmentcategory) {
+                foreach ($assessmentcategory->assessmentCategoryCategoryQuestions as $categoryQuestion) {
+                    if ($categoryQuestion->is_zeromark) {
+                        $mandatoryPassQuestionsids[] = $categoryQuestion->id;
+                        $mandatoryPassQuestionsScore = $mandatoryPassQuestionsScore + $categoryQuestion->points;
+                    }
                 }
             }
-        }
 
-        $mandatoryPassQuestionsactualScore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)
-            ->where('is_active',1)
-            ->whereIn('category_question_id',$mandatoryPassQuestionsids)
-            ->sum('pivot.points');
+            $mandatoryPassQuestionsactualScore = $evaluations->evaluationResults->where('assessor_employee_id', $assessor_employee_id)
+                ->where('is_active', 1)
+                ->whereIn('category_question_id', $mandatoryPassQuestionsids)
+                ->sum('pivot.points');
 
-        $mandatoryPassQuestionsComment = 0;
-        if(count($mandatoryPassQuestionsids)> 0)
-        {
-            if($mandatoryPassQuestionsactualScore == $mandatoryPassQuestionsScore){
+            $mandatoryPassQuestionsComment = 0;
+            if (count($mandatoryPassQuestionsids) > 0) {
+                if ($mandatoryPassQuestionsactualScore == $mandatoryPassQuestionsScore) {
+                    $mandatoryPassQuestionsComment = $assessmentScore;
+                } else {
+                    $mandatoryPassQuestionsComment = 0;
+                }
+            } else {
                 $mandatoryPassQuestionsComment = $assessmentScore;
             }
-            else
-            {
-                $mandatoryPassQuestionsComment = 0;
-            }
-        }
-        else
-        {
-            $mandatoryPassQuestionsComment = $assessmentScore;
-        }
 
-        //dd('done...');
-        return view($this->baseViewPath .'.summary-instances')
-            ->with('Content',$html)
-            ->with('Id',$Id)
-            ->with('EvaluationId',$EvaluationId)
-            ->with('AssessorId',$assessorid)
-            ->with('QaSample',$data)
-            ->with('QaFilePresent',$qafilepresent)
-            ->with('UseContent',$usecontent)
-            ->with('UrlPath',$urlpath)
-            ->with('summary',$summary)
-            ->with('comments',$comments)
-            ->with('evaluationstatusid',$evaluationStatusid)
-            ->with('allowsave',0)
-            ->with('ContainsDuplicate',$containsDuplicateQuestion)
-            ->with('EmployeeDetails',$useremployeeObj->Surname." ".$useremployeeObj->FirstName)
-            ->with('AssessorName',$assessorName)
-            ->with('AssessmentScore',$assessmentScore)
-            ->with('HeaderDetails',$hearderdetails)
-            ->with('Evaluationid',$evaluationid)
-            ->with('MandatoryQuestionComment',$mandatoryPassQuestionsComment)
-            ->with('AssessmentDetails',$assessmentdetails);
+            //dd('done...');
+            return view($this->baseViewPath . '.summary-instances')
+                ->with('Content', $html)
+                ->with('Id', $Id)
+                ->with('EvaluationId', $EvaluationId)
+                ->with('AssessorId', $assessorid)
+                ->with('QaSample', $data)
+                ->with('QaFilePresent', $qafilepresent)
+                ->with('UseContent', $usecontent)
+                ->with('UrlPath', $urlpath)
+                ->with('summary', $summary)
+                ->with('comments', $comments)
+                ->with('evaluationstatusid', $evaluationStatusid)
+                ->with('allowsave', 0)
+                ->with('ContainsDuplicate', $containsDuplicateQuestion)
+                ->with('EmployeeDetails', $useremployeeObj->Surname . " " . $useremployeeObj->FirstName)
+                ->with('AssessorName', $assessorName)
+                ->with('AssessmentScore', $assessmentScore)
+                ->with('HeaderDetails', $hearderdetails)
+                ->with('Evaluationid', $evaluationid)
+                ->with('MandatoryQuestionComment', $mandatoryPassQuestionsComment)
+                ->with('AssessmentDetails', $assessmentdetails);
+        }
     }
 
     public function getaudio(Request $request)

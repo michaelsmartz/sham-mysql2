@@ -16,11 +16,11 @@ use App\Language;
 use App\JobTitle;
 use App\TelephoneNumber;
 use App\TimeGroup;
-use App\Taxstatus;
+use App\TaxStatus;
 use App\Department;
 use App\LineManager;
 use App\EthnicGroup;
-use App\Maritalstatus;
+use App\MaritalStatus;
 use App\EmployeeStatus;
 use App\ImmigrationStatus;
 use App\Qualification;
@@ -436,7 +436,7 @@ class EmployeesController extends CustomController
     {
         $titles = Title::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $genders = Gender::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
-        $maritalstatuses = Maritalstatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+        $maritalstatuses = MaritalStatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $countries = Country::orderBy('is_preferred','desc')->pluck('description','id')->all();
         $languages = Language::pluck('description','id')->all();
         $ethnicGroups = EthnicGroup::pluck('description','id')->all();
