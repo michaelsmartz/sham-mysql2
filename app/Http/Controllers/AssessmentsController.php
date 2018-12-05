@@ -114,6 +114,9 @@ class AssessmentsController extends CustomController
 
         if(!empty($id)) {
             $data = $this->contextObj->findData($id);
+
+            //dump(count($data->evaluationResultsEvaluations()->get()));die;
+            //dump($data::with('evaluationResultsEvaluations')->where('id',1)->get());die;
         }
         $assessmentcategories = AssessmentCategory::pluck('description', 'id');
         $assessmentaAssessmentCategories = $data->assessmentAssessmentCategory()->pluck('description', 'assessments_assessment_category.assessment_category_id');

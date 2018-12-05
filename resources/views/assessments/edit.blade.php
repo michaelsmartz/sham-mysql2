@@ -3,7 +3,9 @@
 @section('modalTitle', 'Edit Assessment')
 
 @section('modalFooter')
-    <button class="btn btn-primary pull-right" type="submit">Update</button>
+    @if((isset($data))&& !$data->isAssessmentInUse())
+        <button class="btn btn-primary pull-right" type="submit">Update</button>
+    @endif
     <a href="{{route('assessments.index')}}" class="btn pull-right" data-close="Close" data-dismiss="modal">Cancel</a>
 @endsection
 

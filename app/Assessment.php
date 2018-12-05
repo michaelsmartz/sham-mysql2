@@ -41,5 +41,20 @@ class Assessment extends Model
         return $this->hasMany('App\Evaluation','assessment_id','id');
     }
 
+    public function evaluationResultsEvaluations()
+    {
+        return $this->belongsToMany(Evaluation::class,'evaluation_results','assessment_id','evaluation_id');
+    }
+
+    public function isAssessmentInUse()
+    {
+        $retvalue = false;
+        $count = count($this->belongsToMany(Evaluation::class,'evaluation_results','assessment_id','evaluation_id')->get());
+        if($count > 0)
+        {
+            $retvalue = true;
+        }
+        return $retvalue;
+    }
 
 }

@@ -104,4 +104,19 @@ class Evaluation extends Model
             ->withPivot('assessment_id','assessment_category_id','category_question_id','content','points','is_active');
     }
 
+    public function hasAnyAssessorComplete()
+    {
+        $retvalue = false;
+        //$count = count($this->belongsToMany(Evaluation::class,'evaluation_results','assessment_id','evaluation_id')->get());
+        $count = count($this->belongsToMany(Employee::class,'employee_evaluation','evaluation_id','employee_id')
+                    ->withPivot('is_completed','summary','comments','id')
+                    ->wherePivot('is_completed', '=', 1)->get()
+        );
+        if($count > 0)
+        {
+            $retvalue = true;
+        }
+        return $retvalue;
+    }
+
 }

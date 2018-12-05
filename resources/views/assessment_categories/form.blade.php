@@ -1,3 +1,9 @@
+@if((isset($assessmentCategory))&& $assessmentCategory->isAssessmentCategoryInUse())
+    <div class="alert alert-danger" style="margin-bottom: 0px;">
+        <p>This Assessment Category is already in use and cannot be edited.</p>
+    </div>
+    <br>
+@endif
 <div class="row">
     
 <div class="form-group col-xs-12 {{ $errors->has('name') ? 'has-error' : '' }}">

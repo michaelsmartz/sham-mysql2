@@ -1,3 +1,9 @@
+@if((isset($categoryQuestion))&& $categoryQuestion->isCategoryQuestionInUse())
+    <div class="alert alert-danger" style="margin-bottom: 0px;">
+        <p>This Category Question is already in use and cannot be edited.</p>
+    </div>
+    <br>
+@endif
 <div class="row">
     
 <div class="form-group col-xs-12 {{ $errors->has('category_question_type_id') ? 'has-error' : '' }}">

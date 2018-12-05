@@ -1,3 +1,9 @@
+@if((isset($evaluation))&& $evaluation->hasAnyAssessorComplete())
+    <div class="alert alert-danger" style="margin-bottom: 0px;">
+        <p>This Evaluation is partly completed and cannot be edited.</p>
+    </div>
+    <br>
+@endif
 <div class="row">
     
     <div class="form-group col-xs-12 {{ $errors->has('assessment_id') ? 'has-error' : '' }}">

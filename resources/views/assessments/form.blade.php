@@ -1,5 +1,11 @@
+@if((isset($assessment))&& $assessment->isAssessmentInUse())
+    <div class="alert alert-danger" style="margin-bottom: 0px;">
+        <p>This Assessment is already in use and cannot be edited.</p>
+    </div>
+    <br>
+@endif
+
 <div class="row">
-    
 <div class="form-group col-xs-12 {{ $errors->has('name') ? 'has-error' : '' }}">
     <label for="name">Name</label>
         <input class="form-control" name="name" type="text" id="name" value="{{ old('name', isset($assessment->name) ? $assessment->name : null) }}" minlength="1" maxlength="1024" required="true" placeholder="Enter name">

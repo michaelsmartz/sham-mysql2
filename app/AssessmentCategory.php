@@ -40,5 +40,16 @@ class AssessmentCategory extends Model
         return $this->hasMany('App\EvaluationResult','assessmentcategory_id','id');
     }
 
+    public function isAssessmentCategoryInUse()
+    {
+        $retvalue = false;
+        $count = count($this->belongsToMany(Evaluation::class,'evaluation_results','assessment_category_id','evaluation_id')->get());
+        if($count > 0)
+        {
+            $retvalue = true;
+        }
+        return $retvalue;
+    }
+
 
 }

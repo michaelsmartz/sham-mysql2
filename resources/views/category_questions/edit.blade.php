@@ -5,8 +5,10 @@
 @section('modalFooter')
     <div class="row text-right">
         <div class="col-sm-12">
+            @if((isset($data))&& !$data->isCategoryQuestionInUse())
+                <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+            @endif
             <a href="{{route('category_questions.index')}}" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-            <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
         </div>
     </div>
 @endsection

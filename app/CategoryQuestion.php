@@ -47,5 +47,14 @@ class CategoryQuestion extends Model
         return $this->hasMany('App\EvaluationResult','categoryquestion_id','id');
     }
 
-
+    public function isCategoryQuestionInUse()
+    {
+        $retvalue = false;
+        $count = count($this->belongsToMany(Evaluation::class,'evaluation_results','category_question_id','evaluation_id')->get());
+        if($count > 0)
+        {
+            $retvalue = true;
+        }
+        return $retvalue;
+    }
 }

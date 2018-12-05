@@ -3,8 +3,11 @@
 
 @section('modalTitle', 'Edit Assessment Category')
 @section('modalFooter')
+    @if((isset($data))&& !$data->isAssessmentCategoryInUse())
+        <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+    @endif
     <a href="{{route('assessment_categories.index')}}" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+
 @endsection
 
 @section('postModalUrl', route('assessment_categories.update', $data->id))
