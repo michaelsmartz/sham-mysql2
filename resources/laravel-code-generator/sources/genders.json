@@ -37,7 +37,7 @@
         {
             "name": "description",
             "labels": "Description",
-            "html-type": "textarea",
+            "html-type": "text",
             "css-class": "",
             "options": {},
             "html-value": null,
@@ -47,14 +47,14 @@
             "is-on-form": true,
             "data-type": "string",
             "data-type-params": [
-                1000
+                50
             ],
             "data-value": null,
             "is-index": false,
             "is-unique": false,
             "is-primary": false,
             "comment": null,
-            "is-nullable": true,
+            "is-nullable": false,
             "is-header": false,
             "is-unsigned": false,
             "is-auto-increment": false,
@@ -62,7 +62,7 @@
             "is-date": false,
             "date-format": "",
             "cast-as": "",
-            "placeholder": {},
+            "placeholder": "Enter description",
             "delimiter": "; ",
             "range": [],
             "foreign-relation": null,

@@ -19,9 +19,9 @@
         <li><a href="{{URL::to('/')}}/products">Products</a></li>
         <li><a href="{{URL::to('/')}}/skills">Skills</a></li>
         <li><a href="{{URL::to('/')}}/tax_statuses">Tax Status</a></li>
-        <li><a href="{{URL::to('/')}}/teams">Team</a></li>
         <li><a href="{{URL::to('/')}}/time_groups">Time Group</a></li>
         <li><a href="{{URL::to('/')}}/time_periods">Time Periods</a></li>
+        <li><a href="{{URL::to('/')}}/teams">Team</a></li>
         <li><a href="{{URL::to('/')}}/titles">Title</a></li>
     </ul>
     <div class="flex-wrapper">
