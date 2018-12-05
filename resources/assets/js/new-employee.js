@@ -7,7 +7,7 @@ require('sumoselect');
 $.extend($.fn.pickadate.defaults, {
     format: 'yyyy-mm-dd',
     formatSubmit: 'yyyy-mm-dd',
-    selectYears: true,
+    selectYears: 20,
     selectMonths: true
 });
 
@@ -53,7 +53,7 @@ const app = new Vue({
                 });
             };
 
-            $("#birth_date").datepicker("option","yearRange", "-65:-18");
+            $("#birth_date").pickadate({min: -65*365, max:-18*365});
             
             //$('.accordion').asAccordion();
             $('.select-multiple').SumoSelect({csvDispCount: 10, up:true});

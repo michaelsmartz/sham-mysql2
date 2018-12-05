@@ -26966,7 +26966,7 @@ var app = new Vue({
                 });
             };
 
-            $("#birth_date").datepicker({
+            $("#birth_date,#JoinedDate,#TerminationDate").datepicker({
                 showButtonPanel: true,
                 dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true
             });

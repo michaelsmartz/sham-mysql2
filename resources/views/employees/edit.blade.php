@@ -20,7 +20,7 @@
 
 @section('post-body')
 <link href="{{URL::to('/')}}/css/employees.min.css" rel="stylesheet">
-<script src="{{URL::to('/')}}/js/employees.js"></script>
+<script src="{{URL::to('/')}}/js/new-employee.min.js"></script>
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script>
     var initializeFileUpload = function() {
