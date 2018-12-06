@@ -109,7 +109,7 @@ class SSPController extends CustomController
                 }
             }
         }
-        return $timeGroup;
+        return ['timegroup' => $timeGroup, 'team'=>  $team->description ];
     }
 
     private static function timeIntervalReadable($value) {

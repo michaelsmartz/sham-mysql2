@@ -458,50 +458,60 @@
                         <div class="row">
                             <div class="timesheet">
                                 <div class="working-hours">
-                                    @if(isset($workingHours) && sizeof($workingHours) > 0)
+                                    @if(isset($workingHours['team']) && sizeof($workingHours['team']) > 0
+                                             && isset($workingHours['timegroup']) && sizeof($workingHours['timegroup']) > 0
+                                    )
                                         @if(!empty($workingHours['team']))
                                             <h2 class="list title">{{ $workingHours['team'] }}</h2>
                                         @endif
-                                        @if(!empty($workingHours['description']))
-                                            <h3 class="list sub-title">{{ $workingHours['description'] }}</h3>
-                                        @endif
 
-                                        <ul class="list-unstyled current-working-hours" id="accordion">
-                                            @if(!empty($workingHours['time_period']))
-                                                @foreach($workingHours['time_period'] as $workingDesc => $workingHour)
-                                                    <li data-toggle="collapse"
-                                                        href="#break_{{$workingHour['day_count']}}"
-                                                        aria-expanded="false"
-                                                        aria-controls="break_{{$workingHour['day_count']}}"
-                                                        data-parent="#accordion"
-                                                    >
-                                                        @if($workingDesc != '' && !is_null($workingDesc)){{ $workingDesc }}@else No description @endif
-                                                        <span class="pull-right">
-                                                    {{ $workingHour['start_time'] }} - {{ $workingHour['end_time'] }}
-                                            </span>
-                                                        @if(!empty($workingHour['breaks']))
-                                                            <span>
-                                                <i class="fa fa-question-circle" aria-hidden="true"  data-wenk="Click to view break details"></i>
-                                            </span>
-                                                        @endif
-                                                    </li>
-                                                    @if(!empty($workingHour['breaks']))
-                                                        <ul id="break_{{$workingHour['day_count']}}" class="collapse">
-                                                            @foreach($workingHour['breaks'] as $periodDesc => $break)
-                                                                <li>
-                                                                    @if($periodDesc != '' && !is_null($periodDesc)){{ $periodDesc }}@else No description @endif
-                                                                    <span class="pull-right">
-                                                   {{ $break['start_time'] }} - {{ $break['end_time'] }}
-                                                </span>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    @endif
-                                                @endforeach
+                                        @if(!empty($workingHours['timegroup']))
+
+                                            @if(!empty($workingHours['timegroup']['description']))
+                                                <h3 class="list sub-title">{{ $workingHours['timegroup']['description'] }}</h3>
                                             @endif
-                                        </ul>
-                                    @else
+
+                                            <ul class="list-unstyled current-working-hours" id="accordion">
+                                                @if(!empty($workingHours['timegroup']['time_period']))
+                                                    @foreach($workingHours['timegroup']['time_period'] as $workingDesc => $workingHour)
+                                                        <li data-toggle="collapse"
+                                                            href="#break_{{$workingHour['day_count']}}"
+                                                            aria-expanded="false"
+                                                            aria-controls="break_{{$workingHour['day_count']}}"
+                                                            data-parent="#accordion"
+                                                        >
+                                                            @if($workingDesc != '' && !is_null($workingDesc)){{ $workingDesc }}@else No description @endif
+                                                            <span class="pull-right">
+                                                        {{ $workingHour['start_time'] }} - {{ $workingHour['end_time'] }}
+                                                </span>
+                                                            @if(!empty($workingHour['breaks']))
+                                                                <span>
+                                                    <i class="fa fa-question-circle" aria-hidden="true"  data-wenk="Click to view break details"></i>
+                                                </span>
+                                                            @endif
+                                                        </li>
+                                                        @if(!empty($workingHour['breaks']))
+                                                            <ul id="break_{{$workingHour['day_count']}}" class="collapse">
+                                                                @foreach($workingHour['breaks'] as $periodDesc => $break)
+                                                                    <li>
+                                                                        @if($periodDesc != '' && !is_null($periodDesc)){{ $periodDesc }}@else No description @endif
+                                                                        <span class="pull-right">
+                                                       {{ $break['start_time'] }} - {{ $break['end_time'] }}
+                                                    </span>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        @endif
+                                    @elseif(isset($workingHours['timegroup']) && sizeof($workingHours['timegroup']) == 0)
+                                        <p style="color: #ffffee ">Your team has not been allocated to a time group yet</p>
+                                    @elseif(isset($workingHours['team']) && sizeof($workingHours['team']) == 0)
                                         <p style="color: #ffffee ">You have not been assigned to a team.</p>
+                                    @else
+                                        <p style="color: #ffffee ">An error occured</p>
                                     @endif
                                 </div>
                             </div>
