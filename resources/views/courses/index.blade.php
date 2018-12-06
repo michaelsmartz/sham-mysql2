@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                @if(count($courses) > 0)
+                @if(count($courses) == 0)
                     <h4 class="text-center">Its a bit empty here. 
                     @if($allowedActions->contains('Create'))
                         You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new Course
