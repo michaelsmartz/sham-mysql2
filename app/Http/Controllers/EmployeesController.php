@@ -95,7 +95,7 @@ class EmployeesController extends CustomController
         $jobTitles, $lineManagers, $divisions, $branches, $skills, $disabilities) = $this->getDropdownsData();
         $uploader = [
             "fieldLabel" => "Add attachments...",
-            "restrictionMsg" => "Upload document files",
+            "restrictionMsg" => "Upload document files in the format doc, docx, ppt, pptx, pdf",
             "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
             "fileMaxSize" => "1.2", // in MB
             "totalMaxSize" => "6", // in MB
@@ -140,7 +140,7 @@ class EmployeesController extends CustomController
         $lineManagers = array();
         $uploader = [
             "fieldLabel" => "Attach Files",
-            "restrictionMsg" => "Upload document files",
+            "restrictionMsg" => "Upload document files in the format doc, docx, ppt, pptx, pdf",
             "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
             "fileMaxSize" => "1.2", // in MB
             "totalMaxSize" => "6", // in MB
