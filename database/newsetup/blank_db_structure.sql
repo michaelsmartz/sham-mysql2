@@ -6793,7 +6793,11 @@ ALTER TABLE `workflowtransitions`
   ADD CONSTRAINT `FK_WorkflowTransitions_Workflows` FOREIGN KEY (`WorkflowId`) REFERENCES `workflows` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
+ALTER TABLE `timelines` DROP FOREIGN KEY `FK_Timelines_TimelineEventTypes`;
 ALTER TABLE `timelines` DROP INDEX `FK_Timelines_TimelineEventTypes`;
+
+ALTER TABLE `shamuat`.`day_time_group_time_period` DROP FOREIGN KEY `FK_TimeGroupDays_Days`;
+ALTER TABLE `shamuat`.`day_time_group_time_period` DROP INDEX `FK_TimeGroupDays_Days`;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
