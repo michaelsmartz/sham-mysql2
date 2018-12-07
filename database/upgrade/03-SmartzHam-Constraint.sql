@@ -990,4 +990,17 @@ DROP INDEX `FK_Evaluations_EvaluationStatuses` ;
 ALTER TABLE `evaluations`
 CHANGE COLUMN `evaluation_status_id` `evaluation_status_id` ENUM('1', '2') NOT NULL DEFAULT '1' ;
 
+#-- 07/12/2018
+ALTER TABLE `timelines` DROP FOREIGN KEY `FK_Timelines_TimelineEventTypes`;
+ALTER TABLE `timelines` DROP INDEX `FK_Timelines_TimelineEventTypes`;
+
+ALTER TABLE `day_time_group_time_period` DROP FOREIGN KEY `FK_TimeGroupDays_Days`;
+ALTER TABLE `day_time_group_time_period` DROP INDEX `FK_TimeGroupDays_Days`;
+
+ALTER TABLE `course_employee` DROP FOREIGN KEY `FK_CourseParticipants_CourseParticipantStatuses`;
+ALTER TABLE `course_employee` DROP INDEX `FK_CourseParticipants_CourseParticipantStatuses` ;
+
+ALTER TABLE `module_questions` DROP FOREIGN KEY `FK_ModuleQuestions_ModuleQuestionTypes`;
+ALTER TABLE `module_questions` DROP INDEX `FK_ModuleQuestions_ModuleQuestionTypes` ;
+
 

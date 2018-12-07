@@ -260,21 +260,21 @@ class SSPMyCourseController extends CustomController
                         $topic_assessments1 = [];
 
                         if (!$isFirst && $current_module_id != $prev_module_id) {
-                            $topic_assessments = self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments, $course_id);
+                            self::extractModuleAssessmentDetails($employee_id, $module->id, $assessment_list, $topic_assessments, $course_id);
                             $topic->assessments = $topic_assessments;
                         }
+
+                        self::extractModuleAssessmentDetails($employee_id, $module->id, $assessment_list, $topic_assessments1, $course_id);
 
                         if ($all_topic_counter + 1 == $all_topics_count) {
                             // Check if module has assemment and get ModuleAssessmentId and AssessmentData
                             // This check is being done on last topic of courses.
-                            $topic_assessments1 = self::extractModuleAssessmentDetails($employee_id, $topic->pivot->module_id, $assessment_list, $topic_assessments1, $course_id);
                             $topic->assessments = $topic_assessments1;
                             $topic->LastTopic = true;
                         } else {
                             $topic->LastTopic = false;
                             $topic->assessments = $topic_assessments1;
                         }
-
 
                         $prev_module_id = $topic->pivot->module_id;
                         $isFirst = false;
@@ -386,7 +386,7 @@ class SSPMyCourseController extends CustomController
      * @param $course_id
      * @return mixed
      */
-    function extractModuleAssessmentDetails($employee_id, $module_id, $assessment_list,$topic_assessments,$course_id)
+    function extractModuleAssessmentDetails($employee_id, $module_id, &$assessment_list, &$topic_assessments,$course_id)
     {
         $module_assessments = ModuleAssessment::where('module_id',$module_id)->get()->all();
         if ($module_assessments != null) {

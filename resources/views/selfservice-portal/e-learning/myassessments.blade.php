@@ -88,7 +88,7 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                                                 <p>{{$assessment->response}}</p>
                                                             </td>
                                                             <td>
-                                                                @if($assessment->question_choices != null && $assessment->question_choices_points != null) {
+                                                                @if($assessment->question_choices != null && $assessment->question_choices_points != null)
                                                                     @php
                                                                         $choices = explode('|', $assessment->question_choices);
                                                                         $choicePoints = explode('|', $assessment->question_choices_points);
