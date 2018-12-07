@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 44);
+/******/ 	return __webpack_require__(__webpack_require__.s = 51);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -9915,944 +9915,561 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 11:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jquery.sumoselect - v3.0.3
- * http://hemantnegi.github.io/jquery.sumoselect
- * 2016-12-12
- *
- * Copyright 2015 Hemant Negi
- * Email : hemant.frnz@gmail.com
- * Compressor http://refresh-sf.com/
- */
-
-(function (factory) {
-    'use strict';
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else if (typeof exports !== 'undefined') {
-        module.exports = factory(require('jquery'));
-    } else {
-        factory(jQuery);
-    }
-
-})(function ($) {
-
-    'namespace sumo';
-    $.fn.SumoSelect = function (options) {
-
-        // This is the easiest way to have default options.
-        var settings = $.extend({
-            placeholder: 'Select Here',   // Dont change it here.
-            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
-            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
-            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
-            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
-            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
-            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
-            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
-            csvSepChar: ',',              // separation char in csv mode
-            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
-            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
-            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
-            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
-
-            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
-            searchText: 'Search...',      // placeholder for search input
-            searchFn: function(haystack, needle) { // search function
-                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
-            },
-            noMatch: 'No matches for "{0}"',
-            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
-            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
-            up: false,                    // set true to open upside.
-            showTitle: true               // set to false to prevent title (tooltip) from appearing
-        }, options);
-
-        var ret = this.each(function () {
-            var selObj = this; // the original select object.
-            if (this.sumo || !$(this).is('select')) return; //already initialized
-
-            this.sumo = {
-                E: $(selObj),   //the jquery object of original select element.
-                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
-                select: '',
-                caption: '',
-                placeholder: '',
-                optDiv: '',
-                CaptionCont: '',
-                ul: '',
-                is_floating: false,
-                is_opened: false,
-                //backdrop: '',
-                mob: false, // if to open device default select
-                Pstate: [],
-                lastUnselected: null,
-
-                createElems: function () {
-                    var O = this;
-                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
-                    O.select = O.E.parent();
-                    O.caption = $('<span>');
-                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
-                        .attr('style', O.E.attr('style'))
-                        .prepend(O.caption);
-                    O.select.append(O.CaptionCont);
-
-                    // default turn off if no multiselect
-                    if (!O.is_multi) settings.okCancelInMulti = false
-
-                    if (O.E.attr('disabled'))
-                        O.select.addClass('disabled').removeAttr('tabindex');
-
-                    //if output as csv and is a multiselect.
-                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
-                        //create a hidden field to store csv value.
-                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
-
-                        // so it can not post the original select.
-                        O.E.removeAttr('name');
-                    }
-
-                    //break for mobile rendring.. if forceCustomRendering is false
-                    if (O.isMobile() && !settings.forceCustomRendering) {
-                        O.setNativeMobile();
-                        return;
-                    }
-
-                    // if there is a name attr in select add a class to container div
-                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
-
-                    //hide original select
-                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
-
-                    //## Creating the list...
-                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
-
-                    //branch for floating list in low res devices.
-                    O.floatingList();
-
-                    //Creating the markup for the available options
-                    O.ul = $('<ul class="options">');
-                    O.optDiv.append(O.ul);
-
-                    // Select all functionality
-                    if (settings.selectAll && O.is_multi) O.SelAll();
-
-                    // search functionality
-                    if (settings.search) O.Search();
-
-                    O.ul.append(O.prepItems(O.E.children()));
-
-                    //if multiple then add the class multiple and add OK / CANCEL button
-                    if (O.is_multi) O.multiSelelect();
-
-                    O.select.append(O.optDiv);
-                    O.basicEvents();
-                    O.selAllState();
-                },
-
-                prepItems: function (opts, d) {
-                    var lis = [], O = this;
-                    $(opts).each(function (i, opt) {       // parsing options to li
-                        opt = $(opt);
-                        lis.push(opt.is('optgroup') ?
-                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
-                                .find('ul')
-                                .append(O.prepItems(opt.children(), opt[0].disabled))
-                                .end()
-                            :
-                            O.createLi(opt, d)
-                        );
-                    });
-                    return lis;
-                },
-
-                //## Creates a LI element from a given option and binds events to it
-                //## returns the jquery instance of li (not inserted in dom)
-                createLi: function (opt, d) {
-                    var O = this;
-
-                    if (!opt.attr('value')) opt.attr('value', opt.val());
-                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
-
-                    li.data('opt', opt);    // store a direct reference to option.
-                    opt.data('li', li);    // store a direct reference to list item.
-                    if (O.is_multi) li.prepend('<span><i></i></span>');
-
-                    if (opt[0].disabled || d)
-                        li = li.addClass('disabled');
-
-                    O.onOptClick(li);
-
-                    if (opt[0].selected)
-                        li.addClass('selected');
-
-                    if (opt.attr('class'))
-                        li.addClass(opt.attr('class'));
-
-                    if (opt.attr('title'))
-                        li.attr('title', opt.attr('title'));
-
-                    return li;
-                },
-
-                //## Returns the selected items as string in a Multiselect.
-                getSelStr: function () {
-                    // get the pre selected items.
-                    var sopt = [];
-                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
-                    return sopt.join(settings.csvSepChar);
-                },
-
-                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
-                multiSelelect: function () {
-                    var O = this;
-                    O.optDiv.addClass('multiple');
-                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
-                        //if combined change event is set.
-                        O._okbtn();
-                        O.hideOpts();
-                    });
-                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
-                        O._cnbtn();
-                        O.hideOpts();
-                    });
-                    var btns = O.okbtn.add(O.cancelBtn);
-                    O.optDiv.append($('<div class="MultiControls">').append(btns));
-
-                    // handling keyboard navigation on ok cancel buttons.
-                    btns.on('keydown.sumo', function (e) {
-                        var el = $(this);
-                        switch (e.which) {
-                            case 32: // space
-                            case 13: // enter
-                                el.trigger('click');
-                                break;
-
-                            case 9:  //tab
-                                if (el.hasClass('btnOk')) return;
-                            case 27: // esc
-                                O._cnbtn();
-                                O.hideOpts();
-                                return;
-                        }
-                        e.stopPropagation();
-                        e.preventDefault();
-                    });
-                },
-
-                _okbtn: function () {
-                    var O = this, cg = 0;
-                    //if combined change event is set.
-                    if (settings.triggerChangeCombined) {
-                        //check for a change in the selection.
-                        if (O.E.find('option:selected').length !== O.Pstate.length) {
-                            cg = 1;
-                        }
-                        else {
-                            O.E.find('option').each(function (i, e) {
-                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
-                            });
-                        }
-
-                        if (cg) {
-                            O.callChange();
-                            O.setText();
-                        }
-                    }
-                },
-                _cnbtn: function () {
-                    var O = this;
-                    //remove all selections
-                    O.E.find('option:selected').each(function () { this.selected = false; });
-                    O.optDiv.find('li.selected').removeClass('selected')
-
-                    //restore selections from saved state.
-                    for (var i = 0; i < O.Pstate.length; i++) {
-                        O.E.find('option')[O.Pstate[i]].selected = true;
-                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
-                    }
-                    O.selAllState();
-                },
-
-                SelAll: function () {
-                    var O = this;
-                    if (!O.is_multi) return;
-                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
-                    O.optDiv.addClass('selall');
-                    O.selAll.on('click', function () {
-                        O.selAll.toggleClass('selected');
-                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
-                        //O.selAllState();
-                    });
-
-                    O.optDiv.prepend(O.selAll);
-                },
-
-                // search module (can be removed if not required.)
-                Search: function () {
-                    var O = this,
-                        cc = O.CaptionCont.addClass('search'),
-                        P = $('<p class="no-match">'),
-                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
-
-                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
-                        .on('click', function (e) {
-                            e.stopPropagation();
-                        });
-                    cc.append(O.ftxt);
-                    O.optDiv.children('ul').after(P);
-
-                    O.ftxt.on('keyup.sumo', function () {
-                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
-                            var e = $(e),
-                                opt = e.data('opt')[0];
-                            opt.hidden = fn(e.text(), O.ftxt.val());
-                            e.toggleClass('hidden', opt.hidden);
-                        }).not('.hidden');
-
-                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
-                        P.find('em').text(O.ftxt.val());
-                        O.selAllState();
-                    });
-                },
-
-                selAllState: function () {
-                    var O = this;
-                    if (settings.selectAll && O.is_multi) {
-                        var sc = 0, vc = 0;
-                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
-                            if ($(e).hasClass('selected')) sc++;
-                            if (!$(e).hasClass('disabled')) vc++;
-                        });
-                        //select all checkbox state change.
-                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
-                        else if (sc === 0) O.selAll.removeClass('selected partial');
-                        else O.selAll.addClass('partial')//.removeClass('selected');
-                    }
-                },
-
-                showOpts: function () {
-                    var O = this;
-                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
-                    O.E.trigger('sumo:opening', O);
-                    O.is_opened = true;
-                    O.select.addClass('open').attr('aria-expanded', 'true');
-                    O.E.trigger('sumo:opened', O);
-
-                    if (O.ftxt) O.ftxt.focus();
-                    else O.select.focus();
-
-                    // hide options on click outside.
-                    $(document).on('click.sumo', function (e) {
-                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
-                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
-                            if (!O.is_opened) return;
-                            O.hideOpts();
-                            if (settings.okCancelInMulti) {
-                                if (settings.isClickAwayOk)
-                                    O._okbtn();
-                                else
-                                    O._cnbtn();
-                            }
-                        }
-                    });
-
-                    if (O.is_floating) {
-                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
-                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
-                        O.optDiv.css('height', H);
-                        $('body').addClass('sumoStopScroll');
-                    }
-
-                    O.setPstate();
-                },
-
-                //maintain state when ok/cancel buttons are available storing the indexes.
-                setPstate: function () {
-                    var O = this;
-                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
-                        O.Pstate = [];
-                        // assuming that find returns elements in tree order
-                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
-                    }
-                },
-
-                callChange: function () {
-                    this.E.trigger('change').trigger('click');
-                },
-
-                hideOpts: function () {
-                    var O = this;
-                    if (O.is_opened) {
-                        O.E.trigger('sumo:closing', O);
-                        O.is_opened = false;
-                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
-                        O.E.trigger('sumo:closed', O);
-                        $(document).off('click.sumo');
-                        O.select.focus();
-                        $('body').removeClass('sumoStopScroll');
-
-                        // clear the search
-                        if (settings.search) {
-                            O.ftxt.val('');
-                            O.ftxt.trigger('keyup.sumo');
-                        }
-                    }
-                },
-                setOnOpen: function () {
-                    var O = this,
-                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
-                    if (li.hasClass('disabled')) {
-                        li = li.next(':not(disabled)')
-                        if (!li.length) return;
-                    }
-                    O.optDiv.find('li.sel').removeClass('sel');
-                    li.addClass('sel');
-                    O.showOpts();
-                },
-                nav: function (up) {
-                    var O = this, c,
-                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
-                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
-                        idx = s.index(sel);
-                    if (O.is_opened && sel.length) {
-
-                        if (up && idx > 0)
-                            c = s.eq(idx - 1);
-                        else if (!up && idx < s.length - 1 && idx > -1)
-                            c = s.eq(idx + 1);
-                        else return; // if no items before or after
-
-                        sel.removeClass('sel');
-                        sel = c.addClass('sel');
-
-                        // setting sel item to visible view.
-                        var ul = O.ul,
-                            st = ul.scrollTop(),
-                            t = sel.position().top + st;
-                        if (t >= st + ul.height() - sel.outerHeight())
-                            ul.scrollTop(t - ul.height() + sel.outerHeight());
-                        if (t < st)
-                            ul.scrollTop(t);
-
-                    }
-                    else
-                        O.setOnOpen();
-                },
-
-                basicEvents: function () {
-                    var O = this;
-                    O.CaptionCont.click(function (evt) {
-                        O.E.trigger('click');
-                        if (O.is_opened) O.hideOpts(); else O.showOpts();
-                        evt.stopPropagation();
-                    });
-
-                    O.select.on('keydown.sumo', function (e) {
-                        switch (e.which) {
-                            case 38: // up
-                                O.nav(true);
-                                break;
-
-                            case 40: // down
-                                O.nav(false);
-                                break;
-
-                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
-                                if (O.is_multi && e.ctrlKey) {
-                                    O.toggSelAll(!e.shiftKey, 1);
-                                    break;
-                                }
-                                else
-                                    return;
-
-                            case 32: // space
-                                if (settings.search && O.ftxt.is(e.target)) return;
-                            case 13: // enter
-                                if (O.is_opened)
-                                    O.optDiv.find('ul li.sel').trigger('click');
-                                else
-                                    O.setOnOpen();
-                                break;
-                            case 9:	 //tab
-                                if (!settings.okCancelInMulti)
-                                    O.hideOpts();
-                                return;
-                            case 27: // esc
-                                if (settings.okCancelInMulti) O._cnbtn();
-                                O.hideOpts();
-                                return;
-
-                            default:
-                                return; // exit this handler for other keys
-                        }
-                        e.preventDefault(); // prevent the default action (scroll / move caret)
-                    });
-
-                    $(window).on('resize.sumo', function () {
-                        O.floatingList();
-                    });
-                },
-
-                onOptClick: function (li) {
-                    var O = this;
-                    li.click(function () {
-                        var li = $(this);
-                        if (li.hasClass('disabled')) return;
-                        var txt = "";
-                        if (O.is_multi) {
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = li.hasClass('selected');
-                            if (li.data('opt')[0].selected === false) {
-                                O.lastUnselected = li.data('opt')[0].textContent;
-                            }
-                            O.selAllState();
-                        }
-                        else {
-                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = true;
-                        }
-
-                        //branch for combined change event.
-                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
-                            O.setText();
-                            O.callChange();
-                        }
-
-                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
-                    });
-                },
-
-                // fixed some variables that were not explicitly typed (michc)
-                setText: function () {
-                    var O = this;
-                    O.placeholder = "";
-                    if (O.is_multi) {
-                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
-
-                        for (var i = 0; i < sels.length; i++) {
-                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
-                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
-                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
-                                } else {
-                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
-                                }
-
-                                break;
-                            }
-                            else O.placeholder += $(sels[i]).text() + ", ";
-                        }
-                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
-                    }
-                    else {
-                        O.placeholder = O.E.find(':selected').not(':disabled').text();
-                    }
-
-                    var is_placeholder = false;
-
-                    if (!O.placeholder) {
-
-                        is_placeholder = true;
-
-                        O.placeholder = O.E.attr('placeholder');
-                        if (!O.placeholder)                  //if placeholder is there then set it
-                            O.placeholder = O.E.find('option:disabled:selected').text();
-                    }
-
-                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
-
-                    //set display text
-                    O.caption.html(O.placeholder);
-                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
-
-                    //set the hidden field if post as csv is true.
-                    var csvField = O.select.find('input.HEMANT123');
-                    if (csvField.length) csvField.val(O.getSelStr());
-
-                    //add class placeholder if its a placeholder text.
-                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
-                    return O.placeholder;
-                },
-
-                isMobile: function () {
-
-                    // Adapted from http://www.detectmobilebrowsers.com
-                    var ua = navigator.userAgent || navigator.vendor || window.opera;
-
-                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
-                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
-                    return false;
-                },
-
-                setNativeMobile: function () {
-                    var O = this;
-                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
-                    O.mob = true;
-                    O.E.change(function () {
-                        O.setText();
-                    });
-                },
-
-                floatingList: function () {
-                    var O = this;
-                    //called on init and also on resize.
-                    //O.is_floating = true if window width is < specified float width
-                    O.is_floating = $(window).width() <= settings.floatWidth;
-
-                    //set class isFloating
-                    O.optDiv.toggleClass('isFloating', O.is_floating);
-
-                    //remove height if not floating
-                    if (!O.is_floating) O.optDiv.css('height', '');
-
-                    //toggle class according to okCancelInMulti flag only when it is not floating
-                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
-                },
-
-                //HELPERS FOR OUTSIDERS
-                // validates range of given item operations
-                vRange: function (i) {
-                    var O = this;
-                    var opts = O.E.find('option');
-                    if (opts.length <= i || i < 0) throw "index out of bounds"
-                    return O;
-                },
-
-                //toggles selection on c as boolean.
-                toggSel: function (c, i) {
-                    var O = this;
-                    var opt;
-                    if (typeof (i) === "number") {
-                        O.vRange(i);
-                        opt = O.E.find('option')[i];
-                    }
-                    else {
-                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
-                    }
-                    if (!opt || opt.disabled)
-                        return;
-
-                    if (opt.selected !== c) {
-                        opt.selected = c;
-                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
-
-                        O.callChange();
-                        O.setPstate();
-                        O.setText();
-                        O.selAllState();
-                    }
-                },
-
-                //toggles disabled on c as boolean.
-                toggDis: function (c, i) {
-                    var O = this.vRange(i);
-                    O.E.find('option')[i].disabled = c;
-                    if (c) O.E.find('option')[i].selected = false;
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
-                    O.setText();
-                },
-
-                // toggle disable/enable on complete select control
-                toggSumo: function (val) {
-                    var O = this;
-                    O.enabled = val;
-                    O.select.toggleClass('disabled', val);
-
-                    if (val) {
-                        O.E.attr('disabled', 'disabled');
-                        O.select.removeAttr('tabindex');
-                    }
-                    else {
-                        O.E.removeAttr('disabled');
-                        O.select.attr('tabindex', '0');
-                    }
-
-                    return O;
-                },
-
-                // toggles all option on c as boolean.
-                // set direct=false/0 bypasses okCancelInMulti behaviour.
-                toggSelAll: function (c, direct) {
-                    var O = this;
-                    O.E.find('option:not(:disabled,:hidden)')
-                        .each(function (ix, e) {
-                            var is_selected = e.selected,
-                                e = $(e).data('li');
-                            if (e.hasClass('hidden')) return;
-                            if (!!c) {
-                                if (!is_selected) e.trigger('click');
-                            }
-                            else {
-                                if (is_selected) e.trigger('click');
-                            }
-                        });
-
-                    if (!direct) {
-                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
-                        O.callChange();
-                        O.setText();
-                        O.setPstate();
-                    }
-                },
-
-                /* outside accessibility options
-                 which can be accessed from the element instance.
-                 */
-                reload: function () {
-                    var elm = this.unload();
-                    return $(elm).SumoSelect(settings);
-                },
-
-                unload: function () {
-                    var O = this;
-                    O.select.before(O.E);
-                    O.E.show();
-
-                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
-                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
-                    }
-                    O.select.remove();
-                    delete selObj.sumo;
-                    return selObj;
-                },
-
-                //## add a new option to select at a given index.
-                add: function (val, txt, i) {
-                    if (typeof val === "undefined") throw "No value to add"
-
-                    var O = this;
-                    var opts = O.E.find('option')
-                    if (typeof txt === "number") { i = txt; txt = val; }
-                    if (typeof txt === "undefined") { txt = val; }
-
-                    var opt = $("<option></option>").val(val).html(txt);
-
-                    if (opts.length < i) throw "index out of bounds"
-
-                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
-                        O.E.append(opt);
-                        if (!O.mob) O.ul.append(O.createLi(opt));
-                    }
-                    else {
-                        opts.eq(i).before(opt);
-                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
-                    }
-
-                    return selObj;
-                },
-
-                //## removes an item at a given index.
-                remove: function (i) {
-                    var O = this.vRange(i);
-                    O.E.find('option').eq(i).remove();
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
-                    O.setText();
-                },
-
-                // removes all but the selected one
-                removeAll: function () {
-                    var O = this;
-                    var options = O.E.find('option');
-
-                    for (var x = (options.length - 1); x >= 0; x--) {
-                        if (options[x].selected !== true) {
-                            O.remove(x);
-                        }
-                    }
-
-                },
-
-
-                find: function (val) {
-                    var O = this;
-                    var options = O.E.find('option');
-                    for (var x in options) {
-                        if (options[x].value === val) {
-                            return parseInt(x);
-                        }
-                    }
-
-                    return -1;
-
-                },
-
-                //## Select an item at a given index.
-                selectItem: function (i) { this.toggSel(true, i); },
-
-                //## UnSelect an iten at a given index.
-                unSelectItem: function (i) { this.toggSel(false, i); },
-
-                //## Select all items  of the select.
-                selectAll: function () { this.toggSelAll(true); },
-
-                //## UnSelect all items of the select.
-                unSelectAll: function () { this.toggSelAll(false); },
-
-                //## Disable an iten at a given index.
-                disableItem: function (i) { this.toggDis(true, i) },
-
-                //## Removes disabled an iten at a given index.
-                enableItem: function (i) { this.toggDis(false, i) },
-
-                //## New simple methods as getter and setter are not working fine in ie8-
-                //## variable to check state of control if enabled or disabled.
-                enabled: true,
-                //## Enables the control
-                enable: function () { return this.toggSumo(false) },
-
-                //## Disables the control
-                disable: function () { return this.toggSumo(true) },
-
-
-                init: function () {
-                    var O = this;
-                    O.createElems();
-                    O.setText();
-                    return O
-                }
-
-            };
-
-            selObj.sumo.init();
-        });
-
-        return ret.length === 1 ? ret[0] : ret;
-    };
-
-
-});
-
-
-/***/ }),
-
-/***/ 44:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(45);
-
-
-/***/ }),
-
-/***/ 45:
+/***/ 18:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
-__webpack_require__(46);
-//require('jquery-asAccordion');
-__webpack_require__(47);
-__webpack_require__(11);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return on; });
+/* unused harmony export off */
+/* unused harmony export fire */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(19);
 
-// Extend the default picker options for all instances.
-$.extend($.fn.pickadate.defaults, {
-    format: 'yyyy-mm-dd',
-    formatSubmit: 'yyyy-mm-dd',
-    selectYears: 20,
-    selectMonths: true
-});
 
-window.Vue = __webpack_require__(5);
+var bubbleEvents = {};
+var captureEvents = {};
+var propagationStopped = new WeakMap();
+var immediatePropagationStopped = new WeakMap();
+var currentTargets = new WeakMap();
+var currentTargetDesc = Object.getOwnPropertyDescriptor(Event.prototype, 'currentTarget');
 
-Vue.config.devtools = false;
-Vue.config.performance = false;
-
-function readURL(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-            $('#imagePreview').hide();
-            $('#imagePreview').fadeIn(650);
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
+function before(subject, verb, fn) {
+  var source = subject[verb];
+  subject[verb] = function () {
+    fn.apply(subject, arguments);
+    return source.apply(subject, arguments);
+  };
+  return subject;
 }
 
-var app = new Vue({
-    el: '#accordion-app',
-    data: {
-        qual: {
-            reference: '', description: '', institution: '', obtained_on: '',
-            student_no: ''
-        },
-        quals: []
-    },
-    mounted: function mounted() {
-        +function ($, el) {
+function matches(selectors, target, reverse) {
+  var queue = [];
+  var node = target;
 
-            $("#imageUpload").change(function () {
-                readURL(this);
-            });
-            $.fn.mirror = function (selector) {
-                return this.each(function () {
-                    var $this = $(this);
-                    var $selector = $(selector);
-                    $this.bind('keyup change', function () {
-                        $selector.val($this.val());
-                    });
-                });
-            };
-
-            $("#birth_date").pickadate({ min: -65 * 365, max: -18 * 365 });
-
-            //$('.accordion').asAccordion();
-            $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
-
-            $(document).on('change', '.datepicker', function () {
-                //use this line if you create datepickers dynamically
-                if ($(this).data('datepicker_from_or_to') === 'from') {
-                    $('#' + $(this).data('datepicker_to_target')).pickadate('picker').set('min', $(this).val());
-                }
-                if ($(this).data('datepicker_from_or_to') === 'to') {
-                    $('#' + $(this).data('datepicker_from_target')).pickadate('picker').set('max', $(this).val());
-                }
-            });
-
-            $(':input[data-mirror]').each(function () {
-                $(this).mirror($(this).data('mirror'));
-            });
-        }(jQuery, this);
-    },
-    methods: {
-        addNewQual: function addNewQual() {
-            this.quals.push(Vue.util.extend({}, this.qual));
-            //ensure height is enough as accordion sets a height as inline style
-            $('.accordion--active').css("height", "");
-        },
-        removeQual: function removeQual(index) {
-            Vue.delete(this.quals, index);
-        },
-        submitForm: function submitForm(event) {
-            event.preventDefault();
-        },
-        fetchQualifications: function fetchQualifications() {
-            var _this = this;
-
-            fetch('./qualifications').then(function (res) {
-                return res.json();
-            }).then(function (res) {
-                _this.quals = res;
-            });
-        }
-    },
-    created: function created() {
-        this.fetchQualifications();
+  do {
+    if (node.nodeType !== 1) break;
+    var _matches = selectors.matches(node);
+    if (_matches.length) {
+      var matched = { node: node, observers: _matches };
+      if (reverse) {
+        queue.unshift(matched);
+      } else {
+        queue.push(matched);
+      }
     }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
+  } while (node = node.parentElement);
+
+  return queue;
+}
+
+function trackPropagation() {
+  propagationStopped.set(this, true);
+}
+
+function trackImmediate() {
+  propagationStopped.set(this, true);
+  immediatePropagationStopped.set(this, true);
+}
+
+function getCurrentTarget() {
+  return currentTargets.get(this) || null;
+}
+
+function defineCurrentTarget(event, getter) {
+  if (!currentTargetDesc) return;
+
+  Object.defineProperty(event, 'currentTarget', {
+    configurable: true,
+    enumerable: true,
+    get: getter || currentTargetDesc.get
+  });
+}
+
+function dispatch(event) {
+  var events = event.eventPhase === 1 ? captureEvents : bubbleEvents;
+
+  var selectors = events[event.type];
+  if (!selectors) return;
+
+  var queue = matches(selectors, event.target, event.eventPhase === 1);
+  if (!queue.length) return;
+
+  before(event, 'stopPropagation', trackPropagation);
+  before(event, 'stopImmediatePropagation', trackImmediate);
+  defineCurrentTarget(event, getCurrentTarget);
+
+  for (var i = 0, len1 = queue.length; i < len1; i++) {
+    if (propagationStopped.get(event)) break;
+    var matched = queue[i];
+    currentTargets.set(event, matched.node);
+
+    for (var j = 0, len2 = matched.observers.length; j < len2; j++) {
+      if (immediatePropagationStopped.get(event)) break;
+      matched.observers[j].data.call(matched.node, event);
+    }
+  }
+
+  currentTargets.delete(event);
+  defineCurrentTarget(event);
+}
+
+function on(name, selector, fn) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  var capture = options.capture ? true : false;
+  var events = capture ? captureEvents : bubbleEvents;
+
+  var selectors = events[name];
+  if (!selectors) {
+    selectors = new __WEBPACK_IMPORTED_MODULE_0_selector_set__["a" /* default */]();
+    events[name] = selectors;
+    document.addEventListener(name, dispatch, capture);
+  }
+  selectors.add(selector, fn);
+}
+
+function off(name, selector, fn) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  var capture = options.capture ? true : false;
+  var events = capture ? captureEvents : bubbleEvents;
+
+  var selectors = events[name];
+  if (!selectors) return;
+  selectors.remove(selector, fn);
+
+  if (selectors.size) return;
+  delete events[name];
+  document.removeEventListener(name, dispatch, capture);
+}
+
+function fire(target, name, detail) {
+  return target.dispatchEvent(new CustomEvent(name, {
+    bubbles: true,
+    cancelable: true,
+    detail: detail
+  }));
+}
+
+
+
 
 /***/ }),
 
-/***/ 46:
+/***/ 19:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = SelectorSet;
+// Public: Create a new SelectorSet.
+function SelectorSet() {
+  // Construct new SelectorSet if called as a function.
+  if (!(this instanceof SelectorSet)) {
+    return new SelectorSet();
+  }
+
+  // Public: Number of selectors added to the set
+  this.size = 0;
+
+  // Internal: Incrementing ID counter
+  this.uid = 0;
+
+  // Internal: Array of String selectors in the set
+  this.selectors = [];
+
+  // Internal: All Object index String names mapping to Index objects.
+  this.indexes = Object.create(this.indexes);
+
+  // Internal: Used Object index String names mapping to Index objects.
+  this.activeIndexes = [];
+}
+
+// Detect prefixed Element#matches function.
+var docElem = window.document.documentElement;
+var matches = (docElem.matches ||
+                docElem.webkitMatchesSelector ||
+                docElem.mozMatchesSelector ||
+                docElem.oMatchesSelector ||
+                docElem.msMatchesSelector);
+
+// Public: Check if element matches selector.
+//
+// Maybe overridden with custom Element.matches function.
+//
+// el       - An Element
+// selector - String CSS selector
+//
+// Returns true or false.
+SelectorSet.prototype.matchesSelector = function(el, selector) {
+  return matches.call(el, selector);
+};
+
+// Public: Find all elements in the context that match the selector.
+//
+// Maybe overridden with custom querySelectorAll function.
+//
+// selectors - String CSS selectors.
+// context   - Element context
+//
+// Returns non-live list of Elements.
+SelectorSet.prototype.querySelectorAll = function(selectors, context) {
+  return context.querySelectorAll(selectors);
+};
+
+
+// Public: Array of indexes.
+//
+// name     - Unique String name
+// selector - Function that takes a String selector and returns a String key
+//            or undefined if it can't be used by the index.
+// element  - Function that takes an Element and returns an Array of String
+//            keys that point to indexed values.
+//
+SelectorSet.prototype.indexes = [];
+
+// Index by element id
+var idRe = /^#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'ID',
+  selector: function matchIdSelector(sel) {
+    var m;
+    if (m = sel.match(idRe)) {
+      return m[0].slice(1);
+    }
+  },
+  element: function getElementId(el) {
+    if (el.id) {
+      return [el.id];
+    }
+  }
+});
+
+// Index by all of its class names
+var classRe = /^\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'CLASS',
+  selector: function matchClassSelector(sel) {
+    var m;
+    if (m = sel.match(classRe)) {
+      return m[0].slice(1);
+    }
+  },
+  element: function getElementClassNames(el) {
+    var className = el.className;
+    if (className) {
+      if (typeof className === 'string') {
+        return className.split(/\s/);
+      } else if (typeof className === 'object' && 'baseVal' in className) {
+        // className is a SVGAnimatedString
+        // global SVGAnimatedString is not an exposed global in Opera 12
+        return className.baseVal.split(/\s/);
+      }
+    }
+  }
+});
+
+// Index by tag/node name: `DIV`, `FORM`, `A`
+var tagRe = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'TAG',
+  selector: function matchTagSelector(sel) {
+    var m;
+    if (m = sel.match(tagRe)) {
+      return m[0].toUpperCase();
+    }
+  },
+  element: function getElementTagName(el) {
+    return [el.nodeName.toUpperCase()];
+  }
+});
+
+// Default index just contains a single array of elements.
+SelectorSet.prototype.indexes['default'] = {
+  name: 'UNIVERSAL',
+  selector: function() {
+    return true;
+  },
+  element: function() {
+    return [true];
+  }
+};
+
+
+// Use ES Maps when supported
+var Map;
+if (typeof window.Map === 'function') {
+  Map = window.Map;
+} else {
+  Map = (function() {
+    function Map() {
+      this.map = {};
+    }
+    Map.prototype.get = function(key) {
+      return this.map[key + ' '];
+    };
+    Map.prototype.set = function(key, value) {
+      this.map[key + ' '] = value;
+    };
+    return Map;
+  })();
+}
+
+
+// Regexps adopted from Sizzle
+//   https://github.com/jquery/sizzle/blob/1.7/sizzle.js
+//
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g;
+
+// Internal: Get indexes for selector.
+//
+// selector - String CSS selector
+//
+// Returns Array of {index, key}.
+function parseSelectorIndexes(allIndexes, selector) {
+  allIndexes = allIndexes.slice(0).concat(allIndexes['default']);
+
+  var allIndexesLen = allIndexes.length,
+      i, j, m, dup, rest = selector,
+      key, index, indexes = [];
+
+  do {
+    chunker.exec('');
+    if (m = chunker.exec(rest)) {
+      rest = m[3];
+      if (m[2] || !rest) {
+        for (i = 0; i < allIndexesLen; i++) {
+          index = allIndexes[i];
+          if (key = index.selector(m[1])) {
+            j = indexes.length;
+            dup = false;
+            while (j--) {
+              if (indexes[j].index === index && indexes[j].key === key) {
+                dup = true;
+                break;
+              }
+            }
+            if (!dup) {
+              indexes.push({index: index, key: key});
+            }
+            break;
+          }
+        }
+      }
+    }
+  } while (m);
+
+  return indexes;
+}
+
+// Internal: Find first item in Array that is a prototype of `proto`.
+//
+// ary   - Array of objects
+// proto - Prototype of expected item in `ary`
+//
+// Returns object from `ary` if found. Otherwise returns undefined.
+function findByPrototype(ary, proto) {
+  var i, len, item;
+  for (i = 0, len = ary.length; i < len; i++) {
+    item = ary[i];
+    if (proto.isPrototypeOf(item)) {
+      return item;
+    }
+  }
+}
+
+// Public: Log when added selector falls under the default index.
+//
+// This API should not be considered stable. May change between
+// minor versions.
+//
+// obj - {selector, data} Object
+//
+//   SelectorSet.prototype.logDefaultIndexUsed = function(obj) {
+//     console.warn(obj.selector, "could not be indexed");
+//   };
+//
+// Returns nothing.
+SelectorSet.prototype.logDefaultIndexUsed = function() {};
+
+// Public: Add selector to set.
+//
+// selector - String CSS selector
+// data     - Optional data Object (default: undefined)
+//
+// Returns nothing.
+SelectorSet.prototype.add = function(selector, data) {
+  var obj, i, indexProto, key, index, objs,
+      selectorIndexes, selectorIndex,
+      indexes = this.activeIndexes,
+      selectors = this.selectors;
+
+  if (typeof selector !== 'string') {
+    return;
+  }
+
+  obj = {
+    id: this.uid++,
+    selector: selector,
+    data: data
+  };
+
+  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
+  for (i = 0; i < selectorIndexes.length; i++) {
+    selectorIndex = selectorIndexes[i];
+    key = selectorIndex.key;
+    indexProto = selectorIndex.index;
+
+    index = findByPrototype(indexes, indexProto);
+    if (!index) {
+      index = Object.create(indexProto);
+      index.map = new Map();
+      indexes.push(index);
+    }
+
+    if (indexProto === this.indexes['default']) {
+      this.logDefaultIndexUsed(obj);
+    }
+    objs = index.map.get(key);
+    if (!objs) {
+      objs = [];
+      index.map.set(key, objs);
+    }
+    objs.push(obj);
+  }
+
+  this.size++;
+  selectors.push(selector);
+};
+
+// Public: Remove selector from set.
+//
+// selector - String CSS selector
+// data     - Optional data Object (default: undefined)
+//
+// Returns nothing.
+SelectorSet.prototype.remove = function(selector, data) {
+  if (typeof selector !== 'string') {
+    return;
+  }
+
+  var selectorIndexes, selectorIndex, i, j, k, selIndex, objs, obj;
+  var indexes = this.activeIndexes;
+  var removedIds = {};
+  var removeAll = arguments.length === 1;
+
+  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
+  for (i = 0; i < selectorIndexes.length; i++) {
+    selectorIndex = selectorIndexes[i];
+
+    j = indexes.length;
+    while (j--) {
+      selIndex = indexes[j];
+      if (selectorIndex.index.isPrototypeOf(selIndex)) {
+        objs = selIndex.map.get(selectorIndex.key);
+        if (objs) {
+          k = objs.length;
+          while (k--) {
+            obj = objs[k];
+            if (obj.selector === selector && (removeAll || obj.data === data)) {
+              objs.splice(k, 1);
+              removedIds[obj.id] = true;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  this.size -= Object.keys(removedIds).length;
+};
+
+// Sort by id property handler.
+//
+// a - Selector obj.
+// b - Selector obj.
+//
+// Returns Number.
+function sortById(a, b) {
+  return a.id - b.id;
+}
+
+// Public: Find all matching decendants of the context element.
+//
+// context - An Element
+//
+// Returns Array of {selector, data, elements} matches.
+SelectorSet.prototype.queryAll = function(context) {
+  if (!this.selectors.length) {
+    return [];
+  }
+
+  var matches = {}, results = [];
+  var els = this.querySelectorAll(this.selectors.join(', '), context);
+
+  var i, j, len, len2, el, m, match, obj;
+  for (i = 0, len = els.length; i < len; i++) {
+    el = els[i];
+    m = this.matches(el);
+    for (j = 0, len2 = m.length; j < len2; j++) {
+      obj = m[j];
+      if (!matches[obj.id]) {
+        match = {
+          id: obj.id,
+          selector: obj.selector,
+          data: obj.data,
+          elements: []
+        };
+        matches[obj.id] = match;
+        results.push(match);
+      } else {
+        match = matches[obj.id];
+      }
+      match.elements.push(el);
+    }
+  }
+
+  return results.sort(sortById);
+};
+
+// Public: Match element against all selectors in set.
+//
+// el - An Element
+//
+// Returns Array of {selector, data} matches.
+SelectorSet.prototype.matches = function(el) {
+  if (!el) {
+    return [];
+  }
+
+  var i, j, k, len, len2, len3, index, keys, objs, obj, id;
+  var indexes = this.activeIndexes, matchedIds = {}, matches = [];
+
+  for (i = 0, len = indexes.length; i < len; i++) {
+    index = indexes[i];
+    keys = index.element(el);
+    if (keys) {
+      for (j = 0, len2 = keys.length; j < len2; j++) {
+        if (objs = index.map.get(keys[j])) {
+          for (k = 0, len3 = objs.length; k < len3; k++) {
+            obj = objs[k];
+            id = obj.id;
+            if (!matchedIds[id] && this.matchesSelector(el, obj.selector)) {
+              matchedIds[id] = true;
+              matches.push(obj);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return matches.sort(sortById);
+};
+
+
+/***/ }),
+
+/***/ 20:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {(function($) {
@@ -11917,7 +11534,2189 @@ var app = new Vue({
 
 /***/ }),
 
-/***/ 47:
+/***/ 21:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * Date picker for pickadate.js v3.5.6
+ * http://amsul.github.io/pickadate.js/date.htm
+ */
+
+(function ( factory ) {
+
+    // AMD.
+    if ( true )
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+
+    // Node.js/browserify.
+    else if ( typeof exports == 'object' )
+        module.exports = factory( require('./picker.js'), require('jquery') )
+
+    // Browser globals.
+    else factory( Picker, jQuery )
+
+}(function( Picker, $ ) {
+
+
+/**
+ * Globals and constants
+ */
+var DAYS_IN_WEEK = 7,
+    WEEKS_IN_CALENDAR = 6,
+    _ = Picker._
+
+
+
+/**
+ * The date picker constructor
+ */
+function DatePicker( picker, settings ) {
+
+    var calendar = this,
+        element = picker.$node[ 0 ],
+        elementValue = element.value,
+        elementDataValue = picker.$node.data( 'value' ),
+        valueString = elementDataValue || elementValue,
+        formatString = elementDataValue ? settings.formatSubmit : settings.format,
+        isRTL = function() {
+
+            return element.currentStyle ?
+
+                // For IE.
+                element.currentStyle.direction == 'rtl' :
+
+                // For normal browsers.
+                getComputedStyle( picker.$root[0] ).direction == 'rtl'
+        }
+
+    calendar.settings = settings
+    calendar.$node = picker.$node
+
+    // The queue of methods that will be used to build item objects.
+    calendar.queue = {
+        min: 'measure create',
+        max: 'measure create',
+        now: 'now create',
+        select: 'parse create validate',
+        highlight: 'parse navigate create validate',
+        view: 'parse create validate viewset',
+        disable: 'deactivate',
+        enable: 'activate'
+    }
+
+    // The component's item object.
+    calendar.item = {}
+
+    calendar.item.clear = null
+    calendar.item.disable = ( settings.disable || [] ).slice( 0 )
+    calendar.item.enable = -(function( collectionDisabled ) {
+        return collectionDisabled[ 0 ] === true ? collectionDisabled.shift() : -1
+    })( calendar.item.disable )
+
+    calendar.
+        set( 'min', settings.min ).
+        set( 'max', settings.max ).
+        set( 'now' )
+
+    // When there’s a value, set the `select`, which in turn
+    // also sets the `highlight` and `view`.
+    if ( valueString ) {
+        calendar.set( 'select', valueString, {
+            format: formatString,
+            defaultValue: true
+        })
+    }
+
+    // If there’s no value, default to highlighting “today”.
+    else {
+        calendar.
+            set( 'select', null ).
+            set( 'highlight', calendar.item.now )
+    }
+
+
+    // The keycode to movement mapping.
+    calendar.key = {
+        40: 7, // Down
+        38: -7, // Up
+        39: function() { return isRTL() ? -1 : 1 }, // Right
+        37: function() { return isRTL() ? 1 : -1 }, // Left
+        go: function( timeChange ) {
+            var highlightedObject = calendar.item.highlight,
+                targetDate = new Date( highlightedObject.year, highlightedObject.month, highlightedObject.date + timeChange )
+            calendar.set(
+                'highlight',
+                targetDate,
+                { interval: timeChange }
+            )
+            this.render()
+        }
+    }
+
+
+    // Bind some picker events.
+    picker.
+        on( 'render', function() {
+            picker.$root.find( '.' + settings.klass.selectMonth ).on( 'change', function() {
+                var value = this.value
+                if ( value ) {
+                    picker.set( 'highlight', [ picker.get( 'view' ).year, value, picker.get( 'highlight' ).date ] )
+                    picker.$root.find( '.' + settings.klass.selectMonth ).trigger( 'focus' )
+                }
+            })
+            picker.$root.find( '.' + settings.klass.selectYear ).on( 'change', function() {
+                var value = this.value
+                if ( value ) {
+                    picker.set( 'highlight', [ value, picker.get( 'view' ).month, picker.get( 'highlight' ).date ] )
+                    picker.$root.find( '.' + settings.klass.selectYear ).trigger( 'focus' )
+                }
+            })
+        }, 1 ).
+        on( 'open', function() {
+            var includeToday = ''
+            if ( calendar.disabled( calendar.get('now') ) ) {
+                includeToday = ':not(.' + settings.klass.buttonToday + ')'
+            }
+            picker.$root.find( 'button' + includeToday + ', select' ).attr( 'disabled', false )
+        }, 1 ).
+        on( 'close', function() {
+            picker.$root.find( 'button, select' ).attr( 'disabled', true )
+        }, 1 )
+
+} //DatePicker
+
+
+/**
+ * Set a datepicker item object.
+ */
+DatePicker.prototype.set = function( type, value, options ) {
+
+    var calendar = this,
+        calendarItem = calendar.item
+
+    // If the value is `null` just set it immediately.
+    if ( value === null ) {
+        if ( type == 'clear' ) type = 'select'
+        calendarItem[ type ] = value
+        return calendar
+    }
+
+    // Otherwise go through the queue of methods, and invoke the functions.
+    // Update this as the time unit, and set the final value as this item.
+    // * In the case of `enable`, keep the queue but set `disable` instead.
+    //   And in the case of `flip`, keep the queue but set `enable` instead.
+    calendarItem[ ( type == 'enable' ? 'disable' : type == 'flip' ? 'enable' : type ) ] = calendar.queue[ type ].split( ' ' ).map( function( method ) {
+        value = calendar[ method ]( type, value, options )
+        return value
+    }).pop()
+
+    // Check if we need to cascade through more updates.
+    if ( type == 'select' ) {
+        calendar.set( 'highlight', calendarItem.select, options )
+    }
+    else if ( type == 'highlight' ) {
+        calendar.set( 'view', calendarItem.highlight, options )
+    }
+    else if ( type.match( /^(flip|min|max|disable|enable)$/ ) ) {
+        if ( calendarItem.select && calendar.disabled( calendarItem.select ) ) {
+            calendar.set( 'select', calendarItem.select, options )
+        }
+        if ( calendarItem.highlight && calendar.disabled( calendarItem.highlight ) ) {
+            calendar.set( 'highlight', calendarItem.highlight, options )
+        }
+    }
+
+    return calendar
+} //DatePicker.prototype.set
+
+
+/**
+ * Get a datepicker item object.
+ */
+DatePicker.prototype.get = function( type ) {
+    return this.item[ type ]
+} //DatePicker.prototype.get
+
+
+/**
+ * Create a picker date object.
+ */
+DatePicker.prototype.create = function( type, value, options ) {
+
+    var isInfiniteValue,
+        calendar = this
+
+    // If there’s no value, use the type as the value.
+    value = value === undefined ? type : value
+
+
+    // If it’s infinity, update the value.
+    if ( value == -Infinity || value == Infinity ) {
+        isInfiniteValue = value
+    }
+
+    // If it’s an object, use the native date object.
+    else if ( $.isPlainObject( value ) && _.isInteger( value.pick ) ) {
+        value = value.obj
+    }
+
+    // If it’s an array, convert it into a date and make sure
+    // that it’s a valid date – otherwise default to today.
+    else if ( $.isArray( value ) ) {
+        value = new Date( value[ 0 ], value[ 1 ], value[ 2 ] )
+        value = _.isDate( value ) ? value : calendar.create().obj
+    }
+
+    // If it’s a number or date object, make a normalized date.
+    else if ( _.isInteger( value ) || _.isDate( value ) ) {
+        value = calendar.normalize( new Date( value ), options )
+    }
+
+    // If it’s a literal true or any other case, set it to now.
+    else /*if ( value === true )*/ {
+        value = calendar.now( type, value, options )
+    }
+
+    // Return the compiled object.
+    return {
+        year: isInfiniteValue || value.getFullYear(),
+        month: isInfiniteValue || value.getMonth(),
+        date: isInfiniteValue || value.getDate(),
+        day: isInfiniteValue || value.getDay(),
+        obj: isInfiniteValue || value,
+        pick: isInfiniteValue || value.getTime()
+    }
+} //DatePicker.prototype.create
+
+
+/**
+ * Create a range limit object using an array, date object,
+ * literal “true”, or integer relative to another time.
+ */
+DatePicker.prototype.createRange = function( from, to ) {
+
+    var calendar = this,
+        createDate = function( date ) {
+            if ( date === true || $.isArray( date ) || _.isDate( date ) ) {
+                return calendar.create( date )
+            }
+            return date
+        }
+
+    // Create objects if possible.
+    if ( !_.isInteger( from ) ) {
+        from = createDate( from )
+    }
+    if ( !_.isInteger( to ) ) {
+        to = createDate( to )
+    }
+
+    // Create relative dates.
+    if ( _.isInteger( from ) && $.isPlainObject( to ) ) {
+        from = [ to.year, to.month, to.date + from ];
+    }
+    else if ( _.isInteger( to ) && $.isPlainObject( from ) ) {
+        to = [ from.year, from.month, from.date + to ];
+    }
+
+    return {
+        from: createDate( from ),
+        to: createDate( to )
+    }
+} //DatePicker.prototype.createRange
+
+
+/**
+ * Check if a date unit falls within a date range object.
+ */
+DatePicker.prototype.withinRange = function( range, dateUnit ) {
+    range = this.createRange(range.from, range.to)
+    return dateUnit.pick >= range.from.pick && dateUnit.pick <= range.to.pick
+}
+
+
+/**
+ * Check if two date range objects overlap.
+ */
+DatePicker.prototype.overlapRanges = function( one, two ) {
+
+    var calendar = this
+
+    // Convert the ranges into comparable dates.
+    one = calendar.createRange( one.from, one.to )
+    two = calendar.createRange( two.from, two.to )
+
+    return calendar.withinRange( one, two.from ) || calendar.withinRange( one, two.to ) ||
+        calendar.withinRange( two, one.from ) || calendar.withinRange( two, one.to )
+}
+
+
+/**
+ * Get the date today.
+ */
+DatePicker.prototype.now = function( type, value, options ) {
+    value = new Date()
+    if ( options && options.rel ) {
+        value.setDate( value.getDate() + options.rel )
+    }
+    return this.normalize( value, options )
+}
+
+
+/**
+ * Navigate to next/prev month.
+ */
+DatePicker.prototype.navigate = function( type, value, options ) {
+
+    var targetDateObject,
+        targetYear,
+        targetMonth,
+        targetDate,
+        isTargetArray = $.isArray( value ),
+        isTargetObject = $.isPlainObject( value ),
+        viewsetObject = this.item.view/*,
+        safety = 100*/
+
+
+    if ( isTargetArray || isTargetObject ) {
+
+        if ( isTargetObject ) {
+            targetYear = value.year
+            targetMonth = value.month
+            targetDate = value.date
+        }
+        else {
+            targetYear = +value[0]
+            targetMonth = +value[1]
+            targetDate = +value[2]
+        }
+
+        // If we’re navigating months but the view is in a different
+        // month, navigate to the view’s year and month.
+        if ( options && options.nav && viewsetObject && viewsetObject.month !== targetMonth ) {
+            targetYear = viewsetObject.year
+            targetMonth = viewsetObject.month
+        }
+
+        // Figure out the expected target year and month.
+        targetDateObject = new Date( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 )
+        targetYear = targetDateObject.getFullYear()
+        targetMonth = targetDateObject.getMonth()
+
+        // If the month we’re going to doesn’t have enough days,
+        // keep decreasing the date until we reach the month’s last date.
+        while ( /*safety &&*/ new Date( targetYear, targetMonth, targetDate ).getMonth() !== targetMonth ) {
+            targetDate -= 1
+            /*safety -= 1
+            if ( !safety ) {
+                throw 'Fell into an infinite loop while navigating to ' + new Date( targetYear, targetMonth, targetDate ) + '.'
+            }*/
+        }
+
+        value = [ targetYear, targetMonth, targetDate ]
+    }
+
+    return value
+} //DatePicker.prototype.navigate
+
+
+/**
+ * Normalize a date by setting the hours to midnight.
+ */
+DatePicker.prototype.normalize = function( value/*, options*/ ) {
+    value.setHours( 0, 0, 0, 0 )
+    return value
+}
+
+
+/**
+ * Measure the range of dates.
+ */
+DatePicker.prototype.measure = function( type, value/*, options*/ ) {
+
+    var calendar = this
+
+    // If it’s anything false-y, remove the limits.
+    if ( !value ) {
+        value = type == 'min' ? -Infinity : Infinity
+    }
+
+    // If it’s a string, parse it.
+    else if ( typeof value == 'string' ) {
+        value = calendar.parse( type, value )
+    }
+
+    // If it's an integer, get a date relative to today.
+    else if ( _.isInteger( value ) ) {
+        value = calendar.now( type, value, { rel: value } )
+    }
+
+    return value
+} ///DatePicker.prototype.measure
+
+
+/**
+ * Create a viewset object based on navigation.
+ */
+DatePicker.prototype.viewset = function( type, dateObject/*, options*/ ) {
+    return this.create([ dateObject.year, dateObject.month, 1 ])
+}
+
+
+/**
+ * Validate a date as enabled and shift if needed.
+ */
+DatePicker.prototype.validate = function( type, dateObject, options ) {
+
+    var calendar = this,
+
+        // Keep a reference to the original date.
+        originalDateObject = dateObject,
+
+        // Make sure we have an interval.
+        interval = options && options.interval ? options.interval : 1,
+
+        // Check if the calendar enabled dates are inverted.
+        isFlippedBase = calendar.item.enable === -1,
+
+        // Check if we have any enabled dates after/before now.
+        hasEnabledBeforeTarget, hasEnabledAfterTarget,
+
+        // The min & max limits.
+        minLimitObject = calendar.item.min,
+        maxLimitObject = calendar.item.max,
+
+        // Check if we’ve reached the limit during shifting.
+        reachedMin, reachedMax,
+
+        // Check if the calendar is inverted and at least one weekday is enabled.
+        hasEnabledWeekdays = isFlippedBase && calendar.item.disable.filter( function( value ) {
+
+            // If there’s a date, check where it is relative to the target.
+            if ( $.isArray( value ) ) {
+                var dateTime = calendar.create( value ).pick
+                if ( dateTime < dateObject.pick ) hasEnabledBeforeTarget = true
+                else if ( dateTime > dateObject.pick ) hasEnabledAfterTarget = true
+            }
+
+            // Return only integers for enabled weekdays.
+            return _.isInteger( value )
+        }).length/*,
+
+        safety = 100*/
+
+
+
+    // Cases to validate for:
+    // [1] Not inverted and date disabled.
+    // [2] Inverted and some dates enabled.
+    // [3] Not inverted and out of range.
+    //
+    // Cases to **not** validate for:
+    // • Navigating months.
+    // • Not inverted and date enabled.
+    // • Inverted and all dates disabled.
+    // • ..and anything else.
+    if ( !options || (!options.nav && !options.defaultValue) ) if (
+        /* 1 */ ( !isFlippedBase && calendar.disabled( dateObject ) ) ||
+        /* 2 */ ( isFlippedBase && calendar.disabled( dateObject ) && ( hasEnabledWeekdays || hasEnabledBeforeTarget || hasEnabledAfterTarget ) ) ||
+        /* 3 */ ( !isFlippedBase && (dateObject.pick <= minLimitObject.pick || dateObject.pick >= maxLimitObject.pick) )
+    ) {
+
+
+        // When inverted, flip the direction if there aren’t any enabled weekdays
+        // and there are no enabled dates in the direction of the interval.
+        if ( isFlippedBase && !hasEnabledWeekdays && ( ( !hasEnabledAfterTarget && interval > 0 ) || ( !hasEnabledBeforeTarget && interval < 0 ) ) ) {
+            interval *= -1
+        }
+
+
+        // Keep looping until we reach an enabled date.
+        while ( /*safety &&*/ calendar.disabled( dateObject ) ) {
+
+            /*safety -= 1
+            if ( !safety ) {
+                throw 'Fell into an infinite loop while validating ' + dateObject.obj + '.'
+            }*/
+
+
+            // If we’ve looped into the next/prev month with a large interval, return to the original date and flatten the interval.
+            if ( Math.abs( interval ) > 1 && ( dateObject.month < originalDateObject.month || dateObject.month > originalDateObject.month ) ) {
+                dateObject = originalDateObject
+                interval = interval > 0 ? 1 : -1
+            }
+
+
+            // If we’ve reached the min/max limit, reverse the direction, flatten the interval and set it to the limit.
+            if ( dateObject.pick <= minLimitObject.pick ) {
+                reachedMin = true
+                interval = 1
+                dateObject = calendar.create([
+                    minLimitObject.year,
+                    minLimitObject.month,
+                    minLimitObject.date + (dateObject.pick === minLimitObject.pick ? 0 : -1)
+                ])
+            }
+            else if ( dateObject.pick >= maxLimitObject.pick ) {
+                reachedMax = true
+                interval = -1
+                dateObject = calendar.create([
+                    maxLimitObject.year,
+                    maxLimitObject.month,
+                    maxLimitObject.date + (dateObject.pick === maxLimitObject.pick ? 0 : 1)
+                ])
+            }
+
+
+            // If we’ve reached both limits, just break out of the loop.
+            if ( reachedMin && reachedMax ) {
+                break
+            }
+
+
+            // Finally, create the shifted date using the interval and keep looping.
+            dateObject = calendar.create([ dateObject.year, dateObject.month, dateObject.date + interval ])
+        }
+
+    } //endif
+
+
+    // Return the date object settled on.
+    return dateObject
+} //DatePicker.prototype.validate
+
+
+/**
+ * Check if a date is disabled.
+ */
+DatePicker.prototype.disabled = function( dateToVerify ) {
+
+    var
+        calendar = this,
+
+        // Filter through the disabled dates to check if this is one.
+        isDisabledMatch = calendar.item.disable.filter( function( dateToDisable ) {
+
+            // If the date is a number, match the weekday with 0index and `firstDay` check.
+            if ( _.isInteger( dateToDisable ) ) {
+                return dateToVerify.day === ( calendar.settings.firstDay ? dateToDisable : dateToDisable - 1 ) % 7
+            }
+
+            // If it’s an array or a native JS date, create and match the exact date.
+            if ( $.isArray( dateToDisable ) || _.isDate( dateToDisable ) ) {
+                return dateToVerify.pick === calendar.create( dateToDisable ).pick
+            }
+
+            // If it’s an object, match a date within the “from” and “to” range.
+            if ( $.isPlainObject( dateToDisable ) ) {
+                return calendar.withinRange( dateToDisable, dateToVerify )
+            }
+        })
+
+    // If this date matches a disabled date, confirm it’s not inverted.
+    isDisabledMatch = isDisabledMatch.length && !isDisabledMatch.filter(function( dateToDisable ) {
+        return $.isArray( dateToDisable ) && dateToDisable[3] == 'inverted' ||
+            $.isPlainObject( dateToDisable ) && dateToDisable.inverted
+    }).length
+
+    // Check the calendar “enabled” flag and respectively flip the
+    // disabled state. Then also check if it’s beyond the min/max limits.
+    return calendar.item.enable === -1 ? !isDisabledMatch : isDisabledMatch ||
+        dateToVerify.pick < calendar.item.min.pick ||
+        dateToVerify.pick > calendar.item.max.pick
+
+} //DatePicker.prototype.disabled
+
+
+/**
+ * Parse a string into a usable type.
+ */
+DatePicker.prototype.parse = function( type, value, options ) {
+
+    var calendar = this,
+        parsingObject = {}
+
+    // If it’s already parsed, we’re good.
+    if ( !value || typeof value != 'string' ) {
+        return value
+    }
+
+    // We need a `.format` to parse the value with.
+    if ( !( options && options.format ) ) {
+        options = options || {}
+        options.format = calendar.settings.format
+    }
+
+    // Convert the format into an array and then map through it.
+    calendar.formats.toArray( options.format ).map( function( label ) {
+
+        var
+            // Grab the formatting label.
+            formattingLabel = calendar.formats[ label ],
+
+            // The format length is from the formatting label function or the
+            // label length without the escaping exclamation (!) mark.
+            formatLength = formattingLabel ? _.trigger( formattingLabel, calendar, [ value, parsingObject ] ) : label.replace( /^!/, '' ).length
+
+        // If there's a format label, split the value up to the format length.
+        // Then add it to the parsing object with appropriate label.
+        if ( formattingLabel ) {
+            parsingObject[ label ] = value.substr( 0, formatLength )
+        }
+
+        // Update the value as the substring from format length to end.
+        value = value.substr( formatLength )
+    })
+
+    // Compensate for month 0index.
+    return [
+        parsingObject.yyyy || parsingObject.yy,
+        +( parsingObject.mm || parsingObject.m ) - 1,
+        parsingObject.dd || parsingObject.d
+    ]
+} //DatePicker.prototype.parse
+
+
+/**
+ * Various formats to display the object in.
+ */
+DatePicker.prototype.formats = (function() {
+
+    // Return the length of the first word in a collection.
+    function getWordLengthFromCollection( string, collection, dateObject ) {
+
+        // Grab the first word from the string.
+        // Regex pattern from http://stackoverflow.com/q/150033
+        var word = string.match( /[^\x00-\x7F]+|\w+/ )[ 0 ]
+
+        // If there's no month index, add it to the date object
+        if ( !dateObject.mm && !dateObject.m ) {
+            dateObject.m = collection.indexOf( word ) + 1
+        }
+
+        // Return the length of the word.
+        return word.length
+    }
+
+    // Get the length of the first word in a string.
+    function getFirstWordLength( string ) {
+        return string.match( /\w+/ )[ 0 ].length
+    }
+
+    return {
+
+        d: function( string, dateObject ) {
+
+            // If there's string, then get the digits length.
+            // Otherwise return the selected date.
+            return string ? _.digits( string ) : dateObject.date
+        },
+        dd: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 2.
+            // Otherwise return the selected date with a leading zero.
+            return string ? 2 : _.lead( dateObject.date )
+        },
+        ddd: function( string, dateObject ) {
+
+            // If there's a string, then get the length of the first word.
+            // Otherwise return the short selected weekday.
+            return string ? getFirstWordLength( string ) : this.settings.weekdaysShort[ dateObject.day ]
+        },
+        dddd: function( string, dateObject ) {
+
+            // If there's a string, then get the length of the first word.
+            // Otherwise return the full selected weekday.
+            return string ? getFirstWordLength( string ) : this.settings.weekdaysFull[ dateObject.day ]
+        },
+        m: function( string, dateObject ) {
+
+            // If there's a string, then get the length of the digits
+            // Otherwise return the selected month with 0index compensation.
+            return string ? _.digits( string ) : dateObject.month + 1
+        },
+        mm: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 2.
+            // Otherwise return the selected month with 0index and leading zero.
+            return string ? 2 : _.lead( dateObject.month + 1 )
+        },
+        mmm: function( string, dateObject ) {
+
+            var collection = this.settings.monthsShort
+
+            // If there's a string, get length of the relevant month from the short
+            // months collection. Otherwise return the selected month from that collection.
+            return string ? getWordLengthFromCollection( string, collection, dateObject ) : collection[ dateObject.month ]
+        },
+        mmmm: function( string, dateObject ) {
+
+            var collection = this.settings.monthsFull
+
+            // If there's a string, get length of the relevant month from the full
+            // months collection. Otherwise return the selected month from that collection.
+            return string ? getWordLengthFromCollection( string, collection, dateObject ) : collection[ dateObject.month ]
+        },
+        yy: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 2.
+            // Otherwise return the selected year by slicing out the first 2 digits.
+            return string ? 2 : ( '' + dateObject.year ).slice( 2 )
+        },
+        yyyy: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 4.
+            // Otherwise return the selected year.
+            return string ? 4 : dateObject.year
+        },
+
+        // Create an array by splitting the formatting string passed.
+        toArray: function( formatString ) { return formatString.split( /(d{1,4}|m{1,4}|y{4}|yy|!.)/g ) },
+
+        // Format an object into a string using the formatting options.
+        toString: function ( formatString, itemObject ) {
+            var calendar = this
+            return calendar.formats.toArray( formatString ).map( function( label ) {
+                return _.trigger( calendar.formats[ label ], calendar, [ 0, itemObject ] ) || label.replace( /^!/, '' )
+            }).join( '' )
+        }
+    }
+})() //DatePicker.prototype.formats
+
+
+
+
+/**
+ * Check if two date units are the exact.
+ */
+DatePicker.prototype.isDateExact = function( one, two ) {
+
+    var calendar = this
+
+    // When we’re working with weekdays, do a direct comparison.
+    if (
+        ( _.isInteger( one ) && _.isInteger( two ) ) ||
+        ( typeof one == 'boolean' && typeof two == 'boolean' )
+     ) {
+        return one === two
+    }
+
+    // When we’re working with date representations, compare the “pick” value.
+    if (
+        ( _.isDate( one ) || $.isArray( one ) ) &&
+        ( _.isDate( two ) || $.isArray( two ) )
+    ) {
+        return calendar.create( one ).pick === calendar.create( two ).pick
+    }
+
+    // When we’re working with range objects, compare the “from” and “to”.
+    if ( $.isPlainObject( one ) && $.isPlainObject( two ) ) {
+        return calendar.isDateExact( one.from, two.from ) && calendar.isDateExact( one.to, two.to )
+    }
+
+    return false
+}
+
+
+/**
+ * Check if two date units overlap.
+ */
+DatePicker.prototype.isDateOverlap = function( one, two ) {
+
+    var calendar = this,
+        firstDay = calendar.settings.firstDay ? 1 : 0
+
+    // When we’re working with a weekday index, compare the days.
+    if ( _.isInteger( one ) && ( _.isDate( two ) || $.isArray( two ) ) ) {
+        one = one % 7 + firstDay
+        return one === calendar.create( two ).day + 1
+    }
+    if ( _.isInteger( two ) && ( _.isDate( one ) || $.isArray( one ) ) ) {
+        two = two % 7 + firstDay
+        return two === calendar.create( one ).day + 1
+    }
+
+    // When we’re working with range objects, check if the ranges overlap.
+    if ( $.isPlainObject( one ) && $.isPlainObject( two ) ) {
+        return calendar.overlapRanges( one, two )
+    }
+
+    return false
+}
+
+
+/**
+ * Flip the “enabled” state.
+ */
+DatePicker.prototype.flipEnable = function(val) {
+    var itemObject = this.item
+    itemObject.enable = val || (itemObject.enable == -1 ? 1 : -1)
+}
+
+
+/**
+ * Mark a collection of dates as “disabled”.
+ */
+DatePicker.prototype.deactivate = function( type, datesToDisable ) {
+
+    var calendar = this,
+        disabledItems = calendar.item.disable.slice(0)
+
+
+    // If we’re flipping, that’s all we need to do.
+    if ( datesToDisable == 'flip' ) {
+        calendar.flipEnable()
+    }
+
+    else if ( datesToDisable === false ) {
+        calendar.flipEnable(1)
+        disabledItems = []
+    }
+
+    else if ( datesToDisable === true ) {
+        calendar.flipEnable(-1)
+        disabledItems = []
+    }
+
+    // Otherwise go through the dates to disable.
+    else {
+
+        datesToDisable.map(function( unitToDisable ) {
+
+            var matchFound
+
+            // When we have disabled items, check for matches.
+            // If something is matched, immediately break out.
+            for ( var index = 0; index < disabledItems.length; index += 1 ) {
+                if ( calendar.isDateExact( unitToDisable, disabledItems[index] ) ) {
+                    matchFound = true
+                    break
+                }
+            }
+
+            // If nothing was found, add the validated unit to the collection.
+            if ( !matchFound ) {
+                if (
+                    _.isInteger( unitToDisable ) ||
+                    _.isDate( unitToDisable ) ||
+                    $.isArray( unitToDisable ) ||
+                    ( $.isPlainObject( unitToDisable ) && unitToDisable.from && unitToDisable.to )
+                ) {
+                    disabledItems.push( unitToDisable )
+                }
+            }
+        })
+    }
+
+    // Return the updated collection.
+    return disabledItems
+} //DatePicker.prototype.deactivate
+
+
+/**
+ * Mark a collection of dates as “enabled”.
+ */
+DatePicker.prototype.activate = function( type, datesToEnable ) {
+
+    var calendar = this,
+        disabledItems = calendar.item.disable,
+        disabledItemsCount = disabledItems.length
+
+    // If we’re flipping, that’s all we need to do.
+    if ( datesToEnable == 'flip' ) {
+        calendar.flipEnable()
+    }
+
+    else if ( datesToEnable === true ) {
+        calendar.flipEnable(1)
+        disabledItems = []
+    }
+
+    else if ( datesToEnable === false ) {
+        calendar.flipEnable(-1)
+        disabledItems = []
+    }
+
+    // Otherwise go through the disabled dates.
+    else {
+
+        datesToEnable.map(function( unitToEnable ) {
+
+            var matchFound,
+                disabledUnit,
+                index,
+                isExactRange
+
+            // Go through the disabled items and try to find a match.
+            for ( index = 0; index < disabledItemsCount; index += 1 ) {
+
+                disabledUnit = disabledItems[index]
+
+                // When an exact match is found, remove it from the collection.
+                if ( calendar.isDateExact( disabledUnit, unitToEnable ) ) {
+                    matchFound = disabledItems[index] = null
+                    isExactRange = true
+                    break
+                }
+
+                // When an overlapped match is found, add the “inverted” state to it.
+                else if ( calendar.isDateOverlap( disabledUnit, unitToEnable ) ) {
+                    if ( $.isPlainObject( unitToEnable ) ) {
+                        unitToEnable.inverted = true
+                        matchFound = unitToEnable
+                    }
+                    else if ( $.isArray( unitToEnable ) ) {
+                        matchFound = unitToEnable
+                        if ( !matchFound[3] ) matchFound.push( 'inverted' )
+                    }
+                    else if ( _.isDate( unitToEnable ) ) {
+                        matchFound = [ unitToEnable.getFullYear(), unitToEnable.getMonth(), unitToEnable.getDate(), 'inverted' ]
+                    }
+                    break
+                }
+            }
+
+            // If a match was found, remove a previous duplicate entry.
+            if ( matchFound ) for ( index = 0; index < disabledItemsCount; index += 1 ) {
+                if ( calendar.isDateExact( disabledItems[index], unitToEnable ) ) {
+                    disabledItems[index] = null
+                    break
+                }
+            }
+
+            // In the event that we’re dealing with an exact range of dates,
+            // make sure there are no “inverted” dates because of it.
+            if ( isExactRange ) for ( index = 0; index < disabledItemsCount; index += 1 ) {
+                if ( calendar.isDateOverlap( disabledItems[index], unitToEnable ) ) {
+                    disabledItems[index] = null
+                    break
+                }
+            }
+
+            // If something is still matched, add it into the collection.
+            if ( matchFound ) {
+                disabledItems.push( matchFound )
+            }
+        })
+    }
+
+    // Return the updated collection.
+    return disabledItems.filter(function( val ) { return val != null })
+} //DatePicker.prototype.activate
+
+
+/**
+ * Create a string for the nodes in the picker.
+ */
+DatePicker.prototype.nodes = function( isOpen ) {
+
+    var
+        calendar = this,
+        settings = calendar.settings,
+        calendarItem = calendar.item,
+        nowObject = calendarItem.now,
+        selectedObject = calendarItem.select,
+        highlightedObject = calendarItem.highlight,
+        viewsetObject = calendarItem.view,
+        disabledCollection = calendarItem.disable,
+        minLimitObject = calendarItem.min,
+        maxLimitObject = calendarItem.max,
+
+
+        // Create the calendar table head using a copy of weekday labels collection.
+        // * We do a copy so we don't mutate the original array.
+        tableHead = (function( collection, fullCollection ) {
+
+            // If the first day should be Monday, move Sunday to the end.
+            if ( settings.firstDay ) {
+                collection.push( collection.shift() )
+                fullCollection.push( fullCollection.shift() )
+            }
+
+            // Create and return the table head group.
+            return _.node(
+                'thead',
+                _.node(
+                    'tr',
+                    _.group({
+                        min: 0,
+                        max: DAYS_IN_WEEK - 1,
+                        i: 1,
+                        node: 'th',
+                        item: function( counter ) {
+                            return [
+                                collection[ counter ],
+                                settings.klass.weekdays,
+                                'scope=col title="' + fullCollection[ counter ] + '"'
+                            ]
+                        }
+                    })
+                )
+            ) //endreturn
+        })( ( settings.showWeekdaysFull ? settings.weekdaysFull : settings.weekdaysShort ).slice( 0 ), settings.weekdaysFull.slice( 0 ) ), //tableHead
+
+
+        // Create the nav for next/prev month.
+        createMonthNav = function( next ) {
+
+            // Otherwise, return the created month tag.
+            return _.node(
+                'div',
+                ' ',
+                settings.klass[ 'nav' + ( next ? 'Next' : 'Prev' ) ] + (
+
+                    // If the focused month is outside the range, disabled the button.
+                    ( next && viewsetObject.year >= maxLimitObject.year && viewsetObject.month >= maxLimitObject.month ) ||
+                    ( !next && viewsetObject.year <= minLimitObject.year && viewsetObject.month <= minLimitObject.month ) ?
+                    ' ' + settings.klass.navDisabled : ''
+                ),
+                'data-nav=' + ( next || -1 ) + ' ' +
+                _.ariaAttr({
+                    role: 'button',
+                    controls: calendar.$node[0].id + '_table'
+                }) + ' ' +
+                'title="' + (next ? settings.labelMonthNext : settings.labelMonthPrev ) + '"'
+            ) //endreturn
+        }, //createMonthNav
+
+
+        // Create the month label.
+        createMonthLabel = function() {
+
+            var monthsCollection = settings.showMonthsShort ? settings.monthsShort : settings.monthsFull
+
+            // If there are months to select, add a dropdown menu.
+            if ( settings.selectMonths ) {
+
+                return _.node( 'select',
+                    _.group({
+                        min: 0,
+                        max: 11,
+                        i: 1,
+                        node: 'option',
+                        item: function( loopedMonth ) {
+
+                            return [
+
+                                // The looped month and no classes.
+                                monthsCollection[ loopedMonth ], 0,
+
+                                // Set the value and selected index.
+                                'value=' + loopedMonth +
+                                ( viewsetObject.month == loopedMonth ? ' selected' : '' ) +
+                                (
+                                    (
+                                        ( viewsetObject.year == minLimitObject.year && loopedMonth < minLimitObject.month ) ||
+                                        ( viewsetObject.year == maxLimitObject.year && loopedMonth > maxLimitObject.month )
+                                    ) ?
+                                    ' disabled' : ''
+                                )
+                            ]
+                        }
+                    }),
+                    settings.klass.selectMonth,
+                    ( isOpen ? '' : 'disabled' ) + ' ' +
+                    _.ariaAttr({ controls: calendar.$node[0].id + '_table' }) + ' ' +
+                    'title="' + settings.labelMonthSelect + '"'
+                )
+            }
+
+            // If there's a need for a month selector
+            return _.node( 'div', monthsCollection[ viewsetObject.month ], settings.klass.month )
+        }, //createMonthLabel
+
+
+        // Create the year label.
+        createYearLabel = function() {
+
+            var focusedYear = viewsetObject.year,
+
+            // If years selector is set to a literal "true", set it to 5. Otherwise
+            // divide in half to get half before and half after focused year.
+            numberYears = settings.selectYears === true ? 5 : ~~( settings.selectYears / 2 )
+
+            // If there are years to select, add a dropdown menu.
+            if ( numberYears ) {
+
+                var
+                    minYear = minLimitObject.year,
+                    maxYear = maxLimitObject.year,
+                    lowestYear = focusedYear - numberYears,
+                    highestYear = focusedYear + numberYears
+
+                // If the min year is greater than the lowest year, increase the highest year
+                // by the difference and set the lowest year to the min year.
+                if ( minYear > lowestYear ) {
+                    highestYear += minYear - lowestYear
+                    lowestYear = minYear
+                }
+
+                // If the max year is less than the highest year, decrease the lowest year
+                // by the lower of the two: available and needed years. Then set the
+                // highest year to the max year.
+                if ( maxYear < highestYear ) {
+
+                    var availableYears = lowestYear - minYear,
+                        neededYears = highestYear - maxYear
+
+                    lowestYear -= availableYears > neededYears ? neededYears : availableYears
+                    highestYear = maxYear
+                }
+
+                return _.node( 'select',
+                    _.group({
+                        min: lowestYear,
+                        max: highestYear,
+                        i: 1,
+                        node: 'option',
+                        item: function( loopedYear ) {
+                            return [
+
+                                // The looped year and no classes.
+                                loopedYear, 0,
+
+                                // Set the value and selected index.
+                                'value=' + loopedYear + ( focusedYear == loopedYear ? ' selected' : '' )
+                            ]
+                        }
+                    }),
+                    settings.klass.selectYear,
+                    ( isOpen ? '' : 'disabled' ) + ' ' + _.ariaAttr({ controls: calendar.$node[0].id + '_table' }) + ' ' +
+                    'title="' + settings.labelYearSelect + '"'
+                )
+            }
+
+            // Otherwise just return the year focused
+            return _.node( 'div', focusedYear, settings.klass.year )
+        } //createYearLabel
+
+
+    // Create and return the entire calendar.
+    return _.node(
+        'div',
+        ( settings.selectYears ? createYearLabel() + createMonthLabel() : createMonthLabel() + createYearLabel() ) +
+        createMonthNav() + createMonthNav( 1 ),
+        settings.klass.header
+    ) + _.node(
+        'table',
+        tableHead +
+        _.node(
+            'tbody',
+            _.group({
+                min: 0,
+                max: WEEKS_IN_CALENDAR - 1,
+                i: 1,
+                node: 'tr',
+                item: function( rowCounter ) {
+
+                    // If Monday is the first day and the month starts on Sunday, shift the date back a week.
+                    var shiftDateBy = settings.firstDay && calendar.create([ viewsetObject.year, viewsetObject.month, 1 ]).day === 0 ? -7 : 0
+
+                    return [
+                        _.group({
+                            min: DAYS_IN_WEEK * rowCounter - viewsetObject.day + shiftDateBy + 1, // Add 1 for weekday 0index
+                            max: function() {
+                                return this.min + DAYS_IN_WEEK - 1
+                            },
+                            i: 1,
+                            node: 'td',
+                            item: function( targetDate ) {
+
+                                // Convert the time date from a relative date to a target date.
+                                targetDate = calendar.create([ viewsetObject.year, viewsetObject.month, targetDate + ( settings.firstDay ? 1 : 0 ) ])
+
+                                var isSelected = selectedObject && selectedObject.pick == targetDate.pick,
+                                    isHighlighted = highlightedObject && highlightedObject.pick == targetDate.pick,
+                                    isDisabled = disabledCollection && calendar.disabled( targetDate ) || targetDate.pick < minLimitObject.pick || targetDate.pick > maxLimitObject.pick,
+                                    formattedDate = _.trigger( calendar.formats.toString, calendar, [ settings.format, targetDate ] )
+
+                                return [
+                                    _.node(
+                                        'div',
+                                        targetDate.date,
+                                        (function( klasses ) {
+
+                                            // Add the `infocus` or `outfocus` classes based on month in view.
+                                            klasses.push( viewsetObject.month == targetDate.month ? settings.klass.infocus : settings.klass.outfocus )
+
+                                            // Add the `today` class if needed.
+                                            if ( nowObject.pick == targetDate.pick ) {
+                                                klasses.push( settings.klass.now )
+                                            }
+
+                                            // Add the `selected` class if something's selected and the time matches.
+                                            if ( isSelected ) {
+                                                klasses.push( settings.klass.selected )
+                                            }
+
+                                            // Add the `highlighted` class if something's highlighted and the time matches.
+                                            if ( isHighlighted ) {
+                                                klasses.push( settings.klass.highlighted )
+                                            }
+
+                                            // Add the `disabled` class if something's disabled and the object matches.
+                                            if ( isDisabled ) {
+                                                klasses.push( settings.klass.disabled )
+                                            }
+
+                                            return klasses.join( ' ' )
+                                        })([ settings.klass.day ]),
+                                        'data-pick=' + targetDate.pick + ' ' + _.ariaAttr({
+                                            role: 'gridcell',
+                                            label: formattedDate,
+                                            selected: isSelected && calendar.$node.val() === formattedDate ? true : null,
+                                            activedescendant: isHighlighted ? true : null,
+                                            disabled: isDisabled ? true : null
+                                        })
+                                    ),
+                                    '',
+                                    _.ariaAttr({ role: 'presentation' })
+                                ] //endreturn
+                            }
+                        })
+                    ] //endreturn
+                }
+            })
+        ),
+        settings.klass.table,
+        'id="' + calendar.$node[0].id + '_table' + '" ' + _.ariaAttr({
+            role: 'grid',
+            controls: calendar.$node[0].id,
+            readonly: true
+        })
+    ) +
+
+    // * For Firefox forms to submit, make sure to set the buttons’ `type` attributes as “button”.
+    _.node(
+        'div',
+        _.node( 'button', settings.today, settings.klass.buttonToday,
+            'type=button data-pick=' + nowObject.pick +
+            ( isOpen && !calendar.disabled(nowObject) ? '' : ' disabled' ) + ' ' +
+            _.ariaAttr({ controls: calendar.$node[0].id }) ) +
+        _.node( 'button', settings.clear, settings.klass.buttonClear,
+            'type=button data-clear=1' +
+            ( isOpen ? '' : ' disabled' ) + ' ' +
+            _.ariaAttr({ controls: calendar.$node[0].id }) ) +
+        _.node('button', settings.close, settings.klass.buttonClose,
+            'type=button data-close=true ' +
+            ( isOpen ? '' : ' disabled' ) + ' ' +
+            _.ariaAttr({ controls: calendar.$node[0].id }) ),
+        settings.klass.footer
+    ) //endreturn
+} //DatePicker.prototype.nodes
+
+
+
+
+/**
+ * The date picker defaults.
+ */
+DatePicker.defaults = (function( prefix ) {
+
+    return {
+
+        // The title label to use for the month nav buttons
+        labelMonthNext: 'Next month',
+        labelMonthPrev: 'Previous month',
+
+        // The title label to use for the dropdown selectors
+        labelMonthSelect: 'Select a month',
+        labelYearSelect: 'Select a year',
+
+        // Months and weekdays
+        monthsFull: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
+        monthsShort: [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
+        weekdaysFull: [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ],
+        weekdaysShort: [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ],
+
+        // Today and clear
+        today: 'Today',
+        clear: 'Clear',
+        close: 'Close',
+
+        // Picker close behavior
+        closeOnSelect: true,
+        closeOnClear: true,
+
+        // The format to show on the `input` element
+        format: 'd mmmm, yyyy',
+
+        // Classes
+        klass: {
+
+            table: prefix + 'table',
+
+            header: prefix + 'header',
+
+            navPrev: prefix + 'nav--prev',
+            navNext: prefix + 'nav--next',
+            navDisabled: prefix + 'nav--disabled',
+
+            month: prefix + 'month',
+            year: prefix + 'year',
+
+            selectMonth: prefix + 'select--month',
+            selectYear: prefix + 'select--year',
+
+            weekdays: prefix + 'weekday',
+
+            day: prefix + 'day',
+            disabled: prefix + 'day--disabled',
+            selected: prefix + 'day--selected',
+            highlighted: prefix + 'day--highlighted',
+            now: prefix + 'day--today',
+            infocus: prefix + 'day--infocus',
+            outfocus: prefix + 'day--outfocus',
+
+            footer: prefix + 'footer',
+
+            buttonClear: prefix + 'button--clear',
+            buttonToday: prefix + 'button--today',
+            buttonClose: prefix + 'button--close'
+        }
+    }
+})( Picker.klasses().picker + '__' )
+
+
+
+
+
+/**
+ * Extend the picker to add the date picker.
+ */
+Picker.extend( 'pickadate', DatePicker )
+
+
+}));
+
+
+
+
+
+/***/ }),
+
+/***/ 22:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * jquery.sumoselect - v3.0.3
+ * http://hemantnegi.github.io/jquery.sumoselect
+ * 2016-12-12
+ *
+ * Copyright 2015 Hemant Negi
+ * Email : hemant.frnz@gmail.com
+ * Compressor http://refresh-sf.com/
+ */
+
+(function (factory) {
+    'use strict';
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports !== 'undefined') {
+        module.exports = factory(require('jquery'));
+    } else {
+        factory(jQuery);
+    }
+
+})(function ($) {
+
+    'namespace sumo';
+    $.fn.SumoSelect = function (options) {
+
+        // This is the easiest way to have default options.
+        var settings = $.extend({
+            placeholder: 'Select Here',   // Dont change it here.
+            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
+            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
+            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
+            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
+            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
+            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
+            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
+            csvSepChar: ',',              // separation char in csv mode
+            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
+            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
+            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
+            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
+
+            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
+            searchText: 'Search...',      // placeholder for search input
+            searchFn: function(haystack, needle) { // search function
+                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
+            },
+            noMatch: 'No matches for "{0}"',
+            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
+            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
+            up: false,                    // set true to open upside.
+            showTitle: true               // set to false to prevent title (tooltip) from appearing
+        }, options);
+
+        var ret = this.each(function () {
+            var selObj = this; // the original select object.
+            if (this.sumo || !$(this).is('select')) return; //already initialized
+
+            this.sumo = {
+                E: $(selObj),   //the jquery object of original select element.
+                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
+                select: '',
+                caption: '',
+                placeholder: '',
+                optDiv: '',
+                CaptionCont: '',
+                ul: '',
+                is_floating: false,
+                is_opened: false,
+                //backdrop: '',
+                mob: false, // if to open device default select
+                Pstate: [],
+                lastUnselected: null,
+
+                createElems: function () {
+                    var O = this;
+                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
+                    O.select = O.E.parent();
+                    O.caption = $('<span>');
+                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
+                        .attr('style', O.E.attr('style'))
+                        .prepend(O.caption);
+                    O.select.append(O.CaptionCont);
+
+                    // default turn off if no multiselect
+                    if (!O.is_multi) settings.okCancelInMulti = false
+
+                    if (O.E.attr('disabled'))
+                        O.select.addClass('disabled').removeAttr('tabindex');
+
+                    //if output as csv and is a multiselect.
+                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
+                        //create a hidden field to store csv value.
+                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
+
+                        // so it can not post the original select.
+                        O.E.removeAttr('name');
+                    }
+
+                    //break for mobile rendring.. if forceCustomRendering is false
+                    if (O.isMobile() && !settings.forceCustomRendering) {
+                        O.setNativeMobile();
+                        return;
+                    }
+
+                    // if there is a name attr in select add a class to container div
+                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
+
+                    //hide original select
+                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
+
+                    //## Creating the list...
+                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
+
+                    //branch for floating list in low res devices.
+                    O.floatingList();
+
+                    //Creating the markup for the available options
+                    O.ul = $('<ul class="options">');
+                    O.optDiv.append(O.ul);
+
+                    // Select all functionality
+                    if (settings.selectAll && O.is_multi) O.SelAll();
+
+                    // search functionality
+                    if (settings.search) O.Search();
+
+                    O.ul.append(O.prepItems(O.E.children()));
+
+                    //if multiple then add the class multiple and add OK / CANCEL button
+                    if (O.is_multi) O.multiSelelect();
+
+                    O.select.append(O.optDiv);
+                    O.basicEvents();
+                    O.selAllState();
+                },
+
+                prepItems: function (opts, d) {
+                    var lis = [], O = this;
+                    $(opts).each(function (i, opt) {       // parsing options to li
+                        opt = $(opt);
+                        lis.push(opt.is('optgroup') ?
+                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
+                                .find('ul')
+                                .append(O.prepItems(opt.children(), opt[0].disabled))
+                                .end()
+                            :
+                            O.createLi(opt, d)
+                        );
+                    });
+                    return lis;
+                },
+
+                //## Creates a LI element from a given option and binds events to it
+                //## returns the jquery instance of li (not inserted in dom)
+                createLi: function (opt, d) {
+                    var O = this;
+
+                    if (!opt.attr('value')) opt.attr('value', opt.val());
+                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
+
+                    li.data('opt', opt);    // store a direct reference to option.
+                    opt.data('li', li);    // store a direct reference to list item.
+                    if (O.is_multi) li.prepend('<span><i></i></span>');
+
+                    if (opt[0].disabled || d)
+                        li = li.addClass('disabled');
+
+                    O.onOptClick(li);
+
+                    if (opt[0].selected)
+                        li.addClass('selected');
+
+                    if (opt.attr('class'))
+                        li.addClass(opt.attr('class'));
+
+                    if (opt.attr('title'))
+                        li.attr('title', opt.attr('title'));
+
+                    return li;
+                },
+
+                //## Returns the selected items as string in a Multiselect.
+                getSelStr: function () {
+                    // get the pre selected items.
+                    var sopt = [];
+                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
+                    return sopt.join(settings.csvSepChar);
+                },
+
+                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
+                multiSelelect: function () {
+                    var O = this;
+                    O.optDiv.addClass('multiple');
+                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
+                        //if combined change event is set.
+                        O._okbtn();
+                        O.hideOpts();
+                    });
+                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
+                        O._cnbtn();
+                        O.hideOpts();
+                    });
+                    var btns = O.okbtn.add(O.cancelBtn);
+                    O.optDiv.append($('<div class="MultiControls">').append(btns));
+
+                    // handling keyboard navigation on ok cancel buttons.
+                    btns.on('keydown.sumo', function (e) {
+                        var el = $(this);
+                        switch (e.which) {
+                            case 32: // space
+                            case 13: // enter
+                                el.trigger('click');
+                                break;
+
+                            case 9:  //tab
+                                if (el.hasClass('btnOk')) return;
+                            case 27: // esc
+                                O._cnbtn();
+                                O.hideOpts();
+                                return;
+                        }
+                        e.stopPropagation();
+                        e.preventDefault();
+                    });
+                },
+
+                _okbtn: function () {
+                    var O = this, cg = 0;
+                    //if combined change event is set.
+                    if (settings.triggerChangeCombined) {
+                        //check for a change in the selection.
+                        if (O.E.find('option:selected').length !== O.Pstate.length) {
+                            cg = 1;
+                        }
+                        else {
+                            O.E.find('option').each(function (i, e) {
+                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
+                            });
+                        }
+
+                        if (cg) {
+                            O.callChange();
+                            O.setText();
+                        }
+                    }
+                },
+                _cnbtn: function () {
+                    var O = this;
+                    //remove all selections
+                    O.E.find('option:selected').each(function () { this.selected = false; });
+                    O.optDiv.find('li.selected').removeClass('selected')
+
+                    //restore selections from saved state.
+                    for (var i = 0; i < O.Pstate.length; i++) {
+                        O.E.find('option')[O.Pstate[i]].selected = true;
+                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
+                    }
+                    O.selAllState();
+                },
+
+                SelAll: function () {
+                    var O = this;
+                    if (!O.is_multi) return;
+                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
+                    O.optDiv.addClass('selall');
+                    O.selAll.on('click', function () {
+                        O.selAll.toggleClass('selected');
+                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
+                        //O.selAllState();
+                    });
+
+                    O.optDiv.prepend(O.selAll);
+                },
+
+                // search module (can be removed if not required.)
+                Search: function () {
+                    var O = this,
+                        cc = O.CaptionCont.addClass('search'),
+                        P = $('<p class="no-match">'),
+                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
+
+                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
+                        .on('click', function (e) {
+                            e.stopPropagation();
+                        });
+                    cc.append(O.ftxt);
+                    O.optDiv.children('ul').after(P);
+
+                    O.ftxt.on('keyup.sumo', function () {
+                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
+                            var e = $(e),
+                                opt = e.data('opt')[0];
+                            opt.hidden = fn(e.text(), O.ftxt.val());
+                            e.toggleClass('hidden', opt.hidden);
+                        }).not('.hidden');
+
+                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
+                        P.find('em').text(O.ftxt.val());
+                        O.selAllState();
+                    });
+                },
+
+                selAllState: function () {
+                    var O = this;
+                    if (settings.selectAll && O.is_multi) {
+                        var sc = 0, vc = 0;
+                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
+                            if ($(e).hasClass('selected')) sc++;
+                            if (!$(e).hasClass('disabled')) vc++;
+                        });
+                        //select all checkbox state change.
+                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
+                        else if (sc === 0) O.selAll.removeClass('selected partial');
+                        else O.selAll.addClass('partial')//.removeClass('selected');
+                    }
+                },
+
+                showOpts: function () {
+                    var O = this;
+                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
+                    O.E.trigger('sumo:opening', O);
+                    O.is_opened = true;
+                    O.select.addClass('open').attr('aria-expanded', 'true');
+                    O.E.trigger('sumo:opened', O);
+
+                    if (O.ftxt) O.ftxt.focus();
+                    else O.select.focus();
+
+                    // hide options on click outside.
+                    $(document).on('click.sumo', function (e) {
+                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
+                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
+                            if (!O.is_opened) return;
+                            O.hideOpts();
+                            if (settings.okCancelInMulti) {
+                                if (settings.isClickAwayOk)
+                                    O._okbtn();
+                                else
+                                    O._cnbtn();
+                            }
+                        }
+                    });
+
+                    if (O.is_floating) {
+                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
+                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
+                        O.optDiv.css('height', H);
+                        $('body').addClass('sumoStopScroll');
+                    }
+
+                    O.setPstate();
+                },
+
+                //maintain state when ok/cancel buttons are available storing the indexes.
+                setPstate: function () {
+                    var O = this;
+                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
+                        O.Pstate = [];
+                        // assuming that find returns elements in tree order
+                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
+                    }
+                },
+
+                callChange: function () {
+                    this.E.trigger('change').trigger('click');
+                },
+
+                hideOpts: function () {
+                    var O = this;
+                    if (O.is_opened) {
+                        O.E.trigger('sumo:closing', O);
+                        O.is_opened = false;
+                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
+                        O.E.trigger('sumo:closed', O);
+                        $(document).off('click.sumo');
+                        O.select.focus();
+                        $('body').removeClass('sumoStopScroll');
+
+                        // clear the search
+                        if (settings.search) {
+                            O.ftxt.val('');
+                            O.ftxt.trigger('keyup.sumo');
+                        }
+                    }
+                },
+                setOnOpen: function () {
+                    var O = this,
+                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
+                    if (li.hasClass('disabled')) {
+                        li = li.next(':not(disabled)')
+                        if (!li.length) return;
+                    }
+                    O.optDiv.find('li.sel').removeClass('sel');
+                    li.addClass('sel');
+                    O.showOpts();
+                },
+                nav: function (up) {
+                    var O = this, c,
+                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
+                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
+                        idx = s.index(sel);
+                    if (O.is_opened && sel.length) {
+
+                        if (up && idx > 0)
+                            c = s.eq(idx - 1);
+                        else if (!up && idx < s.length - 1 && idx > -1)
+                            c = s.eq(idx + 1);
+                        else return; // if no items before or after
+
+                        sel.removeClass('sel');
+                        sel = c.addClass('sel');
+
+                        // setting sel item to visible view.
+                        var ul = O.ul,
+                            st = ul.scrollTop(),
+                            t = sel.position().top + st;
+                        if (t >= st + ul.height() - sel.outerHeight())
+                            ul.scrollTop(t - ul.height() + sel.outerHeight());
+                        if (t < st)
+                            ul.scrollTop(t);
+
+                    }
+                    else
+                        O.setOnOpen();
+                },
+
+                basicEvents: function () {
+                    var O = this;
+                    O.CaptionCont.click(function (evt) {
+                        O.E.trigger('click');
+                        if (O.is_opened) O.hideOpts(); else O.showOpts();
+                        evt.stopPropagation();
+                    });
+
+                    O.select.on('keydown.sumo', function (e) {
+                        switch (e.which) {
+                            case 38: // up
+                                O.nav(true);
+                                break;
+
+                            case 40: // down
+                                O.nav(false);
+                                break;
+
+                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
+                                if (O.is_multi && e.ctrlKey) {
+                                    O.toggSelAll(!e.shiftKey, 1);
+                                    break;
+                                }
+                                else
+                                    return;
+
+                            case 32: // space
+                                if (settings.search && O.ftxt.is(e.target)) return;
+                            case 13: // enter
+                                if (O.is_opened)
+                                    O.optDiv.find('ul li.sel').trigger('click');
+                                else
+                                    O.setOnOpen();
+                                break;
+                            case 9:	 //tab
+                                if (!settings.okCancelInMulti)
+                                    O.hideOpts();
+                                return;
+                            case 27: // esc
+                                if (settings.okCancelInMulti) O._cnbtn();
+                                O.hideOpts();
+                                return;
+
+                            default:
+                                return; // exit this handler for other keys
+                        }
+                        e.preventDefault(); // prevent the default action (scroll / move caret)
+                    });
+
+                    $(window).on('resize.sumo', function () {
+                        O.floatingList();
+                    });
+                },
+
+                onOptClick: function (li) {
+                    var O = this;
+                    li.click(function () {
+                        var li = $(this);
+                        if (li.hasClass('disabled')) return;
+                        var txt = "";
+                        if (O.is_multi) {
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = li.hasClass('selected');
+                            if (li.data('opt')[0].selected === false) {
+                                O.lastUnselected = li.data('opt')[0].textContent;
+                            }
+                            O.selAllState();
+                        }
+                        else {
+                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = true;
+                        }
+
+                        //branch for combined change event.
+                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
+                            O.setText();
+                            O.callChange();
+                        }
+
+                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
+                    });
+                },
+
+                // fixed some variables that were not explicitly typed (michc)
+                setText: function () {
+                    var O = this;
+                    O.placeholder = "";
+                    if (O.is_multi) {
+                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
+
+                        for (var i = 0; i < sels.length; i++) {
+                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
+                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
+                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
+                                } else {
+                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
+                                }
+
+                                break;
+                            }
+                            else O.placeholder += $(sels[i]).text() + ", ";
+                        }
+                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
+                    }
+                    else {
+                        O.placeholder = O.E.find(':selected').not(':disabled').text();
+                    }
+
+                    var is_placeholder = false;
+
+                    if (!O.placeholder) {
+
+                        is_placeholder = true;
+
+                        O.placeholder = O.E.attr('placeholder');
+                        if (!O.placeholder)                  //if placeholder is there then set it
+                            O.placeholder = O.E.find('option:disabled:selected').text();
+                    }
+
+                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
+
+                    //set display text
+                    O.caption.html(O.placeholder);
+                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
+
+                    //set the hidden field if post as csv is true.
+                    var csvField = O.select.find('input.HEMANT123');
+                    if (csvField.length) csvField.val(O.getSelStr());
+
+                    //add class placeholder if its a placeholder text.
+                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
+                    return O.placeholder;
+                },
+
+                isMobile: function () {
+
+                    // Adapted from http://www.detectmobilebrowsers.com
+                    var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
+                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
+                    return false;
+                },
+
+                setNativeMobile: function () {
+                    var O = this;
+                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
+                    O.mob = true;
+                    O.E.change(function () {
+                        O.setText();
+                    });
+                },
+
+                floatingList: function () {
+                    var O = this;
+                    //called on init and also on resize.
+                    //O.is_floating = true if window width is < specified float width
+                    O.is_floating = $(window).width() <= settings.floatWidth;
+
+                    //set class isFloating
+                    O.optDiv.toggleClass('isFloating', O.is_floating);
+
+                    //remove height if not floating
+                    if (!O.is_floating) O.optDiv.css('height', '');
+
+                    //toggle class according to okCancelInMulti flag only when it is not floating
+                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
+                },
+
+                //HELPERS FOR OUTSIDERS
+                // validates range of given item operations
+                vRange: function (i) {
+                    var O = this;
+                    var opts = O.E.find('option');
+                    if (opts.length <= i || i < 0) throw "index out of bounds"
+                    return O;
+                },
+
+                //toggles selection on c as boolean.
+                toggSel: function (c, i) {
+                    var O = this;
+                    var opt;
+                    if (typeof (i) === "number") {
+                        O.vRange(i);
+                        opt = O.E.find('option')[i];
+                    }
+                    else {
+                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
+                    }
+                    if (!opt || opt.disabled)
+                        return;
+
+                    if (opt.selected !== c) {
+                        opt.selected = c;
+                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
+
+                        O.callChange();
+                        O.setPstate();
+                        O.setText();
+                        O.selAllState();
+                    }
+                },
+
+                //toggles disabled on c as boolean.
+                toggDis: function (c, i) {
+                    var O = this.vRange(i);
+                    O.E.find('option')[i].disabled = c;
+                    if (c) O.E.find('option')[i].selected = false;
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
+                    O.setText();
+                },
+
+                // toggle disable/enable on complete select control
+                toggSumo: function (val) {
+                    var O = this;
+                    O.enabled = val;
+                    O.select.toggleClass('disabled', val);
+
+                    if (val) {
+                        O.E.attr('disabled', 'disabled');
+                        O.select.removeAttr('tabindex');
+                    }
+                    else {
+                        O.E.removeAttr('disabled');
+                        O.select.attr('tabindex', '0');
+                    }
+
+                    return O;
+                },
+
+                // toggles all option on c as boolean.
+                // set direct=false/0 bypasses okCancelInMulti behaviour.
+                toggSelAll: function (c, direct) {
+                    var O = this;
+                    O.E.find('option:not(:disabled,:hidden)')
+                        .each(function (ix, e) {
+                            var is_selected = e.selected,
+                                e = $(e).data('li');
+                            if (e.hasClass('hidden')) return;
+                            if (!!c) {
+                                if (!is_selected) e.trigger('click');
+                            }
+                            else {
+                                if (is_selected) e.trigger('click');
+                            }
+                        });
+
+                    if (!direct) {
+                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
+                        O.callChange();
+                        O.setText();
+                        O.setPstate();
+                    }
+                },
+
+                /* outside accessibility options
+                 which can be accessed from the element instance.
+                 */
+                reload: function () {
+                    var elm = this.unload();
+                    return $(elm).SumoSelect(settings);
+                },
+
+                unload: function () {
+                    var O = this;
+                    O.select.before(O.E);
+                    O.E.show();
+
+                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
+                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
+                    }
+                    O.select.remove();
+                    delete selObj.sumo;
+                    return selObj;
+                },
+
+                //## add a new option to select at a given index.
+                add: function (val, txt, i) {
+                    if (typeof val === "undefined") throw "No value to add"
+
+                    var O = this;
+                    var opts = O.E.find('option')
+                    if (typeof txt === "number") { i = txt; txt = val; }
+                    if (typeof txt === "undefined") { txt = val; }
+
+                    var opt = $("<option></option>").val(val).html(txt);
+
+                    if (opts.length < i) throw "index out of bounds"
+
+                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
+                        O.E.append(opt);
+                        if (!O.mob) O.ul.append(O.createLi(opt));
+                    }
+                    else {
+                        opts.eq(i).before(opt);
+                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
+                    }
+
+                    return selObj;
+                },
+
+                //## removes an item at a given index.
+                remove: function (i) {
+                    var O = this.vRange(i);
+                    O.E.find('option').eq(i).remove();
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
+                    O.setText();
+                },
+
+                // removes all but the selected one
+                removeAll: function () {
+                    var O = this;
+                    var options = O.E.find('option');
+
+                    for (var x = (options.length - 1); x >= 0; x--) {
+                        if (options[x].selected !== true) {
+                            O.remove(x);
+                        }
+                    }
+
+                },
+
+
+                find: function (val) {
+                    var O = this;
+                    var options = O.E.find('option');
+                    for (var x in options) {
+                        if (options[x].value === val) {
+                            return parseInt(x);
+                        }
+                    }
+
+                    return -1;
+
+                },
+
+                //## Select an item at a given index.
+                selectItem: function (i) { this.toggSel(true, i); },
+
+                //## UnSelect an iten at a given index.
+                unSelectItem: function (i) { this.toggSel(false, i); },
+
+                //## Select all items  of the select.
+                selectAll: function () { this.toggSelAll(true); },
+
+                //## UnSelect all items of the select.
+                unSelectAll: function () { this.toggSelAll(false); },
+
+                //## Disable an iten at a given index.
+                disableItem: function (i) { this.toggDis(true, i) },
+
+                //## Removes disabled an iten at a given index.
+                enableItem: function (i) { this.toggDis(false, i) },
+
+                //## New simple methods as getter and setter are not working fine in ie8-
+                //## variable to check state of control if enabled or disabled.
+                enabled: true,
+                //## Enables the control
+                enable: function () { return this.toggSumo(false) },
+
+                //## Disables the control
+                disable: function () { return this.toggSumo(true) },
+
+
+                init: function () {
+                    var O = this;
+                    O.createElems();
+                    O.setText();
+                    return O
+                }
+
+            };
+
+            selObj.sumo.init();
+        });
+
+        return ret.length === 1 ? ret[0] : ret;
+    };
+
+
+});
+
+
+/***/ }),
+
+/***/ 5:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13090,7 +14889,143 @@ return PickerConstructor
 
 /***/ }),
 
-/***/ 5:
+/***/ 51:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(52);
+
+
+/***/ }),
+
+/***/ 52:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(18);
+
+
+__webpack_require__(20);
+//require('jquery-asAccordion');
+
+__webpack_require__(5);
+__webpack_require__(21);
+
+__webpack_require__(22);
+
+window.Vue = __webpack_require__(6);
+
+Vue.config.devtools = false;
+Vue.config.performance = false;
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+var app = new Vue({
+    el: '#accordion-app',
+    data: {
+        qual: {
+            reference: '', description: '', institution: '', obtained_on: '',
+            student_no: ''
+        },
+        quals: []
+    },
+    mounted: function mounted() {
+        +function ($, el) {
+
+            // Extend the default picker options for all instances.
+            $.extend($.fn.pickadate.defaults, {
+                format: 'yyyy-mm-dd',
+                formatSubmit: 'yyyy-mm-dd',
+                selectYears: 20,
+                selectMonths: true,
+                closeOnSelect: true,
+                container: '#date-picker'
+            });
+
+            // Listen for browser-generated events.
+            Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.datepicker', function (event) {
+                // Use the picker object directly.
+                var picker = $(this).pickadate('picker');
+                if (picker === undefined) {
+                    //$(this).pickadate();
+                }
+            });
+
+            $("#imageUpload").change(function () {
+                readURL(this);
+            });
+            $.fn.mirror = function (selector) {
+                return this.each(function () {
+                    var $this = $(this);
+                    var $selector = $(selector);
+                    $this.bind('keyup change', function () {
+                        $selector.val($this.val());
+                    });
+                });
+            };
+
+            //$("#birth_date").pickadate({min: -65*365, max:-18*365});
+
+            //$('.accordion').asAccordion();
+            $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
+
+            $(document).on('change', '.datepicker', function () {
+                //use this line if you create datepickers dynamically
+                if ($(this).data('datepicker_from_or_to') === 'from') {
+                    $('#' + $(this).data('datepicker_to_target')).pickadate('picker').set('min', $(this).val());
+                }
+                if ($(this).data('datepicker_from_or_to') === 'to') {
+                    $('#' + $(this).data('datepicker_from_target')).pickadate('picker').set('max', $(this).val());
+                }
+            });
+
+            $(':input[data-mirror]').each(function () {
+                $(this).mirror($(this).data('mirror'));
+            });
+        }(jQuery, this);
+    },
+    methods: {
+        addNewQual: function addNewQual() {
+            this.quals.push(Vue.util.extend({}, this.qual));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeQual: function removeQual(index) {
+            Vue.delete(this.quals, index);
+        },
+        submitForm: function submitForm(event) {
+            event.preventDefault();
+        },
+        fetchQualifications: function fetchQualifications() {
+            var _this = this;
+
+            fetch('./qualifications').then(function (res) {
+                return res.json();
+            }).then(function (res) {
+                _this.quals = res;
+            });
+        }
+    },
+    created: function created() {
+        this.fetchQualifications();
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
+
+/***/ }),
+
+/***/ 6:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24053,11 +25988,11 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(7).setImmediate))
 
 /***/ }),
 
-/***/ 6:
+/***/ 7:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -24113,7 +26048,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(7);
+__webpack_require__(8);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -24128,7 +26063,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
-/***/ 7:
+/***/ 8:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -24318,11 +26253,11 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(8)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(9)))
 
 /***/ }),
 
-/***/ 8:
+/***/ 9:
 /***/ (function(module, exports) {
 
 // shim for using process in browser

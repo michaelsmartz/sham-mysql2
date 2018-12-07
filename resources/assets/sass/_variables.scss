@@ -881,3 +881,8 @@ body + .slimScrollBar {
 body + .slimScrollRail {
 	z-index: 1100 !important;
 }
+
+.picker__select--month, .picker__select--year {
+	font-size: 14px;
+	height: 35px;
+}

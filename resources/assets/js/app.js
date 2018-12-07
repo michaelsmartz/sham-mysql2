@@ -55,6 +55,7 @@ $(function() {
         dateFormat:'yy-mm-dd', changeMonth:true, changeYear:true 
     });
     $("body").delegate("input.datepicker", "focusin", function () {
+        /*
         if ($(this).attr('id')!='DateOfBirth') {
             var elem = $(this); 
             var instnce = jQuery.datepicker._getInst(elem[0]);
@@ -101,6 +102,7 @@ $(function() {
                 });
             }
         }
+        */
     });
 
     $("body").delegate("input.timepicker", "focusin", function () {

@@ -93,5 +93,5 @@
     });
 
 </script>
-<script src="{{URL::to('/')}}/js/employees.js"></script>
+<script src="{{URL::to('/')}}/js/new-employee.min.js"></script>
 @endsection

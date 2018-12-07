@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <script src="{{asset('js/app.min.js')}}"></script>
+        <script src="{{asset('js/alt-app.js')}}"></script>
 
         <!-- Custom Theme JavaScript -->
         <noscript id="deferred-styles"></noscript>

@@ -322,7 +322,7 @@
                     <label class="col-xs-2 control-label">Join/Termination Dates</label>
                     <div class="col-sm-3">
                         <span class="field">
-                            {!! Form::text('date_joined', old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null), ['class'=>'form-control datepicker', 'placeholder'=>'Joined Date', 'id'=>'JoinedDate', 'data-pair-elemeent-id'=>'TerminationDate' ]) !!}
+                            {!! Form::text('date_joined', old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null), ['class'=>'form-control datepicker', 'placeholder'=>'Joined Date', 'id'=>'JoinedDate', 'data-pair-element-id'=>'TerminationDate' ]) !!}
                             <label for="date_joined">Date Joined</label>
                         </span>
                     </div>
@@ -429,4 +429,5 @@
             </div>
         </li>
     </ul>
+    <div id="date-picker"> </div>
 </div>

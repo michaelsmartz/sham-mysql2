@@ -1,15 +1,12 @@
+import {on} from 'delegated-events';
+
 require('touch-dnd/touch-dnd.js');
 //require('jquery-asAccordion');
-require('pickadate/lib/picker');
-require('sumoselect');
 
-// Extend the default picker options for all instances.
-$.extend($.fn.pickadate.defaults, {
-    format: 'yyyy-mm-dd',
-    formatSubmit: 'yyyy-mm-dd',
-    selectYears: 20,
-    selectMonths: true
-});
+require('picker');
+require('pickadate/lib/picker.date.js');
+
+require('sumoselect');
 
 window.Vue = require('vue/dist/vue.common.js');
 
@@ -39,6 +36,25 @@ const app = new Vue({
     },
     mounted: function () {
         +function ($, el) {
+            
+            // Extend the default picker options for all instances.
+            $.extend($.fn.pickadate.defaults, {
+                format: 'yyyy-mm-dd',
+                formatSubmit: 'yyyy-mm-dd',
+                selectYears: 20,
+                selectMonths: true,
+                closeOnSelect: true,
+                container: '#date-picker'
+            });
+
+            // Listen for browser-generated events.
+            on('focusin', 'input.datepicker', function(event) {
+                // Use the picker object directly.
+                var picker = $(this).pickadate('picker');
+                if(picker === undefined){
+                    //$(this).pickadate();
+                }
+            });
 
             $("#imageUpload").change(function() {
                 readURL(this);
@@ -53,17 +69,17 @@ const app = new Vue({
                 });
             };
 
-            $("#birth_date").pickadate({min: -65*365, max:-18*365});
+            //$("#birth_date").pickadate({min: -65*365, max:-18*365});
             
             //$('.accordion').asAccordion();
             $('.select-multiple').SumoSelect({csvDispCount: 10, up:true});
 
             $(document).on('change', '.datepicker', function () { //use this line if you create datepickers dynamically
                 if ($(this).data('datepicker_from_or_to') === 'from') {
-                    $('#'+$(this).data('datepicker_to_target')).pickadate('picker').set('min',$(this).val());
+                    $('#'+$(this).data('datepicker_to_target')).pickadate('picker').set('min', $(this).val());
                 }
                 if ($(this).data('datepicker_from_or_to') === 'to') {
-                    $('#'+$(this).data('datepicker_from_target')).pickadate('picker').set('max',$(this).val());
+                    $('#'+$(this).data('datepicker_from_target')).pickadate('picker').set('max', $(this).val());
                 }
             });
             
