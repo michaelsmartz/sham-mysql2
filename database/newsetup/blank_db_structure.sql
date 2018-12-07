@@ -6799,6 +6799,12 @@ ALTER TABLE `timelines` DROP INDEX `FK_Timelines_TimelineEventTypes`;
 ALTER TABLE `shamuat`.`day_time_group_time_period` DROP FOREIGN KEY `FK_TimeGroupDays_Days`;
 ALTER TABLE `shamuat`.`day_time_group_time_period` DROP INDEX `FK_TimeGroupDays_Days`;
 
+ALTER TABLE `shamuat`.`course_employee` DROP FOREIGN KEY `FK_CourseParticipants_CourseParticipantStatuses`;
+ALTER TABLE `shamuat`.`course_employee` DROP INDEX `FK_CourseParticipants_CourseParticipantStatuses` ;
+
+ALTER TABLE `shamuat`.`module_questions` DROP FOREIGN KEY `FK_ModuleQuestions_ModuleQuestionTypes`;
+ALTER TABLE `shamuat`.`module_questions` DROP INDEX `FK_ModuleQuestions_ModuleQuestionTypes` ;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

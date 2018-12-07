@@ -44,6 +44,7 @@
         </div>
         @endif
         <div id="table-container">
+            @if(count($courses) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     @if($allowedActions->contains('List'))
@@ -59,6 +60,7 @@
                     @endif
                 </div>
             </div>
+            @endif
             <div class="table-responsive">
                 @if(count($courses) == 0)
                     <h4 class="text-center">Its a bit empty here. 

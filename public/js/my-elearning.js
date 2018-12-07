@@ -47,8 +47,9 @@ $(document).ready(function () {
         el.attr('data-busy', 'true').text('Please wait');
         var request = $.ajax({
             url: 'my-elearning/enrol',
-            type: "POST",
+            method: "POST",
             data: {
+                _token:"{{csrf_token()}}",
                 'id': el.attr('data-id')
             },
             dataType: "json"

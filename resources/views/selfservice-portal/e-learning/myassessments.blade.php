@@ -88,11 +88,15 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                                                 <p>{{$assessment->response}}</p>
                                                             </td>
                                                             <td>
-                                                                @php
-                                                                    $choices = explode('|', $assessment->question_choices);
-                                                                    $choicePoints = explode('|', $assessment->question_choices_points);
-                                                                @endphp
-                                                                <p>{{$choicePoints[array_search($assessment->response, $choices)]}}</p>
+                                                                @if($assessment->question_choices != null && $assessment->question_choices_points != null) {
+                                                                    @php
+                                                                        $choices = explode('|', $assessment->question_choices);
+                                                                        $choicePoints = explode('|', $assessment->question_choices_points);
+                                                                    @endphp
+                                                                    <p>{{$choicePoints[array_search($assessment->response, $choices)]}}</p>
+                                                                @else
+                                                                    <p>{{ $assessment->points }}</p>
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 @if($assessment->moduleQuestion['module_question_type_id'] == \App\Enums\ModuleQuestionType::OpenText)

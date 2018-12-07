@@ -51,7 +51,7 @@ Auth::routes();
             Route::resource('my-elearning/my-assessments', 'SSPMyCourseAssessmentsController',[
                 'only'=>['index']
             ]);
-            Route::post('my-elearning/enrol', 'SSPMyCourseController@enrol');
+            Route::post('my-elearning/enrol', 'SSPMyCourseController@enrol')->name('courseEnrol');;
             Route::get('my-elearning/my-courses', 'SSPMyCourseController@myCourses');
             Route::get('my-course/{Id}','SSPMyCourseController@renderTopic');
             Route::any('my-courses/{Id}/assessment/{assmId}', 'SSPMyCourseController@manageAssessment');
