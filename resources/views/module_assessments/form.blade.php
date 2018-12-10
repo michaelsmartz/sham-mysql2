@@ -63,6 +63,7 @@
         display:none !important;
     }
 </style>
+<script src="{{URL::to('/')}}/js/jquery-ui-1.12.1.min.js"></script>
 <link href="{{URL::to('/')}}/plugins/Formbuilder/css/formbuilder.css" rel="stylesheet">
 <script src="{{URL::to('/')}}/plugins/Formbuilder/js/dustjs-2.7.2/dist/dust-full.min.js"></script>
 <script src="{{URL::to('/')}}/plugins/Formbuilder/Formbuilder-settings.js"></script>

@@ -23,6 +23,7 @@
 </div>
 
 @section('post-body')
+<script src="{{URL::to('/')}}/js/jquery-ui-1.12.1.min.js"></script>
 <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/keditor/1.1.4/css/keditor-1.1.4.min.css" rel="stylesheet">
 <link href="{{URL::to('/')}}/plugins/keditor/1.1.4/css/keditor-components-1.1.4.min.css" rel="stylesheet">
