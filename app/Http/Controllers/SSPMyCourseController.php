@@ -178,17 +178,18 @@ class SSPMyCourseController extends CustomController
                         if ($employeeProgress->is_completed > 0) {
                             $topics_completed++;
                         }
-
-                        if ($employeeProgress->courseparticipantstatus_id == 2) {
-                            if ($myCourses[$courses_count]['ProgressPercentage'] == 100) {
-                                $myCourses[$courses_count]['ProgressPercentage'] = 90;
-                            }
-                        }
                     }
                 }
 
                 foreach ($course->employees as $employee){
                     if($employee->employee_id == $employee_id){
+                        $myCourses[$courses_count]['ProgressPercentage'] = ($topics_completed/$all_topics_count) * 100;
+
+                        if ($employee->courseparticipantstatus_id == 2) {
+                            if ($myCourses[$courses_count]['ProgressPercentage'] == 100) {
+                                $myCourses[$courses_count]['ProgressPercentage'] = 90;
+                            }
+                        }
                         $course_participant_description = CourseParticipantStatusType::getDescription($employee->courseparticipantstatus_id);
                         $courseParticipantStatus['Id'] = $employee->courseparticipantstatus_id;
                         $courseParticipantStatus['Description'] = $course_participant_description;
@@ -203,7 +204,6 @@ class SSPMyCourseController extends CustomController
                     $myCourses[$courses_count]['TopicsCompleted'] = $topics_completed;
                     $myCourses[$courses_count]['Modules'] = $modules;
                     $myCourses[$courses_count]['CourseParticipantStatus'] = $courseParticipantStatus;
-                    $myCourses[$courses_count]['ProgressPercentage'] = ($topics_completed/$all_topics_count) * 100;
                     $courses_count++;
                 }
             }
@@ -230,9 +230,9 @@ class SSPMyCourseController extends CustomController
                 $query->where('employee_id',$employee_id);
                 $query->where('course_id',$course_id);
             })
-            ->whereHas('employeeProgress', function($query){
-                $query->where('is_completed',0);
-            })
+//            ->whereHas('employeeProgress', function($query){
+//                $query->where('is_completed',0);
+//            })
             ->get()->first();
 
         if ($course != null) {
@@ -248,6 +248,7 @@ class SSPMyCourseController extends CustomController
             foreach ($course->modules as $module) {
                 //count no of topics in modules
                 $topics_count = $module->topics->count();
+                $topics_counter = 0;
                 //check if topics is not empty in modules i.e. present in pivot module_topic
                 if ($topics_count != 0) {
                     // Detect a change in moduleid...
@@ -264,9 +265,14 @@ class SSPMyCourseController extends CustomController
                             $topic->assessments = $topic_assessments;
                         }
 
+
+                        $topics_counter++;
+                        //dump($topics_counter);
+                        //dump($topics_count);
+
                         self::extractModuleAssessmentDetails($employee_id, $module->id, $assessment_list, $topic_assessments1, $course_id);
 
-                        if ($all_topic_counter + 1 == $all_topics_count) {
+                        if ($topics_counter == $topics_count) {
                             // Check if module has assemment and get ModuleAssessmentId and AssessmentData
                             // This check is being done on last topic of courses.
                             $topic->assessments = $topic_assessments1;
@@ -317,7 +323,7 @@ class SSPMyCourseController extends CustomController
                                     $item['data-displaynavtext'] = $displayText;
 
                                     if ($topic->LastTopic && $counter == $sectioncount) {
-                                        if (in_array(true, $topic->assessments)) {
+                                        if (count($topic->assessments) > 0) {
                                             $item['data-lastslideofcourse'] = "0";
                                         } else {
                                             $item['data-lastslideofcourse'] = "1";
@@ -328,7 +334,7 @@ class SSPMyCourseController extends CustomController
 
                                     if ($counter == $sectioncount) {
                                         $item['data-lastslideoftopic'] = "1";
-                                        if (in_array(true, $topic->assessments)) {
+                                        if (count($topic->assessments) > 0) {
                                             $item['data-topichasassessment'] = "true";
                                         } else {
                                             $item['data-topichasassessment'] = "false";
