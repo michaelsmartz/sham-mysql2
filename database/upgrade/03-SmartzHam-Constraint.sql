@@ -1003,6 +1003,7 @@ ALTER TABLE `course_employee` DROP INDEX `FK_CourseParticipants_CourseParticipan
 ALTER TABLE `module_questions` DROP FOREIGN KEY `FK_ModuleQuestions_ModuleQuestionTypes`;
 ALTER TABLE `module_questions` DROP INDEX `FK_ModuleQuestions_ModuleQuestionTypes` ;
 
+#-- 11/12/2018
 ALTER TABLE `surveys` DROP FOREIGN KEY `FK_Surveys_SurveyStatuses`;
 ALTER TABLE `surveys` DROP INDEX `FK_Surveys_SurveyStatuses` ;
 

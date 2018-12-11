@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Course;
+use App\Employee;
 use Illuminate\Http\Request;
 use App\TrainingSession;
 use App\SystemSubModule;
@@ -54,9 +55,10 @@ class CourseTrainingSessionsController extends CustomController
      */
     public function create()
     {
+        $selectedParticipants = [];
         list($courses, $employees) = $this->createEditCommon();
 
-        return view($this->baseViewPath . '.create', compact('courses','employees'));
+        return view($this->baseViewPath . '.create', compact('courses','employees', 'selectedParticipants'));
     }
 
     /**
@@ -71,7 +73,7 @@ class CourseTrainingSessionsController extends CustomController
         try {
             $this->validator($request);
 
-            $employees = array_get($request->all(), 'employees.id');
+            $employees = array_get($request->all(), 'employees');
             $input = array_except($request->all(), array('_token','employees'));
 
             $data = $this->contextObj->addData($input);
@@ -99,22 +101,17 @@ class CourseTrainingSessionsController extends CustomController
         $id = Route::current()->parameter('course_training_session');
         if(!empty($id)) {
             $data = $this->contextObj::with('employees')->get()->where('id', $id)->first();
-//            $data = $this->contextObj->findData($id);
-            //dd($data);
             list($courses, $temp) = $this->createEditCommon($data->is_final);
-            if($data->is_final == TRUE){
-                $employees = $data->employees->pluck('full_name','id');
-                $participants = [];
-            } else {
-                $participants = $data->employees->pluck('id');
-                $employees = $temp;
-            }
+
+            $selectedParticipants = $data->employees()
+                ->orderBy('employee_training_session.id','asc')
+                ->pluck('full_name', 'employee_training_session.employee_id');
+
+            $employees = $temp;
         }
 
-        //dd($employees);
-
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','courses','participants','employees'))
+            $view = view($this->baseViewPath . '.edit', compact('data','courses','participants','employees','selectedParticipants'))
                     ->renderSections();
 
             return response()->json([
@@ -125,7 +122,7 @@ class CourseTrainingSessionsController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath . '.edit', compact('data','courses','participants','employees'));
+        return view($this->baseViewPath . '.edit', compact('data','courses','participants','employees', 'selectedParticipants'));
     }
 
     /**
@@ -144,8 +141,8 @@ class CourseTrainingSessionsController extends CustomController
             $employees = array_get($request->all(), 'employees');
             $input = array_except($request->all(),array('_token','_method','employees','redirectsTo'));
 
-            $data = TrainingSession::find($id);
             $this->contextObj->updateData($id, $input);
+            $data = TrainingSession::find($id);
 
             // no syncing if the previous save had already finalised the participants
             if($data->is_final != 1){
@@ -175,6 +172,8 @@ class CourseTrainingSessionsController extends CustomController
     {
         try {
             $id = Route::current()->parameter('course_training_session');
+            $data = TrainingSession::find($id);
+            $data->employees()->sync([]); //detach all linked course modules
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -187,17 +186,23 @@ class CourseTrainingSessionsController extends CustomController
     }
     
     protected function createEditCommon(){
+        $selectedParticipants = [];
         $courses = Course::where('is_public', '=', 0)->pluck('description','id')->all();
         $courseIds = implode(',', array_keys($courses));
 
-        $temp = DB::select("select id, concat(first_name, ' ', surname) as full_name 
+        if(!empty($courses)) {
+            $temp = DB::select("select id, concat(first_name, ' ', surname) as full_name 
                             from employees 
-                            where employees.id not in (select employee_id from course_employee where course_id in (".$courseIds.")) and 
+                            where employees.id not in (select employee_id from course_employee where course_id in (" . $courseIds . ")) and 
                                   employees.deleted_at is null 
                             order by full_name");
-        $employees = collect($temp)->pluck('full_name','id')->all();
 
-        return array($courses, $employees);
+            $selectedParticipants = collect($temp)->pluck('full_name', 'id')->all();
+        }
+
+        $employees = Employee::pluck('first_name, surname as full_name', 'id');
+
+        return array($courses, $employees, $selectedParticipants);
     }
 
         /**

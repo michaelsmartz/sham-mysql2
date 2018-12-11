@@ -20,6 +20,8 @@ class TrainingSession extends Model
                   'is_final'
               ];
 
+    public $searchable = ['name'];
+
     public function course()
     {
         return $this->belongsTo('App\Course','course_id','id');
