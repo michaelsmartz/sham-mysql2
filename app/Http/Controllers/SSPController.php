@@ -159,25 +159,27 @@ class SSPController extends CustomController
             return $announcements;
         }
 
-
-        if ($employee != null && $employee->department() != null) {
-            $department = $employee->department()->get(['id','description'])->first();
-
-            if($department != null) {
-                $temp = $department->announcements()->where('announcement_status_id', 1)
-                    ->orderBy('priority', 'ASC')
-                    ->get(['announcement_id', 'title', 'description', 'start_date', 'end_date', 'priority'])
-                    ->all();
-
-                $count = 0;
-                foreach ($temp as $t){
-                    if(DateHelper::todayInRangeIncluded($t->start_date, $t->end_date)) {
+        if ($employee != null) {
+            $temp = Announcement::with(['departments'])
+                ->where('announcement_status_id', 1)
+                ->orderBy('priority', 'ASC')
+                ->get()
+                ->all();
+            $count = 0;
+            foreach ($temp as $t){
+                /**
+                 * TODO add to filter announcement by departments
+                 */
+                //if(count($t->departments) == 0) {
+                    if (DateHelper::todayInRangeIncluded($t->start_date, $t->end_date)) {
                         $announcements[$count]['Id'] = $t->announcement_id;
                         $announcements[$count]['Title'] = $t->title;
                         $announcements[$count]['Description'] = $t->description;
                         $count++;
                     }
-                }
+                //}else{
+
+                //}
             }
         }
 
