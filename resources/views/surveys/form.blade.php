@@ -54,6 +54,7 @@ if (!isset($_mode)) $_mode='create';
         <?php endif; ?>
         {!! Form::hidden('FormData',old('FormData', optional($survey)->FormData),['id'=>'FormData']) !!}
     </div>
+    <div id="date-picker"> </div>
 </div>
 
 @if(!Request::ajax())
