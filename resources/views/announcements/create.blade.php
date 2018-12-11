@@ -23,3 +23,25 @@
         </div>
     </div>
 @endsection
+
+@section('post-body')
+    <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
+    <script>
+        $(function () {
+            $('.multipleSelect').each(function(){
+                $(this).multiselect({
+                    submitAllLeft:false,
+                    sort: false,
+                    keepRenderingSort: false,
+                    search: {
+                        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                        right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                    },
+                    fireSearch: function(value) {
+                        return value.length > 3;
+                    }
+                });
+            });
+        });
+    </script>
+@endsection

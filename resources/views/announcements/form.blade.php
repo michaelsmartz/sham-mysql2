@@ -38,4 +38,39 @@
         {!! $errors->first('announcement_status_id', '<p class="help-block">:message</p>') !!}
 </div>
 
+<div class="form-group col-xs-12 {{ $errors->has('departments[]') ? 'has-error' : '' }}">
+    <label for="from[]">Departments <i class="fa fa-question-circle" data-wenk="Link existing departments" data-wenk-pos="right"></i></label>
+</div>
+
+<div class="col-xs-12">
+    <div class="flex-wrapper">
+        <div class="col-xs-12">
+            {!! Form::select('from[]', $departments, null, array('multiple' => 'multiple', 'size' => '10', 'class'=> 'form-control multipleSelect', 'id'=>'multiselect')) !!}
+        </div>
+    </div>
+    <br>
+</div>
+
+<div class="col-xs-6 col-xs-offset-3">
+    <div class="col-xs-6">
+        <button type="button" id="multiselect_rightAll" class="btn btn-block" data-wenk="Select All"><i class="fa fa-angle-double-down" style="font-weight:900"></i></button>
+        <button type="button" id="multiselect_rightSelected" class="btn btn-block" data-wenk="Add Selected"><i class="fa fa-angle-down" style="font-weight:900"></i></button>
+    </div>
+    <div class="col-xs-6">
+        <button type="button" id="multiselect_leftSelected" class="btn btn-block" data-wenk="Remove Selected"><i class="fa fa-angle-up" style="font-weight:900"></i></button>
+        <button type="button" id="multiselect_leftAll" class="btn btn-block" data-wenk="Unselect All"><i class="fa fa-angle-double-up" style="font-weight:900"></i></button>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <br>
+    <div class="flex-wrapper">
+        <div class="col-xs-12">
+            {!! Form::select('departments[]', isset($announcementDepartments)?$announcementDepartments:[],null, array('multiple' => 'multiple', 'size' => '10', 'class'=> 'form-control', 'id'=>'multiselect_to')) !!}
+        </div>
+        {!! $errors->first('departments[]', '<p class="help-block">:message</p>') !!}
+    </div>
+</div>
+<div id="date-picker"> </div>
+
 </div>

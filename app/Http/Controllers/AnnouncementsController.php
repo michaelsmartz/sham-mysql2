@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Announcement;
+use App\Department;
 use App\SystemSubModule;
 use App\Enums\AnnouncementType;
 use Illuminate\Http\Request;
@@ -52,8 +53,9 @@ class AnnouncementsController extends CustomController
     public function create()
     {
         $announcementStatuses = AnnouncementType::ddList();
+        $departments = Department::pluck('description', 'id');
 
-        return view($this->baseViewPath . '.create', compact('data','announcementStatuses'));
+        return view($this->baseViewPath . '.create', compact('data','announcementStatuses', 'departments'));
     }
 
     /**
@@ -68,9 +70,13 @@ class AnnouncementsController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token'));
+            $departments = array_get($request->all(),'departments');
 
-            $this->contextObj->addData($input);
+            $input = array_except($request->all(),array('_token', 'departments'));
+
+            $data = $this->contextObj->addData($input);
+            $data->departments()
+                ->sync($departments); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -95,10 +101,15 @@ class AnnouncementsController extends CustomController
         if(!empty($id)) {
             $data = $this->contextObj->findData($id);
             $announcementStatuses = AnnouncementType::ddList();
+            $announcementDepartments = $data->departments()
+                ->orderBy('announcement_department.id','asc')
+                ->pluck('description', 'announcement_department.department_id');
+            $departments = Department::pluck('description', 'id');
         }
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','announcementStatuses'))
+            $view = view($this->baseViewPath . '.edit',
+                compact('data','announcementStatuses', 'announcementDepartments', 'departments'))
                     ->renderSections();
 
             return response()->json([
@@ -109,7 +120,8 @@ class AnnouncementsController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath . '.edit', compact('data','announcementStatuses'));
+        return view($this->baseViewPath . '.edit',
+            compact('data','announcementStatuses', 'announcementDepartments', 'departments'));
     }
 
     /**
@@ -125,9 +137,14 @@ class AnnouncementsController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token','_method'));
+            $departments = array_get($request->all(),'departments');
+
+            $input = array_except($request->all(),array('_token','_method','departments'));
 
             $this->contextObj->updateData($id, $input);
+            $data = Announcement::find($id);
+            $data->departments()
+                ->sync($departments); //sync what has been selected
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -150,6 +167,8 @@ class AnnouncementsController extends CustomController
     {
         try {
             $id = Route::current()->parameter('announcement');
+            $data = Announcement::find($id);
+            $data->departments()->sync([]); //detach all linked course modules
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');

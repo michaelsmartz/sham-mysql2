@@ -52,5 +52,5 @@
         <input class="form-control" name="comment" type="text" id="comment" value="{{ old('comment', optional($assetEmployee)->comment) }}" maxlength="1024" placeholder="Enter comment">
         {!! $errors->first('comment', '<p class="help-block">:message</p>') !!}
 </div>
-
+<div id="date-picker"> </div>
 </div>
