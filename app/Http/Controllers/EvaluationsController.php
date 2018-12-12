@@ -53,6 +53,12 @@ class EvaluationsController extends CustomController
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_EVALUATIONS);
 
+        if( !isset(\Auth::user()->employee->id) || \Auth::user()->employee->id == ''){
+            return view('not-allowed')
+                ->with('title', 'Evaluations')
+                ->with('warnings', array('You account is not associated with an employee.'));
+        }
+
         if(!empty($fullName)){
             $request->merge(['name' => '%'.$fullName.'%']);
         }
@@ -309,6 +315,12 @@ class EvaluationsController extends CustomController
         $referenceno = $request->get('reference_no', null);
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_QA_INSTANCES);
+
+        if( !isset(\Auth::user()->employee->id) || \Auth::user()->employee->id == ''){
+            return view('not-allowed')
+                ->with('title', 'Instances')
+                ->with('warnings', array('You account is not associated with an employee.'));
+        }
 
         if(!empty($fullName)){
             $request->merge(['name' => '%'.$fullName.'%']);
