@@ -18639,9 +18639,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
 
     if (toPickerId !== undefined) {
 
-        console.log(toPickerId);
         toPicker = $('#' + toPickerId).pickadate().pickadate('picker');
-        console.log(toPicker);
 
         if (toPicker !== undefined) {
             // When something is selected, update the “from” and “to” limits.
