@@ -624,7 +624,7 @@ class EvaluationsController extends CustomController
             'start_time' => $startdatetime,
             'end_time' => $enddatetime,
             'is_completed' => 1,
-        ]]);
+        ]],false);
 
         return Redirect::to('instances');
 
