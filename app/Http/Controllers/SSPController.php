@@ -47,6 +47,8 @@ class SSPController extends CustomController
         }
 
         $workingHours = $this->getWorkingHours($employeeObject);
+
+        //dd($workingHours);
         $announcements = $this->getAnnouncements($employeeObject);
         $assets = $this->getAllocatedAssets($employeeObject);
 
@@ -68,25 +70,22 @@ class SSPController extends CustomController
 
     private function getWorkingHours($employee){
         $timeGroup = [];
+        $tg= [];
 
         if (empty($employee)) {
             return $timeGroup;
         }
 
         if ($employee != null && $employee->team() != null && $employee->timeGroup() != null) {
-            $team = $employee->team()->get(['description'])->first();
-            $timeGroups = $employee->timeGroup()->get(['id','name'])->all();
-
-            foreach ($timeGroups as $tg) {
-                $timeGroup['team'] = $team->description;
-                $timeGroup['id'] = $tg->id;
-                $timeGroup['description'] = $tg->name;
-            }
+            $team = $employee->team()->get(['description','time_group_id'])->first();
+            $tg = TimeGroup::find($team['time_group_id']);
+            $timeGroup['team'] = $team->description;
+            $timeGroup['description'] = $tg->name;
+        }else{
+            $timeGroup['team'] = [];
         }
 
-        if(sizeof($timeGroup) > 0) {
-            $tg = TimeGroup::find($timeGroup['id']);
-
+        if(sizeof($tg) > 0) {
             $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time', 'time_period_type'])->all();
 
             if (!empty($timeGroup) && $tgTimePeriods != null) {
@@ -109,7 +108,8 @@ class SSPController extends CustomController
                 }
             }
         }
-        return ['timegroup' => $timeGroup, 'team'=>  $team->description ];
+
+        return ['timegroup' => $timeGroup, 'team'=>  $timeGroup['team'] ];
     }
 
     private static function timeIntervalReadable($value) {
