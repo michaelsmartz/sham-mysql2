@@ -97,5 +97,5 @@
 
         {!! $errors->first('is_available', '<p class="help-block">:message</p>') !!}
 </div>
-
+    <div id="date-picker"> </div>
 </div>
