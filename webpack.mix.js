@@ -52,8 +52,8 @@ mix
     ]
 });
 
-mix.js('resources/assets/js/app.js', 'public/js');
-mix.js('resources/assets/js/alt-app.js', 'public/js');
+//mix.js('resources/assets/js/app.js', 'public/js');
+//mix.js('resources/assets/js/alt-app.js', 'public/js');
 mix.js('resources/assets/js/new-employee.js', 'public/js');
 mix.js('resources/assets/js/employees.js', 'public/js/employees.js');
 mix.js('resources/assets/js/uploader.js', 'public/js');
@@ -89,8 +89,8 @@ mix/*.webpackConfig({
 })*/.js('resources/assets/js/tables.js', 'public/js')
 
 
-mix.minify('public/js/app.js');
-mix.minify('public/js/alt-app.js');
+//mix.minify('public/js/app.js');
+//mix.minify('public/js/alt-app.js');
 mix.minify('public/js/tables.js');
 mix.minify('public/js/parsley.js');
 mix.minify('public/js/new-employee.js');
@@ -117,8 +117,8 @@ mix.then(() => {
     minifier.minify('public/css/import_steps.css');
     minifier.minify('public/css/nav-wizard.css');
 
-    minifier.minify('public/js/app.js');
-    minifier.minify('public/js/alt-app.js');
+    //minifier.minify('public/js/app.js');
+    //minifier.minify('public/js/alt-app.js');
     minifier.minify('public/js/tables.js');
     minifier.minify('public/js/uploader.js');
     minifier.minify('public/js/parsley.js');
