@@ -1007,5 +1007,8 @@ ALTER TABLE `module_questions` DROP INDEX `FK_ModuleQuestions_ModuleQuestionType
 ALTER TABLE `surveys` DROP FOREIGN KEY `FK_Surveys_SurveyStatuses`;
 ALTER TABLE `surveys` DROP INDEX `FK_Surveys_SurveyStatuses` ;
 
+ALTER TABLE `survey_responses` DROP FOREIGN KEY `FK_SurveyResponses_ShamUsers`;
+ALTER TABLE `survey_responses`DROP INDEX `FK_SurveyResponses_ShamUsers` ;
+
 
 
