@@ -242,6 +242,32 @@
 
         </script>
 
+        <!-- Customised pickadate picker-->
+        <style>
+            .picker {
+                font-size: 10px;
+            }
+
+            .picker__frame {
+                max-width: 300px;
+            }
+
+            @media (min-height: 40.125em) {
+                .picker__frame {
+                    margin-bottom: 15%;
+                }
+            }
+
+            .picker__select--year {
+                width: 25.5%;
+            }
+
+            .picker__select--month, .picker__select--year {
+                font-size: 12px;
+                height: 28px;
+            }
+        </style>
+
         @yield('scripts')
         @yield('post-body')
         @stack('css-stack')
