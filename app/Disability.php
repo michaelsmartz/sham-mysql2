@@ -2,15 +2,15 @@
 
 namespace App;
 
-
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Disability extends Model
 {
     
-    use SoftDeletes;
+    use SoftDeletes, UsesPredefinedValues;
 
-
+    protected $table = 'disabilities';
 
     /**
      * Attributes that should be mass-assignable.
@@ -23,10 +23,15 @@ class Disability extends Model
                   'is_system_predefined'
               ];
 
+    public $searchable = ['description'];
+
     public function disabilityCategory()
     {
         return $this->belongsTo('App\DisabilityCategory');
     }
 
-
+    public function employees()
+    {
+        return $this->belongsToMany('App\Employee');
+    }
 }

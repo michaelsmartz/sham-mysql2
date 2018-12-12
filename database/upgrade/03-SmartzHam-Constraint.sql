@@ -1010,5 +1010,13 @@ ALTER TABLE `surveys` DROP INDEX `FK_Surveys_SurveyStatuses` ;
 ALTER TABLE `survey_responses` DROP FOREIGN KEY `FK_SurveyResponses_ShamUsers`;
 ALTER TABLE `survey_responses`DROP INDEX `FK_SurveyResponses_ShamUsers` ;
 
+--
+-- Constraints for table `disability_employee`
+--
+ALTER TABLE `disability_employee` DROP INDEX IX_EMPLOYEE_DISABILITY;
+ALTER TABLE `disability_employee`
+  ADD CONSTRAINT `FK_DisabilityEmployee_Employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_DisabilityEmployee_Disabilities` FOREIGN KEY (`disability_id`) REFERENCES `disabilities` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
 
 

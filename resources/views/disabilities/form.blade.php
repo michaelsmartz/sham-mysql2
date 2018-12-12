@@ -20,16 +20,4 @@
         {!! $errors->first('disability_category_id', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('is_system_predefined') ? 'has-error' : '' }}">
-    <label for="is_system_predefined">Is System Predefined</label>
-        <div class="checkbox">
-            <label for="is_system_predefined_1">
-            	<input id="is_system_predefined_1" class="" name="is_system_predefined" type="checkbox" value="1" {{ old('is_system_predefined', optional($disability)->is_system_predefined) == '1' ? 'checked' : '' }}>
-                Yes
-            </label>
-        </div>
-
-        {!! $errors->first('is_system_predefined', '<p class="help-block">:message</p>') !!}
-</div>
-
 </div>

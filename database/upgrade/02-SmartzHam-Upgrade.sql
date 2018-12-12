@@ -2488,3 +2488,7 @@ ALTER TABLE `companies`
 	CHANGE COLUMN `Active` `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `name`
 
 ALTER TABLE `training_sessions` CHANGE `training_delivery_method_id` `training_delivery_method_id` INT(11) NULL DEFAULT NULL;
+
+#-- 12/12/2018
+ALTER TABLE `disabilities` CHANGE `is_system_predefined` `is_system_predefined` TINYINT(1) NULL DEFAULT '0';
+ALTER TABLE `disability_categories` CHANGE `is_system_predefined` `is_system_predefined` TINYINT(1) NULL DEFAULT '0';

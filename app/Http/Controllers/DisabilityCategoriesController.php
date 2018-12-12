@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Disability;
 use App\DisabilityCategory;
-use App\Enums\DisabilityCategoryType;
 use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
@@ -17,7 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 
-class DisabilitiesController extends CustomController
+class DisabilityCategoriesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -26,44 +24,31 @@ class DisabilitiesController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new Disability();
-        $this->baseViewPath = 'disabilities';
-        $this->baseFlash = 'Disability details ';
+        $this->contextObj = new DisabilityCategory();
+        $this->baseViewPath = 'disability_categories';
+        $this->baseFlash = 'Disability Category details ';
     }
 
     /**
-     * Display a listing of the disabilities.
+     * Display a listing of the disability categories.
      *
      * @return Illuminate\View\View
      */
     public function index()
     {
-        $disabilities = $this->contextObj::with(['disabilityCategory'])->filtered()->paginate(10);
+        $disabilityCategories = $this->contextObj::filtered()->paginate(10);
 
-        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_DISABILITY);
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_DISABILITY_CATEGORY);
 
         // handle empty result bug
-        if (Input::has('page') && $disabilities->isEmpty()) {
+        if (Input::has('page') && $disabilityCategories->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('disabilities','allowedActions'));
+        return view($this->baseViewPath .'.index', compact('disabilityCategories', 'allowedActions'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $disabilityCategories= DisabilityCategory::withoutGlobalScope('system_predefined')
-            ->pluck('description', 'id');
-
-        return view($this->baseViewPath . '.create', compact('data','disabilityCategories'));
-    }
-
-    /**
-     * Store a new disability in the storage.
+     * Store a new disability category in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -95,14 +80,11 @@ class DisabilitiesController extends CustomController
     public function edit(Request $request)
     {
         $data = null;
-        $id = Route::current()->parameter('disability');
+        $id = Route::current()->parameter('disability_category');
         $data = $this->contextObj->findData($id);
 
-        $disabilityCategories= DisabilityCategory::withoutGlobalScope('system_predefined')
-            ->pluck('description', 'id');
-
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data', 'disabilityCategories'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -110,11 +92,12 @@ class DisabilitiesController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data', 'disabilityCategories'));
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
+
     /**
-     * Update the specified disability in the storage.
+     * Update the specified disability category in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -142,7 +125,7 @@ class DisabilitiesController extends CustomController
     }
 
     /**
-     * Remove the specified disability from the storage.
+     * Remove the specified disability category from the storage.
      *
      * @param  int $id
      *
@@ -151,7 +134,7 @@ class DisabilitiesController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('disability');
+            $id = Route::current()->parameter('disability_category');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -171,9 +154,9 @@ class DisabilitiesController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'description' => 'required|string|min:1|max:100',
-            'disability_category_id' => 'required|string|min:1|max:1'
+            'description' => 'required|string|min:1|max:100'
         ];
+
 
         $validator = Validator::make($request->all(), $validateFields);
         if($validator->fails()) {

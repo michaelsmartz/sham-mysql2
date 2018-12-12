@@ -110,6 +110,8 @@ Auth::routes();
             Route::group(['prefix'=>'config'], function(){
                 Route::get('employees', 'ConfigDropdownsController@employees')->name('employees');
             });
+            Route::resource('disabilities', 'DisabilitiesController');
+            Route::resource('disability_categories', 'DisabilityCategoriesController');
             Route::resource('law_categories', 'LawCategoriesController');
             Route::resource('policy_categories', 'PolicyCategoriesController');
             Route::resource('genders', 'GendersController');

@@ -1056,6 +1056,39 @@ CREATE TABLE IF NOT EXISTS `disabilities` (
   KEY `IX_DISABILITIES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
 ) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
 
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Full blown Aids', '1', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Partially Hearing', '2', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Pre-lingual Loss of Hearing', '2', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Tinnitus', '2', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ("Asperger\'s Syndrome", '3', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Attention Deficit Hyperactivity Disorder (ADHD)', '3', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Down syndrome', '3', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Dyslexia', '3', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Dyspraxia', '3', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Retardation', '3', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Bipolar Disorder & Manic Depression', '4', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Epilepsy', '4', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Obsessive-Compulsive Disorder (OCD)', '4', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Phycopath', '4', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Schizophrenia', '4', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Loss of limbs', '5', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Mobility of limbs', '5', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Polio', '5', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Agoraphobia', '6', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Depression', '6', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Panic Attacks', '6', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Post Traumatic Stress Disorder', '6', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Psychosis', '6', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Social Phobia', '6', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Albinism & Nystagmus', '7', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Cataracts', '7', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Diabetic Retinopathy', '7', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Glaucoma', '7', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Macular Degeneration', '7', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Optic Atropy', '7', '1');
+INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Retinitis Pigmentosa (RP)', '7', '1');
+
+
 -- --------------------------------------------------------
 
 --
@@ -1073,6 +1106,14 @@ CREATE TABLE IF NOT EXISTS `disability_categories` (
   PRIMARY KEY (`id`),
   KEY `IX_DISABILITY_CATEGORIES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
 ) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Aids', '1');
+INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Hearing', '1');
+INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Learning', '1');
+INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Mental', '1');
+INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Other', '1');
+INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Personality', '1');
+INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Visual', '1');
 
 -- --------------------------------------------------------
 
@@ -5118,6 +5159,8 @@ INSERT INTO `system_sub_modules` (`id`, `description`, `system_module_id`, `is_a
 (126, 'Todo Items', 13, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (127, 'Time Period', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (128, 'Disciplinary Decision', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL);
+(129, 'Disabilities', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL);
+(130, 'Disability Category', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL);
 
 -- --------------------------------------------------------
 
@@ -6793,6 +6836,7 @@ ALTER TABLE `workflowtransitions`
   ADD CONSTRAINT `FK_WorkflowTransitions_Workflows` FOREIGN KEY (`WorkflowId`) REFERENCES `workflows` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
+#--12/12/18
 ALTER TABLE `timelines` DROP FOREIGN KEY `FK_Timelines_TimelineEventTypes`;
 ALTER TABLE `timelines` DROP INDEX `FK_Timelines_TimelineEventTypes`;
 
@@ -6810,6 +6854,17 @@ ALTER TABLE `surveys` DROP INDEX `FK_Surveys_SurveyStatuses` ;
 
 ALTER TABLE `survey_responses` DROP FOREIGN KEY `FK_SurveyResponses_ShamUsers`;
 ALTER TABLE `survey_responses`DROP INDEX `FK_SurveyResponses_ShamUsers` ;
+
+ALTER TABLE `disabilities` CHANGE `is_system_predefined` `is_system_predefined` TINYINT(1) NULL DEFAULT '0';
+ALTER TABLE `disability_categories` CHANGE `is_system_predefined` `is_system_predefined` TINYINT(1) NULL DEFAULT '0';
+
+--
+-- Constraints for table `disability_employee`
+--
+ALTER TABLE `disability_employee` DROP INDEX IX_EMPLOYEE_DISABILITY;
+ALTER TABLE `disability_employee`
+  ADD CONSTRAINT `FK_DisabilityEmployee_Employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_DisabilityEmployee_Disabilities` FOREIGN KEY (`disability_id`) REFERENCES `disabilities` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

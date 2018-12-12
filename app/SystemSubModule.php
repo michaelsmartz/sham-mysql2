@@ -138,7 +138,9 @@ class SystemSubModule extends Model
     const CONST_TODO_ITEMS = 126;
     const CONST_TIMEPERIODS = 127;
     const CONST_DISCIPLINARYDECISIONS = 128;
-	
+    const CONST_DISABILITY = 129;
+    const CONST_DISABILITY_CATEGORY = 130;
+
     protected $casts = [
         'id' => 'integer',
         'systemmodule_id'=>'integer',

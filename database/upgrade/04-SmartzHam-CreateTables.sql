@@ -154,3 +154,7 @@ alter table `audits_pivot` add index `audits_pivot_auditable_id_auditable_type_i
 alter table `audits_pivot` add index `audits_pivot_relation_id_relation_type_index`(`relation_id`, `relation_type`);
 
 create table `csv_data` (`id` int unsigned not null auto_increment primary key, `csv_filename` varchar(255) not null, `csv_header` tinyint(1) not null default '0', `csv_data` longtext not null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate utf8mb4_unicode_ci;
+
+#-- 12/12/18
+INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disabilities', '12', '1');
+INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disability Category ', '12', '1');

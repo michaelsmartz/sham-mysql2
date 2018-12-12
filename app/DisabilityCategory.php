@@ -3,14 +3,13 @@
 namespace App;
 
 
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DisabilityCategory extends Model
 {
-    
-    use SoftDeletes;
 
-
+    use SoftDeletes, UsesPredefinedValues;
 
     /**
      * Attributes that should be mass-assignable.
@@ -21,6 +20,8 @@ class DisabilityCategory extends Model
                   'description',
                   'is_system_predefined'
               ];
+
+    public $searchable = ['description'];
 
     public function disabilities()
     {

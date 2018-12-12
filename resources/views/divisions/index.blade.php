@@ -23,6 +23,8 @@
         <li><a href="{{URL::to('/')}}/time_periods">Time Periods</a></li>
         <li><a href="{{URL::to('/')}}/teams">Team</a></li>
         <li><a href="{{URL::to('/')}}/titles">Title</a></li>
+        <li><a href="{{URL::to('/')}}/disability_categories">Disability Categories</a></li>
+        <li><a href="{{URL::to('/')}}/disabilities">Disability</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">
@@ -56,7 +58,7 @@
                     <tbody>
                         @foreach($divisions as $division)
                         <tr id="tr{{$division->id}}">
-                                                        <td>{{ $division->description }}</td>
+                            <td>{{ $division->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

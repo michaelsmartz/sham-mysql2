@@ -1,12 +1,11 @@
 @extends('portal-index')
-@section('title','Departments')
-@section('subtitle','Department drop-down values for employees')
+@section('title','Disability Categories')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
         <li><a href="{{URL::to('/')}}/branches">Branch</a></li>
         <li><a href="{{URL::to('/')}}/countries">Country</a></li>
-        <li class="active"><a href="#">Department</a></li>
+        <li><a href="{{URL::to('/')}}/departments">Department</a></li>
         <li><a href="{{URL::to('/')}}/divisions">Division</a></li>
         {{--<li><a href="{{URL::to('/')}}/employee_attachment_types">Employee Attachment Types</a></li>--}}
         <li><a href="{{URL::to('/')}}/employee_statuses">Employee Status</a></li>
@@ -23,16 +22,16 @@
         <li><a href="{{URL::to('/')}}/time_periods">Time Periods</a></li>
         <li><a href="{{URL::to('/')}}/teams">Team</a></li>
         <li><a href="{{URL::to('/')}}/titles">Title</a></li>
-        <li><a href="{{URL::to('/')}}/disability_categories">Disability Categories</a></li>
+        <li class="active"><a href="#">Disability Categories</a></li>
         <li><a href="{{URL::to('/')}}/disabilities">Disability</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($departments) > 0)
+            @if(count($disabilityCategories) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     @if($allowedActions->contains('Create'))
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
+                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
                     @endif
@@ -40,10 +39,10 @@
             </div>
             @endif
             <div class="table-responsive">
-            @if(count($departments) == 0)
+            @if(count($disabilityCategories) == 0)
                 <h4 class="text-center">Its a bit empty here.
                 @if($allowedActions->contains('Create'))
-                        You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new department
+                    You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new disability category
                 @endif
                 </h4>
             @elseif($allowedActions->contains('List'))
@@ -56,19 +55,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($departments as $department)
-                        <tr id="tr{{$department->id}}">
-                            <td>{{ $department->description }}</td>
+                        @foreach($disabilityCategories as $disabilityCategory)
+                        <tr id="tr{{$disabilityCategory->id}}">
+                            <td>{{ optional($disabilityCategory)->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
                                     @if($allowedActions->contains('Write'))
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$department->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$disabilityCategory->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
                                     @endif
                                     @if($allowedActions->contains('Delete'))
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$department->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$disabilityCategory->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                     @endif
@@ -79,11 +78,11 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $departments->render() !!}
+                    {!! $disabilityCategories->render() !!}
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'departments.destroy'])
+            @component('partials.index', ['routeName'=> 'disability_categories.destroy'])
             @endcomponent
         </div>
     </div>

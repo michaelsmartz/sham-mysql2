@@ -23,6 +23,8 @@
         <li class="active"><a href="#">Time Periods</a></li>
         <li><a href="{{URL::to('/')}}/teams">Team</a></li>
         <li><a href="{{URL::to('/')}}/titles">Title</a></li>
+        <li><a href="{{URL::to('/')}}/disability_categories">Disability Categories</a></li>
+        <li><a href="{{URL::to('/')}}/disabilities">Disability</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">

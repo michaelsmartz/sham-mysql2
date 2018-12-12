@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Address;
+use App\Disability;
 use App\Team;
 use App\Title;
 use App\Branch;
@@ -160,6 +161,8 @@ class EmployeesController extends CustomController
             }
             $data->load(['skills','disabilities']);
 
+            //dd($data);
+
             $data->homeAddress = $data->addresses->where('address_type_id', 1)->first();
             $data->postalAddress = $data->addresses->where('address_type_id', 2)->first();
 
@@ -179,7 +182,8 @@ class EmployeesController extends CustomController
         }
 
         $employeeSkills = $data->skills->pluck('id');
-        $employeeDisabilities = $data->disabilities->pluck('id');
+
+        $employeeDisabilities = $data->disabilities()->withoutGlobalScope('system_predefined')->pluck('disability_employee.disability_id');
 
         return view($this->baseViewPath .'.edit',
             compact('_mode','fullPageEdit','data','titles','genders','maritalstatuses',
@@ -450,7 +454,8 @@ class EmployeesController extends CustomController
         $divisions = Division::pluck('description','id')->all();
         $branches = Branch::pluck('description','id')->all();
         $skills = Skill::pluck('description','id')->all();
-        $disabilities = DisabilityCategory::with('disabilities')->get();
+        $disabilities = Disability::withoutGlobalScope('system_predefined')
+            ->pluck('description', 'id');
 
         $results = array($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups, 
                          $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses, 

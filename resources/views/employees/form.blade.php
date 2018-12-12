@@ -352,16 +352,19 @@
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Skills</label>
                     <div class="col-sm-10">
-                        {!! Form::select('skills[]', $skills, old('skills', isset($employeeSkills) ? $employeeSkills : null), ['class' => 'form-control select-multiple', 'multiple'=>'multiple']) !!}
+                        {!! Form::select('skills[]', $skills,
+                            old('skills', isset($employeeSkills) ? $employeeSkills : null),
+                            ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
+                        ) !!}
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Disabilities</label>
                     <div class="col-sm-10">
-                        {!! Form::groupRelationSelect('disabilities[]', $disabilities, 'disabilities', 
-                            'description', 'description', 'id', 
-                            isset($employeeDisabilities) ? $employeeDisabilities : null, ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
-                            ) !!}
+                        {!! Form::select('disabilities[]', $disabilities,
+                            old('disabilities', isset($employeeDisabilities) ? $employeeDisabilities : null),
+                            ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
+                        ) !!}
                     </div>
                 </div>
             </div>
