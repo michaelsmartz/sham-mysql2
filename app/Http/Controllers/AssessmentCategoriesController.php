@@ -83,6 +83,9 @@ class AssessmentCategoriesController extends CustomController
             $data = $this->contextObj->addData($input);
             $data->assessmentCategoryCategoryQuestions()->sync($accq);
 
+            $points = $data->assessmentCategoryCategoryQuestions->where('is_active',1)->sum('points');
+            $this->contextObj->updateData($data->id, ['threshold' => $points]);
+
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
@@ -136,6 +139,9 @@ class AssessmentCategoriesController extends CustomController
             $data = AssessmentCategory::find($id);
             $data->assessmentCategoryCategoryQuestions()
                 ->sync($accq); //sync what has been selected
+
+            $points = $data->assessmentCategoryCategoryQuestions->where('is_active',1)->sum('points');
+            $this->contextObj->updateData($data->id, ['threshold' => $points]);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
