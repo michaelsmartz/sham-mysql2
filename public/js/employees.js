@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 53);
+/******/ 	return __webpack_require__(__webpack_require__.s = 55);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -23556,6 +23556,433 @@ return $.datepicker;
 /* 20 */,
 /* 21 */,
 /* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
+/**
+* jQuery asAccordion v0.2.2
+* https://github.com/amazingSurge/jquery-asAccordion
+*
+* Copyright (c) amazingSurge
+* Released under the LGPL-3.0 license
+*/
+
+
+var DEFAULTS = {
+  namespace: 'accordion',
+  skin: null,
+  mobileBreakpoint: 768,
+  initialIndex: 0,
+  easing: 'ease-in-out',
+  speed: 500,
+  direction: 'vertical',
+  event: 'click',
+  multiple: false
+};
+
+function transition() {
+  let e;
+  let end;
+  let prefix = '';
+  let supported = false;
+  const el = document.createElement("fakeelement");
+
+  const transitions = {
+    "WebkitTransition": "webkitTransitionEnd",
+    "MozTransition": "transitionend",
+    "OTransition": "oTransitionend",
+    "transition": "transitionend"
+  };
+
+  for (e in transitions) {
+    if (el.style[e] !== undefined) {
+      end = transitions[e];
+      supported = true;
+      break;
+    }
+  }
+  if (/(WebKit)/i.test(window.navigator.userAgent)) {
+    prefix = '-webkit-';
+  }
+  return {
+    prefix,
+    end,
+    supported
+  };
+}
+
+function throttle(func, wait) {
+  const _now = Date.now || function() {
+    return new Date().getTime();
+  };
+
+  let timeout;
+  let context;
+  let args;
+  let result;
+  let previous = 0;
+  let later = function() {
+    previous = _now();
+    timeout = null;
+    result = func.apply(context, args);
+    if (!timeout) {
+      context = args = null;
+    }
+  };
+
+  return (...params) => {
+    /*eslint consistent-this: "off"*/
+    let now = _now();
+    let remaining = wait - (now - previous);
+    context = this;
+    args = params;
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = now;
+      result = func.apply(context, args);
+      if (!timeout) {
+        context = args = null;
+      }
+    } else if (!timeout) {
+      timeout = setTimeout(later, remaining);
+    }
+    return result;
+  };
+}
+
+const NAMESPACE$1 = 'asAccordion';
+
+/**
+ * Plugin constructor
+ **/
+class asAccordion {
+  constructor(element, options) {
+    this.element = element;
+    this.$element = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(element);
+
+    this.options = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({}, DEFAULTS, options, this.$element.data());
+
+    this.namespace = this.options.namespace;
+    this.initialIndex = this.options.initialIndex;
+    this.initialized = false;
+    this.disabled = false;
+    this.current = null;
+
+    this.classes = {
+      // status
+      skin: `${this.namespace}--${this.options.skin}`,
+      direction: `${this.namespace}--${this.options.direction}`,
+      active: `${this.namespace}--active`,
+      disabled: `${this.namespace}--disabled`
+    };
+
+    this.$panel = this.$element.children('li');
+    this.$heading = this.$panel.children('span');
+    this.$expander = this.$panel.children('div');
+
+    this.size = this.$panel.length;
+
+    this.$element.addClass(this.classes.direction);
+    this.$panel.addClass(`${this.namespace}__panel`);
+    this.$heading.addClass(`${this.namespace}__heading`);
+    this.$expander.addClass(`${this.namespace}__expander`);
+
+    if (this.options.skin) {
+      this.$element.addClass(this.classes.skin);
+    }
+
+    this.transition = transition();
+
+    this._trigger('init');
+    this.init();
+  }
+
+  init() {
+    const style = {};
+
+    this.distance = this.$heading.outerHeight();
+    if (this.options.direction === 'vertical') {
+      this.animateProperty = 'height';
+    } else {
+      this.animateProperty = 'width';
+    }
+
+    style[this.animateProperty] = this.distance;
+
+    this.$panel.css(style);
+
+    this.$heading.on(this.options.event, e => {
+      if (this.disabled) {
+        return false;
+      }
+
+      const index = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(e.currentTarget).parent().index();
+      this.set(index);
+      return false;
+    });
+
+    this.set(this.initialIndex);
+    this.current = this.initialIndex;
+
+    this.initialized = true;
+
+    this.responsiveCheck();
+
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(window).on('resize', throttle(() => {
+      this.responsiveCheck();
+    }, 250));
+
+    this._trigger('ready');
+  }
+
+  responsiveCheck() {
+    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default()('html, body').outerWidth() <= this.options.mobileBreakpoint && !this.responsive) {
+      if (this.options.direction === 'vertical') {
+        return;
+      }
+      this.responsive = true;
+
+      this.resize();
+    } else {
+      if (typeof this.defaultDirection === 'undefined' || this.defaultDirection === 'vertical') {
+        return;
+      }
+      this.responsive = false;
+
+      this.resize();
+    }
+  }
+
+  resize() {
+    const style = {};
+    this.defaultDirection = this.options.direction;
+    if (this.options.direction === 'vertical') {
+      this.options.direction = 'horizontal';
+      this.animateProperty = 'width';
+      this.$panel.css('height', '100%');
+    }else {
+      this.options.direction = 'vertical';
+      this.animateProperty = 'height';
+      this.$panel.css('width', 'auto');
+    }
+
+    this.$element.removeClass(this.classes.direction);
+    this.classes.direction = `${this.namespace}--${this.options.direction}`;
+    this.$element.addClass(this.classes.direction);
+
+    style[this.animateProperty] = this.distance;
+    this.$panel.css(style).removeClass(this.classes.active);
+
+    if (this.current.length >= 0 || this.current >= 0) {
+      const index = this.current;
+      this.current = this.current.length >= 0? [] : null;
+      this.set(index);
+    }
+  }
+
+  set(index) {
+    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(index)) {
+      for(let i of index) {
+        this.set(i);
+      }
+    } else {
+      if (index >= this.size || index < 0) {
+        return;
+      }
+
+      const that = this;
+      const $panel = this.$panel.eq(index);
+      const $oldPanel = this.$element.find(`.${this.classes.active}`);
+      let distance;
+      let duration;
+      const style = {};
+      const oldStyle = {};
+
+      const moveEnd = () => {
+        that.$element.trigger('moveEnd');
+      };
+
+      if (typeof duration === 'undefined') {
+        duration = this.options.speed;
+      }
+      duration = Math.ceil(duration);
+
+      if ($panel.hasClass(this.classes.active)) {
+        distance = this.distance;
+        $panel.removeClass(this.classes.active);
+
+        if (this.options.multiple) {
+          for (var key in this.current) {
+            if (this.current[key] === index) {
+              
+            } else {
+              continue;
+            }
+            this.current.splice(key, 1);
+          }
+        } else {
+          this.current = null;
+        }
+      } else {
+        if (this.options.direction === 'vertical') {
+          distance = $panel.find('.' + this.namespace + '__expander').outerHeight() + this.distance;
+        } else {
+          distance = $panel.find('.' + this.namespace + '__expander').outerWidth() + this.distance;
+        }
+
+        if (this.options.multiple && __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(this.current)) {
+          this.current.push(index);
+        } else {
+          this.current = index;
+        }
+
+        if (this.options.multiple) {
+          $panel.addClass(this.classes.active);
+        } else {
+          oldStyle[this.animateProperty] = this.distance;  // used to remove the original distance
+          this.animate($oldPanel, oldStyle, duration, this.options.easing, moveEnd);
+
+          $panel.addClass(this.classes.active).siblings().removeClass(this.classes.active);
+        }
+      }
+
+      style[this.animateProperty] = distance;
+
+      this.animate($panel, style, duration, this.options.easing, moveEnd);
+    }
+  }
+
+  animate($el, properties, duration, easing, callback) {
+    const that = this;
+
+    if(this.transition.supported){
+      window.setTimeout(() => {
+        that.insertRule(`.transition_${easing} {${that.transition.prefix}transition: all ${duration}ms ${easing} 0s;}`);
+
+        $el.addClass(`transition_${easing}`).one(that.transition.end, function() {
+          $el.removeClass(`transition_${easing}`);
+
+          callback.call(this);
+        });
+        $el.css(properties);
+      }, 10);
+    } else {
+      $el.animate(properties, duration, easing, callback);
+    }
+  }
+
+  insertRule(rule) {
+    if (this.rules && this.rules[rule]) {
+      return;
+    } else if (this.rules === undefined) {
+      this.rules = {};
+    } else {
+      this.rules[rule] = true;
+    }
+
+    if (document.styleSheets && document.styleSheets.length) {
+      document.styleSheets[0].insertRule(rule, 0);
+    } else {
+      const style = document.createElement('style');
+      style.innerHTML = rule;
+      document.head.appendChild(style);
+    }
+  }
+
+  _trigger(eventType, ...params) {
+    let data = [this].concat(params);
+
+    // event
+    this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
+
+    // callback
+    eventType = eventType.replace(/\b\w+\b/g, (word) => {
+      return word.substring(0, 1).toUpperCase() + word.substring(1);
+    });
+    let onFunction = `on${eventType}`;
+
+    if (typeof this.options[onFunction] === 'function') {
+      this.options[onFunction].apply(this, params);
+    }
+  }
+
+  enable() {
+    this.disabled = false;
+    this.$element.removeClass(this.classes.disabled);
+    this._trigger('enable');
+  }
+
+  disable() {
+    this.disabled = true;
+    this.$element.addClass(this.classes.disabled);
+    this._trigger('disable');
+  }
+
+  destroy() {
+    this.$element.data(NAMESPACE$1, null);
+    this.$element.remove();
+    this._trigger('destroy');
+  }
+
+  static setDefaults(options) {
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend(DEFAULTS, __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isPlainObject(options) && options);
+  }
+}
+
+var info = {
+  version:'0.2.2'
+};
+
+const NAMESPACE = 'asAccordion';
+const OtherAsAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion;
+
+const jQueryAsAccordion = function(options, ...args) {
+  if (typeof options === 'string') {
+    const method = options;
+
+    if (/^_/.test(method)) {
+      return false;
+    } else if ((/^(get)/.test(method))) {
+      const instance = this.first().data(NAMESPACE);
+      if (instance && typeof instance[method] === 'function') {
+        return instance[method](...args);
+      }
+    } else {
+      return this.each(function() {
+        const instance = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.data(this, NAMESPACE);
+        if (instance && typeof instance[method] === 'function') {
+          instance[method](...args);
+        }
+      });
+    }
+  }
+
+  return this.each(function() {
+    if (!__WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE)) {
+      __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE, new asAccordion(this, options));
+    }
+  });
+};
+
+__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = jQueryAsAccordion;
+
+__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({
+  setDefaults: asAccordion.setDefaults,
+  noConflict: function() {
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = OtherAsAccordion;
+    return jQueryAsAccordion;
+  }
+}, info);
+
+
+/***/ }),
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -24372,7 +24799,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
@@ -26873,7 +27300,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 24 */,
 /* 25 */,
 /* 26 */,
 /* 27 */,
@@ -26902,14 +27328,16 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* 50 */,
 /* 51 */,
 /* 52 */,
-/* 53 */
+/* 53 */,
+/* 54 */,
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(54);
+module.exports = __webpack_require__(56);
 
 
 /***/ }),
-/* 54 */
+/* 56 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -26917,14 +27345,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__);
 
 
 
-__webpack_require__(59);
-__webpack_require__(23);
 __webpack_require__(22);
+__webpack_require__(24);
+__webpack_require__(23);
 
 //import Vue from 'vue/dist/vue.common.js';
 window.Vue = __webpack_require__(6);
@@ -27096,15 +27524,15 @@ var app = new Vue({
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
 
 /***/ }),
-/* 55 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(56)
+var normalizeComponent = __webpack_require__(58)
 /* script */
-var __vue_script__ = __webpack_require__(57)
+var __vue_script__ = __webpack_require__(59)
 /* template */
-var __vue_template__ = __webpack_require__(58)
+var __vue_template__ = __webpack_require__(60)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -27143,7 +27571,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 56 */
+/* 58 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -27252,7 +27680,7 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 57 */
+/* 59 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27297,7 +27725,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
 
 /***/ }),
-/* 58 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -27324,433 +27752,6 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-b98f72da", module.exports)
   }
 }
-
-/***/ }),
-/* 59 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/**
-* jQuery asAccordion v0.2.2
-* https://github.com/amazingSurge/jquery-asAccordion
-*
-* Copyright (c) amazingSurge
-* Released under the LGPL-3.0 license
-*/
-
-
-var DEFAULTS = {
-  namespace: 'accordion',
-  skin: null,
-  mobileBreakpoint: 768,
-  initialIndex: 0,
-  easing: 'ease-in-out',
-  speed: 500,
-  direction: 'vertical',
-  event: 'click',
-  multiple: false
-};
-
-function transition() {
-  let e;
-  let end;
-  let prefix = '';
-  let supported = false;
-  const el = document.createElement("fakeelement");
-
-  const transitions = {
-    "WebkitTransition": "webkitTransitionEnd",
-    "MozTransition": "transitionend",
-    "OTransition": "oTransitionend",
-    "transition": "transitionend"
-  };
-
-  for (e in transitions) {
-    if (el.style[e] !== undefined) {
-      end = transitions[e];
-      supported = true;
-      break;
-    }
-  }
-  if (/(WebKit)/i.test(window.navigator.userAgent)) {
-    prefix = '-webkit-';
-  }
-  return {
-    prefix,
-    end,
-    supported
-  };
-}
-
-function throttle(func, wait) {
-  const _now = Date.now || function() {
-    return new Date().getTime();
-  };
-
-  let timeout;
-  let context;
-  let args;
-  let result;
-  let previous = 0;
-  let later = function() {
-    previous = _now();
-    timeout = null;
-    result = func.apply(context, args);
-    if (!timeout) {
-      context = args = null;
-    }
-  };
-
-  return (...params) => {
-    /*eslint consistent-this: "off"*/
-    let now = _now();
-    let remaining = wait - (now - previous);
-    context = this;
-    args = params;
-    if (remaining <= 0 || remaining > wait) {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      previous = now;
-      result = func.apply(context, args);
-      if (!timeout) {
-        context = args = null;
-      }
-    } else if (!timeout) {
-      timeout = setTimeout(later, remaining);
-    }
-    return result;
-  };
-}
-
-const NAMESPACE$1 = 'asAccordion';
-
-/**
- * Plugin constructor
- **/
-class asAccordion {
-  constructor(element, options) {
-    this.element = element;
-    this.$element = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(element);
-
-    this.options = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({}, DEFAULTS, options, this.$element.data());
-
-    this.namespace = this.options.namespace;
-    this.initialIndex = this.options.initialIndex;
-    this.initialized = false;
-    this.disabled = false;
-    this.current = null;
-
-    this.classes = {
-      // status
-      skin: `${this.namespace}--${this.options.skin}`,
-      direction: `${this.namespace}--${this.options.direction}`,
-      active: `${this.namespace}--active`,
-      disabled: `${this.namespace}--disabled`
-    };
-
-    this.$panel = this.$element.children('li');
-    this.$heading = this.$panel.children('span');
-    this.$expander = this.$panel.children('div');
-
-    this.size = this.$panel.length;
-
-    this.$element.addClass(this.classes.direction);
-    this.$panel.addClass(`${this.namespace}__panel`);
-    this.$heading.addClass(`${this.namespace}__heading`);
-    this.$expander.addClass(`${this.namespace}__expander`);
-
-    if (this.options.skin) {
-      this.$element.addClass(this.classes.skin);
-    }
-
-    this.transition = transition();
-
-    this._trigger('init');
-    this.init();
-  }
-
-  init() {
-    const style = {};
-
-    this.distance = this.$heading.outerHeight();
-    if (this.options.direction === 'vertical') {
-      this.animateProperty = 'height';
-    } else {
-      this.animateProperty = 'width';
-    }
-
-    style[this.animateProperty] = this.distance;
-
-    this.$panel.css(style);
-
-    this.$heading.on(this.options.event, e => {
-      if (this.disabled) {
-        return false;
-      }
-
-      const index = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(e.currentTarget).parent().index();
-      this.set(index);
-      return false;
-    });
-
-    this.set(this.initialIndex);
-    this.current = this.initialIndex;
-
-    this.initialized = true;
-
-    this.responsiveCheck();
-
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(window).on('resize', throttle(() => {
-      this.responsiveCheck();
-    }, 250));
-
-    this._trigger('ready');
-  }
-
-  responsiveCheck() {
-    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default()('html, body').outerWidth() <= this.options.mobileBreakpoint && !this.responsive) {
-      if (this.options.direction === 'vertical') {
-        return;
-      }
-      this.responsive = true;
-
-      this.resize();
-    } else {
-      if (typeof this.defaultDirection === 'undefined' || this.defaultDirection === 'vertical') {
-        return;
-      }
-      this.responsive = false;
-
-      this.resize();
-    }
-  }
-
-  resize() {
-    const style = {};
-    this.defaultDirection = this.options.direction;
-    if (this.options.direction === 'vertical') {
-      this.options.direction = 'horizontal';
-      this.animateProperty = 'width';
-      this.$panel.css('height', '100%');
-    }else {
-      this.options.direction = 'vertical';
-      this.animateProperty = 'height';
-      this.$panel.css('width', 'auto');
-    }
-
-    this.$element.removeClass(this.classes.direction);
-    this.classes.direction = `${this.namespace}--${this.options.direction}`;
-    this.$element.addClass(this.classes.direction);
-
-    style[this.animateProperty] = this.distance;
-    this.$panel.css(style).removeClass(this.classes.active);
-
-    if (this.current.length >= 0 || this.current >= 0) {
-      const index = this.current;
-      this.current = this.current.length >= 0? [] : null;
-      this.set(index);
-    }
-  }
-
-  set(index) {
-    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(index)) {
-      for(let i of index) {
-        this.set(i);
-      }
-    } else {
-      if (index >= this.size || index < 0) {
-        return;
-      }
-
-      const that = this;
-      const $panel = this.$panel.eq(index);
-      const $oldPanel = this.$element.find(`.${this.classes.active}`);
-      let distance;
-      let duration;
-      const style = {};
-      const oldStyle = {};
-
-      const moveEnd = () => {
-        that.$element.trigger('moveEnd');
-      };
-
-      if (typeof duration === 'undefined') {
-        duration = this.options.speed;
-      }
-      duration = Math.ceil(duration);
-
-      if ($panel.hasClass(this.classes.active)) {
-        distance = this.distance;
-        $panel.removeClass(this.classes.active);
-
-        if (this.options.multiple) {
-          for (var key in this.current) {
-            if (this.current[key] === index) {
-              
-            } else {
-              continue;
-            }
-            this.current.splice(key, 1);
-          }
-        } else {
-          this.current = null;
-        }
-      } else {
-        if (this.options.direction === 'vertical') {
-          distance = $panel.find('.' + this.namespace + '__expander').outerHeight() + this.distance;
-        } else {
-          distance = $panel.find('.' + this.namespace + '__expander').outerWidth() + this.distance;
-        }
-
-        if (this.options.multiple && __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(this.current)) {
-          this.current.push(index);
-        } else {
-          this.current = index;
-        }
-
-        if (this.options.multiple) {
-          $panel.addClass(this.classes.active);
-        } else {
-          oldStyle[this.animateProperty] = this.distance;  // used to remove the original distance
-          this.animate($oldPanel, oldStyle, duration, this.options.easing, moveEnd);
-
-          $panel.addClass(this.classes.active).siblings().removeClass(this.classes.active);
-        }
-      }
-
-      style[this.animateProperty] = distance;
-
-      this.animate($panel, style, duration, this.options.easing, moveEnd);
-    }
-  }
-
-  animate($el, properties, duration, easing, callback) {
-    const that = this;
-
-    if(this.transition.supported){
-      window.setTimeout(() => {
-        that.insertRule(`.transition_${easing} {${that.transition.prefix}transition: all ${duration}ms ${easing} 0s;}`);
-
-        $el.addClass(`transition_${easing}`).one(that.transition.end, function() {
-          $el.removeClass(`transition_${easing}`);
-
-          callback.call(this);
-        });
-        $el.css(properties);
-      }, 10);
-    } else {
-      $el.animate(properties, duration, easing, callback);
-    }
-  }
-
-  insertRule(rule) {
-    if (this.rules && this.rules[rule]) {
-      return;
-    } else if (this.rules === undefined) {
-      this.rules = {};
-    } else {
-      this.rules[rule] = true;
-    }
-
-    if (document.styleSheets && document.styleSheets.length) {
-      document.styleSheets[0].insertRule(rule, 0);
-    } else {
-      const style = document.createElement('style');
-      style.innerHTML = rule;
-      document.head.appendChild(style);
-    }
-  }
-
-  _trigger(eventType, ...params) {
-    let data = [this].concat(params);
-
-    // event
-    this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
-
-    // callback
-    eventType = eventType.replace(/\b\w+\b/g, (word) => {
-      return word.substring(0, 1).toUpperCase() + word.substring(1);
-    });
-    let onFunction = `on${eventType}`;
-
-    if (typeof this.options[onFunction] === 'function') {
-      this.options[onFunction].apply(this, params);
-    }
-  }
-
-  enable() {
-    this.disabled = false;
-    this.$element.removeClass(this.classes.disabled);
-    this._trigger('enable');
-  }
-
-  disable() {
-    this.disabled = true;
-    this.$element.addClass(this.classes.disabled);
-    this._trigger('disable');
-  }
-
-  destroy() {
-    this.$element.data(NAMESPACE$1, null);
-    this.$element.remove();
-    this._trigger('destroy');
-  }
-
-  static setDefaults(options) {
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend(DEFAULTS, __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isPlainObject(options) && options);
-  }
-}
-
-var info = {
-  version:'0.2.2'
-};
-
-const NAMESPACE = 'asAccordion';
-const OtherAsAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion;
-
-const jQueryAsAccordion = function(options, ...args) {
-  if (typeof options === 'string') {
-    const method = options;
-
-    if (/^_/.test(method)) {
-      return false;
-    } else if ((/^(get)/.test(method))) {
-      const instance = this.first().data(NAMESPACE);
-      if (instance && typeof instance[method] === 'function') {
-        return instance[method](...args);
-      }
-    } else {
-      return this.each(function() {
-        const instance = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.data(this, NAMESPACE);
-        if (instance && typeof instance[method] === 'function') {
-          instance[method](...args);
-        }
-      });
-    }
-  }
-
-  return this.each(function() {
-    if (!__WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE)) {
-      __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE, new asAccordion(this, options));
-    }
-  });
-};
-
-__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = jQueryAsAccordion;
-
-__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({
-  setDefaults: asAccordion.setDefaults,
-  noConflict: function() {
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = OtherAsAccordion;
-    return jQueryAsAccordion;
-  }
-}, info);
-
 
 /***/ })
 /******/ ]);

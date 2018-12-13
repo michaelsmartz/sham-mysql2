@@ -1,7 +1,7 @@
 import {on} from 'delegated-events';
 
 require('touch-dnd/touch-dnd.js');
-//require('jquery-asAccordion');
+require('jquery-asAccordion');
 
 require('picker');
 require('pickadate/lib/picker.date.js');
@@ -71,7 +71,7 @@ const app = new Vue({
 
             //$("#birth_date").pickadate({min: -65*365, max:-18*365});
             
-            //$('.accordion').asAccordion();
+            $('.accordion').asAccordion();
             $('.select-multiple').SumoSelect({csvDispCount: 10, up:true});
 
             $(document).on('change', '.datepicker', function () { //use this line if you create datepickers dynamically
