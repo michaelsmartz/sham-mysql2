@@ -73,6 +73,6 @@
         'acceptedFiles' => "['doc', 'docx', 'ppt', 'pptx', 'pdf']"
     ])
 </div>
-
+<div id="date-picker"> </div>
 </div>
 
