@@ -64,7 +64,13 @@ class ModuleAssessmentResponsesController extends CustomController
                                      ->where('module_assessment_response_id', '=', $id)
                                      ->get();
 
-        $data = $moduleAssessmentResponses[0]->moduleAssessmentResponse;
+        if ($moduleAssessmentResponses->count() == 0|| empty($moduleAssessmentResponses)){
+            return View('not-allowed')
+                ->with('title', 'Module Assessment Responses')
+                ->with('warnings', array('There are no responses for this module assessment'));
+        }else{
+            $data = $moduleAssessmentResponses[0]->moduleAssessmentResponse;
+        }
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.show', compact('assessmentId', 'data', 'moduleAssessmentResponses', 'moduleAssessment'))->renderSections();
@@ -96,16 +102,18 @@ class ModuleAssessmentResponsesController extends CustomController
             $input = array_except($request->all(),array('_token','_method','is_reviewed'));
             $reviewed = $request->only('is_reviewed');
 
-            $ids = array_map(function ($value) {
-                return  $value['id'];
-            }, $input['responseDetail']);
-            $revisedPoints = array_map(function ($value) {
-                return  $value['points'];
-            }, $input['responseDetail']);
-            
-            $this->contextObj->updateData($responseId, $reviewed);
-            foreach($ids as $key => $id) {
-                ModuleAssessmentResponseDetail::where('id', $id)->update(['points' => $revisedPoints[$key]]);
+            if(!empty($input)) {
+                $ids = array_map(function ($value) {
+                    return $value['id'];
+                }, $input['responseDetail']);
+                $revisedPoints = array_map(function ($value) {
+                    return $value['points'];
+                }, $input['responseDetail']);
+
+                $this->contextObj->updateData($responseId, $reviewed);
+                foreach ($ids as $key => $id) {
+                    ModuleAssessmentResponseDetail::where('id', $id)->update(['points' => $revisedPoints[$key]]);
+                }
             }
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');

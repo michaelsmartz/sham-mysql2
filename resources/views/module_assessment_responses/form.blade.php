@@ -3,7 +3,7 @@
 		<span>
 			<strong>{{$moduleAssessment->description}}</strong> 
 			<h5> <strong>Assessment Type:</strong> {{$moduleAssessment->assessmentType->description}}
-				|  <strong>Assessment Response Date:</strong> {{$moduleAssessmentResponses[0]->moduleAssessmentResponse->date_completed}}
+				|  <strong>Assessment Response Date:</strong> {{$data->date_completed}}
 				|  <strong>Passmark:</strong> {{$moduleAssessment->pass_mark}}
 			</h5>
 		</span>
@@ -13,6 +13,7 @@
 {!! Form::hidden('is_reviewed', "1") !!}
 
 <ul class="questions">
+	@if(count($moduleAssessmentResponses) >0)
 	@forelse($moduleAssessmentResponses as $responseDetail)
 		<li class="question-container">
 			<div class="row">
@@ -78,4 +79,5 @@
 		</li>
 	@empty
 	@endforelse
+	@endif
 </ul>

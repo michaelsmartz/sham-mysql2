@@ -14,6 +14,7 @@
         <div class="col-sm-12">
             @include ('module_assessment_responses.form', [
                 'moduleAssessmentResponses' => $moduleAssessmentResponses,
+                'data'=>$data,
                 'moduleAssessment' => $moduleAssessment
             ])
         </div>
