@@ -110,7 +110,7 @@
     <div class="modal-footer">
         <div class="form-group">
             <button type="submit" class="btn btn-primary pdf-download" name="Save">Download PDF</button>
-            <button type="button" class="btn btn-primary " data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary " onclick="history.back()">Close</button>
         </div>
     </div>
 

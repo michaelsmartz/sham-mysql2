@@ -412,8 +412,8 @@
                                    name="qualifications[][student_no]" class="form-control">
                         </div>
                         <div class="col-sm-2">
-                            <DatePicker v-model="qual.obtained_on" class="form-control"
-                                    name="qualifications[][obtained_on]" date-format="yy-mm-dd" change-month="true" change-year="true"></DatePicker>
+                            <input v-model="qual.obtained_on" type="text" class="form-control datepicker"
+                                    name="qualifications[][obtained_on]" date-format="yy-mm-dd" change-month="true" change-year="true">
                         </div>
                     </div>
                 </div>

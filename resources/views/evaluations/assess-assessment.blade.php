@@ -55,7 +55,7 @@
         <div class="modal-footer">
             <div class="form-group">
                 {!! Form::submit('Save',['class'=>'btn bg-gold b-r4 text-white has-spinner']) !!}
-                <button type="button" class="btn btn-default bg-grey b-r4" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default bg-grey b-r4" onclick="history.back()">Cancel</button>
             </div>
         </div>
         {!! Form::close() !!}
