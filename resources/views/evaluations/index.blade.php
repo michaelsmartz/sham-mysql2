@@ -107,4 +107,66 @@
             @endcomponent
         </div>
     </div>
+
+    <div id="myModal1" class="modal fade">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="error"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="myModal" class="modal fade in">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Evaluation</h4>
+                </div>
+                <div class="modal-body">
+                    <p><i class="glyphicon glyphicon-info-sign"></i> Please complete evaluation.</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-check"></span> Ok</button>
+                    </div>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dalog -->
+    </div><!-- /.modal -->
+
+
+@endsection
+@section('post-body')
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+        $('document').ready(function(){
+
+            var evaluationassessorid = '{{session()->has('EvaluationAssessorId')?session('EvaluationAssessorId'):-1}}';
+            var evaluationid = '{{session()->has('EvaluationId')?session('EvaluationId'):-1}}';
+
+            if(evaluationassessorid > 0 && evaluationid > 0)
+            {
+                $("#myModal").modal('show');
+                window.location =  "{{url()->to('evaluations')}}/"+evaluationassessorid+"/EvaluationId/"+evaluationid+"/assess";
+            }
+        });
+    </script>
+
 @endsection

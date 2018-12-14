@@ -187,7 +187,14 @@ class EvaluationsController extends CustomController
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        $triggerid = 0;
+        if ($employeeid != null && in_array($employeeid, $selectedassessors))
+        {
+            $triggerid = $employeeid;
+        }
+
+        return redirect()->route($this->baseViewPath .'.index')
+                    ->with([ 'EvaluationId' => $context->id, 'EvaluationAssessorId' => $triggerid]);
     }
 
     public function edit(Request $request)

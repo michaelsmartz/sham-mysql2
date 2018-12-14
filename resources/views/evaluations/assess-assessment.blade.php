@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Assesss')
+@section('title','Assess')
 @section('content')
 
     <div class="">
