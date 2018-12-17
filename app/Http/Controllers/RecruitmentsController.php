@@ -22,7 +22,7 @@ class RecruitmentsController extends CustomController
         $this->baseViewPath = 'recruitments';
     }
 
-        /**
+    /**
      * Display a listing of the policies.
      *
      * @return Illuminate\View\View
@@ -33,5 +33,15 @@ class RecruitmentsController extends CustomController
         return view($this->baseViewPath .'.index');
     }
 
+    /**
+     * Display a listing of the policies.
+     *
+     * @return Illuminate\View\View
+     */
+    public function request()
+    {
+
+        return view($this->baseViewPath .'.request');
+    }
 
 }

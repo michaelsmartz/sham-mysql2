@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 38);
+/******/ 	return __webpack_require__(__webpack_require__.s = 40);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -11131,76 +11131,6 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
-/***/ 38:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(39);
-
-
-/***/ }),
-
-/***/ 39:
-/***/ (function(module, exports, __webpack_require__) {
-
-window.Vue = __webpack_require__(2);
-
-var vm = new Vue({
-	el: "#recruitment",
-	data: {
-		people: [{
-			name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut",
-			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }]
-		}, {
-			name: "Steve Jobs", status: "applied", picture: "", jobTitle: "Chief Marketing Officer",
-			documents: []
-		}, {
-			name: "Jeff Bezos", status: "applied", picture: "", jobTitle: "Operator",
-			documents: []
-		}, {
-			name: "George Clooney", status: "review", picture: "", jobTitle: "Web Developer",
-			documents: []
-		}, {
-			name: "Meryl Streep", status: "review", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "Amy Poehler", status: "interviewing", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "Lady of Lórien", status: "interviewing", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "BB8", status: "offer", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "Michael Scott", status: "contract", picture: "", jobTitle: "",
-			documents: []
-		}],
-		selectedCategory: "applied",
-		current: {}
-	},
-	computed: {
-		filteredPeople: function filteredPeople() {
-			var vm = this;
-			var category = vm.selectedCategory;
-
-			if (category === "All") {
-				return vm.people;
-			} else {
-				return vm.people.filter(function (person) {
-					return person.status === category;
-				});
-			}
-		}
-	},
-	methods: {
-		setCurrent: function setCurrent(item) {
-			this.current = item;
-		}
-	}
-});
-
-/***/ }),
-
 /***/ 4:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11392,6 +11322,76 @@ var vm = new Vue({
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(5)))
+
+/***/ }),
+
+/***/ 40:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(41);
+
+
+/***/ }),
+
+/***/ 41:
+/***/ (function(module, exports, __webpack_require__) {
+
+window.Vue = __webpack_require__(2);
+
+var rr = new Vue({
+    el: '#recruitment-request',
+    data: {
+        errors: [],
+        jobTitle: null,
+        description: null,
+        shortDescription: null,
+        salary: null,
+        showSalary: false,
+        departments: ["Finance", "Development", "Testing"],
+        employmentTypes: ["Full-time", "Part-time", "Contract", "Temporary", "Other"],
+        selectedDepartment: null,
+        selectedEmploymentType: null
+    },
+    methods: {
+        checkForm: function checkForm(e) {
+            if (this.jobTitle && this.description && this.shortDescription) {
+                return true;
+            }
+
+            this.errors = [];
+
+            if (!this.jobTitle) {
+                this.errors.push('Job title is required.');
+            }
+            if (!this.shortDescription) {
+                this.errors.push('Short description is required.');
+            }
+            if (!this.description) {
+                this.errors.push('Full job description is required.');
+            }
+
+            if (this.showSalary && !this.salary) {
+                this.errors.push('Salary is required.');
+            }
+
+            if (!this.selectedDepartment) {
+                this.errors.push('Department is required.');
+            }
+
+            if (!this.selectedEmploymentType) {
+                this.errors.push('Employment Type is required.');
+            }
+
+            e.preventDefault();
+        },
+        selectedDepartmentFunc: function selectedDepartmentFunc() {
+            console.log(this.selectedDepartment);
+        },
+        selectedEmploymentTypeFunc: function selectedEmploymentTypeFunc() {
+            console.log(this.selectedEmploymentType);
+        }
+    }
+});
 
 /***/ }),
 
@@ -11587,4 +11587,4 @@ process.umask = function() { return 0; };
 /***/ })
 
 /******/ });
-//# sourceMappingURL=recruitment.js.map
+//# sourceMappingURL=recruitment-request.js.map

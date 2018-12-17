@@ -59,6 +59,7 @@ mix.js('resources/assets/js/employees.js', 'public/js/employees.js');
 mix.js('resources/assets/js/uploader.js', 'public/js');
 mix.js('resources/assets/js/parsley.js', 'public/js');
 mix.js('resources/assets/js/recruitment.js', 'public/js');
+mix.js('resources/assets/js/recruitment-request.js', 'public/js');
 
 mix.sass('resources/assets/sass/app.scss', 'public/css', {
     outputStyle: 'nested'
@@ -80,6 +81,9 @@ mix.sass('resources/assets/sass/import_steps.scss', 'public/css', {
 });
 mix.sass('resources/assets/sass/nav-wizard.scss', 'public/css', {
   outputStyle: 'nested'
+});
+mix.sass('resources/assets/sass/recruitment-request.scss', 'public/css', {
+    outputStyle: 'nested'
 });
 
 mix/*.webpackConfig({
@@ -107,6 +111,7 @@ mix.minify('public/css/lifecycle.css');
 mix.minify('public/css/hopscotch.css');
 mix.minify('public/css/import_steps.css');
 mix.minify('public/css/nav-wizard.css');
+mix.minify('public/css/recruitment-request.css');
 
 mix.then(() => {
     minifier.minify('public/css/app.css');
@@ -116,6 +121,7 @@ mix.then(() => {
     minifier.minify('public/css/hopscotch.css');
     minifier.minify('public/css/import_steps.css');
     minifier.minify('public/css/nav-wizard.css');
+    minifier.minify('public/css/recruitment-request.css');
 
     //minifier.minify('public/js/app.js');
     //minifier.minify('public/js/alt-app.js');
@@ -123,6 +129,7 @@ mix.then(() => {
     minifier.minify('public/js/uploader.js');
     minifier.minify('public/js/parsley.js');
     minifier.minify('public/js/recruitment.js');
+    minifier.minify('public/js/recruitment-request.js');
     if (!mix.inProduction()) {
       //minifier.minify('public/js/employees.js');
     }
