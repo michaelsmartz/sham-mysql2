@@ -1,12 +1,14 @@
 @extends('portal-index')
 @section('title','Candidates')
 @section('content')
-    <div id="candidates">
+    <div id="jobs">
         <v-client-table :columns="columns" :data="data" :options="options">
-            <a slot="uri" slot-scope="props" target="_blank" :href="props.row.uri" class="glyphicon glyphicon-eye-open"></a>
+            <a slot="applicants" slot-scope="props" data-wenk="show applicants" target="_blank" :href="props.row.applicants" class="glyphicon glyphicon-eye-open"></a>
 
             <div slot="child_row" slot-scope="props">
-                The link to @{{props.row.name}} is <a :href="props.row.uri">@{{props.row.uri}}</a>
+                <div id="candidates">
+                    <v-client-table :columns="subColumns" :data="props.row.applicants" :options="subOptions"></v-client-table>
+                </div>
             </div>
         </v-client-table>
     </div>

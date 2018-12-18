@@ -73,6 +73,7 @@
     "tootik": "^1.0.2",
     "touch-dnd": "^1.1.3",
     "url-search-params-update": "^1.5.0",
+    "vuex": "^3.0.1",
     "webpack": "^3.2.0",
     "webpack-jquery-ui": "^1.0.0",
     "wenk": "^1.0.7"
