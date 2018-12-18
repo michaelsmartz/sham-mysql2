@@ -142,7 +142,6 @@
 @endsection
 
 @section('post-body')
-    <link href="{{URL::to('/')}}/css/nav-wizard.min.css" rel="stylesheet">
     <link href="{{URL::to('/')}}/css/recruitment-request.min.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/recruitment-request.min.js"></script>
 @endsection

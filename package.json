@@ -29,7 +29,8 @@
     "pace-progress": "^1.0.2",
     "progress": "^2.0.0",
     "script-loader": "^0.7.2",
-    "vue": "^2.1.10"
+    "vue": "^2.1.10",
+    "vue-tables-2": "^1.4.70"
   },
   "dependencies": {
     "@benjaminreid/ready.js": "^0.1.2",

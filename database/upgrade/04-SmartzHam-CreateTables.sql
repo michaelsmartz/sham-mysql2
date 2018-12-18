@@ -158,3 +158,4 @@ create table `csv_data` (`id` int unsigned not null auto_increment primary key, 
 #-- 12/12/18
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disabilities', '12', '1');
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disability Category ', '12', '1');
+INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Candidates', '4', '1');

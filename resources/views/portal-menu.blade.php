@@ -204,6 +204,9 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_REQUESTS]))
                 <li> <a href="{{URL::to('/')}}/recruitment_request">Recruitment Request</a></li>
             @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_CANDIDATES]))
+                <li> <a href="{{URL::to('/')}}/candidates">Candidates</a></li>
+            @endif
         </ul>
     </li>
 @endif

@@ -189,6 +189,7 @@ Auth::routes();
         #region Recruitment
         Route::resource('recruitment', 'RecruitmentsController');
         Route::get('recruitment_request', 'RecruitmentsController@request');
+        Route::get('candidates', 'RecruitmentsController@candidates');
         #endregion
     });
 #endregion

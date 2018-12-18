@@ -140,6 +140,7 @@ class SystemSubModule extends Model
     const CONST_DISCIPLINARYDECISIONS = 128;
     const CONST_DISABILITY = 129;
     const CONST_DISABILITY_CATEGORY = 130;
+    const CONST_RECRUITMENT_CANDIDATES = 131;
 
     protected $casts = [
         'id' => 'integer',
