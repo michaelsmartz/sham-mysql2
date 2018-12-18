@@ -193,6 +193,21 @@
     </li>
 @endif
 
+@if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT]))
+    <li class="has-sub">
+        <a href="javascript:;">
+            <b class="caret pull-right"></b>
+            <strong><i class="fa fa-user-plus fa-fw"></i></strong>
+            <span>Recruitment</span>
+        </a>
+        <ul class="sub-menu">
+            @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_REQUESTS]))
+                <li> <a href="{{URL::to('/')}}/recruitment_request">Recruitment Request</a></li>
+            @endif
+        </ul>
+    </li>
+@endif
+
 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS]))
     <li class="has-sub">
         <a href="javascript:;">

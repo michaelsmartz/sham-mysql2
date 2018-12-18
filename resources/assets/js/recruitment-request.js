@@ -7,8 +7,12 @@ const rr = new Vue({
         jobTitle: null,
         description: null,
         shortDescription: null,
-        salary: null,
+        yearExperience: null,
+        minSalary: null,
+        maxSalary: null,
         showSalary: false,
+        internalRecruitment: false,
+        externalRecruitment: false,
         departments: [
              "Finance",
              "Development",
@@ -21,8 +25,17 @@ const rr = new Vue({
              "Temporary",
              "Other",
         ],
+        qualifications:[
+            "Higher School Certificate",
+            "Certificate",
+            "Diploma",
+            "Degree",
+            "Masters",
+            "PhD",
+        ],
         selectedDepartment: null,
         selectedEmploymentType: null,
+        selectedQualification: null,
     },
     methods:{
         checkForm: function (e) {
@@ -42,8 +55,12 @@ const rr = new Vue({
                 this.errors.push('Full job description is required.');
             }
 
-            if(this.showSalary && !this.salary){
-                this.errors.push('Salary is required.');
+            if(this.showSalary && !this.minSalary){
+                this.errors.push('Minimum salary is required.');
+            }
+
+            if(this.showSalary && !this.maxSalary){
+                this.errors.push('Maximum salary is required.');
             }
 
             if(!this.selectedDepartment){
@@ -52,6 +69,14 @@ const rr = new Vue({
 
             if(!this.selectedEmploymentType){
                 this.errors.push('Employment Type is required.');
+            }
+
+            if(!this.selectedQualification){
+                this.errors.push('Qualification is required.');
+            }
+
+            if(!this.yearExperience){
+                this.errors.push('Years of experience is required.');
             }
 
             e.preventDefault();
