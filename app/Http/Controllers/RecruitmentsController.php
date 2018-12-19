@@ -43,16 +43,4 @@ class RecruitmentsController extends CustomController
 
         return view($this->baseViewPath .'.request');
     }
-
-    /**
-     * list of candidates
-     *
-     * @return Illuminate\View\View
-     */
-    public function candidates()
-    {
-
-        return view($this->baseViewPath .'.candidates');
-    }
-
 }

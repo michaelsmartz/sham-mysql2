@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 
-class RecruitmentRequestsController extends CustomController
+class CandidatesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -19,7 +19,7 @@ class RecruitmentRequestsController extends CustomController
      */
     public function __construct()
     {
-        $this->baseViewPath = 'recruitment_requests';
+        $this->baseViewPath = 'candidates';
         $this->baseFlash = 'Recruitment requests details ';
     }
 
@@ -30,7 +30,7 @@ class RecruitmentRequestsController extends CustomController
      */
     public function index()
     {
-        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_REQUESTS);
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_CANDIDATES);
 
         $requests = [];
 
@@ -68,7 +68,7 @@ class RecruitmentRequestsController extends CustomController
 
     public function edit(Request $request)
     {
-        $id = Route::current()->parameter('recruitment_request');
+        $id = Route::current()->parameter('candidate');
         $data = $this->contextObj->findData($id);
 
         $requests = [];
@@ -122,7 +122,7 @@ class RecruitmentRequestsController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('recruitment_request');
+            $id = Route::current()->parameter('candidate');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');

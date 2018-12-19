@@ -10,34 +10,31 @@ Vue.use(Event);
 Vue.use(Vuex);
 
 var table = new Vue({
-    el: '#jobs',
+    el: '#candidates',
     data:  function (){
         return{
-            columns: ['vacancy','jobTitle','hiringManager','location','department','publishedDate','status'],
-            subColumns: ['candidate','email','contactNumber','dateApplied','status'],
+            columns: [
+                'title',
+                'gender',
+                'maritalStatus',
+                'surname',
+                'firstName',
+                'dob',
+                'personalEmail',
+                'homeAddress',
+                'phone',
+                'idNumber',
+                'skills',
+                'disabilities',
+                'edit',
+                'delete',
+            ],
+            subColumns: [
+                'cv',
+            ],
             data: getData(),
             options: {
-                filterByColumn: true,
-                perPage:2,
-                texts: {
-                    filter: "Filter:",
-                    filterBy: 'Filter by {column}',
-                    count:' '
-                },
-                pagination: { chunk:10 },
-                headings: {
-                    vacancy: 'Vacancy',
-                    jobTitle: 'Job Title',
-                    hiringManager: 'Hiring Manager',
-                    location: 'Location',
-                    department: 'Department',
-                    publishedDate: 'Published Date',
-                    status: 'Status',
-                },
-                sortable: ['vacancy','jobTitle','hiringManager','location','department','publishedDate','status'],
-                filterable: ['vacancy','jobTitle','hiringManager','location','department','publishedDate','status']
-            },
-            subOptions: {
+                filter: false,
                 filterByColumn: false,
                 perPage:2,
                 texts: {
@@ -47,74 +44,122 @@ var table = new Vue({
                 },
                 pagination: { chunk:10 },
                 headings: {
-                    candidate: 'Candidate',
-                    email: 'Email',
-                    contactNumber: 'Contact Number',
-                    dateApplied: 'Date Applied',
-                    status: 'Status'
+                    title: "Title",
+                    gender: "Gender",
+                    maritalStatus: "Marital Status",
+                    surname: "Surname",
+                    firstName: "FirstName",
+                    dob: "Date of Birth",
+                    personalEmail: "Personal Email",
+                    homeAddress: "Home Address",
+                    phone: "Phone",
+                    idNumber: "ID number",
+                    skills: "Skills",
+                    qualifications: "Qualifications",
+                    disabilities: "Disabilities",
                 },
-                sortable: ['candidate','email','contactNumber','dateApplied','status'],
-                filterable: ['candidate','email','contactNumber','dateApplied','status']
+                sortable: [
+                    'title',
+                    'gender',
+                    'maritalStatus',
+                    'surname',
+                    'firstName',
+                    'dob',
+                    'personalEmail',
+                    'homeAddress',
+                    'phone',
+                    'idNumber',
+                    'skills',
+                    'disabilities',
+                ],
+                filterable: false
+                // filterable: [
+                // 'title',
+                // 'gender',
+                // 'maritalStatus',
+                // 'surname',
+                // 'firstName',
+                // 'dob',
+                // 'personalEmail',
+                // 'homeAddress',
+                // 'phone',
+                // 'idNumber',
+                // 'skills',
+                // 'disabilities'
+                // ]
+            },
+            subOptions:{
+                filter: false,
+                filterByColumn: false,
+                headings: {
+                    cv: "Filename"
+                },
+                filterable: false
+            },
+            methods:{
+                stages: function(id){
+                    window.location.href = '/recruitment';
+                },
+                erase: function (id) {
+                    alert(id);
+                },
+                edit: function (id) {
+                    window.location.href = '/recruitment';
+                },
+                download: function (id) {
+                    alert(id);
+                }
             }
         }
-
     }
 });
 
 function getData() {
     return [{
-        jobTitle: "Accountant",
-        vacancy: "Accounts Clerk",
-        hiringManager: "Tom John",
-        location: "Zimbabwe",
-        department: "Finance",
-        status: "Published",
-        publishedDate: "2015-04-24T01:46:50.459583",
-        created_at: "2015-04-24T01:46:50.459583",
-        updated_at: "2015-04-24T01:46:50.459593",
-        applicants: [{
-            candidate:"Iron man",
-            email:"ironman@gmail.com",
-            contactNumber: "+23052222222",
-            dateApplied: "2018-10-17",
-            status: "Application received"
+        id:1,
+        title: "Mr",
+        gender: "Male",
+        maritalStatus: "Single",
+        surname: "El",
+        firstName: "Nino",
+        dob: "23/12/09",
+        personalEmail: "elnino@gmail.com",
+        homeAddress: "2 wall street, Iraq",
+        phone: "+3322323333",
+        idNumber: "p1212362112436w",
+        skills: "php",
+        qualifications: "Masters",
+        disabilities: "Tinnitus, Mobility of limbs",
+        attachments: [{
+            cv:"cv.pdf"
         },{
-            candidate:"Wolverine",
-            email:"wolverine@gmail.com",
-            contactNumber: "+23054444444",
-            dateApplied: "2018-11-17",
-            status: "Shortlisted"
+            cv:"cv2.pdf"
+        },
+        {
+            cv:"cv3.pdf"
         }],
-        id: 245
-    }, {
-        jobTitle: "Assistant Architect",
-        vacancy: "Software Development Manager",
-        hiringManager: "Alan Parrish",
-        location: "Zambia",
-        department: "IT",
-        status: "Published",
-        publishedDate: "2015-04-24T01:46:50.457459",
-        created_at: "2015-04-24T01:46:50.457459",
-        updated_at: "2015-04-24T01:46:50.457468",
-        applicants: [{
-            candidate:"Maxim Bady",
-            email:"maxim@gmail.com",
-            contactNumber: "+23057777777",
-            dateApplied: "2018-10-18",
-            status: "Application received"
+        photo: "photo.jpg"
+    },{
+        id:2,
+        title: "Miss",
+        gender: "Female",
+        maritalStatus: "Single",
+        surname: "Nina",
+        firstName: "Williams",
+        dob: "23/12/89",
+        personalEmail: "NinaWilliams@gmail.com",
+        homeAddress: "43 river land, Long Mountain",
+        phone: "+33444444444",
+        idNumber: "p527993424234o",
+        skills: "Mysql",
+        qualifications: "phD",
+        disabilities: "Optic Atropy",
+        attachments: [{
+            cv:"cv.pdf"
+        },{
+            cv:"cv2.pdf"
         }],
-        id: 244
-    }, {
-        jobTitle: "Front End Developer",
-        vacancy: "Front End Developer",
-        hiringManager: "TheGeek",
-        location: "Yemen",
-        department: "IT",
-        status: "Published",
-        publishedDate: "2015-04-24T01:46:50.454731",
-        created_at: "2015-04-24T01:46:50.454731",
-        updated_at: "2015-04-24T01:46:50.454741",
-        applicants: [],
-        id: 243
-    }];
+        photo: "photo.jpg"
+    },
+    ];
 }

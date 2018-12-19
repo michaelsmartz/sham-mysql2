@@ -23,11 +23,12 @@ const table = new Vue({
             'recruitment',
             'edit',
             'stages',
-            'erase',
+            'delete',
         ],
         data: getData(),
         options: {
-            filterByColumn: true,
+            filter: false,
+            filterByColumn: false,
             perPage:2,
             texts: {
                 filter: "Filter:",
@@ -55,16 +56,17 @@ const table = new Vue({
                 'experience',
                 'recruitment',
             ],
-            filterable: [
-                'jobTitle',
-                'shortDescription',
-                'description',
-                'department',
-                'employmentType',
-                'qualification',
-                'experience',
-                'recruitment'
-            ],
+            // filterable: [
+            //     'jobTitle',
+            //     'shortDescription',
+            //     'description',
+            //     'department',
+            //     'employmentType',
+            //     'qualification',
+            //     'experience',
+            //     'recruitment'
+            // ],
+            filterable: false
         },
     },
     methods:{

@@ -45840,10 +45840,11 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vue
 var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#recruitment-requests-table',
     data: {
-        columns: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment', 'edit', 'stages', 'erase'],
+        columns: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment', 'edit', 'stages', 'delete'],
         data: getData(),
         options: {
-            filterByColumn: true,
+            filter: false,
+            filterByColumn: false,
             perPage: 2,
             texts: {
                 filter: "Filter:",
@@ -45862,7 +45863,17 @@ var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
                 recruitment: 'Recruitment'
             },
             sortable: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment'],
-            filterable: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment']
+            // filterable: [
+            //     'jobTitle',
+            //     'shortDescription',
+            //     'description',
+            //     'department',
+            //     'employmentType',
+            //     'qualification',
+            //     'experience',
+            //     'recruitment'
+            // ],
+            filterable: false
         }
     },
     methods: {

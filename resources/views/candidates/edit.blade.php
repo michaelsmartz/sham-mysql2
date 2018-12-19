@@ -1,7 +1,7 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Edit Recruitment Requests')
+@section('title', 'Edit Candidates')
 
-@section('modalTitle', 'Edit Recruitment Requests')
+@section('modalTitle', 'Edit Candidates')
 @section('modalFooter')
     <input class="btn btn-primary pull-right" type="submit" value="Submit">
     <a href="" class="btn btn-default pull-right" title="Show all Recruitment Request">
@@ -9,12 +9,12 @@
     </a>
 @endsection
 
-@section('postModalUrl', route('recruitment_requests.update', $data->id))
+@section('postModalUrl', route('candidates.update', $data->id))
 
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            @include ('recruitment_requests.form', [
+            @include ('candidates.form', [
                 'requests' => $data,
             ])
         </div>
@@ -27,7 +27,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" id="recruitment-requests" action="{{ route('recruitment_requests.update', $data->id) }}" name="edit_recruitment_requests_form" accept-charset="UTF-8" >
+    <form method="POST" id="recruitment-requests" action="{{ route('candidates.update', $data->id) }}" name="edit_candidates_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">
