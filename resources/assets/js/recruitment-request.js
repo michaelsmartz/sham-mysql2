@@ -1,7 +1,7 @@
 window.Vue = require('vue/dist/vue.common.js');
 
 const rr = new Vue({
-    el: '#recruitment-request',
+    el: '#recruitment-requests',
     data: {
         errors: [],
         jobTitle: null,

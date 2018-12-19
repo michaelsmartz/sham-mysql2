@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-sm-12">
             @include ('recruitment_requests.form', [
-                'request' => $data,
+                'requests' => $data,
             ])
         </div>
     </div>
@@ -27,7 +27,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('recruitment_requests.update', $data->id) }}" id="edit_recruitment_requests_form" name="edit_recruitment_requests_form" accept-charset="UTF-8" >
+    <form method="POST" id="recruitment-requests" action="{{ route('recruitment_requests.update', $data->id) }}" name="edit_recruitment_requests_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">

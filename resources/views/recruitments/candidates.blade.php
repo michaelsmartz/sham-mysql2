@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Candidates')
+@section('title','Jobs')
 @section('content')
     <div id="jobs">
         <v-client-table :columns="columns" :data="data" :options="options">

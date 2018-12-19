@@ -4,12 +4,12 @@
 @section('content')
     <div class="box box-primary">
         <div class="box-body">
-            <form method="POST" action="{{ route('recruitment_requests.store') }}" accept-charset="UTF-8" id="create_recruitment_requests_form" name="create_recruitment_requests_form" class="form-horizontal">
+            <form method="POST" id="recruitment-requests" action="{{ route('recruitment_requests.store') }}" accept-charset="UTF-8" name="create_recruitment_requests_form" class="form-horizontal">
                 {{ csrf_field() }}
                 <div class="row">
                     <div class="col-sm-12">
                         @include('recruitment_requests.form', [
-                            'request' => null,
+                            'requests' => null,
                         ])
                     </div>
                 </div>

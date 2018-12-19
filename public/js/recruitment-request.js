@@ -11530,7 +11530,7 @@ module.exports = __webpack_require__(70);
 window.Vue = __webpack_require__(5);
 
 var rr = new Vue({
-    el: '#recruitment-request',
+    el: '#recruitment-requests',
     data: {
         errors: [],
         jobTitle: null,

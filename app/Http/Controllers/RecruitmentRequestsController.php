@@ -35,11 +35,13 @@ class RecruitmentRequestsController extends CustomController
     {
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_REQUESTS);
 
+        $requests = [];
+
         // handle empty result bug
         if (Input::has('page')) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('allowedActions'));
+        return view($this->baseViewPath .'.index', compact('requests','allowedActions'));
     }
 
     /**
@@ -72,8 +74,10 @@ class RecruitmentRequestsController extends CustomController
         $id = Route::current()->parameter('recruitment_request');
         $data = $this->contextObj->findData($id);
 
+        $requests = [];
+
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('requests','data'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -82,7 +86,7 @@ class RecruitmentRequestsController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath . '.edit', compact('data'));
+        return view($this->baseViewPath . '.edit', compact('requests','data'));
     }
 
     /**
@@ -96,7 +100,7 @@ class RecruitmentRequestsController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            //$this->validator($request);
 
             $input = array_except($request->all(),array('_token','_method'));
 
