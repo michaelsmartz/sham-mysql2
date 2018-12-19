@@ -99,7 +99,7 @@ class ModuleAssessmentResponsesController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token','_method','is_reviewed'));
+            $input = array_except($request->all(), array('_token', '_method', 'is_reviewed'));
             $reviewed = $request->only('is_reviewed');
 
             if(!empty($input)) {
@@ -110,11 +110,13 @@ class ModuleAssessmentResponsesController extends CustomController
                     return $value['points'];
                 }, $input['responseDetail']);
 
-                $this->contextObj->updateData($responseId, $reviewed);
                 foreach ($ids as $key => $id) {
                     ModuleAssessmentResponseDetail::where('id', $id)->update(['points' => $revisedPoints[$key]]);
                 }
             }
+
+            $this->contextObj->updateData($responseId, $reviewed);
+
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 

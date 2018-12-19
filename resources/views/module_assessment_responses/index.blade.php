@@ -10,7 +10,7 @@
         <div id="table-container">
             <div class="table-responsive">
             @if(count($moduleAssessmentResponses) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new module assessment response</h4>
+                <h4 class="text-center">Its a bit empty here.
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>
