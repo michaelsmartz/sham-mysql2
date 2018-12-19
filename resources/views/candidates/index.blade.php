@@ -1,7 +1,7 @@
 @extends('portal-index')
 @section('title','Candidates')
 @section('content')
-    <div id="candidates" class="flex-wrapper">
+    <div id="candidates-table" class="flex-wrapper">
         <div id="table-container">
 
             <div class="btn-group">

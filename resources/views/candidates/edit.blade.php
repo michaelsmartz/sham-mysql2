@@ -27,7 +27,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" id="recruitment-requests" action="{{ route('candidates.update', $data->id) }}" name="edit_candidates_form" accept-charset="UTF-8" >
+    <form method="POST" id="candidates" action="{{ route('candidates.update', $data->id) }}" name="edit_candidates_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">

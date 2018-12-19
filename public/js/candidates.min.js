@@ -45840,7 +45840,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue
 __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
 
 var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
-    el: '#candidates',
+    el: '#candidates-table',
     data: function data() {
         return {
             columns: ['title', 'gender', 'maritalStatus', 'surname', 'firstName', 'dob', 'personalEmail', 'homeAddress', 'phone', 'idNumber', 'skills', 'disabilities', 'edit', 'delete'],
@@ -45961,6 +45961,84 @@ function getData() {
         photo: "photo.jpg"
     }];
 }
+
+var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
+    el: '#candidates',
+    data: {
+        errors: [],
+        titles: ['Mr', 'Miss', 'Mrs'],
+        genders: ['Male', 'Female'],
+        maritalStatuses: ['married', 'single', 'divorced'],
+        surname: null,
+        firstName: null,
+        dob: null,
+        personalEmail: null,
+        homeAddress: null,
+        phone: null,
+        idNumber: null,
+        skills: ['php', 'css', 'mysql', 'js', 'angular', 'vue', 'laravel', 'symfony', 'codeigniter', 'zend'],
+        disabilities: ["Optic Atropy", "Full Blown Aids", "Tinnitus", "ADHD", "Down syndrome", "Dyslexia"],
+        qualifications: ["Higher School Certificate", "Certificate", "Diploma", "Degree", "Masters", "PhD"],
+        selectedTitle: null,
+        selectedGender: null,
+        selectedMaritalStatus: null,
+        selectedDisability: null,
+        selectedSkill: null,
+        selectedQualification: null
+    },
+    methods: {
+        checkForm: function checkForm(e) {
+            if (this.title && this.gender && this.maritalStatus) {
+                return true;
+            }
+
+            this.errors = [];
+
+            if (this.surname) {
+                this.errors.push('Surname is required.');
+            }
+
+            if (this.firstName) {
+                this.errors.push('FirstName is required.');
+            }
+
+            if (!this.selectedDisability) {
+                this.errors.push('Disability is required.');
+            }
+
+            if (!this.selectedGender) {
+                this.errors.push('Gender is required.');
+            }
+
+            if (!this.selectedTitle) {
+                this.errors.push('Title is required.');
+            }
+
+            if (!this.selectedMaritalStatus) {
+                this.errors.push('Marital Status is required.');
+            }
+
+            if (!this.dob) {
+                this.errors.push('Date of birth is required.');
+            }
+
+            if (!this.selectedSkill) {
+                this.errors.push('Skills is required.');
+            }
+
+            e.preventDefault();
+        },
+        selectedDisabilityFunc: function selectedDisabilityFunc() {
+            console.log(this.selectedDisability);
+        },
+        selectedSkillFunc: function selectedSkillFunc() {
+            console.log(this.selectedSkill);
+        },
+        selectedQualificationFunc: function selectedQualificationFunc() {
+            console.log(this.selectedQualification);
+        }
+    }
+});
 
 /***/ })
 /******/ ]);

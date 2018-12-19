@@ -4,7 +4,7 @@
 @section('content')
     <div class="box box-primary">
         <div class="box-body">
-            <form method="POST" id="recruitment-requests" action="{{ route('candidates.store') }}" accept-charset="UTF-8" name="create_candidates_form" class="form-horizontal">
+            <form method="POST" id="candidates" action="{{ route('candidates.store') }}" accept-charset="UTF-8" name="create_candidates_form" class="form-horizontal">
                 {{ csrf_field() }}
                 <div class="row">
                     <div class="col-sm-12">

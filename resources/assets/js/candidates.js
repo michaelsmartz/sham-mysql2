@@ -10,7 +10,7 @@ Vue.use(Event);
 Vue.use(Vuex);
 
 var table = new Vue({
-    el: '#candidates',
+    el: '#candidates-table',
     data:  function (){
         return{
             columns: [
@@ -163,3 +163,117 @@ function getData() {
     },
     ];
 }
+
+const rr = new Vue({
+    el: '#candidates',
+    data: {
+        errors: [],
+        titles: [
+            'Mr',
+            'Miss',
+            'Mrs'
+        ],
+        genders: [
+            'Male',
+            'Female'
+        ],
+        maritalStatuses: [
+            'married',
+            'single',
+            'divorced'
+        ],
+        surname: null,
+        firstName: null,
+        dob: null,
+        personalEmail: null,
+        homeAddress: null,
+        phone: null,
+        idNumber: null,
+        skills: [
+            'php',
+            'css',
+            'mysql',
+            'js',
+            'angular',
+            'vue',
+            'laravel',
+            'symfony',
+            'codeigniter',
+            'zend'
+        ],
+        disabilities: [
+            "Optic Atropy",
+            "Full Blown Aids",
+            "Tinnitus",
+            "ADHD",
+            "Down syndrome",
+            "Dyslexia"
+        ],
+        qualifications:[
+            "Higher School Certificate",
+            "Certificate",
+            "Diploma",
+            "Degree",
+            "Masters",
+            "PhD",
+        ],
+        selectedTitle: null,
+        selectedGender: null,
+        selectedMaritalStatus: null,
+        selectedDisability: null,
+        selectedSkill: null,
+        selectedQualification: null,
+    },
+    methods:{
+        checkForm: function (e) {
+            if (this.title && this.gender && this.maritalStatus) {
+                return true;
+            }
+
+            this.errors = [];
+
+            if(this.surname){
+                this.errors.push('Surname is required.');
+            }
+
+            if(this.firstName){
+                this.errors.push('FirstName is required.');
+            }
+
+            if(!this.selectedDisability){
+                this.errors.push('Disability is required.');
+            }
+
+            if(!this.selectedGender){
+                this.errors.push('Gender is required.');
+            }
+
+            if(!this.selectedTitle){
+                this.errors.push('Title is required.');
+            }
+
+            if(!this.selectedMaritalStatus){
+                this.errors.push('Marital Status is required.');
+            }
+
+            if(!this.dob){
+                this.errors.push('Date of birth is required.');
+            }
+
+            if(!this.selectedSkill) {
+                this.errors.push('Skills is required.');
+            }
+
+            e.preventDefault();
+        },
+        selectedDisabilityFunc: function() {
+            console.log(this.selectedDisability)
+        },
+        selectedSkillFunc: function() {
+            console.log(this.selectedSkill)
+        },
+        selectedQualificationFunc: function(){
+            console.log(this.selectedQualification)
+        }
+    }
+});

@@ -90,7 +90,7 @@
             </div>
 
             <div class="form-group col-xs-9">
-                <label for="employmentType">Highest qualifications</label>
+                <label for="qualification">Highest qualifications</label>
                 <select v-model="selectedQualification" class='form-control select-multiple multiple'>
                     <option v-for="qualification in qualifications" :value="qualification">@{{qualification}}</option>
                 </select>
