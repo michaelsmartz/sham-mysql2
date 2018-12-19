@@ -9,12 +9,12 @@
     </a>
 @endsection
 
-@section('postModalUrl', route('recruitment-requests.update', $data->id))
+@section('postModalUrl', route('recruitment_requests.update', $data->id))
 
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            @include ('recruitment-requests.form', [
+            @include ('recruitment_requests.form', [
                 'request' => $data,
             ])
         </div>
@@ -27,7 +27,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('recruitment-requests.update', $data->id) }}" id="edit_recruitment_requests_form" name="edit_recruitment_requests_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('recruitment_requests.update', $data->id) }}" id="edit_recruitment_requests_form" name="edit_recruitment_requests_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">
