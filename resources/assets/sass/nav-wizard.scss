@@ -15,7 +15,7 @@
     align-items: center;
     border: 1px solid #ddd;
 
-    .tab-item {
+    .nav-item {
       display: flex;
       align-items: center;
       height: 100%;
@@ -25,7 +25,7 @@
 
       &.orange {
         border-top: 2px solid #d68a3a;
-        .tab-link {
+        .nav-link {
           &.active{
             background-color: #d68a3a;
             &.show{
@@ -40,7 +40,7 @@
 
       &.blue {
         border-top: 2px solid #3097D1;
-        .tab-link {
+        .nav-link {
           &.active{
             background-color: #3097D1;
             &.show{
@@ -55,7 +55,7 @@
 
       &.green {
         border-top: 2px solid green;
-        .tab-link {
+        .nav-link {
           &.active{
             background-color: green;
             &.show{
@@ -68,7 +68,7 @@
         }
       }
 
-      .tab-link {
+      .nav-link {
         text-decoration: none;
         display:flex;
         flex-direction: column;

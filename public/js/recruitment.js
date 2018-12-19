@@ -60,12 +60,12 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 67);
+/******/ 	return __webpack_require__(__webpack_require__.s = 245);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 1:
+/***/ 2:
 /***/ (function(module, exports) {
 
 var g;
@@ -90,6 +90,76 @@ try {
 
 module.exports = g;
 
+
+/***/ }),
+
+/***/ 245:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(246);
+
+
+/***/ }),
+
+/***/ 246:
+/***/ (function(module, exports, __webpack_require__) {
+
+window.Vue = __webpack_require__(6);
+
+var vm = new Vue({
+	el: "#recruitment",
+	data: {
+		people: [{
+			name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut",
+			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }]
+		}, {
+			name: "Steve Jobs", status: "applied", picture: "", jobTitle: "Chief Marketing Officer",
+			documents: []
+		}, {
+			name: "Jeff Bezos", status: "applied", picture: "", jobTitle: "Operator",
+			documents: []
+		}, {
+			name: "George Clooney", status: "review", picture: "", jobTitle: "Web Developer",
+			documents: []
+		}, {
+			name: "Meryl Streep", status: "review", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "Amy Poehler", status: "interviewing", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "Lady of Lórien", status: "interviewing", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "BB8", status: "offer", picture: "", jobTitle: "",
+			documents: []
+		}, {
+			name: "Michael Scott", status: "contract", picture: "", jobTitle: "",
+			documents: []
+		}],
+		selectedCategory: "applied",
+		current: {}
+	},
+	computed: {
+		filteredPeople: function filteredPeople() {
+			var vm = this;
+			var category = vm.selectedCategory;
+
+			if (category === "All") {
+				return vm.people;
+			} else {
+				return vm.people.filter(function (person) {
+					return person.status === category;
+				});
+			}
+		}
+	},
+	methods: {
+		setCurrent: function setCurrent(item) {
+			this.current = item;
+		}
+	}
+});
 
 /***/ }),
 
@@ -340,7 +410,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(6);
+__webpack_require__(7);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -351,11 +421,11 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 
-/***/ 5:
+/***/ 6:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11318,11 +11388,11 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(4).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(4).setImmediate))
 
 /***/ }),
 
-/***/ 6:
+/***/ 7:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -11512,77 +11582,7 @@ module.exports = Vue;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(3)))
-
-/***/ }),
-
-/***/ 67:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(68);
-
-
-/***/ }),
-
-/***/ 68:
-/***/ (function(module, exports, __webpack_require__) {
-
-window.Vue = __webpack_require__(5);
-
-var vm = new Vue({
-	el: "#recruitment",
-	data: {
-		people: [{
-			name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut",
-			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }]
-		}, {
-			name: "Steve Jobs", status: "applied", picture: "", jobTitle: "Chief Marketing Officer",
-			documents: []
-		}, {
-			name: "Jeff Bezos", status: "applied", picture: "", jobTitle: "Operator",
-			documents: []
-		}, {
-			name: "George Clooney", status: "review", picture: "", jobTitle: "Web Developer",
-			documents: []
-		}, {
-			name: "Meryl Streep", status: "review", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "Amy Poehler", status: "interviewing", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "Lady of Lórien", status: "interviewing", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "BB8", status: "offer", picture: "", jobTitle: "",
-			documents: []
-		}, {
-			name: "Michael Scott", status: "contract", picture: "", jobTitle: "",
-			documents: []
-		}],
-		selectedCategory: "applied",
-		current: {}
-	},
-	computed: {
-		filteredPeople: function filteredPeople() {
-			var vm = this;
-			var category = vm.selectedCategory;
-
-			if (category === "All") {
-				return vm.people;
-			} else {
-				return vm.people.filter(function (person) {
-					return person.status === category;
-				});
-			}
-		}
-	},
-	methods: {
-		setCurrent: function setCurrent(item) {
-			this.current = item;
-		}
-	}
-});
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(3)))
 
 /***/ })
 

@@ -25,7 +25,7 @@
   border: 1px solid #ddd;
 }
 
-.steps .tab-item {
+.steps .nav-item {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -40,55 +40,55 @@
   border-bottom: 1px solid #ddd;
 }
 
-.steps .tab-item.orange {
+.steps .nav-item.orange {
   border-top: 2px solid #d68a3a;
 }
 
-.steps .tab-item.orange .tab-link.active {
+.steps .nav-item.orange .nav-link.active {
   background-color: #d68a3a;
 }
 
-.steps .tab-item.orange .tab-link.active.show {
+.steps .nav-item.orange .nav-link.active.show {
   display: inherit !important;
 }
 
-.steps .tab-item.orange .tab-link.active + .arrow {
+.steps .nav-item.orange .nav-link.active + .arrow {
   background-color: #d68a3a;
 }
 
-.steps .tab-item.blue {
+.steps .nav-item.blue {
   border-top: 2px solid #3097D1;
 }
 
-.steps .tab-item.blue .tab-link.active {
+.steps .nav-item.blue .nav-link.active {
   background-color: #3097D1;
 }
 
-.steps .tab-item.blue .tab-link.active.show {
+.steps .nav-item.blue .nav-link.active.show {
   display: inherit !important;
 }
 
-.steps .tab-item.blue .tab-link.active + .arrow {
+.steps .nav-item.blue .nav-link.active + .arrow {
   background-color: #3097D1;
 }
 
-.steps .tab-item.green {
+.steps .nav-item.green {
   border-top: 2px solid green;
 }
 
-.steps .tab-item.green .tab-link.active {
+.steps .nav-item.green .nav-link.active {
   background-color: green;
 }
 
-.steps .tab-item.green .tab-link.active.show {
+.steps .nav-item.green .nav-link.active.show {
   display: inherit !important;
 }
 
-.steps .tab-item.green .tab-link.active + .arrow {
+.steps .nav-item.green .nav-link.active + .arrow {
   background-color: green;
 }
 
-.steps .tab-item .tab-link {
+.steps .nav-item .nav-link {
   text-decoration: none;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -106,12 +106,12 @@
   margin: 0;
 }
 
-.steps .tab-item .tab-link * {
+.steps .nav-item .nav-link * {
   color: inherit;
   margin: 0;
 }
 
-.steps .tab-item .arrow {
+.steps .nav-item .arrow {
   border: solid #ddd;
   display: inline-block;
   padding: 10px;
@@ -121,15 +121,15 @@
   background-color: transparent;
 }
 
-.steps .tab-item.active {
+.steps .nav-item.active {
   background-color: #d68a3a;
 }
 
-.steps .tab-item.active .bx-pager-link {
+.steps .nav-item.active .bx-pager-link {
   color: white;
 }
 
-.steps .tab-item.active .arrow {
+.steps .nav-item.active .arrow {
   background-color: #d68a3a;
 }
 

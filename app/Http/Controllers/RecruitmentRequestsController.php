@@ -54,11 +54,11 @@ class RecruitmentRequestsController extends CustomController
     public function store(Request $request)
     {
         try {
-            $this->validator($request);
+            //$this->validator($request);
 
-            $input = array_except($request->all(),array('_token'));
+            //$input = array_except($request->all(),array('_token'));
 
-            $this->contextObj->addData($input);
+            //$this->contextObj->addData($input);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
