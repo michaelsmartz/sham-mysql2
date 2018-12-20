@@ -8,8 +8,20 @@
                 </ul>
             </div>
 
+            <div class="col-xs-2">
+                <div class="avatar-upload">
+                    <div class="avatar-edit">
+                        <input type='file' name="profile_pic" id="imageUpload" accept=".png, .jpg, .jpeg" />
+                        <label for="imageUpload" title="change profile image"></label>
+                    </div>
+                    <div class="avatar-preview">
+                        <div id="imagePreview" style="background-image: url('/img/avatar.png');">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <label for="dob">Date of Birth</label>
                 <input
                         id="dob"
@@ -20,7 +32,7 @@
                 >
             </div>
 
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <label for="title">Select title</label>
                 <select v-model="selectedTitle" class='form-control'>
                     <option disabled value="">Please select one</option>
@@ -44,7 +56,7 @@
                 </select>
             </div>
 
-            <div class="form-group col-xs-6">
+            <div class="form-group col-xs-5">
                 <label for="surname">Surname</label>
                 <input
                         id="surname"
@@ -55,7 +67,7 @@
                 >
             </div>
 
-            <div class="form-group col-xs-6">
+            <div class="form-group col-xs-5">
                 <label for="firstName">FirstName</label>
                 <input
                         id="firstName"
@@ -88,7 +100,7 @@
                 >
             </div>
 
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <label for="phone">Phone Number</label>
                 <input
                         id="phone"
@@ -99,7 +111,7 @@
                 >
             </div>
 
-            <div class="form-group col-xs-3">
+            <div class="form-group col-xs-2">
                 <label for="idNumber">Id Number</label>
                 <input
                         id="idNumber"
