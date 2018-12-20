@@ -144,6 +144,18 @@
                     <option v-for="qualification in qualifications" :value="qualification">@{{qualification}}</option>
                 </select>
             </div>
+
+            <div class="form-group col-xs-12">
+                @include('partials.uploader',[
+                'uploader'=>[
+                    'fieldLabel' => 'Attach CV',
+                    'desc' => 'Upload documents only',
+                    'route' => 'candidates.store',
+                    'acceptedFiles' => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+                    'fileMaxSize' => 10,
+                    ]
+                ])
+            </div>
         </div>
     </div>
     <div id="date-picker"> </div>
