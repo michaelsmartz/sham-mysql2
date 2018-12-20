@@ -60,25 +60,117 @@
         </div>
         {!! Form::close() !!}
     </div>
+
+    <div id="myModal" class="modal fade in">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Error</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="errormsg"><i class="glyphicon glyphicon-info-sign"></i> Please complete evaluation.</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button class="btn btn-primary" data-dismiss="modal"><span class="glyphicon glyphicon-check"></span> Ok</button>
+                    </div>
+                </div>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dalog -->
+    </div><!-- /.modal -->
+
 @endsection
 
 @section("post-body")
     <link href="{{URL::to('/')}}/css/nicescroll.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/jquery.nicescroll-3.6.8.min.js"></script>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <script>
 
         $(document).ready(function () {
             $('#starttime').val('{{$startDateTime}}');
-        });
 
-        $(function() {
-            $(".wrap").niceScroll({cursorcolor:"#00F"});
-            //$(".nicescroll-box").niceScroll({cursorcolor:"#00F"});
-        });
+            $('form').submit(function(event) {
 
-        $('.file-download').click(function() {
-            var evaluationid = {{$EvaluationId}};
+                try{
+                    var check = true;
+
+                    var questionnos = [];
+
+                    $('input[type="checkbox"]').each(function(){
+                        var name = $(this).attr("name");
+
+                        //console.log($(this));
+                        if($('input[type=checkbox][name="'+name+'"]:checked').length == 0){
+                            check = false;
+                            //$(this).parent().prev().css({"background-color": "yellow"});
+                            var question =  $(this).parent().prev().find('label').text();
+                            var questionno = question.substr(0, question.indexOf(' '));
+                            questionnos.push(questionno);
+                        }
+                    });
+
+                    $('input[type="radio"]').each(function(){
+                        var name = $(this).attr("name");
+
+                        //console.log($(this));
+                        if($('input[type=radio][name="'+name+'"]:checked').length == 0){
+                            check = false;
+                            var question =  $(this).parent().prev().find('label').text();
+                            var questionno = question.substr(0, question.indexOf(' '));
+                            questionnos.push(questionno);
+                        }
+                    });
+
+                    $('input[type="text"][name^="question_"]').each(function(){
+                        var name = $(this).attr("name");
+
+                        if($(this).val().trim().length == 0){
+                            check = false;
+                            var question =  $(this).prev().find('label').text();
+                            var questionno = question.substr(0, question.indexOf(' '));
+                            questionnos.push(questionno);
+                        }
+                    });
+
+                    $.unique(questionnos.sort());
+                    //alert("Please attempt question(s) "+ questionnos.join(", ") + " before saving.");
+
+                    if(!check){
+                        $("#errormsg").html("Please attempt question(s) "+ questionnos.join(", ") + " before saving.");
+                        $("#myModal").modal('show');
+                    }
+
+                    return check;
+                }
+
+                catch(err)
+                {
+                    //console.log(err);
+                    alert(err);
+                    return false;
+                }
+
+       return false;
+   });
+
+
+
+
+});
+
+$(function() {
+   $(".wrap").niceScroll({cursorcolor:"#00F"});
+   //$(".nicescroll-box").niceScroll({cursorcolor:"#00F"});
+});
+
+$('.file-download').click(function() {
+   var evaluationid = {{$EvaluationId}};
             var mediaid = {{isset($mediaid)&& $mediaid !=null ?$mediaid:0}};
             window.location = '{{url()->to('evaluations')}}/'+evaluationid+'/attachment/'+mediaid;
         });

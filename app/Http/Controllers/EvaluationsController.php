@@ -828,8 +828,9 @@ class EvaluationsController extends CustomController
 
                     if ($categoryquestion->category_question_type_id == 1) {
                         $choicetext = '';
-                        if (count($choices) > 0) {
-                            $choicetext = $choices[0]->content;
+
+                        if (count($choices->pluck('content')->toArray()) > 0) {
+                            $choicetext = $choices->pluck('content')->toArray()[0];
                         }
                         $html .= "<input class=\"form-control\" id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"text\" value=\"" . $choicetext . "\"> " . "" . "<br/>";
                         $question_type = "Open Text";
