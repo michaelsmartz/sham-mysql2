@@ -73,7 +73,7 @@ const table = new Vue({
         stages: function(id){
             window.location.href = '/recruitment';
         },
-        erase: function (id) {
+        delete: function (id) {
             alert(id);
         },
         edit: function (id) {
