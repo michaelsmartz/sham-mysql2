@@ -183,7 +183,7 @@ class EmployeesController extends CustomController
 
         $employeeSkills = $data->skills->pluck('id');
 
-        $employeeDisabilities = $data->disabilities()->withoutGlobalScope('system_predefined')->pluck('disability_employee.disability_id');
+        $employeeDisabilities = $data->disabilities->pluck('id');
 
         return view($this->baseViewPath .'.edit',
             compact('_mode','fullPageEdit','data','titles','genders','maritalstatuses',
@@ -454,8 +454,7 @@ class EmployeesController extends CustomController
         $divisions = Division::pluck('description','id')->all();
         $branches = Branch::pluck('description','id')->all();
         $skills = Skill::pluck('description','id')->all();
-        $disabilities = Disability::withoutGlobalScope('system_predefined')
-            ->pluck('description', 'id');
+        $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
 
         $results = array($titles, $genders, $maritalstatuses, $countries, $languages, $ethnicGroups, 
                          $immigrationStatuses, $taxstatuses, $departments, $teams, $employeeStatuses, 
