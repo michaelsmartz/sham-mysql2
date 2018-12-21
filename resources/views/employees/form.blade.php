@@ -361,9 +361,9 @@
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Disabilities</label>
                     <div class="col-sm-10">
-                        {!! Form::select('disabilities[]', $disabilities,
-                            old('disabilities', isset($employeeDisabilities) ? $employeeDisabilities : null),
-                            ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
+                        {!! Form::groupRelationSelect('disabilities[]', $disabilities, 'disabilities',
+                           'description', 'description', 'id',
+                           isset($employeeDisabilities) ? $employeeDisabilities : null, ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
                         ) !!}
                     </div>
                 </div>
