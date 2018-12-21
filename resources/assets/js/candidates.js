@@ -1,6 +1,8 @@
 window.Vue = require('vue/dist/vue.common.js');
 window.Vue = require('vue-tables-2/dist/vue-tables-2.min.js');
 
+require('sumoselect');
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {ClientTable, Event} from 'vue-tables-2';
@@ -58,20 +60,21 @@ var table = new Vue({
                     qualifications: "Qualifications",
                     disabilities: "Disabilities",
                 },
-                sortable: [
-                    'title',
-                    'gender',
-                    'maritalStatus',
-                    'surname',
-                    'firstName',
-                    'dob',
-                    'personalEmail',
-                    'homeAddress',
-                    'phone',
-                    'idNumber',
-                    'skills',
-                    'disabilities',
-                ],
+                // sortable: [
+                //     'title',
+                //     'gender',
+                //     'maritalStatus',
+                //     'surname',
+                //     'firstName',
+                //     'dob',
+                //     'personalEmail',
+                //     'homeAddress',
+                //     'phone',
+                //     'idNumber',
+                //     'skills',
+                //     'disabilities',
+                // ],
+                sortable: [],
                 filterable: false
                 // filterable: [
                 // 'title',
@@ -201,6 +204,10 @@ const rr = new Vue({
             'codeigniter',
             'zend'
         ],
+        multipleSelectionsDisabilities: [
+            "Optic Atropy",
+            "Full Blown Aids"
+        ],
         disabilities: [
             "Optic Atropy",
             "Full Blown Aids",
@@ -275,5 +282,10 @@ const rr = new Vue({
         selectedQualificationFunc: function(){
             console.log(this.selectedQualification)
         }
+    },
+    mounted: function () {
+        +function ($, el) {
+            $('.select-multiple').SumoSelect({csvDispCount: 10, up:true});
+        }(jQuery, this);
     }
 });

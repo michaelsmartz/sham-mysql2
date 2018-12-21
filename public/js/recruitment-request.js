@@ -32981,11 +32981,12 @@ module.exports = debounce;
 
 
 /***/ }),
-/* 13 */
+/* 13 */,
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Pagination = __webpack_require__(41);
-var PaginationEvent = __webpack_require__(14);
+var PaginationEvent = __webpack_require__(15);
 
 module.exports = {
   Pagination:Pagination,
@@ -32994,7 +32995,7 @@ module.exports = {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33011,7 +33012,7 @@ var bus = new _vue2.default();
 module.exports = bus;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33137,7 +33138,7 @@ function clientExtra() {
 }
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33158,7 +33159,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33178,7 +33179,7 @@ var directives = __webpack_require__(170);
 var beforeDestroy = __webpack_require__(173);
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33249,7 +33250,7 @@ function noDebounce(e, name, opts) {
 }
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33260,7 +33261,7 @@ module.exports = function (val) {
 };
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33276,7 +33277,7 @@ module.exports = function (val) {
 
 var base64 = __webpack_require__(76)
 var ieee754 = __webpack_require__(77)
-var isArray = __webpack_require__(21)
+var isArray = __webpack_require__(22)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -35057,7 +35058,7 @@ function isnan (val) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -35068,7 +35069,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 /*!
@@ -35095,7 +35096,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35120,7 +35121,7 @@ module.exports = function repeat(ele, num) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35143,7 +35144,7 @@ module.exports = function forIn(obj, fn, thisArg) {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 /*!
@@ -35160,7 +35161,7 @@ module.exports = function isExtglob(str) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -35179,7 +35180,7 @@ module.exports = function isGlob(str) {
 };
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35230,7 +35231,7 @@ var _merge2 = _interopRequireDefault(_merge);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35256,7 +35257,7 @@ function makeId() {
 }
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35340,7 +35341,7 @@ function getDevice(val) {
 }
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35392,7 +35393,7 @@ module.exports = function (template, theme) {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35423,7 +35424,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35434,7 +35435,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35443,7 +35444,7 @@ module.exports = function () {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var object_filled_keys_count = __webpack_require__(202);
-var is_valid_moment_object = __webpack_require__(19);
+var is_valid_moment_object = __webpack_require__(20);
 var filterByCustomFilters = __webpack_require__(203);
 
 module.exports = function (data, e) {
@@ -35572,7 +35573,6 @@ function foundMatch(query, value, isListFilter) {
 }
 
 /***/ }),
-/* 34 */,
 /* 35 */,
 /* 36 */,
 /* 37 */
@@ -36556,13 +36556,13 @@ module.exports = {
 "use strict";
 
 
-var _vuePagination = __webpack_require__(13);
+var _vuePagination = __webpack_require__(14);
 
-var _vuex = __webpack_require__(15);
+var _vuex = __webpack_require__(16);
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _normal = __webpack_require__(16);
+var _normal = __webpack_require__(17);
 
 var _normal2 = _interopRequireDefault(_normal);
 
@@ -36570,20 +36570,20 @@ var _merge = __webpack_require__(1);
 
 var _merge2 = _interopRequireDefault(_merge);
 
-var _table = __webpack_require__(17);
+var _table = __webpack_require__(18);
 
 var _table2 = _interopRequireDefault(_table);
 
-var _data2 = __webpack_require__(27);
+var _data2 = __webpack_require__(28);
 
 var _data3 = _interopRequireDefault(_data2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _data = __webpack_require__(28);
-var _created = __webpack_require__(29);
+var _data = __webpack_require__(29);
+var _created = __webpack_require__(30);
 
-var templateCompiler = __webpack_require__(30);
+var templateCompiler = __webpack_require__(31);
 
 exports.install = function (Vue, globalOptions, useVuex) {
   var theme = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'bootstrap3';
@@ -36666,7 +36666,7 @@ exports.install = function (Vue, globalOptions, useVuex) {
     computed: {
       q: __webpack_require__(199),
       customQ: __webpack_require__(200),
-      totalPages: __webpack_require__(32),
+      totalPages: __webpack_require__(33),
       filteredData: __webpack_require__(201),
       hasMultiSort: function hasMultiSort() {
         return this.opts.clientMultiSorting;
@@ -36675,7 +36675,7 @@ exports.install = function (Vue, globalOptions, useVuex) {
     methods: {
       transformDateStringsToMoment: __webpack_require__(205),
       registerClientFilters: __webpack_require__(206),
-      search: __webpack_require__(33),
+      search: __webpack_require__(34),
       defaultSort: __webpack_require__(207),
       getGroupSlot: __webpack_require__(208),
       toggleGroup: function toggleGroup(group, e) {
@@ -36763,7 +36763,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var template = __webpack_require__(44);
-var bus = __webpack_require__(14);
+var bus = __webpack_require__(15);
 
 
 module.exports = {
@@ -37275,7 +37275,7 @@ module.exports = {
       getHeading: __webpack_require__(56),
       getHeadingTooltip: __webpack_require__(58),
       sortable: __webpack_require__(59),
-      serverSearch: __webpack_require__(18),
+      serverSearch: __webpack_require__(19),
       initOrderBy: __webpack_require__(60),
       initDateFilters: __webpack_require__(61),
       setFilter: __webpack_require__(62),
@@ -37890,7 +37890,7 @@ function escapeRegex(s) {
 "use strict";
 
 
-var validMoment = __webpack_require__(19);
+var validMoment = __webpack_require__(20);
 
 module.exports = function (value, dateFormat) {
 
@@ -38067,7 +38067,7 @@ module.exports = function kindOf(val) {
   return type.slice(8, -1).toLowerCase();
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21).Buffer))
 
 /***/ }),
 /* 76 */
@@ -39511,7 +39511,7 @@ module.exports = function unique(arr) {
  */
 
 var expand = __webpack_require__(88);
-var repeat = __webpack_require__(23);
+var repeat = __webpack_require__(24);
 var tokens = __webpack_require__(98);
 
 /**
@@ -39966,7 +39966,7 @@ var isObject = __webpack_require__(90);
 var isNumber = __webpack_require__(91);
 var randomize = __webpack_require__(93);
 var repeatStr = __webpack_require__(97);
-var repeat = __webpack_require__(23);
+var repeat = __webpack_require__(24);
 
 /**
  * Expose `fillRange`
@@ -40377,7 +40377,7 @@ function length(val) {
 
 
 
-var isArray = __webpack_require__(21);
+var isArray = __webpack_require__(22);
 
 module.exports = function isObject(val) {
   return val != null && typeof val === 'object' && isArray(val) === false;
@@ -40414,7 +40414,7 @@ module.exports = function isNumber(num) {
 /* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isBuffer = __webpack_require__(22);
+var isBuffer = __webpack_require__(23);
 var toString = Object.prototype.toString;
 
 /**
@@ -41348,7 +41348,7 @@ module.exports = function isGlob(str) {
 /* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isBuffer = __webpack_require__(22);
+var isBuffer = __webpack_require__(23);
 var toString = Object.prototype.toString;
 
 /**
@@ -41596,7 +41596,7 @@ module.exports = function isExtendable(val) {
 
 
 
-var forIn = __webpack_require__(24);
+var forIn = __webpack_require__(25);
 var hasOwn = Object.prototype.hasOwnProperty;
 
 module.exports = function forOwn(obj, fn, thisArg) {
@@ -41624,7 +41624,7 @@ module.exports = function forOwn(obj, fn, thisArg) {
 
 var isGlob = __webpack_require__(110);
 var findBase = __webpack_require__(111);
-var extglob = __webpack_require__(25);
+var extglob = __webpack_require__(26);
 var dotfile = __webpack_require__(114);
 
 /**
@@ -41782,7 +41782,7 @@ function unescape(str) {
  * Licensed under the MIT License.
  */
 
-var isExtglob = __webpack_require__(25);
+var isExtglob = __webpack_require__(26);
 
 module.exports = function isGlob(str) {
   return typeof str === 'string'
@@ -41806,7 +41806,7 @@ module.exports = function isGlob(str) {
 
 var path = __webpack_require__(10);
 var parent = __webpack_require__(112);
-var isGlob = __webpack_require__(26);
+var isGlob = __webpack_require__(27);
 
 module.exports = function globBase(pattern) {
   if (typeof pattern !== 'string') {
@@ -41856,7 +41856,7 @@ function dirname(glob) {
 
 
 var path = __webpack_require__(10);
-var isglob = __webpack_require__(26);
+var isglob = __webpack_require__(27);
 
 module.exports = function globParent(str) {
 	str += 'a'; // preserves full path in case of trailing path separator
@@ -42461,7 +42461,7 @@ function noop(val) {
 
 
 
-var forIn = __webpack_require__(24);
+var forIn = __webpack_require__(25);
 var hasOwn = Object.prototype.hasOwnProperty;
 
 module.exports = function forOwn(obj, fn, thisArg) {
@@ -44050,7 +44050,7 @@ module.exports = function (h, modules, classes, slots) {
   var filterId = 'VueTables__search_' + this.id;
   var ddpId = 'VueTables__dropdown-pagination_' + this.id;
   var perpageId = 'VueTables__limit_' + this.id;
-  var perpageValues = __webpack_require__(31).call(this, h);
+  var perpageValues = __webpack_require__(32).call(this, h);
 
   var genericFilter = this.hasGenericFilter ? h(
     'div',
@@ -44164,7 +44164,7 @@ module.exports = function (h, modules, classes, slots) {
 
   var filterId = 'VueTables__search_' + this.id;
   var perpageId = 'VueTables__limit_' + this.id;
-  var perpageValues = __webpack_require__(31).call(this, h);
+  var perpageValues = __webpack_require__(32).call(this, h);
 
   var genericFilter = this.hasGenericFilter ? h(
     'div',
@@ -45012,7 +45012,7 @@ module.exports = function () {
 "use strict";
 
 
-var search = __webpack_require__(33);
+var search = __webpack_require__(34);
 var clone = __webpack_require__(204);
 
 module.exports = function () {
@@ -45351,7 +45351,7 @@ if (typeof module === 'object' && module.exports) {
   module.exports = clone;
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21).Buffer))
 
 /***/ }),
 /* 205 */
@@ -45470,30 +45470,30 @@ var _merge = __webpack_require__(1);
 
 var _merge2 = _interopRequireDefault(_merge);
 
-var _data2 = __webpack_require__(27);
+var _data2 = __webpack_require__(28);
 
 var _data3 = _interopRequireDefault(_data2);
 
-var _vuex = __webpack_require__(15);
+var _vuex = __webpack_require__(16);
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _normal = __webpack_require__(16);
+var _normal = __webpack_require__(17);
 
 var _normal2 = _interopRequireDefault(_normal);
 
-var _table = __webpack_require__(17);
+var _table = __webpack_require__(18);
 
 var _table2 = _interopRequireDefault(_table);
 
-var _vuePagination = __webpack_require__(13);
+var _vuePagination = __webpack_require__(14);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _data = __webpack_require__(28);
-var _created = __webpack_require__(29);
+var _data = __webpack_require__(29);
+var _created = __webpack_require__(30);
 
-var templateCompiler = __webpack_require__(30);
+var templateCompiler = __webpack_require__(31);
 
 exports.install = function (Vue, globalOptions, useVuex) {
   var theme = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'bootstrap3';
@@ -45579,7 +45579,7 @@ exports.install = function (Vue, globalOptions, useVuex) {
       refresh: __webpack_require__(210),
       getData: __webpack_require__(211),
       setData: __webpack_require__(212),
-      serverSearch: __webpack_require__(18),
+      serverSearch: __webpack_require__(19),
       registerServerFilters: __webpack_require__(213),
       loadState: function loadState() {
         var _this = this;
@@ -45625,7 +45625,7 @@ exports.install = function (Vue, globalOptions, useVuex) {
       }
     },
     computed: {
-      totalPages: __webpack_require__(32),
+      totalPages: __webpack_require__(33),
       filteredQuery: __webpack_require__(214),
       hasMultiSort: function hasMultiSort() {
         return this.opts.serverMultiSorting;
@@ -45840,7 +45840,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vue
 var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#recruitment-requests-table',
     data: {
-        columns: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment', 'edit', 'stages', 'delete'],
+        columns: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment', 'edit', 'pipelines', 'delete'],
         data: getData(),
         options: {
             filter: false,
@@ -45862,7 +45862,16 @@ var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
                 experience: 'Experience',
                 recruitment: 'Recruitment'
             },
-            sortable: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment'],
+            // sortable: [
+            //     'jobTitle',
+            //     'shortDescription',
+            //     'description',
+            //     'department',
+            //     'employmentType',
+            //     'qualification',
+            //     'experience',
+            //     'recruitment',
+            // ],
             // filterable: [
             //     'jobTitle',
             //     'shortDescription',
@@ -45873,14 +45882,16 @@ var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
             //     'experience',
             //     'recruitment'
             // ],
+
+            sortable: [],
             filterable: false
         }
     },
     methods: {
-        stages: function stages(id) {
+        pipelines: function pipelines(id) {
             window.location.href = '/recruitment';
         },
-        erase: function erase(id) {
+        delete: function _delete(id) {
             alert(id);
         },
         edit: function edit(id) {

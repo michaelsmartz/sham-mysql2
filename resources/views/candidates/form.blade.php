@@ -124,23 +124,22 @@
 
             <div class="form-group col-xs-4">
                 <label for="disability">Select disability</label>
-                <select v-model="selectedDisability" class='form-control' @change="selectedDisabilityFunc()">
-                    <option disabled value="">Please select one</option>
-                    <option v-for="disability in disabilities" :value="disability">@{{disability}}</option>
-                </select>
+                {!! Form::groupRelationSelect('disabilities[]', $disabilities, 'disabilities',
+                          'description', 'description', 'id',
+                          isset($disabilities) ? [] : null, ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
+                ) !!}
             </div>
 
             <div class="form-group col-xs-4">
                 <label for="skill">Select skills</label>
                 <select v-model="selectedSkill" class='form-control' @change="selectedSkillFunc()">
-                    <option disabled value="">Please select one</option>
                     <option v-for="skill in skills" :value="skill">@{{skill}}</option>
                 </select>
             </div>
 
             <div class="form-group col-xs-4">
                 <label for="qualification">Highest qualifications</label>
-                <select v-model="selectedQualification" class='form-control select-multiple multiple' @change="selectedQualificationFunc()">
+                <select v-model="selectedQualification" class='form-control' @change="selectedQualificationFunc()">
                     <option v-for="qualification in qualifications" :value="qualification">@{{qualification}}</option>
                 </select>
             </div>

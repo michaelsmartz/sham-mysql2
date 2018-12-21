@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DisabilityCategory;
 use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
@@ -39,6 +40,12 @@ class CandidatesController extends CustomController
             return redirect()->route($this->baseViewPath .'.index');
         }
         return view($this->baseViewPath .'.index', compact('requests','allowedActions'));
+    }
+
+    public function create(){
+        $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
+
+        return view($this->baseViewPath .'.create', compact('disabilities'));
     }
 
     /**

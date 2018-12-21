@@ -22,7 +22,7 @@ const table = new Vue({
             'experience',
             'recruitment',
             'edit',
-            'stages',
+            'pipelines',
             'delete',
         ],
         data: getData(),
@@ -46,16 +46,16 @@ const table = new Vue({
                 experience: 'Experience',
                 recruitment: 'Recruitment',
             },
-            sortable: [
-                'jobTitle',
-                'shortDescription',
-                'description',
-                'department',
-                'employmentType',
-                'qualification',
-                'experience',
-                'recruitment',
-            ],
+            // sortable: [
+            //     'jobTitle',
+            //     'shortDescription',
+            //     'description',
+            //     'department',
+            //     'employmentType',
+            //     'qualification',
+            //     'experience',
+            //     'recruitment',
+            // ],
             // filterable: [
             //     'jobTitle',
             //     'shortDescription',
@@ -66,11 +66,13 @@ const table = new Vue({
             //     'experience',
             //     'recruitment'
             // ],
-            filterable: false
+
+            sortable: [],
+            filterable: false,
         },
     },
     methods:{
-        stages: function(id){
+        pipelines: function(id){
             window.location.href = '/recruitment';
         },
         delete: function (id) {

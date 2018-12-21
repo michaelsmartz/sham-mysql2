@@ -1,5 +1,5 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Add Candidates')
+@section('title', 'Add Candidate')
 
 @section('content')
     <div class="box box-primary">
