@@ -46661,7 +46661,7 @@ var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#candidates-table',
     data: function data() {
         return {
-            columns: ['title', 'gender', 'maritalStatus', 'surname', 'firstName', 'dob', 'personalEmail', 'homeAddress', 'phone', 'idNumber', 'skills', 'disabilities', 'edit', 'delete'],
+            columns: ['title', 'gender', 'maritalStatus', 'surname', 'firstName', 'dob', 'personalEmail', 'homeAddress', 'phone', 'idNumber', 'skills', 'disabilities', 'edit', 'download', 'delete'],
             subColumns: ['cv'],
             data: getData(),
             options: {

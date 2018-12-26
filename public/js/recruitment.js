@@ -109,6 +109,8 @@ window.Vue = __webpack_require__(6);
 var vm = new Vue({
 	el: "#recruitment",
 	data: {
+		interviewType: null,
+		interviewTypes: ["Internal", "External"],
 		people: [{
 			name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut",
 			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }]
@@ -138,7 +140,8 @@ var vm = new Vue({
 			documents: []
 		}],
 		selectedCategory: "applied",
-		current: {}
+		current: {},
+		counter: 0
 	},
 	computed: {
 		filteredPeople: function filteredPeople() {
@@ -157,6 +160,9 @@ var vm = new Vue({
 	methods: {
 		setCurrent: function setCurrent(item) {
 			this.current = item;
+		},
+		increment: function increment() {
+			this.counter++;
 		}
 	}
 });

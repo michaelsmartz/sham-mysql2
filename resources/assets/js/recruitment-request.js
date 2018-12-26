@@ -177,15 +177,9 @@ const rr = new Vue({
 function getData() {
     return [{
         jobTitle: "Finance Manager",
-        shortDescription: 'Monitor the day-to-day financial operations within the company, ' +
-            'such as payroll, invoicing, and other transactions. Oversee financial department employees, ' +
-            'including financial assistants and accountants',
+        shortDescription: 'Monitor the day-to-day financial operations within the company',
         description : 'Responsibilities of the job include:\n' +
-            'collating, preparing and interpreting reports, budgets, accounts, commentaries and financial statements\n' +
-            'undertaking strategic analysis and assisting with strategic planning\n' +
-            'producing long-term business plans\n' +
-            'undertaking research into pricing, competitors and factors affecting performance\n' +
-            'controlling income, cash flow and expenditure',
+            'collating, preparing and interpreting reports, budgets, accounts, commentaries and financial statements',
         department: 'Finance',
         employmentType: 'Full-time',
         qualification: 'PhD',
@@ -198,18 +192,7 @@ function getData() {
         jobTitle: "Assistant Architect",
         shortDescription: 'A valid New York State Registration as an Architect. Under supervision of the Director, the candidate will serve as an Assistant Architect in the Land Use...',
         description : 'Under supervision of the Director, the candidate will serve as an Assistant Architect ' +
-            'in the Land Use Review unit within the Division of Legal Affairs. S/he will review ' +
-            'various types of applications such as ULURP, license agreements and waivers; conduct ' +
-            'topographical research and gather information from various agencies; consult with other ' +
-            'DOT divisions for their opinion, conduct field surveys, investigations; participate in meetings; ' +
-            'prepare maps using ArcGIS; review design plans, sketches, maps, and other technical drawings ' +
-            'and make recommendations; prepare correspondence for supervisor’s review; respond to inquiries ' +
-            'from communities, elected officials and their constituencies related to street system; provide ' +
-            'assistance to and coordinate work with other Divisions of DOT; engage in investigations and studies ' +
-            'pertaining to land use and transportation, provide authoritative interpretations of New York City ' +
-            'tax maps, sanborn maps and City Maps. S/he will maintain real estate portfolio of DOT, review and ' +
-            'interpret deeds, real estate agreements, metes and bounds descriptions and title search documents; ' +
-            'conduct title search as necessary. Perform other related duties as assigned by the supervisor.',
+            'in the Land Use Review unit within the Division of Legal Affairs. S/he will review ',
         department: 'Construction',
         employmentType: 'Full-time',
         qualification: 'Degree',
@@ -222,11 +205,7 @@ function getData() {
         jobTitle: "Front End Developer",
         shortDescription: 'Angular 7 developer needed',
         description : 'We are looking for a Front-End Web Developer who is motivated to combine ' +
-            'the art of design with the art of programming. Responsibilities will include translation ' +
-            'of the UI/UX design wireframes to actual code that will produce visual elements of the application. ' +
-            'You will work with the UI/UX designer and bridge the gap between graphical design and technical ' +
-            'implementation, taking an active role on both sides and defining how the application looks ' +
-            'as well as how it works.',
+            'the art of design with the art of programming.',
         department: 'IT',
         employmentType: 'Full-time',
         qualification: 'degree',

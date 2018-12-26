@@ -3,13 +3,18 @@ window.Vue = require('vue/dist/vue.common.js');
 var vm = new Vue({
 	el:  "#recruitment",
 	data: {
-		people: [
+        interviewType : null,
+        interviewTypes: [
+            "Internal",
+            "External"
+        ],
+        people: [
 			{ 
 				name: "Bill Gates", status: "applied", picture:"", jobTitle:"Astronaut",
 				documents: [
 					{name:"Curriculum Vitae.docx"},
 					{name:"Application Letter.docx"}
-				]
+				],
 			},
 			{ 
 				name: "Steve Jobs", status: "applied", picture:"", jobTitle:"Chief Marketing Officer",
@@ -44,8 +49,9 @@ var vm = new Vue({
 				documents: [] 
 			}
 		],
-		selectedCategory: "applied",
-		current: {}
+        selectedCategory: "applied",
+        current: {},
+        counter: 0
 	},
 	computed: {
 		filteredPeople: function() {
@@ -64,6 +70,9 @@ var vm = new Vue({
 	methods:{
 		setCurrent: function(item) {
 			this.current = item;
-		}
+		},
+        increment() {
+            this.counter++;
+        }
 	}
 });

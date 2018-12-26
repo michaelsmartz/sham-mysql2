@@ -1,6 +1,7 @@
 @extends('portal-index')
 @section('title','Candidates')
 @section('content')
+    <div class="row">
     <div id="candidates-table" class="flex-wrapper">
         <div id="table-container">
 
@@ -12,12 +13,12 @@
             <br>
             <div>
                 <v-client-table :columns="columns" :data="data" :options="options">
-                    <div slot="child_row" slot-scope="props">
-                        <v-client-table :columns="subColumns" :data="props.row.attachments" :options="subOptions"></v-client-table>
-                        {{--<button slot="child_row" slot-scope="download" data-wenk="download" class="b-n b-n-r bg-transparent item-download" v-on:click="download(props.row.id)">--}}
-                            {{--<i class="glyphicon glyphicon-download text-primary"></i>--}}
-                        {{--</button>--}}
-                    </div>
+                    {{--<div slot="child_row" slot-scope="props">--}}
+                        {{--<v-client-table :columns="subColumns" :data="props.row.attachments" :options="subOptions"></v-client-table>--}}
+                    {{--</div>--}}
+                    <button slot="download" slot-scope="props" data-wenk="download cv" class="b-n b-n-r bg-transparent item-download" v-on:click="download(props.row.id)">
+                        <i class="glyphicon glyphicon-download text-primary"></i>
+                    </button>
                     <button slot="edit" slot-scope="props" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" v-on:click="edit(props.row.id)">
                         <i class="glyphicon glyphicon-edit text-primary"></i>
                     </button>
@@ -29,6 +30,7 @@
             @component('partials.index', ['routeName'=> 'candidates.destroy'])
             @endcomponent
         </div>
+    </div>
     </div>
 @endsection
 

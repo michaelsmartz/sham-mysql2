@@ -15,7 +15,7 @@
                     <button slot="edit" slot-scope="props" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" v-on:click="edit(props.row.id)">
                         <i class="glyphicon glyphicon-edit text-primary"></i>
                     </button>
-                    <button slot="pipelines" slot-scope="props" class="b-n b-n-r bg-transparent item-view" data-wenk="View stages" v-on:click="pipelines(props.row.id)">
+                    <button slot="pipelines" slot-scope="props" class="b-n b-n-r bg-transparent item-view" data-wenk="View pipelines" v-on:click="pipelines(props.row.id)">
                         <i class="glyphicon glyphicon-eye-open text-primary"></i>
                     </button>
                     <button slot="delete" slot-scope="props" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" v-on:click="delete(props.row.id)">

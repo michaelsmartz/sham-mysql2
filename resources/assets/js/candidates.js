@@ -29,6 +29,7 @@ var table = new Vue({
                 'skills',
                 'disabilities',
                 'edit',
+                'download',
                 'delete',
             ],
             subColumns: [

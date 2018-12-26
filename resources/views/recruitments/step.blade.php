@@ -10,7 +10,18 @@
                 </ul>
                 <div class="tab-detail" v-if="current !== null">
                     <div class="row">
-                        <div class="col-md-2 img"></div>
+                        <div class="col-md-2 img">
+                            <div class="avatar-upload">
+                                <div class="avatar-edit">
+                                    <input type='file' name="profile_pic" id="imageUpload" accept=".png, .jpg, .jpeg" />
+                                    <label for="imageUpload" title="change profile image"></label>
+                                </div>
+                                <div class="avatar-preview">
+                                    <div id="imagePreview" style="background-image: url('/img/avatar.png');">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div>
                                 <h2>@{{ current.name }}</h2>
