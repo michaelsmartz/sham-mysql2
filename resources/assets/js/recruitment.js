@@ -3,42 +3,67 @@ window.Vue = require('vue/dist/vue.common.js');
 var vm = new Vue({
 	el:  "#recruitment",
 	data: {
-        interviewType : null,
-        interviewTypes: [
-            "Internal",
-            "External"
-        ],
         people: [
 			{ 
 				name: "Bill Gates", status: "applied", picture:"", jobTitle:"Astronaut",
 				documents: [
 					{name:"Curriculum Vitae.docx"},
 					{name:"Application Letter.docx"}
-				],
+				]
+
 			},
 			{ 
 				name: "Steve Jobs", status: "applied", picture:"", jobTitle:"Chief Marketing Officer",
-				documents: [] 
+				documents: []
 			},
-			{ 
-				name: "Jeff Bezos", status: "applied", picture:"", jobTitle:"Operator",
-				documents: [] 
-			},
-			{ 	
+			{
 				name: "George Clooney", status: "review", picture:"", jobTitle:"Web Developer",
-				documents: [] 
-			},
-			{ 
-				name: "Meryl Streep", status: "review", picture:"", jobTitle:"",
-				documents: [] 
-			},
-			{ 
-				name: "Amy Poehler", status: "interviewing", picture:"", jobTitle:"",
 				documents: []
 			},
+            {
+				name: "Meryl Streep", status: "interviewing", picture:"", jobTitle:"Web Developer",
+				documents: [],
+                interviewTypes:[
+                    "Phone Interview",
+                    "Structured Interview",
+                    "Problem Solving Interview",
+                    "Skype Interview",
+                    "Case Interview",
+				],
+                interviewers:[
+                	"John w henry",
+					"Mike chung"
+				],
+				location: "Port Louis, Mauritius",
+				from: "",
+				to: ""
+			},
 			{ 
-				name: "Lady of Lórien", status: "interviewing", picture:"", jobTitle:"",
-				documents: []
+				name: "Amy Poehler", status: "interviewing", picture:"", jobTitle:"Chief Marketing Officer",
+				documents: [],
+                interviewTypes: [
+                    "Phone Interview",
+                    "Structured Interview"
+                ],
+                interviewers:[],
+                location: "Grand Bay, Mauritius",
+                from: "",
+                to: ""
+			},
+			{ 
+				name: "Lady of Lórien", status: "interviewing", picture:"", jobTitle:"Astronaut",
+				documents: [],
+                interviewTypes: [
+                    "Phone Interview",
+                    "Structured Interview",
+                    "Problem Solving Interview",
+                    "Skype Interview",
+                    "Case Interview",
+                ],
+                interviewers:[],
+                location: "",
+                from: "",
+                to: ""
 			},
 			{ 
 				name: "BB8", status: "offer", picture:"", jobTitle:"",
@@ -46,12 +71,14 @@ var vm = new Vue({
 			},
 			{ 
 				name: "Michael Scott", status: "contract", picture:"", jobTitle:"",
-				documents: [] 
+				documents: []
 			}
 		],
         selectedCategory: "applied",
         current: {},
-        counter: 0
+        counter: 0,
+        lastInterview: true,
+        submitInterview: false,
 	},
 	computed: {
 		filteredPeople: function() {
@@ -70,6 +97,8 @@ var vm = new Vue({
 	methods:{
 		setCurrent: function(item) {
 			this.current = item;
+            this.counter = 0;
+            this.lastInterview = false;
 		},
         increment() {
             this.counter++;
