@@ -69,7 +69,7 @@
                 {{--@endcomponent--}}
             {{--</div>--}}
             <div class="tab-pane"  role="tabpanel" id="interviewing">
-                @component('recruitments.interview', ['interview' => [
+                @component('interviews.index', ['interview' => [
                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Schedule interview'],
                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
                ] ])

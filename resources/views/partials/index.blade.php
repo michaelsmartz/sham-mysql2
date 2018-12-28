@@ -84,6 +84,20 @@
                     @endif
                 }
             };
+
+            window.addForm = function(event, baseUrl) {
+                var route;
+                if (baseUrl === void 0) {
+                    route = '<?php echo e(url()->current()); ?>/';
+                } else {
+                    route = '<?php echo e(URL::to('/')); ?>/' + baseUrl + '/';
+                }
+
+                //window.location = route + '/create';
+
+                loadUrl(route + 'create');
+            };
+
             window.showForm = function(id, event) {
                 $("#modalForm input[name='_method']").remove();
                 if (id) {

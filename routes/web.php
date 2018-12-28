@@ -188,6 +188,7 @@ Auth::routes();
 
         #region Recruitment
         Route::resource('recruitment', 'RecruitmentsController');
+        Route::resource('interview', 'InterviewsController');
         Route::resource('recruitment_requests', 'RecruitmentRequestsController');
         Route::resource('candidates', 'CandidatesController');
         #endregion
