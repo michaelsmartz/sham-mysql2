@@ -35,9 +35,13 @@
                 </div>
                 <div class="col-md-12">
                     <label for="comments">Comments</label>
-                    <textarea rows="4" cols="66"> </textarea>
+                    <textarea
+                            id="comments"
+                            class='form-control'
+                            name="comments">
+                    </textarea>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-12" style="padding-top: 10px;">
                     <button type="button" class="btn btn-success pull-right">Save</button>
                     <button type="button" class="btn btn-success">Import Candidate Data</button>
                 </div>

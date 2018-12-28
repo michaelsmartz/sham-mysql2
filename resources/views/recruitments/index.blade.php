@@ -54,9 +54,9 @@
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" role="tabpanel" id="applied">
+            <div class="tab-pane" role="tabpanel" id="applied">
                 @component('recruitments.applied', ['step' => [
-                    ['id'=>'item-approve','btnclass'=>'btn btn-sham','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve for review'],
+                    ['id'=>'item-approve','btnclass'=>'btn btn-sham','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve for interview'],
                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Reject applicant']
                 ] ])
                 @endcomponent
@@ -191,4 +191,9 @@
         });
 
     </script>
+    <style>
+        .avatar-upload .avatar-edit input + label {
+            display: none; !important;
+        }
+    </style>
 @endsection
