@@ -4,7 +4,7 @@
 @section('modalTitle', 'Add Interview')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Add</button>
+    <a href="#!" class="btn btn-primary" data-close="Close" data-dismiss="modal">Add</a>
 @endsection
 
 @section('postModalUrl', route('interview.create'))
