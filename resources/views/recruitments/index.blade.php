@@ -102,17 +102,12 @@
                 <div class="tab-detail"></div>
             </div>
             <div class="tab-pane" role="tabpanel" id="hired">
-                <ul class="people-list">
-                    <li v-for="person in filteredPeople">
-                        <div class="img">
-                        </div>
-                        <div>
-                            <div>@{{ person.name }}</div>
-                            <div>@{{ person.jobTitle }}</div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="tab-detail"></div>
+                @component('recruitments.hired', ['interview' => [
+                 ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Schedule interview'],
+                 ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                    ] ])
+                @endcomponent
+
             </div>
         </div>
     </section>
