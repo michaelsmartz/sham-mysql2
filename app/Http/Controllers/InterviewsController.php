@@ -38,6 +38,15 @@ class InterviewsController extends CustomController
         }
         return view($this->baseViewPath .'.index', compact('interviews'));
     }
+    public function create(){
+        $view = view($this->baseViewPath . '.create', [])->renderSections();
+        return response()->json([
+            'title' => $view['modalTitle'],
+            'content' => $view['modalContent'],
+            'footer' => $view['modalFooter'],
+            'url' => $view['postModalUrl']
+        ]);
+    }
 
     /**
      * Store a new branch in the storage.

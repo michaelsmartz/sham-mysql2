@@ -3,7 +3,10 @@
             <label for="interviewType">Select Interview Type</label>
             <select v-model="interviewType" class='form-control'>
                 <option disabled value="">Please select one</option>
-                <option v-for="interviewType in interviewTypes" :value="interviewType">@{{interviewType}}</option>
+                <option> Phone Interview</option>
+                <option> Structured Interview </option>
+                <option> Problem Solving Interview </option>
+                <option> Skype Interview </option>
             </select>
         </div>
         <div class="col-md-6">

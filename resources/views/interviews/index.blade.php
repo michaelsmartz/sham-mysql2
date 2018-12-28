@@ -32,20 +32,20 @@
                                 <br>
                             </div>
                             <div class="btn-group">
-                                <button href="#light-modal" type="button" class="btn btn-primary"
+                                <a href="#light-modal" type="button" class="btn btn-primary"
                                         data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event, 'interview')">
                                     <i class="glyphicon glyphicon-plus"></i> Add New Interview
-                                </button>
+                                </a>
                             </div>
 
                             <div class="table-responsive">
                                 <table id="new-table" data-toggle="table" style="width:100%">
                                     <thead>
                                     <tr>
-                                        <th data-sortable="true">Type</th>
-                                        <th data-sortable="true">ScheduledOn</th>
-                                        <th data-sortable="true">Status</th>
-                                        <th data-sortable="true">Actions</th>
+                                        <th>Type</th>
+                                        <th>ScheduledOn</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -56,9 +56,9 @@
 
                                             <td data-html2canvas-ignore="true">
                                                 <div class="btn-group">
-                                                    <button href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="showForm(1,event)">
+                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
                                                         <i class="glyphicon glyphicon-eye-open text-primary"></i>
-                                                    </button>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -70,9 +70,9 @@
                                             <td data-html2canvas-ignore="true">
                                                 <div class="btn-group">
                                                     <div class="btn-group">
-                                                        <button href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="showForm(1,event)">
+                                                        <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
                                                             <i class="glyphicon glyphicon-eye-open text-primary"></i>
-                                                        </button>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </td>
