@@ -13,23 +13,31 @@
                     {{--@{{ lastInterview }}--}}
                     {{--@{{ counter }}--}}
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-2 img">
+                            <div class="avatar-upload">
+                                <div class="avatar-edit">
+                                    <input type='file' name="profile_pic" id="imageUpload" accept=".png, .jpg, .jpeg" />
+                                    <label for="imageUpload" title="change profile image"></label>
+                                </div>
+                                <div class="avatar-preview">
+                                    <div id="imagePreview" style="background-image: url('/img/avatar.png');">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
                             <div>
                                 <h2>@{{ current.name }}</h2>
                                 <div>@{{ current.jobTitle }}</div>
                                 <br>
                             </div>
-                        </div>
-                        <div class="col-md-12" style="margin-top: 10px">
                             <div class="btn-group">
-                                <button href="#light-modal" type="button" class="btn btn-sham"
+                                <button href="#light-modal" type="button" class="btn btn-primary"
                                         data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event, 'interview')">
                                     <i class="glyphicon glyphicon-plus"></i> Add New Interview
                                 </button>
                             </div>
-                        </div>
 
-                        <div class="col-md-12">
                             <div class="table-responsive">
                                 <table id="new-table" data-toggle="table" style="width:100%">
                                     <thead>
@@ -72,9 +80,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
 
-                        <div class="col-md-12">
                             <label for="overallComment">Overall Comments</label>
                             <textarea
                                     id="overallComment"
@@ -82,8 +88,6 @@
                                     {{--v-model="overallComment"--}}
                                     name="overallComment">
                                 </textarea>
-                        </div>
-                        <div class="col-md-12">
                             <div class="pull-right" style="font-size: 2rem;padding-top: 15px">
                                 <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Save</button>
                             </div>

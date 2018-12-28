@@ -55,8 +55,8 @@
 
         <div class="tab-content">
             <div class="tab-pane active" role="tabpanel" id="applied">
-                @component('recruitments.step', ['step' => [
-                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve for review'],
+                @component('recruitments.applied', ['step' => [
+                    ['id'=>'item-approve','btnclass'=>'btn btn-sham','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve for review'],
                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Reject applicant']
                 ] ])
                 @endcomponent
@@ -76,33 +76,22 @@
                 @endcomponent
             </div>
             <div class="tab-pane"  role="tabpanel" id="offer">
-                <ul class="people-list">
-                    <li v-for="person in filteredPeople">
-                        <div class="img">
-                        </div>
-                        <div>
-                            <div>@{{ person.name }}</div>
-                            <div>@{{ person.jobTitle }}</div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="tab-detail"></div>
+                    @component('recruitments.offer', ['step' => [
+                     ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve offer'],
+                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                        ] ])
+                    @endcomponent
+
             </div>
             <div class="tab-pane"  role="tabpanel" id="contract">
-                <ul class="people-list">
-                    <li v-for="person in filteredPeople">
-                        <div class="img">
-                        </div>
-                        <div>
-                            <div>@{{ person.name }}</div>
-                            <div>@{{ person.jobTitle }}</div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="tab-detail"></div>
+                    @component('recruitments.contract', ['step' => [
+                     ['id'=>'item-approve','btnclass'=>'btn btn-success','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve contract'],
+                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                        ] ])
+                    @endcomponent
             </div>
             <div class="tab-pane" role="tabpanel" id="hired">
-                @component('recruitments.hired', ['interview' => [
+                @component('recruitments.hired', ['step' => [
                  ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Schedule interview'],
                  ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
                     ] ])

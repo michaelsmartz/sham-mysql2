@@ -30,8 +30,8 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <label for="candidateName">Start Date</label>
-                    <input id="candidateName" class='form-control' type="text" name="candidateName" >
+                    <label for="startDate">Start Date</label>
+                    <input id="startDate" class='form-control datepicker' type="text" name="startDate" >
                 </div>
                 <div class="col-md-12">
                     <label for="comments">Comments</label>
@@ -42,6 +42,7 @@
                     <button type="button" class="btn btn-success">Import Candidate Data</button>
                 </div>
             </div>
+            <div id="date-picker"> </div>
         </div>
     </div>
 </div>

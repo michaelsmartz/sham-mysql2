@@ -93,9 +93,7 @@
                     route = '<?php echo e(URL::to('/')); ?>/' + baseUrl + '/';
                 }
 
-                //window.location = route + '/create';
-
-                loadUrl(route + 'create');
+               loadUrl(route + 'create');
             };
 
             window.showForm = function(id, event) {
