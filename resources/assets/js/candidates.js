@@ -18,19 +18,11 @@ var table = new Vue({
             columns: [
                 'title',
                 'gender',
-                'maritalStatus',
                 'surname',
                 'firstName',
-                'dob',
                 'personalEmail',
-                'homeAddress',
                 'phone',
-                'idNumber',
-                'skills',
-                'disabilities',
-                'edit',
-                'download',
-                'delete',
+                'actions'
             ],
             subColumns: [
                 'cv',
@@ -123,12 +115,9 @@ function getData() {
         id:1,
         title: "Mr",
         gender: "Male",
-        maritalStatus: "Single",
         surname: "El",
         firstName: "Nino",
-        dob: "23/12/09",
         personalEmail: "elnino@gmail.com",
-        homeAddress: "2 wall street, Iraq",
         phone: "+3322323333",
         idNumber: "p1212362112436w",
         skills: "php",
@@ -171,6 +160,11 @@ function getData() {
 const rr = new Vue({
     el: '#candidates',
     data: {
+        qual: {
+            reference: '', description: '', institution: '', obtained_on: '',
+            student_no: ''
+        },
+        quals: [],
         errors: [],
         titles: [
             'Mr',
@@ -282,11 +276,34 @@ const rr = new Vue({
         },
         selectedQualificationFunc: function(){
             console.log(this.selectedQualification)
+        },
+        addNewQual: function () {
+            this.quals.push(Vue.util.extend({}, this.qual));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeQual: function (index) {
+            Vue.delete(this.quals, index);
+        },
+        submitForm: function (event) {
+            event.preventDefault();
+        },
+        fetchQualifications: function()
+        {
+            fetch('./qualifications')
+                .then(res => res.json())
+                .then(res => {
+                    this.quals = res;
+                })
         }
     },
     mounted: function () {
         +function ($, el) {
             $('.select-multiple').SumoSelect({csvDispCount: 10, up:true});
         }(jQuery, this);
+    },
+    created: function()
+    {
+        this.fetchQualifications();
     }
 });

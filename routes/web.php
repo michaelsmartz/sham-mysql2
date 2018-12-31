@@ -191,6 +191,8 @@ Auth::routes();
         Route::resource('interview', 'InterviewsController');
         Route::resource('recruitment_requests', 'RecruitmentRequestsController');
         Route::resource('candidates', 'CandidatesController');
+        Route::get('candidates/{candidate?}/qualifications', 'CandidatesController@qualifications')->name('get-candidate-qualifications');
+
         #endregion
     });
 #endregion

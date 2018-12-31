@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DisabilityCategory;
+use App\Qualification;
+use App\Skill;
 use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
@@ -45,7 +47,17 @@ class CandidatesController extends CustomController
     public function create(){
         $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
 
-        return view($this->baseViewPath .'.create', compact('disabilities'));
+        $skills = Skill::pluck('description','id')->all();
+
+        return view($this->baseViewPath .'.create', compact('disabilities', 'skills'));
+    }
+
+    public function qualifications(Request $request)
+    {
+        $id = intval(Route::current()->parameter('candidate'));
+        $result = Qualification::where('employee_id', $id)->get();
+
+        return Response()->json($result);
     }
 
     /**

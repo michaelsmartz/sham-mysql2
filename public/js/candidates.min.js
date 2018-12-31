@@ -46640,7 +46640,7 @@ module.exports = __webpack_require__(250);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(8);
+/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__);
@@ -46661,7 +46661,7 @@ var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#candidates-table',
     data: function data() {
         return {
-            columns: ['title', 'gender', 'maritalStatus', 'surname', 'firstName', 'dob', 'personalEmail', 'homeAddress', 'phone', 'idNumber', 'skills', 'disabilities', 'edit', 'download', 'delete'],
+            columns: ['title', 'gender', 'surname', 'firstName', 'personalEmail', 'phone', 'actions'],
             subColumns: ['cv'],
             data: getData(),
             options: {
@@ -46751,12 +46751,9 @@ function getData() {
         id: 1,
         title: "Mr",
         gender: "Male",
-        maritalStatus: "Single",
         surname: "El",
         firstName: "Nino",
-        dob: "23/12/09",
         personalEmail: "elnino@gmail.com",
-        homeAddress: "2 wall street, Iraq",
         phone: "+3322323333",
         idNumber: "p1212362112436w",
         skills: "php",
@@ -46797,6 +46794,11 @@ function getData() {
 var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#candidates',
     data: {
+        qual: {
+            reference: '', description: '', institution: '', obtained_on: '',
+            student_no: ''
+        },
+        quals: [],
         errors: [],
         titles: ['Mr', 'Miss', 'Mrs'],
         genders: ['Male', 'Female'],
@@ -46869,15 +46871,38 @@ var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
         },
         selectedQualificationFunc: function selectedQualificationFunc() {
             console.log(this.selectedQualification);
+        },
+        addNewQual: function addNewQual() {
+            this.quals.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.qual));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeQual: function removeQual(index) {
+            __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
+        },
+        submitForm: function submitForm(event) {
+            event.preventDefault();
+        },
+        fetchQualifications: function fetchQualifications() {
+            var _this = this;
+
+            fetch('./qualifications').then(function (res) {
+                return res.json();
+            }).then(function (res) {
+                _this.quals = res;
+            });
         }
     },
     mounted: function mounted() {
         +function ($, el) {
             $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
         }(jQuery, this);
+    },
+    created: function created() {
+        this.fetchQualifications();
     }
 });
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
 
 /***/ })
 /******/ ]);

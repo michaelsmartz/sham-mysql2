@@ -15,15 +15,9 @@ const table = new Vue({
         columns: [
             'jobTitle',
             'shortDescription',
-            'description',
             'department',
             'employmentType',
-            'qualification',
-            'experience',
-            'recruitment',
-            'edit',
-            'pipelines',
-            'delete',
+            'actions'
         ],
         data: getData(),
         options: {
@@ -87,6 +81,11 @@ const table = new Vue({
 const rr = new Vue({
     el: '#recruitment-requests',
     data: {
+        qual: {
+            reference: '', description: '', institution: '', obtained_on: '',
+            student_no: ''
+        },
+        quals: [],
         errors: [],
         jobTitle: null,
         description: null,
@@ -171,6 +170,29 @@ const rr = new Vue({
         selectedEmploymentTypeFunc: function() {
             console.log(this.selectedEmploymentType)
         },
+        addNewQual: function () {
+            this.quals.push(Vue.util.extend({}, this.qual));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeQual: function (index) {
+            Vue.delete(this.quals, index);
+        },
+        submitForm: function (event) {
+            event.preventDefault();
+        },
+        fetchQualifications: function()
+        {
+            fetch('./qualifications')
+                .then(res => res.json())
+                .then(res => {
+                    this.quals = res;
+                })
+        }
+    },
+    created: function()
+    {
+        this.fetchQualifications();
     }
 });
 
@@ -190,7 +212,7 @@ function getData() {
         id: 245
     }, {
         jobTitle: "Assistant Architect",
-        shortDescription: 'A valid New York State Registration as an Architect. Under supervision of the Director, the candidate will serve as an Assistant Architect in the Land Use...',
+        shortDescription: 'A valid New York State Registration as an Architect...',
         description : 'Under supervision of the Director, the candidate will serve as an Assistant Architect ' +
             'in the Land Use Review unit within the Division of Legal Affairs. S/he will review ',
         department: 'Construction',

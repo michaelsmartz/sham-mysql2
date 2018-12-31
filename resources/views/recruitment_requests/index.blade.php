@@ -12,15 +12,17 @@
             <br>
             <div>
                 <v-client-table :columns="columns" :data="data" :options="options">
-                    <button slot="edit" slot-scope="props" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" v-on:click="edit(props.row.id)">
-                        <i class="glyphicon glyphicon-edit text-primary"></i>
-                    </button>
-                    <button slot="pipelines" slot-scope="props" class="b-n b-n-r bg-transparent item-view" data-wenk="View pipelines" v-on:click="pipelines(props.row.id)">
-                        <i class="glyphicon glyphicon-eye-open text-primary"></i>
-                    </button>
-                    <button slot="delete" slot-scope="props" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" v-on:click="delete(props.row.id)">
-                        <i class="glyphicon glyphicon-remove text-danger"></i>
-                    </button>
+                    <div slot="actions" slot-scope="props">
+                        <button data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" v-on:click="edit(props.row.id)">
+                            <i class="glyphicon glyphicon-edit text-primary"></i>
+                        </button>
+                        <button class="b-n b-n-r bg-transparent item-view" data-wenk="View pipelines" v-on:click="pipelines(props.row.id)">
+                            <i class="glyphicon glyphicon-eye-open text-primary"></i>
+                        </button>
+                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" v-on:click="delete(props.row.id)">
+                            <i class="glyphicon glyphicon-remove text-danger"></i>
+                        </button>
+                    </div>
                 </v-client-table>
             </div>
             @component('partials.index', ['routeName'=> 'recruitment_requests.destroy'])

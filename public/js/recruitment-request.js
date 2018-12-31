@@ -45822,7 +45822,7 @@ module.exports = __webpack_require__(248);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(8);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__);
@@ -45840,7 +45840,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vue
 var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#recruitment-requests-table',
     data: {
-        columns: ['jobTitle', 'shortDescription', 'description', 'department', 'employmentType', 'qualification', 'experience', 'recruitment', 'edit', 'pipelines', 'delete'],
+        columns: ['jobTitle', 'shortDescription', 'department', 'employmentType', 'actions'],
         data: getData(),
         options: {
             filter: false,
@@ -45903,6 +45903,11 @@ var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
 var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#recruitment-requests',
     data: {
+        qual: {
+            reference: '', description: '', institution: '', obtained_on: '',
+            student_no: ''
+        },
+        quals: [],
         errors: [],
         jobTitle: null,
         description: null,
@@ -45969,7 +45974,30 @@ var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
         },
         selectedEmploymentTypeFunc: function selectedEmploymentTypeFunc() {
             console.log(this.selectedEmploymentType);
+        },
+        addNewQual: function addNewQual() {
+            this.quals.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.qual));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeQual: function removeQual(index) {
+            __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
+        },
+        submitForm: function submitForm(event) {
+            event.preventDefault();
+        },
+        fetchQualifications: function fetchQualifications() {
+            var _this = this;
+
+            fetch('./qualifications').then(function (res) {
+                return res.json();
+            }).then(function (res) {
+                _this.quals = res;
+            });
         }
+    },
+    created: function created() {
+        this.fetchQualifications();
     }
 });
 
@@ -45988,7 +46016,7 @@ function getData() {
         id: 245
     }, {
         jobTitle: "Assistant Architect",
-        shortDescription: 'A valid New York State Registration as an Architect. Under supervision of the Director, the candidate will serve as an Assistant Architect in the Land Use...',
+        shortDescription: 'A valid New York State Registration as an Architect...',
         description: 'Under supervision of the Director, the candidate will serve as an Assistant Architect ' + 'in the Land Use Review unit within the Division of Legal Affairs. S/he will review ',
         department: 'Construction',
         employmentType: 'Full-time',
@@ -46012,6 +46040,7 @@ function getData() {
         id: 243
     }];
 }
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ })
 /******/ ]);
