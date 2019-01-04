@@ -14,6 +14,7 @@ $tables = [
     //'Policies',
     //'Topics',
     //"ShamUsers",
+    "ReportTemplates"
 ];
 
 
@@ -37,12 +38,12 @@ if ($conn_mysql->connect_error) {
 
 //addMissingColumns($conn_mysql);
 
-//copyData($conn_mysql, $conn_mssql, $tables);
+copyData($conn_mysql, $conn_mssql, $tables);
 
 //setForeignKey($conn_mysql);
 
 function renameTables($conn_mysql){
-     $mysql = "rename table lawcategories to law_categories;";
+    $mysql = "rename table lawcategories to law_categories;";
     if ($conn_mysql->query($mysql) === TRUE) {
         echo "<b>succesful renamed</b><br>";
     } else {
@@ -164,14 +165,18 @@ function insertData($conn_mysql, $datas, $table){
                 $key = 'is_active';
             if($key === 'ExpiryDate')
                 $key = 'expires_on';
+            if($key === 'Order')
+                $key = "`order`";
+            if($key === 'Source')
+                $key = "`source`";
             if($key === 'ShamUserProfileId' || $key ==='LawId') {
                 $fields .= $key.',';
             }else{
                 $fields .= ltrim(strtolower(preg_replace('/([A-Z]+)/', "_$1", $key)), '_') . ',';
             }
 
-            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' ||
-                        $key === 'ShamUserProfileId' || $key === 'is_public')?'null'.',':"'".$value."'".',';
+            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' || $key === '`order`' ||
+                $key === 'ShamUserProfileId' || $key === 'is_public')?'null'.',':"'".$value."'".',';
         }
 
         $fields = rtrim($fields,',');
