@@ -557,8 +557,11 @@ class EvaluationsController extends CustomController
         if(count($medias) > 0){
             $mediaid = $medias[0]->id;
         }
+
+        $audio = $this->getaudio($request);
+
         //dump($mediaid);die;
-        return view($this->baseViewPath .'.assess-assessment', compact('employeeDetails', 'urlpath', 'usecontent', 'content','Id','EvaluationId','startDateTime','mediaid'));
+        return view($this->baseViewPath .'.assess-assessment', compact('employeeDetails', 'urlpath', 'usecontent', 'content', 'audio', 'Id','EvaluationId','startDateTime','mediaid'));
     }
 
     public function submitAssessment(Request $request,$Id,$EvaluationId){
@@ -1000,6 +1003,8 @@ class EvaluationsController extends CustomController
     public function getaudio(Request $request)
     {
 
+        app('debugbar')->disable();
+
         //https://laracasts.com/discuss/channels/requests/streaming-audio
         //https://stackoverflow.com/questions/45125656/convert-binary-to-file-using-php
         // Binary file Response
@@ -1007,8 +1012,8 @@ class EvaluationsController extends CustomController
         $post = [
             "apiUsername"=> "Development",
             "apiPassword" => "D3velop%m3Nt",
-            "callDate" => "2018-10-26 13:52:30",
-            "recordingFilename" => "1540554779.152.wav"
+            "callDate" => "2019-01-03",
+            "recordingFilename" => "1546500633.2887.wav"
         ];
 
         $ch = curl_init("https://chats-development.smartz-solutions.com/APIV1/CallRecordByFilename");
@@ -1018,9 +1023,8 @@ class EvaluationsController extends CustomController
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         $response = curl_exec($ch);
 
-        dump($response);
-
-        return($response);
+        //return($response);
+        return ('data:audio/wav;base64,'.base64_encode($response));
 
         //return (new Response($response, 206))
         //   ->header('Content-Range', 'bytes');

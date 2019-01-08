@@ -21,8 +21,7 @@
                         </p>
                     @elseif($usecontent == 2)
                         <p><b>Audio File: </b></p>
-                        <audio src="/getaudio/" controls="true"  type="audio/mpeg" ></audio>
-
+                        <audio controls src="{!! (isset($audio)?$audio:"") !!}"></audio>
                     @else
                         <p><b>QA Sample: </b>{{$urlpath}}
                         </p>
