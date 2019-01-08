@@ -210,9 +210,14 @@
                 <div class="row">
                     <div class="col-xs-7">
                         <div class="input-group input-group-sm">
-                            {!! Form::text('audiodate', null,($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Choose Date', 'id'=>'recordingdate']) !!}
+                            {!! Form::text('audiodate', null,($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke datepicker', 'autocomplete'=>'off', 'placeholder'=>'Choose Date', 'id'=>'recordingdate']) !!}
                             <span class="input-group-btn">
                                 <button class="btn btn-info btn-sm" type="button" id="searchaudio">Search</button>
+                            </span>
+                            <span>
+                                <div id="loading" style="width:2px;height:2px; display:none;">
+                                    <img src="{{url('/images/loading_32.gif')}}" style="margin-top:-22px;padding-left: 2px;">
+                                </div>
                             </span>
                         </div>
                     </div>
@@ -230,6 +235,7 @@
                         </table>
                     </div>
                 </div>
+
             </div>
 
             <div class="modal-footer">
@@ -238,6 +244,7 @@
             </div>
         </div>
     </div>
+    <div id="date-picker"> </div>
 </div>
 
 @component('partials.index')
@@ -341,10 +348,15 @@
 
             $("#searchaudio").click(function(){
 
-                var data = {"apiUsername": "Development", "apiPassword" : "D3velop%m3Nt", "dateFrom": "2018-12-31","dateTo":"2019-01-30"};
-                $.post("https://chats-development.smartz-solutions.com/APIV1/CallRecords", data, function(result){
-                    //$("span").html(result);
-                    //console.log(result);
+                $date = $('#recordingdate').val();
+                //var data = {"apiUsername": "Development", "apiPassword" : "D3velop%m3Nt", "dateFrom": "2018-12-31","dateTo":"2019-01-30"};
+                var data = {"date": $date};
+                //$('#loading').html('<img src="{{url('/images/loading_32.gif')}}" style="margin-top:-22px;padding-left: 4px;">');
+                $('#loading').css({'display': 'block', 'width':'2px', 'height':'2px'});
+                //$.post("https://chats-development.smartz-solutions.com/APIV1/CallRecords", data, function(result){
+                $.get("/getaudiolist", data, function(result){
+
+                    result = JSON.parse(result);
 
                     $('#datatable tr').not(':first').not(':last').remove();
                     var html = '';
@@ -361,6 +373,8 @@
                         }
                     }
                     $('#datatable tr').first().after(html);
+                    //$('#loading').html('');
+                    $('#loading').css({'display': 'none'});
                 })
             });
 
@@ -397,6 +411,10 @@
         });
     </script>
     <style>
+
+       /* .modal-dialog {
+            width: 1000px;
+        }*/
 
         .modal-body{
             height: 350px;

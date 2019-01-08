@@ -1030,4 +1030,30 @@ class EvaluationsController extends CustomController
         //   ->header('Content-Range', 'bytes');
     }
 
+    public function getaudiolist(Request $request)
+    {
+        $url =  env('CHAT_API','');
+        $username = env('CHAT_USERNAME','');
+        $password = env('CHAT_PASSWORD','');
+
+        $url = $url.'CallRecords';
+        $date = $request->get('date','');
+
+        $post = [
+            "apiUsername"=> "Development",
+            "apiPassword" => "D3velop%m3Nt",
+            "dateFrom" => $date.' 00:00:00',
+            "dateTo" => $date.' 23:59:59',
+
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        $response = curl_exec($ch);
+
+        return response()->json($response);
+    }
 }
