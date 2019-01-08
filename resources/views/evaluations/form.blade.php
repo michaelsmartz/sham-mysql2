@@ -341,7 +341,7 @@
 
             $("#searchaudio").click(function(){
 
-                var data = {"apiUsername": "Development", "apiPassword" : "D3velop%m3Nt", "dateFrom": "2018-10-01","dateTo":"2018-11-04"};
+                var data = {"apiUsername": "Development", "apiPassword" : "D3velop%m3Nt", "dateFrom": "2018-12-31","dateTo":"2019-01-30"};
                 $.post("https://chats-development.smartz-solutions.com/APIV1/CallRecords", data, function(result){
                     //$("span").html(result);
                     //console.log(result);
