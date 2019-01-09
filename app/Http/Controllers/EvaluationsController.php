@@ -470,6 +470,7 @@ class EvaluationsController extends CustomController
     public function loadAssessment(Request $request,$Id,$EvaluationId){
 
         $evaluationDetails = $this->contextObj->findData($EvaluationId);
+
         $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
             ->find($evaluationDetails->assessment_id);
 
@@ -558,7 +559,11 @@ class EvaluationsController extends CustomController
             $mediaid = $medias[0]->id;
         }
 
-        $audio = $this->getaudio($request);
+        $audio = '';
+        if($evaluationDetails->is_usecontent == 2){
+            $request->request->add(['file' => $evaluationDetails->url_path]);
+            $audio = $this->getaudio($request);
+        }
 
         //dump($mediaid);die;
         return view($this->baseViewPath .'.assess-assessment', compact('employeeDetails', 'urlpath', 'usecontent', 'content', 'audio', 'Id','EvaluationId','startDateTime','mediaid'));
@@ -1009,25 +1014,42 @@ class EvaluationsController extends CustomController
         //https://stackoverflow.com/questions/45125656/convert-binary-to-file-using-php
         // Binary file Response
 
+        $file = $request->get('file','');
+        $parts = array();
+        $calldate = "";
+        $recordingfilename = "";
+
+        $url =  env('CHAT_API','');
+        $username = env('CHAT_USERNAME','');
+        $password = env('CHAT_PASSWORD','');
+
+        $url = $url.'CallRecordByFilename';
+
+        if($file != ''){
+            $parts = explode('/', $file);
+        }
+
+        if(sizeof($parts) > 0){
+            $calldate = $parts[0];
+            $recordingfilename = $parts[1];
+        }
+
         $post = [
-            "apiUsername"=> "Development",
-            "apiPassword" => "D3velop%m3Nt",
-            "callDate" => "2019-01-03",
-            "recordingFilename" => "1546500633.2887.wav"
+            "apiUsername"=> $username,
+            "apiPassword" => $password,
+            "callDate" => $calldate,
+            "recordingFilename" => $recordingfilename,
         ];
 
-        $ch = curl_init("https://chats-development.smartz-solutions.com/APIV1/CallRecordByFilename");
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         $response = curl_exec($ch);
 
-        //return($response);
         return ('data:audio/wav;base64,'.base64_encode($response));
 
-        //return (new Response($response, 206))
-        //   ->header('Content-Range', 'bytes');
     }
 
     public function getaudiolist(Request $request)
@@ -1040,8 +1062,8 @@ class EvaluationsController extends CustomController
         $date = $request->get('date','');
 
         $post = [
-            "apiUsername"=> "Development",
-            "apiPassword" => "D3velop%m3Nt",
+            "apiUsername"=> $username,
+            "apiPassword" => $password,
             "dateFrom" => $date.' 00:00:00',
             "dateTo" => $date.' 23:59:59',
 
