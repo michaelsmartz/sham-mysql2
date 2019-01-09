@@ -228,7 +228,10 @@
                         <table class="table table-striped table-bordered table-hover" id="datatable">
                             <tr>
                                 <th>Filename</th>
+                                <th>User Id</th>
                                 <th>Disposition</th>
+                                <th>Source No</th>
+                                <th>Destination No</th>
                                 <th>Duration</th>
                                 <th>use</th>
                             </tr>
@@ -349,11 +352,13 @@
             $("#searchaudio").click(function(){
 
                 $date = $('#recordingdate').val();
-                //var data = {"apiUsername": "Development", "apiPassword" : "D3velop%m3Nt", "dateFrom": "2018-12-31","dateTo":"2019-01-30"};
+
                 var data = {"date": $date};
-                //$('#loading').html('<img src="{{url('/images/loading_32.gif')}}" style="margin-top:-22px;padding-left: 4px;">');
+
                 $('#loading').css({'display': 'block', 'width':'2px', 'height':'2px'});
-                //$.post("https://chats-development.smartz-solutions.com/APIV1/CallRecords", data, function(result){
+                //$('#datatable tr').not(':first').not(':last').remove();
+                $('#datatable tr').not(':first').remove();
+
                 $.get("/getaudiolist", data, function(result){
 
                     result = JSON.parse(result);
@@ -366,14 +371,16 @@
                             var dateofrecording = result[i].call_start_date.split(' ')[0];
                             html += '<tr>'+
                                     '<td class="recordingfile">' + dateofrecording + '/' +result[i].recording_filename + '</td>' +
+                                    '<td>' + result[i].user_id + '</td>' +
                                     '<td>' + result[i].disposition + '</td>' +
+                                    '<td>' + result[i].source_number + '</td>' +
+                                    '<td>' + result[i].destination_number + '</td>' +
                                     '<td>' + result[i].duration + '</td>' +
                                     '<td> <input type="radio"  value="1" name="selectedaudio" /></label> </td>' +
                                     '</tr>';
                         }
                     }
                     $('#datatable tr').first().after(html);
-                    //$('#loading').html('');
                     $('#loading').css({'display': 'none'});
                 })
             });
@@ -412,9 +419,9 @@
     </script>
     <style>
 
-       /* .modal-dialog {
-            width: 1000px;
-        }*/
+        .modal-dialog {
+            width: 700px;
+        }
 
         .modal-body{
             height: 350px;
