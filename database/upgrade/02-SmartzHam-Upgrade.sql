@@ -2495,4 +2495,4 @@ ALTER TABLE `disability_categories` CHANGE `is_system_predefined` `is_system_pre
 
 #-- 09/01/2018
 ALTER TABLE `disciplinary_actions`
-CHANGE COLUMN `updated_by` `updated_by` VARCHAR(100) NULL DEFAULT
+CHANGE COLUMN `updated_by` `updated_by` VARCHAR(100) NULL
