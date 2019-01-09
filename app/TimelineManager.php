@@ -154,7 +154,7 @@ class TimelineManager extends Model
         $historyDispActionObj->employee_id = $dispAction->employee_id;
         $historyDispActionObj->disciplinary_action_id = $dispAction->id;
         $historyDispActionObj->date_occurred = $dispAction->violation_date;
-        $historyDispActionObj->updated_by_employee_id = "";
+        $historyDispActionObj->updated_by_employeeid = "";
 
         $historyDispActionObj->save();
 

@@ -2,14 +2,13 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
+use App\Traits\UsesPredefinedValues;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DisciplinaryDecision extends Model
 {
-    
-    use SoftDeletes;
+
+    use SoftDeletes, UsesPredefinedValues;
 
 
     /**

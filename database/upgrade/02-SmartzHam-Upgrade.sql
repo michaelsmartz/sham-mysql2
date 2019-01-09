@@ -2492,3 +2492,7 @@ ALTER TABLE `training_sessions` CHANGE `training_delivery_method_id` `training_d
 #-- 12/12/2018
 ALTER TABLE `disabilities` CHANGE `is_system_predefined` `is_system_predefined` TINYINT(1) NULL DEFAULT '0';
 ALTER TABLE `disability_categories` CHANGE `is_system_predefined` `is_system_predefined` TINYINT(1) NULL DEFAULT '0';
+
+#-- 09/01/2018
+ALTER TABLE `disciplinary_actions`
+CHANGE COLUMN `updated_by` `updated_by` VARCHAR(100) NULL DEFAULT

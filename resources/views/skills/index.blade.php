@@ -8,6 +8,7 @@
         <li><a href="{{URL::to('/')}}/countries">Country</a></li>
         <li><a href="{{URL::to('/')}}/departments">Department</a></li>
         <li><a href="{{URL::to('/')}}/divisions">Division</a></li>
+        <li><a href="{{URL::to('/')}}/disciplinary_decisions">Disciplinary Decisions</a></li>
         {{--<li><a href="{{URL::to('/')}}/employee_attachment_types">Employee Attachment Types</a></li>--}}
         <li><a href="{{URL::to('/')}}/employee_statuses">Employee Status</a></li>
         <li><a href="{{URL::to('/')}}/ethnic_groups">Ethnic Group</a></li>

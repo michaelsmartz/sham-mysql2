@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
-use App\Employee;
-use App\Violation;
-use App\DisciplinaryAction;
-use App\DisciplinaryDecision;
-use App\TimelineManager;
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
+use App\DisciplinaryDecision;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
@@ -18,7 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 
-class DisciplinaryActionsController extends CustomController
+class DisciplinaryDecisionsController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -27,39 +24,32 @@ class DisciplinaryActionsController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new DisciplinaryAction();
-        $this->baseViewPath = 'disciplinary_actions';
-        $this->baseFlash = 'Disciplinary Action details ';
+        $this->contextObj = new DisciplinaryDecision();
+        $this->baseViewPath = 'disciplinary_decisions';
+        $this->baseFlash = 'Disciplinary Decision details ';
     }
 
     /**
-     * Display a listing of the disciplinary actions.
+     * Display a listing of the disciplinary decisions.
      *
      * @return Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index()
     {
-        $id = Route::current()->parameter('employee');
-        $disciplinaryActions = $this->contextObj::where('employee_id', $id)->filtered()->paginate(10);
+        $disciplinaryDecisions = $this->contextObj::filtered()->paginate(10);
+
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_DISCIPLINARYDECISIONS);
 
         // handle empty result bug
-        if (Input::has('page') && $disciplinaryActions->isEmpty()) {
+        if (Input::has('page') && $disciplinaryDecisions->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
-        return view($this->baseViewPath .'.index', compact('id','disciplinaryActions'));
-    }
 
-    public function create() {
-        Session::put('redirectsTo', \URL::previous());
-        $id = Route::current()->parameter('employee');
-        $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
-        $violations = Violation::pluck('description','id');
-
-        return view($this->baseViewPath . '.create',compact('id','disciplinaryDecisions','violations'));
+        return view($this->baseViewPath .'.index', compact('disciplinaryDecisions','allowedActions'));
     }
 
     /**
-     * Store a new disciplinary action in the storage.
+     * Store a new disciplinary decision in the storage.
      *
      * @param Illuminate\Http\Request $request
      *
@@ -67,13 +57,12 @@ class DisciplinaryActionsController extends CustomController
      */
     public function store(Request $request)
     {
-       try {
+        try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token', '_method'));
+            $input = array_except($request->all(),array('_token'));
 
-            $data = $this->contextObj->addData($input);
-            TimelineManager::addDisciplinaryActionTimelineHistory($data);
+            $this->contextObj->addData($input);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -81,7 +70,7 @@ class DisciplinaryActionsController extends CustomController
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return redirect(Session::get('redirectsTo'));
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**
@@ -91,14 +80,12 @@ class DisciplinaryActionsController extends CustomController
      */
     public function edit(Request $request)
     {
-        $id = Route::current()->parameter('disciplinary_action');
+        $data = null;
+        $id = Route::current()->parameter('disciplinary_decision');
         $data = $this->contextObj->findData($id);
 
-        $violations = Violation::pluck('description','id')->all();
-        $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
-
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -106,11 +93,11 @@ class DisciplinaryActionsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'));
+        return view($this->baseViewPath . '.edit', compact('data'));
     }
 
     /**
-     * Update the specified disciplinary action in the storage.
+     * Update the specified disciplinary decision in the storage.
      *
      * @param  int $id
      * @param Request $request
@@ -122,7 +109,7 @@ class DisciplinaryActionsController extends CustomController
         try {
             $this->validator($request);
             
-            $redirectsTo = $request->get('redirectsTo', route('disciplinaryactions.index'));
+            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             
             $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
@@ -134,11 +121,11 @@ class DisciplinaryActionsController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->back();
+        return Redirect::to($redirectsTo);
     }
 
     /**
-     * Remove the specified disciplinary action from the storage.
+     * Remove the specified disciplinary decision from the storage.
      *
      * @param  int $id
      *
@@ -147,7 +134,7 @@ class DisciplinaryActionsController extends CustomController
     public function destroy(Request $request)
     {
         try {
-            $id = Route::current()->parameter('disciplinary_action');
+            $id = Route::current()->parameter('disciplinary_decision');
             $this->contextObj->destroyData($id);
 
             \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
@@ -160,6 +147,7 @@ class DisciplinaryActionsController extends CustomController
     }
 
 
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
@@ -167,17 +155,9 @@ class DisciplinaryActionsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'violation_id' => 'required',
-            'violation_date' => 'required|string|min:0',
-            'employee_statement' => 'required|string|min:1',
-            'employer_statement' => 'required|string|min:1',
-            'decision' => 'required|string|min:1',
-            'disciplinary_decision_id' => 'required',
-            'employee_id' => 'required',
-            'updated_by' => 'nullable',
-            'date_issued' => 'required|string|min:0',
-            'date_expires' => 'required|string|min:0'
+            'description' => 'required|string|min:1|max:50'
         ];
+
 
         $validator = Validator::make($request->all(), $validateFields);
         if($validator->fails()) {
