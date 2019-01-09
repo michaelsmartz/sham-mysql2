@@ -69,9 +69,9 @@
                 {{--@endcomponent--}}
             {{--</div>--}}
             <div class="tab-pane"  role="tabpanel" id="interviewing">
-                @component('interviews.index', ['interview' => [
-                   ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Schedule interview'],
-                   ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                @component('interviews.index', ['step' => [
+                   ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Overall Pass'],
+                   ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Overall Fail']
                ] ])
                 @endcomponent
             </div>
@@ -194,6 +194,22 @@
     <style>
         .avatar-upload .avatar-edit input + label {
             display: none; !important;
+        }
+
+        #interview-table tbody tr:nth-child(3) td{
+            background-color:#FFECB3;!important;
+        }
+
+        #interview-table tbody tr:nth-child(2) td{
+            background-color:#A5D6A7!important;
+        }
+
+        #interview-table tbody tr:nth-child(4) td{
+            background-color:#A5D6A7!important;
+        }
+
+        #interview-table tbody tr:nth-child(1) td{
+            background-color: #ef9a9a;!important;
         }
     </style>
 @endsection

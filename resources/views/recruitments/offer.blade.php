@@ -37,7 +37,7 @@
 
                     <label for="originalCopy">Signed Copy</label>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-primary">Download</button>
+                        <button type="button" class="btn btn-primary">Upload</button>
                     </div>
                 </div>
                 <div class="col-md-12">

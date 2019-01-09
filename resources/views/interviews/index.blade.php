@@ -13,6 +13,19 @@
                     {{--@{{ lastInterview }}--}}
                     {{--@{{ counter }}--}}
                     <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <div class="btn-group">
+                                <button id="{{ $step[0]['id'] }}" type="button" class="{{ $step[0]['btnclass'] }}">
+                                    <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
+                                </button>
+                                <button id="{{ $step[1]['id'] }}" type="button" class="{{ $step[1]['btnclass'] }}">
+                                    <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-2 img">
                             <div class="avatar-upload">
                                 <div class="avatar-edit">
@@ -39,44 +52,88 @@
                             </div>
 
                             <div class="table-responsive">
-                                <table id="new-table" data-toggle="table" style="width:100%">
+                                <table id="interview-table" data-toggle="table" style="width:100%">
                                     <thead>
                                     <tr>
                                         <th>Type</th>
                                         <th>ScheduledOn</th>
                                         <th>Status</th>
+                                        <th>Reasons(if any)</th>
+                                        <th>Results</th>
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Phone</td>
-                                            <td>2018-01-01</td>
-                                            <td>Completed</td>
+                                    <tr>
+                                        <td>Skype</td>
+                                        <td>2018-01-12</td>
+                                        <td>Cancelled</td>
 
-                                            <td data-html2canvas-ignore="true">
+                                        <td>Candidate was sick</td>
+                                        <td>Failed</td>
+                                        <td data-html2canvas-ignore="true">
+                                            <div class="btn-group">
                                                 <div class="btn-group">
                                                     <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
-                                                        <i class="glyphicon glyphicon-eye-open text-primary"></i>
+                                                        <i class="glyphicon glyphicon-eye-open"></i>
                                                     </a>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Assessment</td>
-                                            <td>2018-01-30</td>
-                                            <td>Not Completed</td>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phone</td>
+                                        <td>2018-01-01</td>
+                                        <td>Completed</td>
 
-                                            <td data-html2canvas-ignore="true">
+                                        <td></td>
+                                        <td>Failed</td>
+                                        <td data-html2canvas-ignore="true">
+                                            <div class="btn-group">
+                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
+                                                    <i class="glyphicon glyphicon-eye-open"></i>
+                                                </a>
+                                                <a class="b-n b-n-r bg-transparent item-view" data-wenk="Attach documents" onclick="">
+                                                    <i class="glyphicon glyphicon-paperclip"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Assessment</td>
+                                        <td>2018-01-30</td>
+                                        <td>Not Completed</td>
+
+                                        <td></td>
+                                        <td></td>
+                                        <td data-html2canvas-ignore="true">
+                                            <div class="btn-group">
                                                 <div class="btn-group">
-                                                    <div class="btn-group">
-                                                        <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
-                                                            <i class="glyphicon glyphicon-eye-open text-primary"></i>
-                                                        </a>
-                                                    </div>
+                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
+                                                        <i class="glyphicon glyphicon-eye-open"></i>
+                                                    </a>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Panel</td>
+                                        <td>2018-01-15</td>
+                                        <td>Completed</td>
+
+                                        <td></td>
+                                        <td>Passed</td>
+                                        <td data-html2canvas-ignore="true">
+                                            <div class="btn-group">
+                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
+                                                    <i class="glyphicon glyphicon-eye-open"></i>
+                                                </a>
+                                                <a class="b-n b-n-r bg-transparent item-view" data-wenk="Attach documents" onclick="">
+                                                    <i class="glyphicon glyphicon-paperclip"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
