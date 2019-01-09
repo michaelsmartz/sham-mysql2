@@ -210,9 +210,14 @@
                 <div class="row">
                     <div class="col-xs-7">
                         <div class="input-group input-group-sm">
-                            {!! Form::text('audiodate', null,($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke', 'autocomplete'=>'off', 'placeholder'=>'Choose Date', 'id'=>'recordingdate']) !!}
+                            {!! Form::text('audiodate', null,($mode =='view')?['class'=>'form-control','disabled']:['class'=>'form-control bg-whitesmoke datepicker', 'autocomplete'=>'off', 'placeholder'=>'Choose Date', 'id'=>'recordingdate']) !!}
                             <span class="input-group-btn">
                                 <button class="btn btn-info btn-sm" type="button" id="searchaudio">Search</button>
+                            </span>
+                            <span>
+                                <div id="loading" style="width:2px;height:2px; display:none;">
+                                    <img src="{{url('/images/loading_32.gif')}}" style="margin-top:-22px;padding-left: 2px;">
+                                </div>
                             </span>
                         </div>
                     </div>
@@ -223,13 +228,17 @@
                         <table class="table table-striped table-bordered table-hover" id="datatable">
                             <tr>
                                 <th>Filename</th>
+                                <th>User Id</th>
                                 <th>Disposition</th>
+                                <th>Source No</th>
+                                <th>Destination No</th>
                                 <th>Duration</th>
                                 <th>use</th>
                             </tr>
                         </table>
                     </div>
                 </div>
+
             </div>
 
             <div class="modal-footer">
@@ -238,6 +247,7 @@
             </div>
         </div>
     </div>
+    <div id="date-picker"> </div>
 </div>
 
 @component('partials.index')
@@ -341,10 +351,17 @@
 
             $("#searchaudio").click(function(){
 
-                var data = {"apiUsername": "Development", "apiPassword" : "D3velop%m3Nt", "dateFrom": "2018-12-31","dateTo":"2019-01-30"};
-                $.post("https://chats-development.smartz-solutions.com/APIV1/CallRecords", data, function(result){
-                    //$("span").html(result);
-                    //console.log(result);
+                $date = $('#recordingdate').val();
+
+                var data = {"date": $date};
+
+                $('#loading').css({'display': 'block', 'width':'2px', 'height':'2px'});
+                //$('#datatable tr').not(':first').not(':last').remove();
+                $('#datatable tr').not(':first').remove();
+
+                $.get("/getaudiolist", data, function(result){
+
+                    result = JSON.parse(result);
 
                     $('#datatable tr').not(':first').not(':last').remove();
                     var html = '';
@@ -354,13 +371,17 @@
                             var dateofrecording = result[i].call_start_date.split(' ')[0];
                             html += '<tr>'+
                                     '<td class="recordingfile">' + dateofrecording + '/' +result[i].recording_filename + '</td>' +
+                                    '<td>' + result[i].user_id + '</td>' +
                                     '<td>' + result[i].disposition + '</td>' +
+                                    '<td>' + result[i].source_number + '</td>' +
+                                    '<td>' + result[i].destination_number + '</td>' +
                                     '<td>' + result[i].duration + '</td>' +
                                     '<td> <input type="radio"  value="1" name="selectedaudio" /></label> </td>' +
                                     '</tr>';
                         }
                     }
                     $('#datatable tr').first().after(html);
+                    $('#loading').css({'display': 'none'});
                 })
             });
 
@@ -397,6 +418,10 @@
         });
     </script>
     <style>
+
+        .modal-dialog {
+            width: 700px;
+        }
 
         .modal-body{
             height: 350px;
