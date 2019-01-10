@@ -71,7 +71,7 @@ class RewardsController extends CustomController
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return Session::get('redirectsTo');
+        return redirect(Session::get('redirectsTo'));
     }
 
     /**

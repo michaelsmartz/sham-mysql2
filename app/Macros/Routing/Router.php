@@ -49,15 +49,17 @@ class Router
                     'middleware' => ['auth'],
                 ], function () use ($url, $name, $controller, $except) {
                     DefaultRouter::get($url . '/employee/{employee}', $controller . '@index' )->name($url);
-                    
+
                     DefaultRouter::get($url . '/create/employee/{employee}', $controller . '@create')->name($url . '.create');
+                    DefaultRouter::get($url, $controller . '@index')->name($url . '.index');
                     DefaultRouter::post($url, $controller . '@store')->name($url . '.store');
                     DefaultRouter::get($url . '/{' . $name .'}/edit', $controller . '@edit')->name($url . '.edit');
                     DefaultRouter::put($url . '/{' . $name .'}', $controller . '@update')->name($url . '.update');
                     DefaultRouter::patch($url . '/{' . $name .'}', $controller . '@update')->name($url . '.update');
-                    if(!in_array('destroy', $except)){
+
+                    //if(!in_array('destroy', $except)){
                         DefaultRouter::delete($url . '/{' .$name .'}', $controller . '@destroy')->name($url . '.destroy');
-                    }
+                    //}
 
                 });
             });

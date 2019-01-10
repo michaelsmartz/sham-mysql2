@@ -1,6 +1,5 @@
 @extends('portal-index')
-@section('title','Marital Statuses')
-@section('subtitle','Marital Status drop-down values for employees')
+@section('title','Disciplinary Decisions')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
@@ -8,7 +7,7 @@
         <li><a href="{{URL::to('/')}}/countries">Country</a></li>
         <li><a href="{{URL::to('/')}}/departments">Department</a></li>
         <li><a href="{{URL::to('/')}}/divisions">Division</a></li>
-        <li><a href="{{URL::to('/')}}/disciplinary_decisions">Disciplinary Decisions</a></li>
+        <li class="active"><a href="#">Disciplinary Decisions</a></li>
         {{--<li><a href="{{URL::to('/')}}/employee_attachment_types">Employee Attachment Types</a></li>--}}
         <li><a href="{{URL::to('/')}}/employee_statuses">Employee Status</a></li>
         <li><a href="{{URL::to('/')}}/ethnic_groups">Ethnic Group</a></li>
@@ -16,7 +15,7 @@
         <li><a href="{{URL::to('/')}}/immigration_statuses">Immigration Status</a></li>
         <li><a href="{{URL::to('/')}}/job_titles">Job Title</a></li>
         <li><a href="{{URL::to('/')}}/languages">Language</a></li>
-        <li class="active"><a href="#">Marital Status</a></li>
+        <li><a href="{{URL::to('/')}}/marital_statuses">Marital Status</a></li>
         <li><a href="{{URL::to('/')}}/products">Products </a></li>
         <li><a href="{{URL::to('/')}}/skills">Skills</a></li>
         <li><a href="{{URL::to('/')}}/tax_statuses">Tax Status</a></li>
@@ -29,11 +28,11 @@
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($maritalStatuses) > 0)
+            @if(count($disciplinaryDecisions) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     @if($allowedActions->contains('Create'))
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
+                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
                     @endif
@@ -41,10 +40,10 @@
             </div>
             @endif
             <div class="table-responsive">
-            @if(count($maritalStatuses) == 0)
+            @if(count($disciplinaryDecisions) == 0)
                 <h4 class="text-center">Its a bit empty here.
                 @if($allowedActions->contains('Create'))
-                    You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new marital status
+                    You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new disciplinary decision
                 @endif
                 </h4>
             @elseif($allowedActions->contains('List'))
@@ -57,22 +56,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($maritalStatuses as $maritalStatus)
-                        <tr id="tr{{$maritalStatus->id}}">
-                            <td>{{ $maritalStatus->description }}</td>
+                        @foreach($disciplinaryDecisions as $disciplinaryDecision)
+                        <tr id="tr{{$disciplinaryDecision->id}}">
+                            <td>{{ $disciplinaryDecision->description}}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    @if($allowedActions->contains('Write'))
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$maritalStatus->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$disciplinaryDecision->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    @endif
-                                    @if($allowedActions->contains('Delete'))
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$maritalStatus->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$disciplinaryDecision->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
-                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -80,11 +75,11 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $maritalStatuses->render() !!}
+                    {!! $disciplinaryDecisions->render() !!}
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'marital_statuses.destroy'])
+            @component('partials.index', ['routeName'=> 'disciplinary_decisions.destroy'])
             @endcomponent
         </div>
     </div>

@@ -19,5 +19,5 @@
     </div>
 
     <input type="hidden" id="employee_id" name="employee_id" value="{{ old('employee_id', isset($id)? $id:optional($reward)->employee_id) }}">
-
+    <div id="date-picker"> </div>
 </div>

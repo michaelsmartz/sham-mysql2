@@ -59,9 +59,11 @@
                 </option>
             @endforeach
         </select>
-            
+
         {!! $errors->first('disciplinary_decision_id', '<p class="help-block">:message</p>') !!}
     </div>
+
+    <div id="date-picker"> </div>
 
     <input type="hidden" id="employee_id" name="employee_id" value="{{ old('employee_id', isset($id)? $id:optional($disciplinaryAction)->employee_id) }}">
     <input type="hidden" id="updated_by" name="updated_by" value="">
