@@ -33,7 +33,7 @@
             </div>
 
             <div class="form-group col-xs-2">
-                <label for="title">Select title</label>
+                <label for="title">Select Title</label>
                 <select v-model="selectedTitle" class='form-control'>
                     <option disabled value="">Please select one</option>
                     <option v-for="title in titles" :value="title">@{{title}}</option>
@@ -41,7 +41,7 @@
             </div>
 
             <div class="form-group col-xs-3">
-                <label for="gender">Select gender</label>
+                <label for="gender">Select Gender</label>
                 <select v-model="selectedGender" class='form-control'>
                     <option disabled value="">Please select one</option>
                     <option v-for="gender in genders" :value="gender">@{{gender}}</option>
@@ -49,7 +49,7 @@
             </div>
 
             <div class="form-group col-xs-3">
-                <label for="gender">Select marital status</label>
+                <label for="gender">Select Marital Status</label>
                 <select v-model="selectedMaritalStatus" class='form-control'>
                     <option disabled value="">Please select one</option>
                     <option v-for="maritalStatus in maritalStatuses" :value="maritalStatus">@{{maritalStatus}}</option>
@@ -122,7 +122,7 @@
                 >
             </div>
 
-            <div class="form-group col-xs-6">
+            <div class="form-group col-xs-5">
                 <label for="disability">Select disability</label>
                 {!! Form::groupRelationSelect('disabilities[]', $disabilities, 'disabilities',
                           'description', 'description', 'id',
@@ -130,7 +130,7 @@
                 ) !!}
             </div>
 
-            <div class="form-group col-xs-6">
+            <div class="form-group col-xs-5">
                 <label for="skill">Select skills</label>
                 {!! Form::select('skills[]', $skills,
                     old('skills', isset($employeeSkills) ? $employeeSkills : null),
@@ -139,6 +139,8 @@
             </div>
 
             <div class="form-group col-xs-12">
+                <fieldset>
+                <legend style="font-size:14px;"><b>Add Qualifications</b></legend>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-xs-1">
@@ -184,10 +186,103 @@
                         </div>
                     </div>
                 </div>
+                </fieldset>
             </div>
 
             <div class="form-group col-xs-12">
                 <div class="fileUploader" id="one"></div>
+            </div>
+
+            <div class="form-group col-xs-4">
+                <label for="surname">Previous Employer</label>
+                <input
+                        id="previous_employer"
+                        class='form-control'
+                        v-model="previous_employer"
+                        type="text"
+                        name="previous_employer"
+                >
+            </div>
+
+            <div class="form-group col-xs-4">
+                <label for="surname">Position</label>
+                <input
+                        id="position"
+                        class='form-control'
+                        v-model="position"
+                        type="text"
+                        name="position"
+                >
+            </div>
+
+            <div class="form-group col-xs-2">
+                <label for="surname">Salary</label>
+                <input
+                        id="salary"
+                        class='form-control'
+                        v-model="salary"
+                        type="number"
+                        name="salary"
+                >
+            </div>
+
+            <div class="form-group col-xs-2">
+                <label for="surname">Reason for leaving?</label>
+                <textarea
+                        id="reason_leaving"
+                        class='form-control'
+                        v-model="reason_leaving"
+                        type="text"
+                        name="reason_leaving"
+                ></textarea>
+            </div>
+
+            <div class="form-group col-xs-4">
+                <label for="surname">Position Applying For</label>
+                <input
+                        id="surname"
+                        class='form-control'
+                        v-model="position_applied"
+                        type="text"
+                        name="position_applied"
+                >
+            </div>
+
+            <div class="form-group col-xs-2">
+                <label for="dob">Date You Can Start</label>
+                <input
+                        id="date_available"
+                        class='form-control datepicker'
+                        v-model="date_available"
+                        type="text"
+                        name="date_available"
+                >
+            </div>
+
+            <div class="form-group col-xs-2">
+                <label for="surname">Salary Expectation</label>
+                <input
+                        id="salary_expectation"
+                        class='form-control'
+                        v-model="salary_expectation"
+                        type="number"
+                        name="salary_expectation"
+                >
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label for="skill">Overview</label>
+                <textarea class="form-control" name="overview" cols="50" rows="4" id="overview" minlength="1" placeholder="Add Overview"></textarea>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label for="skill">Cover Letter</label>
+                <textarea class="form-control" name="short-description" cols="50" rows="4" id="short-description" minlength="1" placeholder="Add short description why you should be selected"></textarea>
+            </div>
+
+            <div class="form-html col-xs-12">
+                <p><b>By clicking the submit button below, I certify that all of the information provided by me on this application is true and complete, and I understand that if any false information, ommissions, or misrepresentations are discovered, my application may be rejected and, if I am employed, my employement may be terminated at any time. &nbsp;</b></p>
+                <p><b>I also understand and agree that the terms and conditions of my employment may be changed, with or without cause, and with or without notice, at any time by the company. &nbsp;</b></p>
             </div>
         </div>
     </div>

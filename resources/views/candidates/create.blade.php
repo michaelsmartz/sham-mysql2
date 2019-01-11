@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div class="box-footer">
-                    <input class="btn btn-primary pull-right" type="submit" value="Add">
+                    <input class="btn btn-primary pull-right" type="submit" value="Submit">
                     <a href="{{ route('candidates.index') }}" class="btn btn-default pull-right" title="Show all recruitment requests">
                         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                     </a>
@@ -75,7 +75,7 @@
                 },
                 langs: {
                     'en': {
-                        intro_msg: "{{ 'Attach CV' }}",
+                        intro_msg: "{{ 'Attach Testmonials (CV, certificates, qualifications, ..etc)' }}",
                         dropZone_msg:
                             '<p><strong>Drop</strong>&nbsp;your files here or <strong class="text-primary">click</strong>&nbsp;on this area' +
                             '<br><small class="text-muted">{{ "You can upload any related files" }}.\n' +
