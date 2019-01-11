@@ -249,7 +249,7 @@
             </div>
 
             <div class="form-group col-xs-2">
-                <label for="dob">Date You Can Start</label>
+                <label for="date_available">Date You Can Start</label>
                 <input
                         id="date_available"
                         class='form-control datepicker'
@@ -268,6 +268,15 @@
                         type="number"
                         name="salary_expectation"
                 >
+            </div>
+
+            <div class="form-group col-xs-4">
+                <h5><b>Preferred notification: </b></h5>
+                <label for="internalRecruitment">Mail</label>
+                <input type="checkbox">
+
+                <label for="externalRecruitment">SMS</label>
+                <input type="checkbox">
             </div>
 
             <div class="form-group col-xs-12">

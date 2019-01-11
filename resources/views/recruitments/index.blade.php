@@ -1,5 +1,5 @@
 @extends('portal-index')
-@section('title','Recruitment Pipeline')
+@section('title','Recruitment for Finance Manager')
 @section('content')
     <br>
     <section id="recruitment">

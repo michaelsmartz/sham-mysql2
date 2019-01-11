@@ -21,13 +21,13 @@
             </div>
 
             <div class="form-group col-xs-6">
-                <label for="shortDescription">Short description</label>
+                <label for="position">Position</label>
                 <input
-                        id="shortDescription"
+                        id="position"
                         class='form-control'
-                        v-model="shortDescription"
+                        v-model="position"
                         type="text"
-                        name="shortDescription"
+                        name="position"
                 >
             </div>
 
@@ -41,7 +41,7 @@
                                 </textarea>
             </div>
 
-            <div class="form-group col-xs-5">
+            <div class="form-group col-xs-3">
                 <label for="department">Select department</label>
                 <select v-model="selectedDepartment" class='form-control' @change="selectedDepartmentFunc()">
                     <option disabled value="">Please select one</option>
@@ -49,16 +49,24 @@
                 </select>
             </div>
 
-            <div class="form-group col-xs-5">
-                <label for="employmentType">Select employment type</label>
+            <div class="form-group col-xs-3">
+                <label for="employmentType">Select type of position</label>
                 <select v-model="selectedEmploymentType" class='form-control' @change="selectedEmploymentTypeFunc()">
                     <option disabled value="">Please select one</option>
                     <option v-for="employmentType in employmentTypes" :value="employmentType">@{{employmentType}}</option>
                 </select>
             </div>
 
-            <div class="form-group col-xs-2">
-                <label for="yearExperience">Years of experience</label>
+            <div class="form-group col-xs-3">
+                <label for="skills">Select skills</label>
+                <select v-model="selectedSkill" class='form-control'>
+                    <option disabled value="">Please select one</option>
+                    <option v-for="skill in skills" :value="skill">@{{skill}}</option>
+                </select>
+            </div>
+
+            <div class="form-group col-xs-3">
+                <label for="yearExperience">Years of experience required</label>
                 <input
                         id="yearExperience"
                         class='form-control'
@@ -70,51 +78,111 @@
             </div>
 
             <div class="form-group col-xs-12">
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-xs-1">
-                            <button class="btn btn-default" v-on:click="addNewQual" type="button" data-wenk-pos="right"
-                                    data-wenk="Add New Qualification">
-                                <i class="fa fa-plus text-success"></i>
-                            </button>
-                        </div>
-                        <label class="col-sm-1">Ref</label>
-                        <label class="col-sm-3">Description</label>
-                        <label class="col-sm-3">Institution</label>
-                        <label class="col-sm-2">Student Number</label>
-                        <label class="col-sm-2">Date Obtained</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="row" v-for="(qual, index) in quals">
-                        <div class="col-xs-1">
-                            <button type="button" v-on:click="removeQual(index)" class="btn btn-default" data-wenk-pos="right"
-                                    data-wenk="Remove Qualification">
-                                <i class="fa fa-minus" style="color:rgb(255,59,48)"></i>
-                            </button>
-                        </div>
-                        <div class="col-md-1">
-                            <input v-model="qual.reference" type="text"
-                                   name="qualifications[][reference]" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <input v-model="qual.description" type="text"
-                                   name="qualifications[][description]" class="form-control">
-                        </div>
-                        <div class="col-md-3">
-                            <input v-model="qual.institution" type="text"
-                                   name="qualifications[][institution]" class="form-control">
-                        </div>
-                        <div class="col-sm-2">
-                            <input v-model="qual.student_no" type="text"
-                                   name="qualifications[][student_no]" class="form-control">
-                        </div>
-                        <div class="col-sm-2">
-                            <input v-model="qual.obtained_on" type="text" class="form-control datepicker"
-                                   name="qualifications[][obtained_on]" date-format="yy-mm-dd" change-month="true" change-year="true">
+                <fieldset>
+                    <legend style="font-size:14px;"><b>Add Interviews</b></legend>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <button class="btn btn-default" v-on:click="addNewInterview" type="button" data-wenk-pos="right"
+                                        data-wenk="Add New Interview">
+                                    <i class="fa fa-plus text-success"></i>
+                                </button>
+                            </div>
+                            <label class="col-sm-2">Interview Type</label>
+                            <label class="col-sm-3">Schedule Comment</label>
+                            <label class="col-sm-2">Schedule Date</label>
+                            <label class="col-sm-2">Interviewers</label>
+                            <label class="col-sm-2">Location</label>
                         </div>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <div class="row" v-for="(interview, index) in interviews">
+                            <div class="col-xs-1">
+                                <button type="button" v-on:click="removeInterview(index)" class="btn btn-default" data-wenk-pos="right"
+                                        data-wenk="Remove Interview">
+                                    <i class="fa fa-minus" style="color:rgb(255,59,48)"></i>
+                                </button>
+                            </div>
+
+                            <div class="col-md-2">
+                                <select v-model="selectedInterviewType" class='form-control'>
+                                    <option disabled value="">Please select one</option>
+                                    <option v-for="interview_type in interview.interview_types" :value="interview_type">@{{interview_type}}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <textarea
+                                        id="schedule_comment"
+                                        class="form-control"
+                                        v-model="interview.schedule_comment"
+                                        type="text"
+                                        name="interviews[][schedule_comment]"
+                                >
+
+                                </textarea>
+                            </div>
+                            <div class="col-md-2">
+                                <input
+                                        id="schedule_date"
+                                        class='form-control datepicker'
+                                        v-model="interview.schedule_date"
+                                        type="text"
+                                        name="interviews[][schedule_date]"
+                                >
+                            </div>
+                            <div class="col-md-2">
+                                <input
+                                        id="interviewers"
+                                        class='form-control'
+                                        v-model="interview.interviewers"
+                                        type="text"
+                                        name="interviews[][interviewers]"
+                                        multiple
+                                >
+                            </div>
+                            <div class="col-md-2">
+                                <input
+                                        id="location"
+                                        class='form-control'
+                                        v-model="interview.location"
+                                        type="text"
+                                        name="interviews[][location]"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="form-group col-xs-3">
+                <label for="skills">Select Qualifications</label>
+                <select v-model="selectedQualification" class='form-control'>
+                    <option disabled value="">Please select one</option>
+                    <option v-for="qualification in qualifications" :value="qualification">@{{qualification}}</option>
+                </select>
+            </div>
+
+            <div class="form-group col-xs-2">
+                <label for="date_start">Start Date</label>
+                <input
+                        id="date_start"
+                        class='form-control datepicker'
+                        v-model="date_start"
+                        type="text"
+                        name="date_start"
+                >
+            </div>
+
+            <div class="form-group col-xs-2" v-if="showEndDate">
+                <label for="date_end">End Date</label>
+                <input
+                        id="date_end"
+                        class='form-control datepicker'
+                        v-model="date_end"
+                        type="text"
+                        name="date_end"
+                >
             </div>
 
             <div class="form-group col-xs-12">
@@ -158,6 +226,7 @@
             </transition>
         </div>
     </div>
+    <div id="date-picker"> </div>
 </div>
 
 @section('post-body')

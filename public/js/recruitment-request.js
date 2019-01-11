@@ -45903,11 +45903,14 @@ var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
 var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
     el: '#recruitment-requests',
     data: {
-        qual: {
-            reference: '', description: '', institution: '', obtained_on: '',
-            student_no: ''
+        interview: {
+            interview_types: ['Phone', 'Skype', 'Panel', 'Assessment'],
+            interviewers: '',
+            location: '',
+            schedule_date: '',
+            schedule_comment: ''
         },
-        quals: [],
+        interviews: [],
         errors: [],
         jobTitle: null,
         description: null,
@@ -45916,14 +45919,18 @@ var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
         minSalary: null,
         maxSalary: null,
         showSalary: false,
+        showEndDate: false,
         internalRecruitment: false,
         externalRecruitment: false,
         departments: ["Finance", "Development", "Testing"],
         employmentTypes: ["Full-time", "Part-time", "Contract", "Temporary", "Other"],
         qualifications: ["Higher School Certificate", "Certificate", "Diploma", "Degree", "Masters", "PhD"],
+        skills: ["skill1", "skill2", "skill3"],
         selectedDepartment: null,
         selectedEmploymentType: null,
-        selectedQualification: null
+        selectedInterviewType: null,
+        selectedQualification: null,
+        selectedSkill: null
     },
     methods: {
         checkForm: function checkForm(e) {
@@ -45967,21 +45974,30 @@ var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
                 this.errors.push('Years of experience is required.');
             }
 
+            if (!this.skills) {
+                this.errors.push('Skill is required.');
+            }
+
             e.preventDefault();
         },
         selectedDepartmentFunc: function selectedDepartmentFunc() {
-            console.log(this.selectedDepartment);
+            //console.log(this.selectedDepartment)
         },
         selectedEmploymentTypeFunc: function selectedEmploymentTypeFunc() {
-            console.log(this.selectedEmploymentType);
+            //console.log(this.selectedEmploymentType);
+            if (this.selectedEmploymentType === "Temporary") {
+                this.showEndDate = true;
+            } else {
+                this.showEndDate = false;
+            }
         },
-        addNewQual: function addNewQual() {
-            this.quals.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.qual));
+        addNewInterview: function addNewInterview() {
+            this.interviews.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.interview));
             //ensure height is enough as accordion sets a height as inline style
             $('.accordion--active').css("height", "");
         },
-        removeQual: function removeQual(index) {
-            __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
+        removeInterview: function removeInterview(index) {
+            __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.interviews, index);
         },
         submitForm: function submitForm(event) {
             event.preventDefault();
@@ -45992,7 +46008,7 @@ var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
             fetch('./qualifications').then(function (res) {
                 return res.json();
             }).then(function (res) {
-                _this.quals = res;
+                _this.interviews = res;
             });
         }
     },

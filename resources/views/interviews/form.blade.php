@@ -1,5 +1,5 @@
 
-        <div class="col-md-6">
+        <div class="col-md-12">
             <label for="interviewType">Select Interview Type</label>
             <select v-model="interviewType" class='form-control'>
                 <option disabled value="">Please select one</option>
@@ -9,25 +9,9 @@
                 <option> Skype Interview </option>
             </select>
         </div>
-        <div class="col-md-6">
-            <label for="candidateName">Candidate Name</label>
-            <input
-                    id="candidateName"
-                    class='form-control'
-                    v-model="current.name"
-                    type="text"
-                    name="candidateName"
-            >
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
             <label for="comments">Schedule Comments</label>
-            <input
-                    id="comments"
-                    class='form-control'
-                    v-model="current.comments"
-                    type="text"
-                    name="comments"
-            >
+            <textarea class="form-control"></textarea>
         </div>
         <div class="col-md-6">
             <label for="from">From</label>
@@ -49,7 +33,7 @@
                     type="text"
             >
         </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
             <label for="interviewers">Interviewer(s)</label>
             <input
                     id="interviewers"
@@ -60,7 +44,7 @@
                     multiple
             >
         </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
             <label for="location">Location</label>
             <input
                     id="location"
@@ -70,4 +54,3 @@
                     name="location"
             >
         </div>
-        <div id="date-picker"> </div>

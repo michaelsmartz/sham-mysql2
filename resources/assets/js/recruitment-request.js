@@ -81,11 +81,14 @@ const table = new Vue({
 const rr = new Vue({
     el: '#recruitment-requests',
     data: {
-        qual: {
-            reference: '', description: '', institution: '', obtained_on: '',
-            student_no: ''
+        interview: {
+            interview_types: ['Phone','Skype','Panel','Assessment'],
+            interviewers: '',
+            location: '',
+            schedule_date: '',
+            schedule_comment: '',
         },
-        quals: [],
+        interviews: [],
         errors: [],
         jobTitle: null,
         description: null,
@@ -94,6 +97,7 @@ const rr = new Vue({
         minSalary: null,
         maxSalary: null,
         showSalary: false,
+        showEndDate: false,
         internalRecruitment: false,
         externalRecruitment: false,
         departments: [
@@ -116,9 +120,16 @@ const rr = new Vue({
             "Masters",
             "PhD",
         ],
+        skills:[
+          "skill1",
+          "skill2",
+          "skill3",
+        ],
         selectedDepartment: null,
         selectedEmploymentType: null,
+        selectedInterviewType: null,
         selectedQualification: null,
+        selectedSkill: null,
     },
     methods:{
         checkForm: function (e) {
@@ -158,25 +169,34 @@ const rr = new Vue({
                 this.errors.push('Qualification is required.');
             }
 
-            if(!this.yearExperience){
+            if(!this.yearExperience) {
                 this.errors.push('Years of experience is required.');
+            }
+
+            if(!this.skills){
+                this.errors.push('Skill is required.');
             }
 
             e.preventDefault();
         },
         selectedDepartmentFunc: function() {
-            console.log(this.selectedDepartment)
+            //console.log(this.selectedDepartment)
         },
         selectedEmploymentTypeFunc: function() {
-            console.log(this.selectedEmploymentType)
+            //console.log(this.selectedEmploymentType);
+            if(this.selectedEmploymentType === "Temporary"){
+                this.showEndDate = true;
+            }else{
+                this.showEndDate = false;
+            }
         },
-        addNewQual: function () {
-            this.quals.push(Vue.util.extend({}, this.qual));
+        addNewInterview: function () {
+            this.interviews.push(Vue.util.extend({}, this.interview));
             //ensure height is enough as accordion sets a height as inline style
             $('.accordion--active').css("height", "");
         },
-        removeQual: function (index) {
-            Vue.delete(this.quals, index);
+        removeInterview: function (index) {
+            Vue.delete(this.interviews, index);
         },
         submitForm: function (event) {
             event.preventDefault();
@@ -186,7 +206,7 @@ const rr = new Vue({
             fetch('./qualifications')
                 .then(res => res.json())
                 .then(res => {
-                    this.quals = res;
+                    this.interviews = res;
                 })
         }
     },

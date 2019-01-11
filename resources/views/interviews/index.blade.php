@@ -44,12 +44,12 @@
                                 <div>@{{ current.jobTitle }}</div>
                                 <br>
                             </div>
-                            <div class="btn-group">
-                                <a href="#light-modal" type="button" class="btn btn-primary"
-                                        data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event, 'interview')">
-                                    <i class="glyphicon glyphicon-plus"></i> Add New Interview
-                                </a>
-                            </div>
+                            {{--<div class="btn-group">--}}
+                                {{--<a href="#light-modal" type="button" class="btn btn-primary"--}}
+                                        {{--data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event, 'interview')">--}}
+                                    {{--<i class="glyphicon glyphicon-plus"></i> Add New Interview--}}
+                                {{--</a>--}}
+                            {{--</div>--}}
 
                             <div class="table-responsive">
                                 <table id="interview-table" data-toggle="table" style="width:100%">
@@ -151,6 +151,7 @@
                         </div>
                     </div>
                 </div>
+                <div id="date-picker"> </div>
 
                 @component('partials.index', [])
                 @endcomponent

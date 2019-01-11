@@ -30,7 +30,7 @@
                             </div>
                             <div class="tabbable" v-show="current !== null">
                                 <ul class="nav">
-                                    <li><a href="#pane1" data-toggle="tab">Bibliography</a></li>
+                                    <li><a href="#pane1" data-toggle="tab">Overview</a></li>
                                     <li><a href="#pane2" data-toggle="tab">Documents</a></li>
                                 </ul>
                             </div>
