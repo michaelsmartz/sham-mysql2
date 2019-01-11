@@ -74,8 +74,8 @@
                                         <td data-html2canvas-ignore="true">
                                             <div class="btn-group">
                                                 <div class="btn-group">
-                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
-                                                        <i class="glyphicon glyphicon-eye-open"></i>
+                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
+                                                        <i class="glyphicon glyphicon-edit"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -90,8 +90,8 @@
                                         <td>Failed</td>
                                         <td data-html2canvas-ignore="true">
                                             <div class="btn-group">
-                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
-                                                    <i class="glyphicon glyphicon-eye-open"></i>
+                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
+                                                    <i class="glyphicon glyphicon-edit"></i>
                                                 </a>
                                                 <a class="b-n b-n-r bg-transparent item-view" data-wenk="Attach documents" onclick="">
                                                     <i class="glyphicon glyphicon-paperclip"></i>
@@ -109,8 +109,8 @@
                                         <td data-html2canvas-ignore="true">
                                             <div class="btn-group">
                                                 <div class="btn-group">
-                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
-                                                        <i class="glyphicon glyphicon-eye-open"></i>
+                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
+                                                        <i class="glyphicon glyphicon-edit"></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -125,8 +125,8 @@
                                         <td>Passed</td>
                                         <td data-html2canvas-ignore="true">
                                             <div class="btn-group">
-                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="View Details" onclick="addForm(event, 'interview')">
-                                                    <i class="glyphicon glyphicon-eye-open"></i>
+                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
+                                                    <i class="glyphicon glyphicon-edit"></i>
                                                 </a>
                                                 <a class="b-n b-n-r bg-transparent item-view" data-wenk="Attach documents" onclick="">
                                                     <i class="glyphicon glyphicon-paperclip"></i>

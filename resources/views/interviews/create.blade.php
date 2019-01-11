@@ -1,7 +1,7 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Add Interview')
+@section('title', 'Edit Interview')
 
-@section('modalTitle', 'Add Interview')
+@section('modalTitle', 'Edit Interview')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
     <a href="#!" class="btn btn-primary" data-close="Close" data-dismiss="modal">Add</a>
