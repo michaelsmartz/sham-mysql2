@@ -67,6 +67,13 @@
                 //history.replaceState(null, "", window.location.pathname);
                 //return window.location.hash.replace(/^#/, '');
             };
+
+            window.editEmployeeHistoryForm = function(id, event) {
+                if (id) {
+                    loadUrl('{{url()->current()}}/employee-history');
+                }
+            };
+
             window.editForm = function(id, event, baseUrl) {
                 var route; 
                 if (baseUrl === void 0) {

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Address;
 use App\Disability;
+use App\HistoryDepartment;
+use App\HistoryJobTitle;
+use App\HistoryJoinTermination;
 use App\Team;
 use App\Title;
 use App\Branch;
@@ -30,6 +33,7 @@ use App\SystemSubModule;
 use App\SysConfigValue;
 use App\TimelineManager;
 use App\Traits\MediaFiles;
+use Illuminate\Support\Facades\Session;
 use OwenIt\Auditing\Facades\Auditor;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -192,6 +196,68 @@ class EmployeesController extends CustomController
                     'teams','employeeStatuses','jobTitles',
                     'divisions','branches','skills','disabilities','lineManagers',
                     'employeeSkills','employeeDisabilities','qualifications','uploader'));
+    }
+
+
+    public function editEmployeeHistory(Request $request){
+        Session::put('redirectsTo', \URL::previous());
+        $data = null;
+        $id = Route::current()->parameter('employee');
+        $data = ['id'=>$id];
+
+        $historyDepartment = HistoryDepartment::select(['date_occurred'])->where('employee_id',$id)->get()->first();
+        $historyJobTittle = HistoryJobTitle::select(['date_occurred'])->where('employee_id',$id)->get()->first();
+        $historyJoinTermination = HistoryJoinTermination::select(['date_occurred','is_joined'])->where('employee_id',$id)->get()->first();
+
+        if(isset($historyDepartment['date_occurred'])){
+            $data['historyDepartmentDate'] = date("Y-m-d", strtotime($historyDepartment['date_occurred']));
+        }else{
+            $data['historyDepartmentDate'] = null;
+        }
+
+        if(isset($historyJobTittle['date_occurred'])){
+            $data['historyJobTitleDate'] = date("Y-m-d", strtotime($historyJobTittle['date_occurred']));
+        }else{
+            $data['historyJobTitleDate'] = null;
+        }
+
+        if(isset($historyJoinTermination['date_occurred']) && isset($historyJoinTermination['is_joined'])){
+            $data['is_joined'] = $historyJoinTermination['is_joined'];
+            $data['historyJoinTerminationDate'] = date("Y-m-d", strtotime($historyJoinTermination['date_occurred']));
+        }else{
+            $data['historyJoinTerminationDate'] = null;
+            $data['is_joined'] = null;
+        }
+
+        //dump($id);
+        //dd($data);
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.history', compact('data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+        return view($this->baseViewPath . '.history', compact('data'));
+    }
+
+    public function updateEmployeeHistory(Request $request, $id)
+    {
+        $otherFields = ['_token', '_method'];
+        $input = array_except($request->all(), $otherFields);
+
+        HistoryDepartment::where('employee_id', $id)->update(['date_occurred' => $input['department']]);
+        HistoryJobTitle::where('employee_id', $id)->update(['date_occurred' => $input['job-title']]);
+        HistoryJoinTermination::where('employee_id', $id)
+            ->update(['is_joined' => $input['is-joined'],
+                'date_occurred' => $input['join-termination']
+            ]);
+
+        \Session::put('success', 'Employee Timeline History updated Successfully!!');
+        return redirect(Session::get('redirectsTo'));
     }
 
     /**

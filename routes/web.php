@@ -79,6 +79,9 @@ Auth::routes();
             Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
             Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
             Route::any('employees/{employee?}/departmentid', 'EmployeesController@getEmployeeDepartmentId')->name('get-departmentid');
+            Route::any('employees/{employee?}/edit/employee-history', 'EmployeesController@editEmployeeHistory')->name('employee-history');
+            Route::any('employees/{employee?}/update/employee-history', 'EmployeesController@updateEmployeeHistory')->name('employees-history.update');
+
 
             Route::resource('announcements', 'AnnouncementsController');
             Route::fileResource('laws');
