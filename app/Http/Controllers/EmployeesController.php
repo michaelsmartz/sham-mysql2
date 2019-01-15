@@ -212,8 +212,6 @@ class EmployeesController extends CustomController
 
         $data = self::getTimeline($employee);
 
-        //dd($data);
-
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.history', compact('id','data'))->renderSections();
             return response()->json([
@@ -230,13 +228,35 @@ class EmployeesController extends CustomController
     {
         $otherFields = ['_token', '_method'];
         $input = array_except($request->all(), $otherFields);
+        $histories = [];
 
-        HistoryDepartment::where('employee_id', $id)->update(['date_occurred' => $input['department']]);
-        HistoryJobTitle::where('employee_id', $id)->update(['date_occurred' => $input['job-title']]);
-        HistoryJoinTermination::where('employee_id', $id)
-            ->update(['is_joined' => $input['is-joined'],
-                'date_occurred' => $input['join-termination']
-            ]);
+        //update only input field that was changed on submit
+        foreach($input as $key => $value){
+            $exp_key = explode('_', $key);
+            if(isset($exp_key[2]) && $exp_key[2] == 'submit'){
+                $histories[$exp_key[0]][$exp_key[1]] = $value;
+            }
+        }
+
+        if(!empty($histories)) {
+            foreach ($histories as $title => $history) {
+                switch ($title) {
+                    case "Department":
+                        foreach ($history as $id => $date_occurred) {
+                            HistoryDepartment::where('id', $id)
+                                ->update(['date_occurred' => $date_occurred]);
+                        }
+                        break;
+
+                    case "JobTitle":
+                        foreach ($history as $id => $date_occurred) {
+                            HistoryJobTitle::where('id', $id)
+                                ->update(['date_occurred' => $date_occurred]);
+                        }
+                        break;
+                }
+            }
+        }
 
         \Session::put('success', 'Employee Timeline History updated Successfully!!');
         return redirect(Session::get('redirectsTo'));
@@ -247,6 +267,7 @@ class EmployeesController extends CustomController
 
         foreach( $employee->timelines as $timeline) {
             $timelineEventType = TimelineEventType::getDescription($timeline->timeline_event_type_id);
+            $timelineEventTypeKey = TimelineEventType::getKey($timeline->timeline_event_type_id);
             $event_id = trim($timeline->event_id);
 
             switch ($timelineEventType) {
@@ -261,6 +282,7 @@ class EmployeesController extends CustomController
                             $timeline->Description = optional($historyDepartment->department)->description;
                             $timeline->Id = $historyDepartment->id;
                             $timeline->EventType = $timelineEventType;
+                            $timeline->EventTypeKey = $timelineEventTypeKey;
                             $timeline->formattedDate = date("Y-m-d", strtotime($historyDepartment->date_occurred));
                             $timeCompileResults[] = $timeline;
                         }
@@ -277,6 +299,7 @@ class EmployeesController extends CustomController
                             $timeline->Description = $historyJobTitle->jobTitle->description;
                             $timeline->Id = $historyJobTitle->id;
                             $timeline->EventType = $timelineEventType;
+                            $timeline->EventTypeKey = $timelineEventTypeKey;
                             $timeline->formattedDate = date("Y-m-d", strtotime($historyJobTitle->date_occurred));
                             $timeCompileResults[] = $timeline;
                         }

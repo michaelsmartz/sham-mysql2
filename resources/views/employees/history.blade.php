@@ -4,7 +4,12 @@
 @section('modalTitle', 'Edit History Dates')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+    @if (isset($data)&& count($data)>0)
+    <button class="btn btn-primary" type="submit"
+            data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">
+        Update
+    </button>
+    @endif
 @endsection
 
 @section('postModalUrl', route('employees-history.update', $id))
