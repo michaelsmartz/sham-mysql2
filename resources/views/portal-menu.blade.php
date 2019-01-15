@@ -129,7 +129,7 @@
 
 @if (isset($allowedmodules[App\SystemModule::CONST_QUALITY_ASSURANCE]))
     <li class="has-sub">
-        <a href="{{URL::to('/')}}/qa-helper">
+        <a href="#">
             <b class="caret pull-right"></b>
             <i class="fa fa-certificate fa-fw" style="font-size: 125%;"></i>
             <span>@lang('home.QualityAssurance')</span>
