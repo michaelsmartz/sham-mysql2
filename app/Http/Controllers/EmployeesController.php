@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Address;
 use App\Disability;
+use App\Enums\TimelineEventType;
 use App\HistoryDepartment;
 use App\HistoryJobTitle;
 use App\HistoryJoinTermination;
 use App\Team;
+use App\Timeline;
 use App\Title;
 use App\Branch;
 use App\Gender;
@@ -201,39 +203,19 @@ class EmployeesController extends CustomController
 
     public function editEmployeeHistory(Request $request){
         Session::put('redirectsTo', \URL::previous());
-        $data = null;
+
         $id = Route::current()->parameter('employee');
-        $data = ['id'=>$id];
+        $employee = $this->contextObj::with([
+            'historyDepartments.department',
+            'historyJobTitles.jobTitle',
+        ])->where('employees.id',$id)->get()->first();
 
-        $historyDepartment = HistoryDepartment::select(['date_occurred'])->where('employee_id',$id)->get()->first();
-        $historyJobTittle = HistoryJobTitle::select(['date_occurred'])->where('employee_id',$id)->get()->first();
-        $historyJoinTermination = HistoryJoinTermination::select(['date_occurred','is_joined'])->where('employee_id',$id)->get()->first();
+        $data = self::getTimeline($employee);
 
-        if(isset($historyDepartment['date_occurred'])){
-            $data['historyDepartmentDate'] = date("Y-m-d", strtotime($historyDepartment['date_occurred']));
-        }else{
-            $data['historyDepartmentDate'] = null;
-        }
-
-        if(isset($historyJobTittle['date_occurred'])){
-            $data['historyJobTitleDate'] = date("Y-m-d", strtotime($historyJobTittle['date_occurred']));
-        }else{
-            $data['historyJobTitleDate'] = null;
-        }
-
-        if(isset($historyJoinTermination['date_occurred']) && isset($historyJoinTermination['is_joined'])){
-            $data['is_joined'] = $historyJoinTermination['is_joined'];
-            $data['historyJoinTerminationDate'] = date("Y-m-d", strtotime($historyJoinTermination['date_occurred']));
-        }else{
-            $data['historyJoinTerminationDate'] = null;
-            $data['is_joined'] = null;
-        }
-
-        //dump($id);
         //dd($data);
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.history', compact('data'))->renderSections();
+            $view = view($this->baseViewPath . '.history', compact('id','data'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -241,7 +223,7 @@ class EmployeesController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.history', compact('data'));
+        return view($this->baseViewPath . '.history', compact('id','data'));
     }
 
     public function updateEmployeeHistory(Request $request, $id)
@@ -258,6 +240,53 @@ class EmployeesController extends CustomController
 
         \Session::put('success', 'Employee Timeline History updated Successfully!!');
         return redirect(Session::get('redirectsTo'));
+    }
+
+    private static function getTimeline($employee) {
+        $timeCompileResults = [];
+
+        foreach( $employee->timelines as $timeline) {
+            $timelineEventType = TimelineEventType::getDescription($timeline->timeline_event_type_id);
+            $event_id = trim($timeline->event_id);
+
+            switch ($timelineEventType) {
+                case "Department":
+                    $historyDepartments =  $employee->historyDepartments->where('id', $event_id);
+
+                    if(count($historyDepartments) > 0)
+                    {
+                        //dd($historyDepartments);
+                        foreach ($historyDepartments as $historyDepartment) {
+                            $timeline = new Timeline();
+                            $timeline->Description = optional($historyDepartment->department)->description;
+                            $timeline->Id = $historyDepartment->id;
+                            $timeline->EventType = $timelineEventType;
+                            $timeline->formattedDate = date("Y-m-d", strtotime($historyDepartment->date_occurred));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+
+                case "Job Title":
+                    $historyJobTitles = $employee->historyJobTitles->where('id', $event_id);
+
+                    if(count($historyJobTitles) > 0)
+                    {
+                        foreach ($historyJobTitles as $historyJobTitle) {
+                            $timeline = new Timeline();
+                            $timeline->Description = $historyJobTitle->jobTitle->description;
+                            $timeline->Id = $historyJobTitle->id;
+                            $timeline->EventType = $timelineEventType;
+                            $timeline->formattedDate = date("Y-m-d", strtotime($historyJobTitle->date_occurred));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        $timeCompileResults = collect($timeCompileResults)->sortBy('formattedDate');
+        return $timeCompileResults;
     }
 
     /**

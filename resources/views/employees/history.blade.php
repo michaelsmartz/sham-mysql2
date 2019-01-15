@@ -1,19 +1,19 @@
 @extends(Request::ajax()?'blank':'portal-index')
 @section('title', 'Edit Employee History')
 
-@section('modalTitle', 'Edit Employee History')
+@section('modalTitle', 'Edit History Dates')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
 @endsection
 
-@section('postModalUrl', route('employees-history.update', $data['id']))
+@section('postModalUrl', route('employees-history.update', $id))
 
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
             @include ('employees.history.form', [
-                'employeeHistory' => $data,
+                'histories' => $data,
             ])
         </div>
     </div>
@@ -25,7 +25,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('employees-history.update', $data['id']) }}" id="edit_employee_history_form" name="edit_employee_history_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('employees-history.update', $id) }}" id="edit_employee_history_form" name="edit_employee_history_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">
