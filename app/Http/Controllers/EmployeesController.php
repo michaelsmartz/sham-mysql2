@@ -329,7 +329,6 @@ class EmployeesController extends CustomController
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-            dd($exception);
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
@@ -349,8 +348,7 @@ class EmployeesController extends CustomController
         try {
 
             $this->validator($request);
-            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            //dd($request);
+            //$redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             $this->saveEmployee($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
@@ -359,7 +357,7 @@ class EmployeesController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**
