@@ -25,8 +25,10 @@ class ModuleAssessmentResponse extends Model
                   'date_completed',
                   'is_reviewed',
                   'module_assessment_id',
-                  'course_id'
+                  'course_id',
               ];
+
+    protected $dates = ['deleted_at'];
 
     public function module()
     {

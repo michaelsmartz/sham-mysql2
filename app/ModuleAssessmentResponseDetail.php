@@ -25,6 +25,8 @@ class ModuleAssessmentResponseDetail extends Model
                   'sequence'
               ];
 
+    protected $dates = ['deleted_at'];
+
     public function moduleAssessment()
     {
         return $this->belongsTo('App\ModuleAssessment','module_assessment_id');
@@ -70,6 +72,7 @@ class ModuleAssessmentResponseDetail extends Model
             'module_assessment_response_details.module_assessment_id',
             'module_assessment_responses.module_id',
             'module_assessment_responses.course_id',
+            'module_assessment_responses.deleted_at',
             'module_assessment_response_details.module_question_id',
             'module_questions.module_question_type_id', 'module_questions.title',
             'module_questions.Points as question_points',
