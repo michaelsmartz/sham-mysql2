@@ -165,7 +165,7 @@ class TopicsController extends CustomController
 
         if($id > 0) {
             $obj = $this->contextObj->find($id);
-            $relatedMedia = $obj->media()->whereIn('aggregate_type', [Media::TYPE_AUDIO,Media::TYPE_VIDEO])->get();
+            $relatedMedia = $obj->media()->whereIn('aggregate_type', [Media::TYPE_AUDIO,Media::TYPE_VIDEO, Media::TYPE_IMAGE])->get();
             
             
             if(sizeof($relatedMedia) > 0 ){
@@ -285,6 +285,9 @@ class TopicsController extends CustomController
 
                 foreach ($media as $index => $file) {
                     $elementId += intval($index);
+                    if($file->aggregate_type == 'photo') {
+                        $response['snippets'][] = '<section class="keditor-snippet ui-draggable ui-draggable-handle" data-snippet="#keditor-snippet-' . $elementId .'" data-type="component-media" title="'. $file->filename .'" data-categories="Media">   <img class="keditor-snippet-preview " src="http://localhost:17000/plugins/keditor/snippets/default/preview/photo.png"></section>';
+                    }
                     if($file->aggregate_type == 'audio') {
                         $response['snippets'][] = '<section class="keditor-snippet ui-draggable ui-draggable-handle" data-snippet="#keditor-snippet-' . $elementId .'" data-type="component-media" title="'. $file->filename .'" data-categories="Media">   <img class="keditor-snippet-preview " src="http://localhost:17000/plugins/keditor/snippets/default/preview/audio.png"></section>';
                     }
