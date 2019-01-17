@@ -202,7 +202,9 @@ class TopicsController extends CustomController
             $response = response()->file($fileObj->pathToFile, $headers);
 
             //here is the magic
-            ob_end_clean();
+            if (ob_get_length() > 0 ) {
+                ob_end_clean();
+            }
 
             return $response;
         }
