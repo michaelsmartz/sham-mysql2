@@ -80,4 +80,69 @@
 	@empty
 	@endforelse
 	@endif
+
+	@if(count($moduleAssessmentResponsesTrashed) >0)
+	<fieldset>
+		<legend>History Assessment Responses</legend>
+		@forelse($moduleAssessmentResponsesTrashed as $responseDetailTrashed)
+			<li class="question-container">
+				<div class="row">
+					<div class="col-xs-9">
+						<strong class="text-danger">{{$responseDetailTrashed->title}}</strong>
+					</div>
+					<div class="col-xs-3 text-right">
+						<span class="disabled-score-box">{{$responseDetailTrashed->points}}</span>
+						<strong class="text-danger">of {{$responseDetailTrashed->question_points}} marks</strong>
+					</div>
+				</div>
+				<div class="row" style="padding-top:5px; padding-bottom:5px;">
+					<div class="col-xs-12">
+						<strong>Candidate&apos;s response: </strong>
+					</div>
+					<div class="col-xs-12">
+						@if($responseDetailTrashed->module_question_type_id == App\Enums\ModuleQuestionType::OpenText)
+							<div class="col-xs-12">
+								<p class="text-justify" style="margin-left:5px;">{{$responseDetailTrashed->response}}</p>
+							</div>
+						@else
+							@php
+								$responses = explode('|', $responseDetailTrashed->response);
+							@endphp
+							@foreach($responses as $response)
+								<div class="col-xs-6 col-md-3">
+									{{$response}}
+								</div>
+							@endforeach
+						@endif
+
+					</div>
+				</div>
+				@if($responseDetailTrashed->module_question_type_id != App\Enums\ModuleQuestionType::OpenText)
+					<div class="row" style="padding-top:5px; padding-bottom:5px;">
+						<div class="col-xs-12">
+							<strong>Question choices: </strong>
+						</div>
+						<div class="col-xs-12">
+							@php
+								$choices = explode('|', $responseDetailTrashed->question_choices);
+								$choicePoints = explode('|', $responseDetailTrashed->question_choices_points);
+							@endphp
+							@for($i = 0; $i < sizeof($choices); $i++)
+								<div class="col-xs-6 col-md-3">
+									<strong>{{$choices[$i]}}</strong>
+									@if($choicePoints[$i] > 0)
+										<span class="label label-success">Correct</span>
+									@else
+										<span class="label label-danger">Incorrect</span>
+									@endif
+								</div>
+							@endfor
+						</div>
+					</div>
+				@endif
+			</li>
+		@empty
+		@endforelse
+	</fieldset>
+	@endif
 </ul>

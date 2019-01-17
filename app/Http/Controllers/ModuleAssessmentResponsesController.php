@@ -52,17 +52,27 @@ class ModuleAssessmentResponsesController extends CustomController
         return view($this->baseViewPath .'.index', compact('moduleAssessmentResponses'));
     }
 
-    public function edit(Request $request)
+    public function editAssessment(Request $request)
     {
         Session::put('redirectsTo', \URL::previous());
         $id = Route::current()->parameter('response');
         $assessmentId = Route::current()->parameter('module_assessment');
+        $empId = Route::current()->parameter('employee_id');
 
-        $moduleAssessment = ModuleAssessment::with('module','assessmentType')->find($assessmentId);
+        //dd($id);
+
+        $moduleAssessment = ModuleAssessment::with('module','assessmentType')->find($id);
         $moduleAssessmentResponses = ModuleAssessmentResponseDetail::assessmentResponseSheet()
                                      ->with('moduleAssessmentResponse')
-                                     ->where('module_assessment_response_id', '=', $id)
+                                     ->where('module_assessment_response_details.module_assessment_response_id', '=', $assessmentId)
                                      ->get();
+
+        $moduleAssessmentResponsesTrashed = ModuleAssessmentResponseDetail::assessmentResponseSheet()
+            ->with('moduleAssessmentResponse')
+            ->onlyTrashed()
+            ->where('module_assessment_responses.module_assessment_id',$id)
+            ->where('module_assessment_responses.employee_id',$empId)
+            ->get();
 
         if ($moduleAssessmentResponses->count() == 0|| empty($moduleAssessmentResponses)){
             return View('not-allowed')
@@ -73,7 +83,7 @@ class ModuleAssessmentResponsesController extends CustomController
         }
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.show', compact('assessmentId', 'data', 'moduleAssessmentResponses', 'moduleAssessment'))->renderSections();
+            $view = view($this->baseViewPath . '.show', compact('assessmentId', 'data', 'moduleAssessmentResponsesTrashed', 'moduleAssessmentResponses', 'moduleAssessment'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -82,7 +92,7 @@ class ModuleAssessmentResponsesController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath . '.edit', compact('assessmentId', 'data', 'moduleAssessmentResponses','moduleAssessment'));
+        return view($this->baseViewPath . '.edit', compact('assessmentId', 'data', 'moduleAssessmentResponsesTrashed', 'moduleAssessmentResponses','moduleAssessment'));
     }
 
     /**

@@ -62,6 +62,7 @@ class ModuleAssessmentResponseDetail extends Model
                         DB::raw("group_concat(distinct module_assessment_response_details.points SEPARATOR '|') as points")])
               ->join('module_questions','module_questions.id','=','module_assessment_response_details.module_question_id')
               ->leftJoin('module_question_choices','module_question_choices.module_question_id','=','module_questions.id')
+              ->leftJoin('module_assessment_responses','module_assessment_responses.id','=','module_assessment_response_details.module_assessment_response_id')
               ->groupBy(['module_assessment_response_details.id','module_assessment_response_details.module_question_id']);
     }
 

@@ -20,23 +20,45 @@
         </div>
     </div>
     <ul class="list-group">
-        @if(count($moduleAssessmentResponses) >0)
-        @forelse($moduleAssessmentResponses as $responseDetail)
-            <li class="list-group-item">
-                <div class="row">
-                    <div class="col-xs-9">
-                        <strong class="text-danger">{{$responseDetail->title}}</strong>
-                    </div>
-                    <div class="col-xs-3 text-right">
-                        <span class="disabled-score-box">{{$responseDetail->points}}</span>
-                        <strong class="text-danger">of {{$responseDetail->question_points}} marks</strong>
-                    </div>
+    @if(count($moduleAssessmentResponses) >0)
+    @forelse($moduleAssessmentResponses as $responseDetail)
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-xs-9">
+                    <strong class="text-danger">{{$responseDetail->title}}</strong>
                 </div>
-            </li>
+                <div class="col-xs-3 text-right">
+                    <span class="disabled-score-box">{{$responseDetail->points}}</span>
+                    <strong class="text-danger">of {{$responseDetail->question_points}} marks</strong>
+                </div>
+            </div>
+        </li>
 	@empty
 	@endforelse
     @endif
-</ul>
+    </ul>
+
+    @if(count($moduleAssessmentResponsesTrashed) >0)
+    <fieldset>
+        <legend>History Assessment Responses</legend>
+        <ul class="list-group">
+            @forelse($moduleAssessmentResponsesTrashed as $responseDetailTrashed)
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-xs-9">
+                            <strong class="text-danger">{{$responseDetailTrashed->title}}</strong>
+                        </div>
+                        <div class="col-xs-3 text-right">
+                            <span class="disabled-score-box">{{$responseDetailTrashed->points}}</span>
+                            <strong class="text-danger">of {{$responseDetailTrashed->question_points}} marks</strong>
+                        </div>
+                    </div>
+                </li>
+            @empty
+            @endforelse
+        </ul>
+    </fieldset>
+    @endif
 
     @if(!Request::ajax())
     <div class="box-footer">

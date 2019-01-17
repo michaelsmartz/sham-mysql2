@@ -68,7 +68,6 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                             <table class="table">
                                                 <thead>
                                                 <tr>
-                                                    <th class="col-lg-3 col-md-3 col-sm-3">History</th>
                                                     <th class="col-lg-3 col-md-3 col-sm-3">Question</th>
                                                     <th class="col-lg-4 col-md-4 col-sm-4">Answer</th>
                                                     <th class="col-lg-1 col-md-1 col-sm-1">Score</th>
@@ -77,52 +76,45 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                                 </thead>
                                                 <tbody>
                                                 <!-- each assessment is a page report -->
+                                                @foreach($course->data as $assessment)
+                                                    @php
+                                                        $choices = explode('|', $assessment->question_choices);
+                                                        $choicePoints = explode('|', $assessment->question_choices_points);
+                                                    @endphp
 
-                                                <fieldset>
-                                                    <legend>Assessment Responses</legend>
-                                                         @foreach($course->data as $assessment)
-                                                            @php
-                                                                $choices = explode('|', $assessment->question_choices);
-                                                                $choicePoints = explode('|', $assessment->question_choices_points);
-                                                            @endphp
-
-                                                            <tr class="assessment-text">
-                                                                <td><?php echo($assessment->trashed())
-                                                                        ?"<span><i data-wenk-pos='right' data-wenk='Previous assessment response' class='fa fa-history'></i></span>"
-                                                                        :"<span class='badge bg-green'>New</span>"?></td>
-                                                                <td><p>{{$assessment->moduleQuestion['title']}}</p></td>
-                                                                <td>
-                                                                    <p>{{$assessment->response}}</p>
-                                                                </td>
-                                                                <td>
-                                                                    @if($assessment->question_choices != null && $assessment->question_choices_points != null)
-                                                                        @php
-                                                                            $choices = explode('|', $assessment->question_choices);
-                                                                            $choicePoints = explode('|', $assessment->question_choices_points);
-                                                                        @endphp
-                                                                        <p>{{$choicePoints[array_search($assessment->response, $choices)]}}</p>
+                                                        <tr class="assessment-text">
+                                                            <td><p>{{$assessment->moduleQuestion['title']}}</p></td>
+                                                            <td>
+                                                                <p>{{$assessment->response}}</p>
+                                                            </td>
+                                                            <td>
+                                                                @if($assessment->question_choices != null && $assessment->question_choices_points != null)
+                                                                    @php
+                                                                        $choices = explode('|', $assessment->question_choices);
+                                                                        $choicePoints = explode('|', $assessment->question_choices_points);
+                                                                    @endphp
+                                                                    <p>{{$choicePoints[array_search($assessment->response, $choices)]}}</p>
+                                                                @else
+                                                                    <p>{{ $assessment->points }}</p>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                @if($assessment->moduleQuestion['module_question_type_id'] == \App\Enums\ModuleQuestionType::OpenText)
+                                                                    @if($assessment->moduleAssessmentResponse['is_reviewed'])
+                                                                        <span>Reviewed by trainer</span>
                                                                     @else
-                                                                        <p>{{ $assessment->points }}</p>
+                                                                        <span>Will be reviewed by trainer</span>
                                                                     @endif
-                                                                </td>
-                                                                <td>
-                                                                    @if($assessment->moduleQuestion['module_question_type_id'] == \App\Enums\ModuleQuestionType::OpenText)
-                                                                        @if($assessment->moduleAssessmentResponse['is_reviewed'])
-                                                                            <span>Reviewed by trainer</span>
-                                                                        @else
-                                                                            <span>Will be reviewed by trainer</span>
+                                                                @else
+                                                                    @for($i = 0; $i < sizeof($choices); $i++)
+                                                                        @if($choicePoints[$i] > 0)
+                                                                            <p>{{$choices[$i]}}</p>
                                                                         @endif
-                                                                    @else
-                                                                        @for($i = 0; $i < sizeof($choices); $i++)
-                                                                            @if($choicePoints[$i] > 0)
-                                                                                <p>{{$choices[$i]}}</p>
-                                                                            @endif
-                                                                        @endfor
-                                                                    @endif
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </fieldset>
+                                                                    @endfor
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
                                         </div>

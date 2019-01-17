@@ -37,8 +37,6 @@ class SSPMyCourseAssessmentsController extends CustomController
             }
         }
 
-        //dd($crs);
-
         return View::make($this->baseViewPath .'.myassessments')
             ->with('myCourses',$crs);
     }
@@ -71,11 +69,9 @@ class SSPMyCourseAssessmentsController extends CustomController
                         $course->data = ModuleAssessmentResponseDetail::assessmentResponseSheetByCourse()
                             ->with(['moduleAssessmentResponse'=> function ($query) use ($course){
                                 $query->where('module_assessment_responses.course_id', $course->id);
-                                $query->withTrashed();
                             }])
                             ->with('moduleQuestion')
                             ->with('moduleAssessment')
-                            ->withTrashed()
                             ->where('module_assessment_responses.course_id', $course->id)
                             ->where('module_assessment_responses.employee_id',$employee_id)
                             ->get()->all();
@@ -83,10 +79,7 @@ class SSPMyCourseAssessmentsController extends CustomController
                         $course['assessment_total_possible_points'] = 0;
                         $course['assessment_overall_points'] = 0;
 
-                        $courseData = $course->data;
-                        //since using withTrashed score should be calculated with last assessment result
-                        $assessment = end($courseData);
-//                        foreach ($course->data as $assessment) {
+                        foreach ($course->data as $assessment) {
                             if($assessment->question_choices != null && $assessment->question_choices_points != null) {
                                 $choices = explode('|', $assessment->question_choices);
                                 $choicePoints = explode('|', $assessment->question_choices_points);
@@ -98,7 +91,7 @@ class SSPMyCourseAssessmentsController extends CustomController
                             $course['assessment_date_completed'] = optional($assessment->moduleAssessmentResponse)->date_completed;
                             $course['assessment_description'] = optional($assessment->moduleAssessment)->description;
                             $course['assessment_pass_mark'] = optional($assessment->moduleAssessment)->pass_mark;
-//                        }
+                        }
                     }
                 }
             }

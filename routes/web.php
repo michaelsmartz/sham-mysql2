@@ -165,8 +165,9 @@ Auth::routes();
 
             Route::resource('module_assessments', 'ModuleAssessmentsController' );
             Route::resource('module_assessments/{module_assessment}/responses', 'ModuleAssessmentResponsesController',[
-                'only'=>['index','edit','update']
+                'only'=>['index', 'update']
             ]);
+            Route::get('module_assessments/{response}/responses/{module_assessment}/employee/{employee_id}/editAssessment', 'ModuleAssessmentResponsesController@editAssessment');
             Route::resource('course_training_sessions', 'CourseTrainingSessionsController' );
         #endregion
 
