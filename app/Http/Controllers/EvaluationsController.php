@@ -1076,6 +1076,20 @@ class EvaluationsController extends CustomController
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         $response = curl_exec($ch);
 
+        //var_dump(json_decode($response));die;
+
+        $jsondata = json_decode($response);
+        foreach($jsondata as $item)
+        {
+            $user_id = $item->user_id;
+            $item->audio = '';
+            $date = explode(' ',$item->call_start_date)[0];
+            $request->request->add(['file' => $date.'/'.$item->recording_filename]);
+            $audio = $this->getaudio($request);
+            $item->audio = $audio;
+        }
+
+        $response = json_encode($jsondata);
         return response()->json($response);
     }
 }

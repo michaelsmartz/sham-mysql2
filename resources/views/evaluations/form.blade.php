@@ -233,6 +233,7 @@
                                 <th>Source No</th>
                                 <th>Destination No</th>
                                 <th>Duration</th>
+                                <th>Player</th>
                                 <th>use</th>
                             </tr>
                         </table>
@@ -376,6 +377,10 @@
                                     '<td>' + result[i].source_number + '</td>' +
                                     '<td>' + result[i].destination_number + '</td>' +
                                     '<td>' + result[i].duration + '</td>' +
+                                    //'<td><div id="songPlayPause" onclick="">&#x25b6;</div></td>'+
+                                    '<td><audio controls preload="metadata" autobuffer="autobuffer" name="chataudio" style=" width:300px;"><source src="'+ result[i].audio +'" type="audio/mpeg"></audio></td>' +
+                                    //'<td><audio controls preload="metadata" autobuffer="autobuffer" name="chataudio" style=" width:300px;"><source src="/getaudio?file=2019-01-03/1546500633.2887.wav" ></audio></td>' +
+                                    //'<td><audio controls preload="metadata" autobuffer="autobuffer" name="chataudio" style=" width:300px;"><source src="#" ></audio></td>' +
                                     '<td> <input type="radio"  value="1" name="selectedaudio" /></label> </td>' +
                                     '</tr>';
                         }
@@ -416,16 +421,29 @@
                 }
             }
         });
+
+        /*var player = document.getElementByClassName("chataudio");
+        player.addEventListener("play", function () {
+            console.log("it's go time");
+        });*/
+
     </script>
+
     <style>
 
         .modal-dialog {
-            width: 700px;
+            width: 1100px;
         }
 
         .modal-body{
             height: 350px;
             overflow-y: auto;
         }
+        audio{
+            height:20px;
+        }
+
+
+
     </style>
 @endsection
