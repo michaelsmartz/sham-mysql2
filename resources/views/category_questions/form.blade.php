@@ -64,13 +64,13 @@
     <div class="form-group choicegroup">
         <div class="row">
             <div class="col-xs-1 hide">
-                {!! Form::text('Choices['.$key.'][Id1]',$categoryquestionchoice->id,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
+                {!! Form::text('Choices['.$key.'][Id1]',$categoryquestionchoice->id,['class'=>'form-control hide', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
             </div>
             <div class="col-xs-5">
-                {!! Form::text('Choices['.$key.'][Choice]',$categoryquestionchoice->choice_text,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
+                {!! Form::text('Choices['.$key.'][Choice]',$categoryquestionchoice->choice_text,['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
             </div>
             <div class="col-xs-2">
-                {!! Form::text('Choices['.$key.'][Point]',$categoryquestionchoice->points,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+                {!! Form::text('Choices['.$key.'][Point]',$categoryquestionchoice->points,['class'=>'form-control choice_points', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
             </div>
             <div class="col-xs-1">
                 <button type="button" class="btn btn-default addQualButton"><i class="fa fa-plus"></i></button>
@@ -88,13 +88,13 @@
     </div>
     <div class="row">
         <div class="col-xs-1 hide">
-            {!! Form::text('Choices[0][Id1]',(Request::has('Ids[0][Id1]')?Request::input('Ids[0][Id1]'):null),['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
+            {!! Form::text('Choices[0][Id1]',(Request::has('Ids[0][Id1]')?Request::input('Ids[0][Id1]'):null),['class'=>'form-control hide', 'autocomplete'=>'off', 'placeholder'=>'']) !!}
         </div>
         <div class="col-xs-5">
-            {!! Form::text('Choices[0][Choice]',(Request::has('Choices[0][Choice]')?Request::input('Choices[0][Choice]'):null),['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
+            {!! Form::text('Choices[0][Choice]',(Request::has('Choices[0][Choice]')?Request::input('Choices[0][Choice]'):null),['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
         </div>
         <div class="col-xs-2">
-            {!! Form::text('Choices[0][Point]',(Request::has('Choices[0][point]')?Request::input('Choices[0]Point'):null),['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+            {!! Form::text('Choices[0][Point]',(Request::has('Choices[0][point]')?Request::input('Choices[0]Point'):null),['class'=>'form-control choice_points', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
         </div>
         <div class="col-xs-1">
             <button type="button" class="btn btn-default addQualButton"><i class="fa fa-plus"></i></button>
@@ -108,13 +108,13 @@
 <div class="form-group hide choicegroup" id="qualificationTemplate">
     <div class="row">
         <div class="col-xs-1 hide">
-            {!! Form::text('Id1',null,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+            {!! Form::text('Id1',null,['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
         </div>
         <div class="col-xs-5">
-            {!! Form::text('Choice',null,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
+            {!! Form::text('Choice',null,['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Choice']) !!}
         </div>
         <div class="col-xs-2">
-            {!! Form::text('ChoicePoint',null,['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
+            {!! Form::text('ChoicePoint',null,['class'=>'form-control choice_points', 'autocomplete'=>'off', 'placeholder'=>'Points']) !!}
         </div>
         <div class="col-xs-1">
             <button type="button" class="btn btn-default removeQualButton"><i class="fa fa-minus"></i></button>
@@ -131,7 +131,8 @@
 </div>
 
 @section('post-body')
-    <script src="{{URL::to('/')}}/plugins/jstepper/jquery.jstepper-1.5.3.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{url('/')}}/plugins/alerty/alerty.min.css">
+    <script src="{{url('/')}}/plugins/alerty/alerty.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -155,6 +156,10 @@
                     $('.choicegroup').show();
                     $('input[name=Indicator]').val("SHOW");
                     $(".choicegroup :input").prop('required',true);
+                    $(".hide :input").prop('required',false);
+                    if($(".choicegroup :input").hasClass( "hide" )){
+                        $(".choicegroup .hide").prop('required',false);
+                    }
                 }
             };
 
@@ -195,26 +200,46 @@
                 $row.remove(); });
         });
 
-        var Points = $('#points').val();
-        var stepperPointOptions = {allowDecimals:false, minValue:1};
-
-        $('body').on('blur', '#points', function(e) {
-            $(this).jStepper(stepperPointOptions);
-            distributeChildrenPoints($(this));
+        $('.choicegroup input').blur(function()
+        {
+            if($(this).val()) {
+                $(this).prop('required',false);
+            }
         });
 
-        function distributeChildrenPoints(el) {
-            console.log(el);
-            var curElement = $(el).attr('id');
+        function sumPoints(arr){
+            var Points = $('#points').val();
 
-            console.log(curElement);
+            var tot=0;
+            for(var i=0;i<arr.length;i++){
+                if(parseInt(arr[i].value)) {
+                    tot += parseInt(arr[i].value);
+                }
+            }
 
-            var parentPoints = $(el).val();
-            console.log(parentPoints);
+            //console.log(tot);
+            //console.log(Points);
 
-            var maxAllowablePoints = 0;
-            var stepperChoiceOptions = {allowDecimals:false, minValue:0};
+            if(tot > Points){
+                alerty.toasts('Choices points cannot be greater than Category question points!',
+                    {bgColor:'#b94a48',time:5000});
+                event.preventDefault();
+            }
+
+            if( $('.choicegroup input').val() !== '') {
+                $(this).prop('required',false);
+            }
         }
+
+        $("#edit_category_question_form").submit(function( event ) {
+            var arr = $('#edit_category_question_form .choicegroup .choice_points')
+            sumPoints(arr);
+        });
+
+        $("#create_category_question_form").submit(function( event ) {
+            var arr = $('#create_category_question_form .choicegroup .choice_points')
+            sumPoints(arr);
+        });
 
     </script>
 @endsection
