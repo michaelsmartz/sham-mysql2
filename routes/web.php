@@ -183,6 +183,7 @@ Auth::routes();
             Route::any('evaluations/{Id}/name/{name}/downloadscorepdf', 'EvaluationsController@downloadScorePdf' )->name('evaluations.pdfscores');
             Route::any('evaluations/{Id}/EvaluationId/{EvaluationId}/AssessorId/{AssessorId}/summary', 'EvaluationsController@summary')->name('evaluations.summary');
             Route::get('getaudio', 'EvaluationsController@getaudio');
+            Route::get('getaudio1', 'EvaluationsController@getaudio1');
             Route::get('getaudiolist', 'EvaluationsController@getaudiolist');
         #endregion
 

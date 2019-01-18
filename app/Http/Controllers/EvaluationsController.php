@@ -22,6 +22,7 @@ use Exception;
 use App\SystemSubModule;
 use App\Support\Helper;
 use Barryvdh\DomPDF\Facade as PDF;
+use Storage;
 
 class EvaluationsController extends CustomController
 {
@@ -1052,6 +1053,74 @@ class EvaluationsController extends CustomController
 
     }
 
+    public function getaudio1(Request $request)
+    {
+        $file = $request->get('file','');
+        $parts = array();
+        $calldate = "";
+        $recordingfilename = "";
+
+        $url =  env('CHAT_API','');
+        $username = env('CHAT_USERNAME','');
+        $password = env('CHAT_PASSWORD','');
+
+        $url = $url.'CallRecordByFilename';
+
+        if($file != ''){
+            $parts = explode('/', $file);
+        }
+
+        if(sizeof($parts) > 0){
+            $calldate = $parts[0];
+            $recordingfilename = $parts[1];
+        }
+
+        $post = [
+            "apiUsername"=> $username,
+            "apiPassword" => $password,
+            "callDate" => $calldate,
+            "recordingFilename" => $recordingfilename,
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        $response = curl_exec($ch);
+
+
+
+        $stream = fopen('data://text/plain;base64,' . base64_encode($response),'r');
+        $stat = fstat($stream);
+        $size = $stat['size'];
+
+        $type = "audio/wav";//Storage::mimeType('hi.wav');
+        $start = 0;
+        $length = $size;
+        $status = 200;
+
+        $headers = ['Content-Type' => $type, 'Content-Length' => $size, 'Accept-Ranges' => 'bytes'];
+
+        /*
+        return response()->stream(function() use ($stream)  {
+            fpassthru($stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }, 200, $headers);
+        */
+
+        return response()->stream(
+            function() use ($stream, $start, $length) {
+                fseek($stream, $start, SEEK_SET);
+                echo fread($stream, $length);
+                fclose($stream);
+            }, $status, $headers
+        );
+
+    }
+
     public function getaudiolist(Request $request)
     {
         $url =  env('CHAT_API','');
@@ -1075,6 +1144,26 @@ class EvaluationsController extends CustomController
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         $response = curl_exec($ch);
+
+        //var_dump(json_decode($response));die;
+
+        // Load Audio file from controller
+        //Start
+        /*
+        $jsondata = json_decode($response);
+        foreach($jsondata as $item)
+        {
+            $user_id = $item->user_id;
+            $item->audio = '';
+            $date = explode(' ',$item->call_start_date)[0];
+            $request->request->add(['file' => $date.'/'.$item->recording_filename]);
+            $audio = $this->getaudio($request);
+            $item->audio = $audio;
+        }
+        $response = json_encode($jsondata);
+        */
+        //end
+
 
         return response()->json($response);
     }
