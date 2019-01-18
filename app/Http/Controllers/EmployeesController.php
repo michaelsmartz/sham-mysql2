@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Address;
 use App\Disability;
+use App\Enums\TimelineEventType;
+use App\HistoryDepartment;
+use App\HistoryJobTitle;
+use App\HistoryJoinTermination;
 use App\Team;
+use App\Timeline;
 use App\Title;
 use App\Branch;
 use App\Gender;
@@ -30,6 +35,7 @@ use App\SystemSubModule;
 use App\SysConfigValue;
 use App\TimelineManager;
 use App\Traits\MediaFiles;
+use Illuminate\Support\Facades\Session;
 use OwenIt\Auditing\Facades\Auditor;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -194,6 +200,118 @@ class EmployeesController extends CustomController
                     'employeeSkills','employeeDisabilities','qualifications','uploader'));
     }
 
+
+    public function editEmployeeHistory(Request $request){
+        Session::put('redirectsTo', \URL::previous());
+
+        $id = Route::current()->parameter('employee');
+        $employee = $this->contextObj::with([
+            'historyDepartments.department',
+            'historyJobTitles.jobTitle',
+        ])->where('employees.id',$id)->get()->first();
+
+        $data = self::getTimeline($employee);
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.history', compact('id','data'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+        return view($this->baseViewPath . '.history', compact('id','data'));
+    }
+
+    public function updateEmployeeHistory(Request $request, $id)
+    {
+        $otherFields = ['_token', '_method'];
+        $input = array_except($request->all(), $otherFields);
+        $histories = [];
+
+        //update only input field that was changed on submit
+        foreach($input as $key => $value){
+            $exp_key = explode('_', $key);
+            if(isset($exp_key[2]) && $exp_key[2] == 'submit'){
+                $histories[$exp_key[0]][$exp_key[1]] = $value;
+            }
+        }
+
+        if(!empty($histories)) {
+            foreach ($histories as $title => $history) {
+                switch ($title) {
+                    case "Department":
+                        foreach ($history as $id => $date_occurred) {
+                            HistoryDepartment::where('id', $id)
+                                ->update(['date_occurred' => $date_occurred]);
+                        }
+                        break;
+
+                    case "JobTitle":
+                        foreach ($history as $id => $date_occurred) {
+                            HistoryJobTitle::where('id', $id)
+                                ->update(['date_occurred' => $date_occurred]);
+                        }
+                        break;
+                }
+            }
+        }
+
+        \Session::put('success', 'Employee Timeline History updated Successfully!!');
+        return redirect(Session::get('redirectsTo'));
+    }
+
+    private static function getTimeline($employee) {
+        $timeCompileResults = [];
+
+        foreach( $employee->timelines as $timeline) {
+            $timelineEventType = TimelineEventType::getDescription($timeline->timeline_event_type_id);
+            $timelineEventTypeKey = TimelineEventType::getKey($timeline->timeline_event_type_id);
+            $event_id = trim($timeline->event_id);
+
+            switch ($timelineEventType) {
+                case "Department":
+                    $historyDepartments =  $employee->historyDepartments->where('id', $event_id);
+
+                    if(count($historyDepartments) > 0)
+                    {
+                        //dd($historyDepartments);
+                        foreach ($historyDepartments as $historyDepartment) {
+                            $timeline = new Timeline();
+                            $timeline->Description = optional($historyDepartment->department)->description;
+                            $timeline->Id = $historyDepartment->id;
+                            $timeline->EventType = $timelineEventType;
+                            $timeline->EventTypeKey = $timelineEventTypeKey;
+                            $timeline->formattedDate = date("Y-m-d", strtotime($historyDepartment->date_occurred));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+
+                case "Job Title":
+                    $historyJobTitles = $employee->historyJobTitles->where('id', $event_id);
+
+                    if(count($historyJobTitles) > 0)
+                    {
+                        foreach ($historyJobTitles as $historyJobTitle) {
+                            $timeline = new Timeline();
+                            $timeline->Description = $historyJobTitle->jobTitle->description;
+                            $timeline->Id = $historyJobTitle->id;
+                            $timeline->EventType = $timelineEventType;
+                            $timeline->EventTypeKey = $timelineEventTypeKey;
+                            $timeline->formattedDate = date("Y-m-d", strtotime($historyJobTitle->date_occurred));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        $timeCompileResults = collect($timeCompileResults)->sortBy('formattedDate');
+        return $timeCompileResults;
+    }
+
     /**
      * Store a new employee in the storage.
      *
@@ -211,7 +329,6 @@ class EmployeesController extends CustomController
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-            dd($exception);
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
@@ -231,8 +348,7 @@ class EmployeesController extends CustomController
         try {
 
             $this->validator($request);
-            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            //dd($request);
+            //$redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             $this->saveEmployee($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
@@ -241,7 +357,7 @@ class EmployeesController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**

@@ -73,6 +73,7 @@ class SSPMyCourseAssessmentsController extends CustomController
                             ->with('moduleQuestion')
                             ->with('moduleAssessment')
                             ->where('module_assessment_responses.course_id', $course->id)
+                            ->where('module_assessment_responses.employee_id',$employee_id)
                             ->get()->all();
 
                         $course['assessment_total_possible_points'] = 0;

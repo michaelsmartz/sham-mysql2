@@ -67,6 +67,13 @@
                 //history.replaceState(null, "", window.location.pathname);
                 //return window.location.hash.replace(/^#/, '');
             };
+
+            window.editEmployeeHistoryForm = function(id, event) {
+                if (id) {
+                    loadUrl('{{url()->current()}}/employee-history');
+                }
+            };
+
             window.editForm = function(id, event, baseUrl) {
                 var route; 
                 if (baseUrl === void 0) {
@@ -94,6 +101,28 @@
                 }
 
                loadUrl(route + 'create');
+            };
+
+
+            window.editFormAssessment = function(id, event, emp_id) {
+                var route;
+                route = '{{url()->current()}}/';
+
+                if (id) {
+                    @if (isset($fullPageEdit) && $fullPageEdit == TRUE)
+                        window.location = route + id + '/employee/'+ emp_id + '/editAssessment';
+                    @else
+                    //$mainButton = $('.buttons button[type="submit"]');
+                    loadUrl(route + id + '/employee/'+ emp_id + '/editAssessment');
+                    @endif
+                }
+            };
+
+            window.editFullPageAssessment = function(id, event, emp_id) {
+                event.preventDefault();
+                var route;
+                route = '{{url()->current()}}/';
+                window.location = route + id + '/employee/'+ emp_id + '/editAssessment';
             };
 
             window.showForm = function(id, event) {

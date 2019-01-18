@@ -25,6 +25,8 @@ class ModuleAssessmentResponseDetail extends Model
                   'sequence'
               ];
 
+    protected $dates = ['deleted_at'];
+
     public function moduleAssessment()
     {
         return $this->belongsTo('App\ModuleAssessment','module_assessment_id');
@@ -60,6 +62,7 @@ class ModuleAssessmentResponseDetail extends Model
                         DB::raw("group_concat(distinct module_assessment_response_details.points SEPARATOR '|') as points")])
               ->join('module_questions','module_questions.id','=','module_assessment_response_details.module_question_id')
               ->leftJoin('module_question_choices','module_question_choices.module_question_id','=','module_questions.id')
+              ->leftJoin('module_assessment_responses','module_assessment_responses.id','=','module_assessment_response_details.module_assessment_response_id')
               ->groupBy(['module_assessment_response_details.id','module_assessment_response_details.module_question_id']);
     }
 
@@ -70,6 +73,7 @@ class ModuleAssessmentResponseDetail extends Model
             'module_assessment_response_details.module_assessment_id',
             'module_assessment_responses.module_id',
             'module_assessment_responses.course_id',
+            'module_assessment_responses.deleted_at',
             'module_assessment_response_details.module_question_id',
             'module_questions.module_question_type_id', 'module_questions.title',
             'module_questions.Points as question_points',

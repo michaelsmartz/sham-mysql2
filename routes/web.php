@@ -79,6 +79,9 @@ Auth::routes();
             Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
             Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
             Route::any('employees/{employee?}/departmentid', 'EmployeesController@getEmployeeDepartmentId')->name('get-departmentid');
+            Route::any('employees/{employee?}/edit/employee-history', 'EmployeesController@editEmployeeHistory')->name('employee-history');
+            Route::any('employees/{employee?}/update/employee-history', 'EmployeesController@updateEmployeeHistory')->name('employees-history.update');
+
 
             Route::resource('announcements', 'AnnouncementsController');
             Route::fileResource('laws');
@@ -162,8 +165,9 @@ Auth::routes();
 
             Route::resource('module_assessments', 'ModuleAssessmentsController' );
             Route::resource('module_assessments/{module_assessment}/responses', 'ModuleAssessmentResponsesController',[
-                'only'=>['index','edit','update']
+                'only'=>['index', 'update']
             ]);
+            Route::get('module_assessments/{response}/responses/{module_assessment}/employee/{employee_id}/editAssessment', 'ModuleAssessmentResponsesController@editAssessment');
             Route::resource('course_training_sessions', 'CourseTrainingSessionsController' );
         #endregion
 
@@ -179,6 +183,7 @@ Auth::routes();
             Route::any('evaluations/{Id}/name/{name}/downloadscorepdf', 'EvaluationsController@downloadScorePdf' )->name('evaluations.pdfscores');
             Route::any('evaluations/{Id}/EvaluationId/{EvaluationId}/AssessorId/{AssessorId}/summary', 'EvaluationsController@summary')->name('evaluations.summary');
             Route::get('getaudio', 'EvaluationsController@getaudio');
+            Route::get('getaudio1', 'EvaluationsController@getaudio1');
             Route::get('getaudiolist', 'EvaluationsController@getaudiolist');
         #endregion
 

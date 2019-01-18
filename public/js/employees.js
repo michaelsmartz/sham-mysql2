@@ -60,12 +60,11 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 232);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 0:
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9886,826 +9885,7 @@ return jQuery;
 
 
 /***/ }),
-
-/***/ 13:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jquery.sumoselect - v3.0.3
- * http://hemantnegi.github.io/jquery.sumoselect
- * 2016-12-12
- *
- * Copyright 2015 Hemant Negi
- * Email : hemant.frnz@gmail.com
- * Compressor http://refresh-sf.com/
- */
-
-(function (factory) {
-    'use strict';
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else if (typeof exports !== 'undefined') {
-        module.exports = factory(require('jquery'));
-    } else {
-        factory(jQuery);
-    }
-
-})(function ($) {
-
-    'namespace sumo';
-    $.fn.SumoSelect = function (options) {
-
-        // This is the easiest way to have default options.
-        var settings = $.extend({
-            placeholder: 'Select Here',   // Dont change it here.
-            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
-            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
-            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
-            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
-            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
-            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
-            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
-            csvSepChar: ',',              // separation char in csv mode
-            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
-            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
-            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
-            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
-
-            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
-            searchText: 'Search...',      // placeholder for search input
-            searchFn: function(haystack, needle) { // search function
-                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
-            },
-            noMatch: 'No matches for "{0}"',
-            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
-            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
-            up: false,                    // set true to open upside.
-            showTitle: true               // set to false to prevent title (tooltip) from appearing
-        }, options);
-
-        var ret = this.each(function () {
-            var selObj = this; // the original select object.
-            if (this.sumo || !$(this).is('select')) return; //already initialized
-
-            this.sumo = {
-                E: $(selObj),   //the jquery object of original select element.
-                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
-                select: '',
-                caption: '',
-                placeholder: '',
-                optDiv: '',
-                CaptionCont: '',
-                ul: '',
-                is_floating: false,
-                is_opened: false,
-                //backdrop: '',
-                mob: false, // if to open device default select
-                Pstate: [],
-                lastUnselected: null,
-
-                createElems: function () {
-                    var O = this;
-                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
-                    O.select = O.E.parent();
-                    O.caption = $('<span>');
-                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
-                        .attr('style', O.E.attr('style'))
-                        .prepend(O.caption);
-                    O.select.append(O.CaptionCont);
-
-                    // default turn off if no multiselect
-                    if (!O.is_multi) settings.okCancelInMulti = false
-
-                    if (O.E.attr('disabled'))
-                        O.select.addClass('disabled').removeAttr('tabindex');
-
-                    //if output as csv and is a multiselect.
-                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
-                        //create a hidden field to store csv value.
-                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
-
-                        // so it can not post the original select.
-                        O.E.removeAttr('name');
-                    }
-
-                    //break for mobile rendring.. if forceCustomRendering is false
-                    if (O.isMobile() && !settings.forceCustomRendering) {
-                        O.setNativeMobile();
-                        return;
-                    }
-
-                    // if there is a name attr in select add a class to container div
-                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
-
-                    //hide original select
-                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
-
-                    //## Creating the list...
-                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
-
-                    //branch for floating list in low res devices.
-                    O.floatingList();
-
-                    //Creating the markup for the available options
-                    O.ul = $('<ul class="options">');
-                    O.optDiv.append(O.ul);
-
-                    // Select all functionality
-                    if (settings.selectAll && O.is_multi) O.SelAll();
-
-                    // search functionality
-                    if (settings.search) O.Search();
-
-                    O.ul.append(O.prepItems(O.E.children()));
-
-                    //if multiple then add the class multiple and add OK / CANCEL button
-                    if (O.is_multi) O.multiSelelect();
-
-                    O.select.append(O.optDiv);
-                    O.basicEvents();
-                    O.selAllState();
-                },
-
-                prepItems: function (opts, d) {
-                    var lis = [], O = this;
-                    $(opts).each(function (i, opt) {       // parsing options to li
-                        opt = $(opt);
-                        lis.push(opt.is('optgroup') ?
-                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
-                                .find('ul')
-                                .append(O.prepItems(opt.children(), opt[0].disabled))
-                                .end()
-                            :
-                            O.createLi(opt, d)
-                        );
-                    });
-                    return lis;
-                },
-
-                //## Creates a LI element from a given option and binds events to it
-                //## returns the jquery instance of li (not inserted in dom)
-                createLi: function (opt, d) {
-                    var O = this;
-
-                    if (!opt.attr('value')) opt.attr('value', opt.val());
-                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
-
-                    li.data('opt', opt);    // store a direct reference to option.
-                    opt.data('li', li);    // store a direct reference to list item.
-                    if (O.is_multi) li.prepend('<span><i></i></span>');
-
-                    if (opt[0].disabled || d)
-                        li = li.addClass('disabled');
-
-                    O.onOptClick(li);
-
-                    if (opt[0].selected)
-                        li.addClass('selected');
-
-                    if (opt.attr('class'))
-                        li.addClass(opt.attr('class'));
-
-                    if (opt.attr('title'))
-                        li.attr('title', opt.attr('title'));
-
-                    return li;
-                },
-
-                //## Returns the selected items as string in a Multiselect.
-                getSelStr: function () {
-                    // get the pre selected items.
-                    var sopt = [];
-                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
-                    return sopt.join(settings.csvSepChar);
-                },
-
-                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
-                multiSelelect: function () {
-                    var O = this;
-                    O.optDiv.addClass('multiple');
-                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
-                        //if combined change event is set.
-                        O._okbtn();
-                        O.hideOpts();
-                    });
-                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
-                        O._cnbtn();
-                        O.hideOpts();
-                    });
-                    var btns = O.okbtn.add(O.cancelBtn);
-                    O.optDiv.append($('<div class="MultiControls">').append(btns));
-
-                    // handling keyboard navigation on ok cancel buttons.
-                    btns.on('keydown.sumo', function (e) {
-                        var el = $(this);
-                        switch (e.which) {
-                            case 32: // space
-                            case 13: // enter
-                                el.trigger('click');
-                                break;
-
-                            case 9:  //tab
-                                if (el.hasClass('btnOk')) return;
-                            case 27: // esc
-                                O._cnbtn();
-                                O.hideOpts();
-                                return;
-                        }
-                        e.stopPropagation();
-                        e.preventDefault();
-                    });
-                },
-
-                _okbtn: function () {
-                    var O = this, cg = 0;
-                    //if combined change event is set.
-                    if (settings.triggerChangeCombined) {
-                        //check for a change in the selection.
-                        if (O.E.find('option:selected').length !== O.Pstate.length) {
-                            cg = 1;
-                        }
-                        else {
-                            O.E.find('option').each(function (i, e) {
-                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
-                            });
-                        }
-
-                        if (cg) {
-                            O.callChange();
-                            O.setText();
-                        }
-                    }
-                },
-                _cnbtn: function () {
-                    var O = this;
-                    //remove all selections
-                    O.E.find('option:selected').each(function () { this.selected = false; });
-                    O.optDiv.find('li.selected').removeClass('selected')
-
-                    //restore selections from saved state.
-                    for (var i = 0; i < O.Pstate.length; i++) {
-                        O.E.find('option')[O.Pstate[i]].selected = true;
-                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
-                    }
-                    O.selAllState();
-                },
-
-                SelAll: function () {
-                    var O = this;
-                    if (!O.is_multi) return;
-                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
-                    O.optDiv.addClass('selall');
-                    O.selAll.on('click', function () {
-                        O.selAll.toggleClass('selected');
-                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
-                        //O.selAllState();
-                    });
-
-                    O.optDiv.prepend(O.selAll);
-                },
-
-                // search module (can be removed if not required.)
-                Search: function () {
-                    var O = this,
-                        cc = O.CaptionCont.addClass('search'),
-                        P = $('<p class="no-match">'),
-                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
-
-                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
-                        .on('click', function (e) {
-                            e.stopPropagation();
-                        });
-                    cc.append(O.ftxt);
-                    O.optDiv.children('ul').after(P);
-
-                    O.ftxt.on('keyup.sumo', function () {
-                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
-                            var e = $(e),
-                                opt = e.data('opt')[0];
-                            opt.hidden = fn(e.text(), O.ftxt.val());
-                            e.toggleClass('hidden', opt.hidden);
-                        }).not('.hidden');
-
-                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
-                        P.find('em').text(O.ftxt.val());
-                        O.selAllState();
-                    });
-                },
-
-                selAllState: function () {
-                    var O = this;
-                    if (settings.selectAll && O.is_multi) {
-                        var sc = 0, vc = 0;
-                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
-                            if ($(e).hasClass('selected')) sc++;
-                            if (!$(e).hasClass('disabled')) vc++;
-                        });
-                        //select all checkbox state change.
-                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
-                        else if (sc === 0) O.selAll.removeClass('selected partial');
-                        else O.selAll.addClass('partial')//.removeClass('selected');
-                    }
-                },
-
-                showOpts: function () {
-                    var O = this;
-                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
-                    O.E.trigger('sumo:opening', O);
-                    O.is_opened = true;
-                    O.select.addClass('open').attr('aria-expanded', 'true');
-                    O.E.trigger('sumo:opened', O);
-
-                    if (O.ftxt) O.ftxt.focus();
-                    else O.select.focus();
-
-                    // hide options on click outside.
-                    $(document).on('click.sumo', function (e) {
-                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
-                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
-                            if (!O.is_opened) return;
-                            O.hideOpts();
-                            if (settings.okCancelInMulti) {
-                                if (settings.isClickAwayOk)
-                                    O._okbtn();
-                                else
-                                    O._cnbtn();
-                            }
-                        }
-                    });
-
-                    if (O.is_floating) {
-                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
-                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
-                        O.optDiv.css('height', H);
-                        $('body').addClass('sumoStopScroll');
-                    }
-
-                    O.setPstate();
-                },
-
-                //maintain state when ok/cancel buttons are available storing the indexes.
-                setPstate: function () {
-                    var O = this;
-                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
-                        O.Pstate = [];
-                        // assuming that find returns elements in tree order
-                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
-                    }
-                },
-
-                callChange: function () {
-                    this.E.trigger('change').trigger('click');
-                },
-
-                hideOpts: function () {
-                    var O = this;
-                    if (O.is_opened) {
-                        O.E.trigger('sumo:closing', O);
-                        O.is_opened = false;
-                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
-                        O.E.trigger('sumo:closed', O);
-                        $(document).off('click.sumo');
-                        O.select.focus();
-                        $('body').removeClass('sumoStopScroll');
-
-                        // clear the search
-                        if (settings.search) {
-                            O.ftxt.val('');
-                            O.ftxt.trigger('keyup.sumo');
-                        }
-                    }
-                },
-                setOnOpen: function () {
-                    var O = this,
-                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
-                    if (li.hasClass('disabled')) {
-                        li = li.next(':not(disabled)')
-                        if (!li.length) return;
-                    }
-                    O.optDiv.find('li.sel').removeClass('sel');
-                    li.addClass('sel');
-                    O.showOpts();
-                },
-                nav: function (up) {
-                    var O = this, c,
-                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
-                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
-                        idx = s.index(sel);
-                    if (O.is_opened && sel.length) {
-
-                        if (up && idx > 0)
-                            c = s.eq(idx - 1);
-                        else if (!up && idx < s.length - 1 && idx > -1)
-                            c = s.eq(idx + 1);
-                        else return; // if no items before or after
-
-                        sel.removeClass('sel');
-                        sel = c.addClass('sel');
-
-                        // setting sel item to visible view.
-                        var ul = O.ul,
-                            st = ul.scrollTop(),
-                            t = sel.position().top + st;
-                        if (t >= st + ul.height() - sel.outerHeight())
-                            ul.scrollTop(t - ul.height() + sel.outerHeight());
-                        if (t < st)
-                            ul.scrollTop(t);
-
-                    }
-                    else
-                        O.setOnOpen();
-                },
-
-                basicEvents: function () {
-                    var O = this;
-                    O.CaptionCont.click(function (evt) {
-                        O.E.trigger('click');
-                        if (O.is_opened) O.hideOpts(); else O.showOpts();
-                        evt.stopPropagation();
-                    });
-
-                    O.select.on('keydown.sumo', function (e) {
-                        switch (e.which) {
-                            case 38: // up
-                                O.nav(true);
-                                break;
-
-                            case 40: // down
-                                O.nav(false);
-                                break;
-
-                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
-                                if (O.is_multi && e.ctrlKey) {
-                                    O.toggSelAll(!e.shiftKey, 1);
-                                    break;
-                                }
-                                else
-                                    return;
-
-                            case 32: // space
-                                if (settings.search && O.ftxt.is(e.target)) return;
-                            case 13: // enter
-                                if (O.is_opened)
-                                    O.optDiv.find('ul li.sel').trigger('click');
-                                else
-                                    O.setOnOpen();
-                                break;
-                            case 9:	 //tab
-                                if (!settings.okCancelInMulti)
-                                    O.hideOpts();
-                                return;
-                            case 27: // esc
-                                if (settings.okCancelInMulti) O._cnbtn();
-                                O.hideOpts();
-                                return;
-
-                            default:
-                                return; // exit this handler for other keys
-                        }
-                        e.preventDefault(); // prevent the default action (scroll / move caret)
-                    });
-
-                    $(window).on('resize.sumo', function () {
-                        O.floatingList();
-                    });
-                },
-
-                onOptClick: function (li) {
-                    var O = this;
-                    li.click(function () {
-                        var li = $(this);
-                        if (li.hasClass('disabled')) return;
-                        var txt = "";
-                        if (O.is_multi) {
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = li.hasClass('selected');
-                            if (li.data('opt')[0].selected === false) {
-                                O.lastUnselected = li.data('opt')[0].textContent;
-                            }
-                            O.selAllState();
-                        }
-                        else {
-                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = true;
-                        }
-
-                        //branch for combined change event.
-                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
-                            O.setText();
-                            O.callChange();
-                        }
-
-                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
-                    });
-                },
-
-                // fixed some variables that were not explicitly typed (michc)
-                setText: function () {
-                    var O = this;
-                    O.placeholder = "";
-                    if (O.is_multi) {
-                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
-
-                        for (var i = 0; i < sels.length; i++) {
-                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
-                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
-                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
-                                } else {
-                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
-                                }
-
-                                break;
-                            }
-                            else O.placeholder += $(sels[i]).text() + ", ";
-                        }
-                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
-                    }
-                    else {
-                        O.placeholder = O.E.find(':selected').not(':disabled').text();
-                    }
-
-                    var is_placeholder = false;
-
-                    if (!O.placeholder) {
-
-                        is_placeholder = true;
-
-                        O.placeholder = O.E.attr('placeholder');
-                        if (!O.placeholder)                  //if placeholder is there then set it
-                            O.placeholder = O.E.find('option:disabled:selected').text();
-                    }
-
-                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
-
-                    //set display text
-                    O.caption.html(O.placeholder);
-                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
-
-                    //set the hidden field if post as csv is true.
-                    var csvField = O.select.find('input.HEMANT123');
-                    if (csvField.length) csvField.val(O.getSelStr());
-
-                    //add class placeholder if its a placeholder text.
-                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
-                    return O.placeholder;
-                },
-
-                isMobile: function () {
-
-                    // Adapted from http://www.detectmobilebrowsers.com
-                    var ua = navigator.userAgent || navigator.vendor || window.opera;
-
-                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
-                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
-                    return false;
-                },
-
-                setNativeMobile: function () {
-                    var O = this;
-                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
-                    O.mob = true;
-                    O.E.change(function () {
-                        O.setText();
-                    });
-                },
-
-                floatingList: function () {
-                    var O = this;
-                    //called on init and also on resize.
-                    //O.is_floating = true if window width is < specified float width
-                    O.is_floating = $(window).width() <= settings.floatWidth;
-
-                    //set class isFloating
-                    O.optDiv.toggleClass('isFloating', O.is_floating);
-
-                    //remove height if not floating
-                    if (!O.is_floating) O.optDiv.css('height', '');
-
-                    //toggle class according to okCancelInMulti flag only when it is not floating
-                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
-                },
-
-                //HELPERS FOR OUTSIDERS
-                // validates range of given item operations
-                vRange: function (i) {
-                    var O = this;
-                    var opts = O.E.find('option');
-                    if (opts.length <= i || i < 0) throw "index out of bounds"
-                    return O;
-                },
-
-                //toggles selection on c as boolean.
-                toggSel: function (c, i) {
-                    var O = this;
-                    var opt;
-                    if (typeof (i) === "number") {
-                        O.vRange(i);
-                        opt = O.E.find('option')[i];
-                    }
-                    else {
-                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
-                    }
-                    if (!opt || opt.disabled)
-                        return;
-
-                    if (opt.selected !== c) {
-                        opt.selected = c;
-                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
-
-                        O.callChange();
-                        O.setPstate();
-                        O.setText();
-                        O.selAllState();
-                    }
-                },
-
-                //toggles disabled on c as boolean.
-                toggDis: function (c, i) {
-                    var O = this.vRange(i);
-                    O.E.find('option')[i].disabled = c;
-                    if (c) O.E.find('option')[i].selected = false;
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
-                    O.setText();
-                },
-
-                // toggle disable/enable on complete select control
-                toggSumo: function (val) {
-                    var O = this;
-                    O.enabled = val;
-                    O.select.toggleClass('disabled', val);
-
-                    if (val) {
-                        O.E.attr('disabled', 'disabled');
-                        O.select.removeAttr('tabindex');
-                    }
-                    else {
-                        O.E.removeAttr('disabled');
-                        O.select.attr('tabindex', '0');
-                    }
-
-                    return O;
-                },
-
-                // toggles all option on c as boolean.
-                // set direct=false/0 bypasses okCancelInMulti behaviour.
-                toggSelAll: function (c, direct) {
-                    var O = this;
-                    O.E.find('option:not(:disabled,:hidden)')
-                        .each(function (ix, e) {
-                            var is_selected = e.selected,
-                                e = $(e).data('li');
-                            if (e.hasClass('hidden')) return;
-                            if (!!c) {
-                                if (!is_selected) e.trigger('click');
-                            }
-                            else {
-                                if (is_selected) e.trigger('click');
-                            }
-                        });
-
-                    if (!direct) {
-                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
-                        O.callChange();
-                        O.setText();
-                        O.setPstate();
-                    }
-                },
-
-                /* outside accessibility options
-                 which can be accessed from the element instance.
-                 */
-                reload: function () {
-                    var elm = this.unload();
-                    return $(elm).SumoSelect(settings);
-                },
-
-                unload: function () {
-                    var O = this;
-                    O.select.before(O.E);
-                    O.E.show();
-
-                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
-                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
-                    }
-                    O.select.remove();
-                    delete selObj.sumo;
-                    return selObj;
-                },
-
-                //## add a new option to select at a given index.
-                add: function (val, txt, i) {
-                    if (typeof val === "undefined") throw "No value to add"
-
-                    var O = this;
-                    var opts = O.E.find('option')
-                    if (typeof txt === "number") { i = txt; txt = val; }
-                    if (typeof txt === "undefined") { txt = val; }
-
-                    var opt = $("<option></option>").val(val).html(txt);
-
-                    if (opts.length < i) throw "index out of bounds"
-
-                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
-                        O.E.append(opt);
-                        if (!O.mob) O.ul.append(O.createLi(opt));
-                    }
-                    else {
-                        opts.eq(i).before(opt);
-                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
-                    }
-
-                    return selObj;
-                },
-
-                //## removes an item at a given index.
-                remove: function (i) {
-                    var O = this.vRange(i);
-                    O.E.find('option').eq(i).remove();
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
-                    O.setText();
-                },
-
-                // removes all but the selected one
-                removeAll: function () {
-                    var O = this;
-                    var options = O.E.find('option');
-
-                    for (var x = (options.length - 1); x >= 0; x--) {
-                        if (options[x].selected !== true) {
-                            O.remove(x);
-                        }
-                    }
-
-                },
-
-
-                find: function (val) {
-                    var O = this;
-                    var options = O.E.find('option');
-                    for (var x in options) {
-                        if (options[x].value === val) {
-                            return parseInt(x);
-                        }
-                    }
-
-                    return -1;
-
-                },
-
-                //## Select an item at a given index.
-                selectItem: function (i) { this.toggSel(true, i); },
-
-                //## UnSelect an iten at a given index.
-                unSelectItem: function (i) { this.toggSel(false, i); },
-
-                //## Select all items  of the select.
-                selectAll: function () { this.toggSelAll(true); },
-
-                //## UnSelect all items of the select.
-                unSelectAll: function () { this.toggSelAll(false); },
-
-                //## Disable an iten at a given index.
-                disableItem: function (i) { this.toggDis(true, i) },
-
-                //## Removes disabled an iten at a given index.
-                enableItem: function (i) { this.toggDis(false, i) },
-
-                //## New simple methods as getter and setter are not working fine in ie8-
-                //## variable to check state of control if enabled or disabled.
-                enabled: true,
-                //## Enables the control
-                enable: function () { return this.toggSumo(false) },
-
-                //## Disables the control
-                disable: function () { return this.toggSumo(true) },
-
-
-                init: function () {
-                    var O = this;
-                    O.createElems();
-                    O.setText();
-                    return O
-                }
-
-            };
-
-            selObj.sumo.init();
-        });
-
-        return ret.length === 1 ? ret[0] : ret;
-    };
-
-
-});
-
-
-/***/ }),
-
-/***/ 2:
+/* 1 */
 /***/ (function(module, exports) {
 
 var g;
@@ -10732,5842 +9912,7 @@ module.exports = g;
 
 
 /***/ }),
-
-/***/ 216:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
-	if ( true ) {
-
-		// AMD. Register as an anonymous module.
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(0) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {
-
-		// Browser globals
-		factory( jQuery );
-	}
-} ( function( $ ) {
-
-$.ui = $.ui || {};
-
-return $.ui.version = "1.12.1";
-
-} ) );
-
-
-/***/ }),
-
-/***/ 232:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(233);
-
-
-/***/ }),
-
-/***/ 233:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__ = __webpack_require__(234);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__ = __webpack_require__(236);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__);
-
-
-
-__webpack_require__(35);
-__webpack_require__(36);
-__webpack_require__(13);
-
-//import Vue from 'vue/dist/vue.common.js';
-window.Vue = __webpack_require__(6);
-
-Vue.config.devtools = false;
-Vue.config.performance = false;
-
-function readURL(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-            $('#imagePreview').hide();
-            $('#imagePreview').fadeIn(650);
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-var app = new Vue({
-    el: '#accordion-app',
-    data: {
-        qual: {
-            reference: '', description: '', institution: '', obtained_on: '',
-            student_no: ''
-        },
-        quals: []
-    },
-    mounted: function mounted() {
-        //this.quals = JSON.parse(this.$el.dataset.quals);
-
-        +function ($, el) {
-
-            $("#imageUpload").change(function () {
-                readURL(this);
-            });
-            $.fn.mirror = function (selector) {
-                return this.each(function () {
-                    var $this = $(this);
-                    var $selector = $(selector);
-                    $this.bind('keyup change', function () {
-                        $selector.val($this.val());
-                    });
-                });
-            };
-
-            $("#birth_date,#JoinedDate,#TerminationDate").datepicker({
-                showButtonPanel: true,
-                dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true
-            });
-            $("#birth_date").datepicker("option", "yearRange", "-65:-18");
-
-            $(':input[data-mirror]').each(function () {
-                $(this).mirror($(this).data('mirror'));
-            });
-
-            $('.accordion').asAccordion();
-            $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true, search: true });
-
-            window.Parsley.addValidator('requiredIf', {
-                validateString: function validateString(value, requirement) {
-                    if (jQuery(requirement).val()) {
-                        return !!value;
-                    }
-                    return true;
-                }, priority: 33
-            });
-            window.Parsley.addValidator('fileextension', function (value, requirement) {
-                var fileExtension = value.split('.').pop();
-                return fileExtension === requirement;
-            }, 32).addMessage('en', 'fileextension', 'The extension doesn\'t match the required');
-
-            window.Parsley.addValidator('filemaxmegabytes', {
-                requirementType: 'string',
-                validateString: function validateString(value, requirement, parsleyInstance) {
-                    if (!app.utils.formDataSuppoerted) {
-                        return true;
-                    }
-                    var file = parsleyInstance.$element[0].files;
-                    var maxBytes = requirement * 1048576;
-
-                    if (file.length == 0) {
-                        return true;
-                    }
-                    return file.length === 1 && file[0].size <= maxBytes;
-                },
-                messages: {
-                    en: 'File is too big'
-                }
-            }).addValidator('filemimetypes', {
-                requirementType: 'string',
-                validateString: function validateString(value, requirement, parsleyInstance) {
-                    if (!app.utils.formDataSuppoerted) {
-                        return true;
-                    }
-                    var file = parsleyInstance.$element[0].files;
-
-                    if (file.length == 0) {
-                        return true;
-                    }
-                    var allowedMimeTypes = requirement.replace(/\s/g, "").split(',');
-                    return allowedMimeTypes.indexOf(file[0].type) !== -1;
-                },
-                messages: {
-                    en: 'File mime type not allowed'
-                }
-            });
-
-            window.Parsley.addAsyncValidator('checkId', function (xhr) {
-                return xhr.responseText !== 'false';
-            }, './check-id');
-            window.Parsley.addAsyncValidator('checkName', function (xhr) {
-                return xhr.responseText !== 'false';
-            }, './check-name');
-            window.Parsley.addAsyncValidator('checkPassport', function (xhr) {
-                return xhr.responseText !== 'false';
-            }, './check-passport');
-            window.Parsley.addAsyncValidator('checkEmployeeNo', function (xhr) {
-                return xhr.responseText !== 'false';
-            }, './check-employeeno');
-            window.Parsley.on('field:ajaxoptions', function (p1, ajaxOptions) {
-                var FirstName = $("[name=first_name]").val(),
-                    Surname = $("[name=surname]").val(),
-                    IdNumber = $("[name=id_number]").val(),
-                    PassportCountryId = $("[name=passport_country_id]").val(),
-                    PassportNo = $("[name=passport_no]").val(),
-                    EmployeeNo = $("[name=employee_no]").val();
-
-                var namedDataMap = {
-                    'id_number': { 'idNumber': IdNumber, 'firstName': FirstName, 'surname': Surname },
-                    'employee_no': { 'employeeNo': EmployeeNo },
-                    'passport_no': { 'passportCountryId': PassportCountryId, 'passportNo': PassportNo, 'firstName': FirstName, 'surname': Surname }
-                };
-
-                ajaxOptions.global = false;
-                ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
-            });
-        }(jQuery, this);
-    },
-    methods: {
-        addNewQual: function addNewQual() {
-            this.quals.push(Vue.util.extend({}, this.qual));
-            //ensure height is enough as accordion sets a height as inline style
-            $('.accordion--active').css("height", "");
-        },
-        removeQual: function removeQual(index) {
-            Vue.delete(this.quals, index);
-        },
-        submitForm: function submitForm(event) {
-            event.preventDefault();
-        },
-        fetchQualifications: function fetchQualifications() {
-            var _this = this;
-
-            fetch('./qualifications').then(function (res) {
-                return res.json();
-            }).then(function (res) {
-                _this.quals = res;
-            });
-        }
-    },
-    created: function created() {
-        this.fetchQualifications();
-    },
-    components: {
-        'datepicker': __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue___default.a
-    }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
-
-/***/ }),
-
-/***/ 234:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// jscs:disable maximumLineLength
-/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
-/*!
- * jQuery UI Datepicker 1.12.1
- * http://jqueryui.com
- *
- * Copyright jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- */
-
-//>>label: Datepicker
-//>>group: Widgets
-//>>description: Displays a calendar from an input or inline for selecting dates.
-//>>docs: http://api.jqueryui.com/datepicker/
-//>>demos: http://jqueryui.com/datepicker/
-//>>css.structure: ../../themes/base/core.css
-//>>css.structure: ../../themes/base/datepicker.css
-//>>css.theme: ../../themes/base/theme.css
-
-( function( factory ) {
-	if ( true ) {
-
-		// AMD. Register as an anonymous module.
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-			__webpack_require__(0),
-			__webpack_require__(216),
-			__webpack_require__(235)
-		], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {
-
-		// Browser globals
-		factory( jQuery );
-	}
-}( function( $ ) {
-
-$.extend( $.ui, { datepicker: { version: "1.12.1" } } );
-
-var datepicker_instActive;
-
-function datepicker_getZindex( elem ) {
-	var position, value;
-	while ( elem.length && elem[ 0 ] !== document ) {
-
-		// Ignore z-index if position is set to a value where z-index is ignored by the browser
-		// This makes behavior of this function consistent across browsers
-		// WebKit always returns auto if the element is positioned
-		position = elem.css( "position" );
-		if ( position === "absolute" || position === "relative" || position === "fixed" ) {
-
-			// IE returns 0 when zIndex is not specified
-			// other browsers return a string
-			// we ignore the case of nested elements with an explicit value of 0
-			// <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
-			value = parseInt( elem.css( "zIndex" ), 10 );
-			if ( !isNaN( value ) && value !== 0 ) {
-				return value;
-			}
-		}
-		elem = elem.parent();
-	}
-
-	return 0;
-}
-/* Date picker manager.
-   Use the singleton instance of this class, $.datepicker, to interact with the date picker.
-   Settings for (groups of) date pickers are maintained in an instance object,
-   allowing multiple different settings on the same page. */
-
-function Datepicker() {
-	this._curInst = null; // The current instance in use
-	this._keyEvent = false; // If the last event was a key event
-	this._disabledInputs = []; // List of date picker inputs that have been disabled
-	this._datepickerShowing = false; // True if the popup picker is showing , false if not
-	this._inDialog = false; // True if showing within a "dialog", false if not
-	this._mainDivId = "ui-datepicker-div"; // The ID of the main datepicker division
-	this._inlineClass = "ui-datepicker-inline"; // The name of the inline marker class
-	this._appendClass = "ui-datepicker-append"; // The name of the append marker class
-	this._triggerClass = "ui-datepicker-trigger"; // The name of the trigger marker class
-	this._dialogClass = "ui-datepicker-dialog"; // The name of the dialog marker class
-	this._disableClass = "ui-datepicker-disabled"; // The name of the disabled covering marker class
-	this._unselectableClass = "ui-datepicker-unselectable"; // The name of the unselectable cell marker class
-	this._currentClass = "ui-datepicker-current-day"; // The name of the current day marker class
-	this._dayOverClass = "ui-datepicker-days-cell-over"; // The name of the day hover marker class
-	this.regional = []; // Available regional settings, indexed by language code
-	this.regional[ "" ] = { // Default regional settings
-		closeText: "Done", // Display text for close link
-		prevText: "Prev", // Display text for previous month link
-		nextText: "Next", // Display text for next month link
-		currentText: "Today", // Display text for current month link
-		monthNames: [ "January","February","March","April","May","June",
-			"July","August","September","October","November","December" ], // Names of months for drop-down and formatting
-		monthNamesShort: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ], // For formatting
-		dayNames: [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ], // For formatting
-		dayNamesShort: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ], // For formatting
-		dayNamesMin: [ "Su","Mo","Tu","We","Th","Fr","Sa" ], // Column headings for days starting at Sunday
-		weekHeader: "Wk", // Column header for week of the year
-		dateFormat: "mm/dd/yy", // See format options on parseDate
-		firstDay: 0, // The first day of the week, Sun = 0, Mon = 1, ...
-		isRTL: false, // True if right-to-left language, false if left-to-right
-		showMonthAfterYear: false, // True if the year select precedes month, false for month then year
-		yearSuffix: "" // Additional text to append to the year in the month headers
-	};
-	this._defaults = { // Global defaults for all the date picker instances
-		showOn: "focus", // "focus" for popup on focus,
-			// "button" for trigger button, or "both" for either
-		showAnim: "fadeIn", // Name of jQuery animation for popup
-		showOptions: {}, // Options for enhanced animations
-		defaultDate: null, // Used when field is blank: actual date,
-			// +/-number for offset from today, null for today
-		appendText: "", // Display text following the input box, e.g. showing the format
-		buttonText: "...", // Text for trigger button
-		buttonImage: "", // URL for trigger button image
-		buttonImageOnly: false, // True if the image appears alone, false if it appears on a button
-		hideIfNoPrevNext: false, // True to hide next/previous month links
-			// if not applicable, false to just disable them
-		navigationAsDateFormat: false, // True if date formatting applied to prev/today/next links
-		gotoCurrent: false, // True if today link goes back to current selection instead
-		changeMonth: false, // True if month can be selected directly, false if only prev/next
-		changeYear: false, // True if year can be selected directly, false if only prev/next
-		yearRange: "c-10:c+10", // Range of years to display in drop-down,
-			// either relative to today's year (-nn:+nn), relative to currently displayed year
-			// (c-nn:c+nn), absolute (nnnn:nnnn), or a combination of the above (nnnn:-n)
-		showOtherMonths: false, // True to show dates in other months, false to leave blank
-		selectOtherMonths: false, // True to allow selection of dates in other months, false for unselectable
-		showWeek: false, // True to show week of the year, false to not show it
-		calculateWeek: this.iso8601Week, // How to calculate the week of the year,
-			// takes a Date and returns the number of the week for it
-		shortYearCutoff: "+10", // Short year values < this are in the current century,
-			// > this are in the previous century,
-			// string value starting with "+" for current year + value
-		minDate: null, // The earliest selectable date, or null for no limit
-		maxDate: null, // The latest selectable date, or null for no limit
-		duration: "fast", // Duration of display/closure
-		beforeShowDay: null, // Function that takes a date and returns an array with
-			// [0] = true if selectable, false if not, [1] = custom CSS class name(s) or "",
-			// [2] = cell title (optional), e.g. $.datepicker.noWeekends
-		beforeShow: null, // Function that takes an input field and
-			// returns a set of custom settings for the date picker
-		onSelect: null, // Define a callback function when a date is selected
-		onChangeMonthYear: null, // Define a callback function when the month or year is changed
-		onClose: null, // Define a callback function when the datepicker is closed
-		numberOfMonths: 1, // Number of months to show at a time
-		showCurrentAtPos: 0, // The position in multipe months at which to show the current month (starting at 0)
-		stepMonths: 1, // Number of months to step back/forward
-		stepBigMonths: 12, // Number of months to step back/forward for the big links
-		altField: "", // Selector for an alternate field to store selected dates into
-		altFormat: "", // The date format to use for the alternate field
-		constrainInput: true, // The input is constrained by the current date format
-		showButtonPanel: false, // True to show button panel, false to not show it
-		autoSize: false, // True to size the input for the date format, false to leave as is
-		disabled: false // The initial disabled state
-	};
-	$.extend( this._defaults, this.regional[ "" ] );
-	this.regional.en = $.extend( true, {}, this.regional[ "" ] );
-	this.regional[ "en-US" ] = $.extend( true, {}, this.regional.en );
-	this.dpDiv = datepicker_bindHover( $( "<div id='" + this._mainDivId + "' class='ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>" ) );
-}
-
-$.extend( Datepicker.prototype, {
-	/* Class name added to elements to indicate already configured with a date picker. */
-	markerClassName: "hasDatepicker",
-
-	//Keep track of the maximum number of rows displayed (see #7043)
-	maxRows: 4,
-
-	// TODO rename to "widget" when switching to widget factory
-	_widgetDatepicker: function() {
-		return this.dpDiv;
-	},
-
-	/* Override the default settings for all instances of the date picker.
-	 * @param  settings  object - the new settings to use as defaults (anonymous object)
-	 * @return the manager object
-	 */
-	setDefaults: function( settings ) {
-		datepicker_extendRemove( this._defaults, settings || {} );
-		return this;
-	},
-
-	/* Attach the date picker to a jQuery selection.
-	 * @param  target	element - the target input field or division or span
-	 * @param  settings  object - the new settings to use for this date picker instance (anonymous)
-	 */
-	_attachDatepicker: function( target, settings ) {
-		var nodeName, inline, inst;
-		nodeName = target.nodeName.toLowerCase();
-		inline = ( nodeName === "div" || nodeName === "span" );
-		if ( !target.id ) {
-			this.uuid += 1;
-			target.id = "dp" + this.uuid;
-		}
-		inst = this._newInst( $( target ), inline );
-		inst.settings = $.extend( {}, settings || {} );
-		if ( nodeName === "input" ) {
-			this._connectDatepicker( target, inst );
-		} else if ( inline ) {
-			this._inlineDatepicker( target, inst );
-		}
-	},
-
-	/* Create a new instance object. */
-	_newInst: function( target, inline ) {
-		var id = target[ 0 ].id.replace( /([^A-Za-z0-9_\-])/g, "\\\\$1" ); // escape jQuery meta chars
-		return { id: id, input: target, // associated target
-			selectedDay: 0, selectedMonth: 0, selectedYear: 0, // current selection
-			drawMonth: 0, drawYear: 0, // month being drawn
-			inline: inline, // is datepicker inline or not
-			dpDiv: ( !inline ? this.dpDiv : // presentation div
-			datepicker_bindHover( $( "<div class='" + this._inlineClass + " ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>" ) ) ) };
-	},
-
-	/* Attach the date picker to an input field. */
-	_connectDatepicker: function( target, inst ) {
-		var input = $( target );
-		inst.append = $( [] );
-		inst.trigger = $( [] );
-		if ( input.hasClass( this.markerClassName ) ) {
-			return;
-		}
-		this._attachments( input, inst );
-		input.addClass( this.markerClassName ).on( "keydown", this._doKeyDown ).
-			on( "keypress", this._doKeyPress ).on( "keyup", this._doKeyUp );
-		this._autoSize( inst );
-		$.data( target, "datepicker", inst );
-
-		//If disabled option is true, disable the datepicker once it has been attached to the input (see ticket #5665)
-		if ( inst.settings.disabled ) {
-			this._disableDatepicker( target );
-		}
-	},
-
-	/* Make attachments based on settings. */
-	_attachments: function( input, inst ) {
-		var showOn, buttonText, buttonImage,
-			appendText = this._get( inst, "appendText" ),
-			isRTL = this._get( inst, "isRTL" );
-
-		if ( inst.append ) {
-			inst.append.remove();
-		}
-		if ( appendText ) {
-			inst.append = $( "<span class='" + this._appendClass + "'>" + appendText + "</span>" );
-			input[ isRTL ? "before" : "after" ]( inst.append );
-		}
-
-		input.off( "focus", this._showDatepicker );
-
-		if ( inst.trigger ) {
-			inst.trigger.remove();
-		}
-
-		showOn = this._get( inst, "showOn" );
-		if ( showOn === "focus" || showOn === "both" ) { // pop-up date picker when in the marked field
-			input.on( "focus", this._showDatepicker );
-		}
-		if ( showOn === "button" || showOn === "both" ) { // pop-up date picker when button clicked
-			buttonText = this._get( inst, "buttonText" );
-			buttonImage = this._get( inst, "buttonImage" );
-			inst.trigger = $( this._get( inst, "buttonImageOnly" ) ?
-				$( "<img/>" ).addClass( this._triggerClass ).
-					attr( { src: buttonImage, alt: buttonText, title: buttonText } ) :
-				$( "<button type='button'></button>" ).addClass( this._triggerClass ).
-					html( !buttonImage ? buttonText : $( "<img/>" ).attr(
-					{ src:buttonImage, alt:buttonText, title:buttonText } ) ) );
-			input[ isRTL ? "before" : "after" ]( inst.trigger );
-			inst.trigger.on( "click", function() {
-				if ( $.datepicker._datepickerShowing && $.datepicker._lastInput === input[ 0 ] ) {
-					$.datepicker._hideDatepicker();
-				} else if ( $.datepicker._datepickerShowing && $.datepicker._lastInput !== input[ 0 ] ) {
-					$.datepicker._hideDatepicker();
-					$.datepicker._showDatepicker( input[ 0 ] );
-				} else {
-					$.datepicker._showDatepicker( input[ 0 ] );
-				}
-				return false;
-			} );
-		}
-	},
-
-	/* Apply the maximum length for the date format. */
-	_autoSize: function( inst ) {
-		if ( this._get( inst, "autoSize" ) && !inst.inline ) {
-			var findMax, max, maxI, i,
-				date = new Date( 2009, 12 - 1, 20 ), // Ensure double digits
-				dateFormat = this._get( inst, "dateFormat" );
-
-			if ( dateFormat.match( /[DM]/ ) ) {
-				findMax = function( names ) {
-					max = 0;
-					maxI = 0;
-					for ( i = 0; i < names.length; i++ ) {
-						if ( names[ i ].length > max ) {
-							max = names[ i ].length;
-							maxI = i;
-						}
-					}
-					return maxI;
-				};
-				date.setMonth( findMax( this._get( inst, ( dateFormat.match( /MM/ ) ?
-					"monthNames" : "monthNamesShort" ) ) ) );
-				date.setDate( findMax( this._get( inst, ( dateFormat.match( /DD/ ) ?
-					"dayNames" : "dayNamesShort" ) ) ) + 20 - date.getDay() );
-			}
-			inst.input.attr( "size", this._formatDate( inst, date ).length );
-		}
-	},
-
-	/* Attach an inline date picker to a div. */
-	_inlineDatepicker: function( target, inst ) {
-		var divSpan = $( target );
-		if ( divSpan.hasClass( this.markerClassName ) ) {
-			return;
-		}
-		divSpan.addClass( this.markerClassName ).append( inst.dpDiv );
-		$.data( target, "datepicker", inst );
-		this._setDate( inst, this._getDefaultDate( inst ), true );
-		this._updateDatepicker( inst );
-		this._updateAlternate( inst );
-
-		//If disabled option is true, disable the datepicker before showing it (see ticket #5665)
-		if ( inst.settings.disabled ) {
-			this._disableDatepicker( target );
-		}
-
-		// Set display:block in place of inst.dpDiv.show() which won't work on disconnected elements
-		// http://bugs.jqueryui.com/ticket/7552 - A Datepicker created on a detached div has zero height
-		inst.dpDiv.css( "display", "block" );
-	},
-
-	/* Pop-up the date picker in a "dialog" box.
-	 * @param  input element - ignored
-	 * @param  date	string or Date - the initial date to display
-	 * @param  onSelect  function - the function to call when a date is selected
-	 * @param  settings  object - update the dialog date picker instance's settings (anonymous object)
-	 * @param  pos int[2] - coordinates for the dialog's position within the screen or
-	 *					event - with x/y coordinates or
-	 *					leave empty for default (screen centre)
-	 * @return the manager object
-	 */
-	_dialogDatepicker: function( input, date, onSelect, settings, pos ) {
-		var id, browserWidth, browserHeight, scrollX, scrollY,
-			inst = this._dialogInst; // internal instance
-
-		if ( !inst ) {
-			this.uuid += 1;
-			id = "dp" + this.uuid;
-			this._dialogInput = $( "<input type='text' id='" + id +
-				"' style='position: absolute; top: -100px; width: 0px;'/>" );
-			this._dialogInput.on( "keydown", this._doKeyDown );
-			$( "body" ).append( this._dialogInput );
-			inst = this._dialogInst = this._newInst( this._dialogInput, false );
-			inst.settings = {};
-			$.data( this._dialogInput[ 0 ], "datepicker", inst );
-		}
-		datepicker_extendRemove( inst.settings, settings || {} );
-		date = ( date && date.constructor === Date ? this._formatDate( inst, date ) : date );
-		this._dialogInput.val( date );
-
-		this._pos = ( pos ? ( pos.length ? pos : [ pos.pageX, pos.pageY ] ) : null );
-		if ( !this._pos ) {
-			browserWidth = document.documentElement.clientWidth;
-			browserHeight = document.documentElement.clientHeight;
-			scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
-			scrollY = document.documentElement.scrollTop || document.body.scrollTop;
-			this._pos = // should use actual width/height below
-				[ ( browserWidth / 2 ) - 100 + scrollX, ( browserHeight / 2 ) - 150 + scrollY ];
-		}
-
-		// Move input on screen for focus, but hidden behind dialog
-		this._dialogInput.css( "left", ( this._pos[ 0 ] + 20 ) + "px" ).css( "top", this._pos[ 1 ] + "px" );
-		inst.settings.onSelect = onSelect;
-		this._inDialog = true;
-		this.dpDiv.addClass( this._dialogClass );
-		this._showDatepicker( this._dialogInput[ 0 ] );
-		if ( $.blockUI ) {
-			$.blockUI( this.dpDiv );
-		}
-		$.data( this._dialogInput[ 0 ], "datepicker", inst );
-		return this;
-	},
-
-	/* Detach a datepicker from its control.
-	 * @param  target	element - the target input field or division or span
-	 */
-	_destroyDatepicker: function( target ) {
-		var nodeName,
-			$target = $( target ),
-			inst = $.data( target, "datepicker" );
-
-		if ( !$target.hasClass( this.markerClassName ) ) {
-			return;
-		}
-
-		nodeName = target.nodeName.toLowerCase();
-		$.removeData( target, "datepicker" );
-		if ( nodeName === "input" ) {
-			inst.append.remove();
-			inst.trigger.remove();
-			$target.removeClass( this.markerClassName ).
-				off( "focus", this._showDatepicker ).
-				off( "keydown", this._doKeyDown ).
-				off( "keypress", this._doKeyPress ).
-				off( "keyup", this._doKeyUp );
-		} else if ( nodeName === "div" || nodeName === "span" ) {
-			$target.removeClass( this.markerClassName ).empty();
-		}
-
-		if ( datepicker_instActive === inst ) {
-			datepicker_instActive = null;
-		}
-	},
-
-	/* Enable the date picker to a jQuery selection.
-	 * @param  target	element - the target input field or division or span
-	 */
-	_enableDatepicker: function( target ) {
-		var nodeName, inline,
-			$target = $( target ),
-			inst = $.data( target, "datepicker" );
-
-		if ( !$target.hasClass( this.markerClassName ) ) {
-			return;
-		}
-
-		nodeName = target.nodeName.toLowerCase();
-		if ( nodeName === "input" ) {
-			target.disabled = false;
-			inst.trigger.filter( "button" ).
-				each( function() { this.disabled = false; } ).end().
-				filter( "img" ).css( { opacity: "1.0", cursor: "" } );
-		} else if ( nodeName === "div" || nodeName === "span" ) {
-			inline = $target.children( "." + this._inlineClass );
-			inline.children().removeClass( "ui-state-disabled" );
-			inline.find( "select.ui-datepicker-month, select.ui-datepicker-year" ).
-				prop( "disabled", false );
-		}
-		this._disabledInputs = $.map( this._disabledInputs,
-			function( value ) { return ( value === target ? null : value ); } ); // delete entry
-	},
-
-	/* Disable the date picker to a jQuery selection.
-	 * @param  target	element - the target input field or division or span
-	 */
-	_disableDatepicker: function( target ) {
-		var nodeName, inline,
-			$target = $( target ),
-			inst = $.data( target, "datepicker" );
-
-		if ( !$target.hasClass( this.markerClassName ) ) {
-			return;
-		}
-
-		nodeName = target.nodeName.toLowerCase();
-		if ( nodeName === "input" ) {
-			target.disabled = true;
-			inst.trigger.filter( "button" ).
-				each( function() { this.disabled = true; } ).end().
-				filter( "img" ).css( { opacity: "0.5", cursor: "default" } );
-		} else if ( nodeName === "div" || nodeName === "span" ) {
-			inline = $target.children( "." + this._inlineClass );
-			inline.children().addClass( "ui-state-disabled" );
-			inline.find( "select.ui-datepicker-month, select.ui-datepicker-year" ).
-				prop( "disabled", true );
-		}
-		this._disabledInputs = $.map( this._disabledInputs,
-			function( value ) { return ( value === target ? null : value ); } ); // delete entry
-		this._disabledInputs[ this._disabledInputs.length ] = target;
-	},
-
-	/* Is the first field in a jQuery collection disabled as a datepicker?
-	 * @param  target	element - the target input field or division or span
-	 * @return boolean - true if disabled, false if enabled
-	 */
-	_isDisabledDatepicker: function( target ) {
-		if ( !target ) {
-			return false;
-		}
-		for ( var i = 0; i < this._disabledInputs.length; i++ ) {
-			if ( this._disabledInputs[ i ] === target ) {
-				return true;
-			}
-		}
-		return false;
-	},
-
-	/* Retrieve the instance data for the target control.
-	 * @param  target  element - the target input field or division or span
-	 * @return  object - the associated instance data
-	 * @throws  error if a jQuery problem getting data
-	 */
-	_getInst: function( target ) {
-		try {
-			return $.data( target, "datepicker" );
-		}
-		catch ( err ) {
-			throw "Missing instance data for this datepicker";
-		}
-	},
-
-	/* Update or retrieve the settings for a date picker attached to an input field or division.
-	 * @param  target  element - the target input field or division or span
-	 * @param  name	object - the new settings to update or
-	 *				string - the name of the setting to change or retrieve,
-	 *				when retrieving also "all" for all instance settings or
-	 *				"defaults" for all global defaults
-	 * @param  value   any - the new value for the setting
-	 *				(omit if above is an object or to retrieve a value)
-	 */
-	_optionDatepicker: function( target, name, value ) {
-		var settings, date, minDate, maxDate,
-			inst = this._getInst( target );
-
-		if ( arguments.length === 2 && typeof name === "string" ) {
-			return ( name === "defaults" ? $.extend( {}, $.datepicker._defaults ) :
-				( inst ? ( name === "all" ? $.extend( {}, inst.settings ) :
-				this._get( inst, name ) ) : null ) );
-		}
-
-		settings = name || {};
-		if ( typeof name === "string" ) {
-			settings = {};
-			settings[ name ] = value;
-		}
-
-		if ( inst ) {
-			if ( this._curInst === inst ) {
-				this._hideDatepicker();
-			}
-
-			date = this._getDateDatepicker( target, true );
-			minDate = this._getMinMaxDate( inst, "min" );
-			maxDate = this._getMinMaxDate( inst, "max" );
-			datepicker_extendRemove( inst.settings, settings );
-
-			// reformat the old minDate/maxDate values if dateFormat changes and a new minDate/maxDate isn't provided
-			if ( minDate !== null && settings.dateFormat !== undefined && settings.minDate === undefined ) {
-				inst.settings.minDate = this._formatDate( inst, minDate );
-			}
-			if ( maxDate !== null && settings.dateFormat !== undefined && settings.maxDate === undefined ) {
-				inst.settings.maxDate = this._formatDate( inst, maxDate );
-			}
-			if ( "disabled" in settings ) {
-				if ( settings.disabled ) {
-					this._disableDatepicker( target );
-				} else {
-					this._enableDatepicker( target );
-				}
-			}
-			this._attachments( $( target ), inst );
-			this._autoSize( inst );
-			this._setDate( inst, date );
-			this._updateAlternate( inst );
-			this._updateDatepicker( inst );
-		}
-	},
-
-	// Change method deprecated
-	_changeDatepicker: function( target, name, value ) {
-		this._optionDatepicker( target, name, value );
-	},
-
-	/* Redraw the date picker attached to an input field or division.
-	 * @param  target  element - the target input field or division or span
-	 */
-	_refreshDatepicker: function( target ) {
-		var inst = this._getInst( target );
-		if ( inst ) {
-			this._updateDatepicker( inst );
-		}
-	},
-
-	/* Set the dates for a jQuery selection.
-	 * @param  target element - the target input field or division or span
-	 * @param  date	Date - the new date
-	 */
-	_setDateDatepicker: function( target, date ) {
-		var inst = this._getInst( target );
-		if ( inst ) {
-			this._setDate( inst, date );
-			this._updateDatepicker( inst );
-			this._updateAlternate( inst );
-		}
-	},
-
-	/* Get the date(s) for the first entry in a jQuery selection.
-	 * @param  target element - the target input field or division or span
-	 * @param  noDefault boolean - true if no default date is to be used
-	 * @return Date - the current date
-	 */
-	_getDateDatepicker: function( target, noDefault ) {
-		var inst = this._getInst( target );
-		if ( inst && !inst.inline ) {
-			this._setDateFromField( inst, noDefault );
-		}
-		return ( inst ? this._getDate( inst ) : null );
-	},
-
-	/* Handle keystrokes. */
-	_doKeyDown: function( event ) {
-		var onSelect, dateStr, sel,
-			inst = $.datepicker._getInst( event.target ),
-			handled = true,
-			isRTL = inst.dpDiv.is( ".ui-datepicker-rtl" );
-
-		inst._keyEvent = true;
-		if ( $.datepicker._datepickerShowing ) {
-			switch ( event.keyCode ) {
-				case 9: $.datepicker._hideDatepicker();
-						handled = false;
-						break; // hide on tab out
-				case 13: sel = $( "td." + $.datepicker._dayOverClass + ":not(." +
-									$.datepicker._currentClass + ")", inst.dpDiv );
-						if ( sel[ 0 ] ) {
-							$.datepicker._selectDay( event.target, inst.selectedMonth, inst.selectedYear, sel[ 0 ] );
-						}
-
-						onSelect = $.datepicker._get( inst, "onSelect" );
-						if ( onSelect ) {
-							dateStr = $.datepicker._formatDate( inst );
-
-							// Trigger custom callback
-							onSelect.apply( ( inst.input ? inst.input[ 0 ] : null ), [ dateStr, inst ] );
-						} else {
-							$.datepicker._hideDatepicker();
-						}
-
-						return false; // don't submit the form
-				case 27: $.datepicker._hideDatepicker();
-						break; // hide on escape
-				case 33: $.datepicker._adjustDate( event.target, ( event.ctrlKey ?
-							-$.datepicker._get( inst, "stepBigMonths" ) :
-							-$.datepicker._get( inst, "stepMonths" ) ), "M" );
-						break; // previous month/year on page up/+ ctrl
-				case 34: $.datepicker._adjustDate( event.target, ( event.ctrlKey ?
-							+$.datepicker._get( inst, "stepBigMonths" ) :
-							+$.datepicker._get( inst, "stepMonths" ) ), "M" );
-						break; // next month/year on page down/+ ctrl
-				case 35: if ( event.ctrlKey || event.metaKey ) {
-							$.datepicker._clearDate( event.target );
-						}
-						handled = event.ctrlKey || event.metaKey;
-						break; // clear on ctrl or command +end
-				case 36: if ( event.ctrlKey || event.metaKey ) {
-							$.datepicker._gotoToday( event.target );
-						}
-						handled = event.ctrlKey || event.metaKey;
-						break; // current on ctrl or command +home
-				case 37: if ( event.ctrlKey || event.metaKey ) {
-							$.datepicker._adjustDate( event.target, ( isRTL ? +1 : -1 ), "D" );
-						}
-						handled = event.ctrlKey || event.metaKey;
-
-						// -1 day on ctrl or command +left
-						if ( event.originalEvent.altKey ) {
-							$.datepicker._adjustDate( event.target, ( event.ctrlKey ?
-								-$.datepicker._get( inst, "stepBigMonths" ) :
-								-$.datepicker._get( inst, "stepMonths" ) ), "M" );
-						}
-
-						// next month/year on alt +left on Mac
-						break;
-				case 38: if ( event.ctrlKey || event.metaKey ) {
-							$.datepicker._adjustDate( event.target, -7, "D" );
-						}
-						handled = event.ctrlKey || event.metaKey;
-						break; // -1 week on ctrl or command +up
-				case 39: if ( event.ctrlKey || event.metaKey ) {
-							$.datepicker._adjustDate( event.target, ( isRTL ? -1 : +1 ), "D" );
-						}
-						handled = event.ctrlKey || event.metaKey;
-
-						// +1 day on ctrl or command +right
-						if ( event.originalEvent.altKey ) {
-							$.datepicker._adjustDate( event.target, ( event.ctrlKey ?
-								+$.datepicker._get( inst, "stepBigMonths" ) :
-								+$.datepicker._get( inst, "stepMonths" ) ), "M" );
-						}
-
-						// next month/year on alt +right
-						break;
-				case 40: if ( event.ctrlKey || event.metaKey ) {
-							$.datepicker._adjustDate( event.target, +7, "D" );
-						}
-						handled = event.ctrlKey || event.metaKey;
-						break; // +1 week on ctrl or command +down
-				default: handled = false;
-			}
-		} else if ( event.keyCode === 36 && event.ctrlKey ) { // display the date picker on ctrl+home
-			$.datepicker._showDatepicker( this );
-		} else {
-			handled = false;
-		}
-
-		if ( handled ) {
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	},
-
-	/* Filter entered characters - based on date format. */
-	_doKeyPress: function( event ) {
-		var chars, chr,
-			inst = $.datepicker._getInst( event.target );
-
-		if ( $.datepicker._get( inst, "constrainInput" ) ) {
-			chars = $.datepicker._possibleChars( $.datepicker._get( inst, "dateFormat" ) );
-			chr = String.fromCharCode( event.charCode == null ? event.keyCode : event.charCode );
-			return event.ctrlKey || event.metaKey || ( chr < " " || !chars || chars.indexOf( chr ) > -1 );
-		}
-	},
-
-	/* Synchronise manual entry and field/alternate field. */
-	_doKeyUp: function( event ) {
-		var date,
-			inst = $.datepicker._getInst( event.target );
-
-		if ( inst.input.val() !== inst.lastVal ) {
-			try {
-				date = $.datepicker.parseDate( $.datepicker._get( inst, "dateFormat" ),
-					( inst.input ? inst.input.val() : null ),
-					$.datepicker._getFormatConfig( inst ) );
-
-				if ( date ) { // only if valid
-					$.datepicker._setDateFromField( inst );
-					$.datepicker._updateAlternate( inst );
-					$.datepicker._updateDatepicker( inst );
-				}
-			}
-			catch ( err ) {
-			}
-		}
-		return true;
-	},
-
-	/* Pop-up the date picker for a given input field.
-	 * If false returned from beforeShow event handler do not show.
-	 * @param  input  element - the input field attached to the date picker or
-	 *					event - if triggered by focus
-	 */
-	_showDatepicker: function( input ) {
-		input = input.target || input;
-		if ( input.nodeName.toLowerCase() !== "input" ) { // find from button/image trigger
-			input = $( "input", input.parentNode )[ 0 ];
-		}
-
-		if ( $.datepicker._isDisabledDatepicker( input ) || $.datepicker._lastInput === input ) { // already here
-			return;
-		}
-
-		var inst, beforeShow, beforeShowSettings, isFixed,
-			offset, showAnim, duration;
-
-		inst = $.datepicker._getInst( input );
-		if ( $.datepicker._curInst && $.datepicker._curInst !== inst ) {
-			$.datepicker._curInst.dpDiv.stop( true, true );
-			if ( inst && $.datepicker._datepickerShowing ) {
-				$.datepicker._hideDatepicker( $.datepicker._curInst.input[ 0 ] );
-			}
-		}
-
-		beforeShow = $.datepicker._get( inst, "beforeShow" );
-		beforeShowSettings = beforeShow ? beforeShow.apply( input, [ input, inst ] ) : {};
-		if ( beforeShowSettings === false ) {
-			return;
-		}
-		datepicker_extendRemove( inst.settings, beforeShowSettings );
-
-		inst.lastVal = null;
-		$.datepicker._lastInput = input;
-		$.datepicker._setDateFromField( inst );
-
-		if ( $.datepicker._inDialog ) { // hide cursor
-			input.value = "";
-		}
-		if ( !$.datepicker._pos ) { // position below input
-			$.datepicker._pos = $.datepicker._findPos( input );
-			$.datepicker._pos[ 1 ] += input.offsetHeight; // add the height
-		}
-
-		isFixed = false;
-		$( input ).parents().each( function() {
-			isFixed |= $( this ).css( "position" ) === "fixed";
-			return !isFixed;
-		} );
-
-		offset = { left: $.datepicker._pos[ 0 ], top: $.datepicker._pos[ 1 ] };
-		$.datepicker._pos = null;
-
-		//to avoid flashes on Firefox
-		inst.dpDiv.empty();
-
-		// determine sizing offscreen
-		inst.dpDiv.css( { position: "absolute", display: "block", top: "-1000px" } );
-		$.datepicker._updateDatepicker( inst );
-
-		// fix width for dynamic number of date pickers
-		// and adjust position before showing
-		offset = $.datepicker._checkOffset( inst, offset, isFixed );
-		inst.dpDiv.css( { position: ( $.datepicker._inDialog && $.blockUI ?
-			"static" : ( isFixed ? "fixed" : "absolute" ) ), display: "none",
-			left: offset.left + "px", top: offset.top + "px" } );
-
-		if ( !inst.inline ) {
-			showAnim = $.datepicker._get( inst, "showAnim" );
-			duration = $.datepicker._get( inst, "duration" );
-			inst.dpDiv.css( "z-index", datepicker_getZindex( $( input ) ) + 1 );
-			$.datepicker._datepickerShowing = true;
-
-			if ( $.effects && $.effects.effect[ showAnim ] ) {
-				inst.dpDiv.show( showAnim, $.datepicker._get( inst, "showOptions" ), duration );
-			} else {
-				inst.dpDiv[ showAnim || "show" ]( showAnim ? duration : null );
-			}
-
-			if ( $.datepicker._shouldFocusInput( inst ) ) {
-				inst.input.trigger( "focus" );
-			}
-
-			$.datepicker._curInst = inst;
-		}
-	},
-
-	/* Generate the date picker content. */
-	_updateDatepicker: function( inst ) {
-		this.maxRows = 4; //Reset the max number of rows being displayed (see #7043)
-		datepicker_instActive = inst; // for delegate hover events
-		inst.dpDiv.empty().append( this._generateHTML( inst ) );
-		this._attachHandlers( inst );
-
-		var origyearshtml,
-			numMonths = this._getNumberOfMonths( inst ),
-			cols = numMonths[ 1 ],
-			width = 17,
-			activeCell = inst.dpDiv.find( "." + this._dayOverClass + " a" );
-
-		if ( activeCell.length > 0 ) {
-			datepicker_handleMouseover.apply( activeCell.get( 0 ) );
-		}
-
-		inst.dpDiv.removeClass( "ui-datepicker-multi-2 ui-datepicker-multi-3 ui-datepicker-multi-4" ).width( "" );
-		if ( cols > 1 ) {
-			inst.dpDiv.addClass( "ui-datepicker-multi-" + cols ).css( "width", ( width * cols ) + "em" );
-		}
-		inst.dpDiv[ ( numMonths[ 0 ] !== 1 || numMonths[ 1 ] !== 1 ? "add" : "remove" ) +
-			"Class" ]( "ui-datepicker-multi" );
-		inst.dpDiv[ ( this._get( inst, "isRTL" ) ? "add" : "remove" ) +
-			"Class" ]( "ui-datepicker-rtl" );
-
-		if ( inst === $.datepicker._curInst && $.datepicker._datepickerShowing && $.datepicker._shouldFocusInput( inst ) ) {
-			inst.input.trigger( "focus" );
-		}
-
-		// Deffered render of the years select (to avoid flashes on Firefox)
-		if ( inst.yearshtml ) {
-			origyearshtml = inst.yearshtml;
-			setTimeout( function() {
-
-				//assure that inst.yearshtml didn't change.
-				if ( origyearshtml === inst.yearshtml && inst.yearshtml ) {
-					inst.dpDiv.find( "select.ui-datepicker-year:first" ).replaceWith( inst.yearshtml );
-				}
-				origyearshtml = inst.yearshtml = null;
-			}, 0 );
-		}
-	},
-
-	// #6694 - don't focus the input if it's already focused
-	// this breaks the change event in IE
-	// Support: IE and jQuery <1.9
-	_shouldFocusInput: function( inst ) {
-		return inst.input && inst.input.is( ":visible" ) && !inst.input.is( ":disabled" ) && !inst.input.is( ":focus" );
-	},
-
-	/* Check positioning to remain on screen. */
-	_checkOffset: function( inst, offset, isFixed ) {
-		var dpWidth = inst.dpDiv.outerWidth(),
-			dpHeight = inst.dpDiv.outerHeight(),
-			inputWidth = inst.input ? inst.input.outerWidth() : 0,
-			inputHeight = inst.input ? inst.input.outerHeight() : 0,
-			viewWidth = document.documentElement.clientWidth + ( isFixed ? 0 : $( document ).scrollLeft() ),
-			viewHeight = document.documentElement.clientHeight + ( isFixed ? 0 : $( document ).scrollTop() );
-
-		offset.left -= ( this._get( inst, "isRTL" ) ? ( dpWidth - inputWidth ) : 0 );
-		offset.left -= ( isFixed && offset.left === inst.input.offset().left ) ? $( document ).scrollLeft() : 0;
-		offset.top -= ( isFixed && offset.top === ( inst.input.offset().top + inputHeight ) ) ? $( document ).scrollTop() : 0;
-
-		// Now check if datepicker is showing outside window viewport - move to a better place if so.
-		offset.left -= Math.min( offset.left, ( offset.left + dpWidth > viewWidth && viewWidth > dpWidth ) ?
-			Math.abs( offset.left + dpWidth - viewWidth ) : 0 );
-		offset.top -= Math.min( offset.top, ( offset.top + dpHeight > viewHeight && viewHeight > dpHeight ) ?
-			Math.abs( dpHeight + inputHeight ) : 0 );
-
-		return offset;
-	},
-
-	/* Find an object's position on the screen. */
-	_findPos: function( obj ) {
-		var position,
-			inst = this._getInst( obj ),
-			isRTL = this._get( inst, "isRTL" );
-
-		while ( obj && ( obj.type === "hidden" || obj.nodeType !== 1 || $.expr.filters.hidden( obj ) ) ) {
-			obj = obj[ isRTL ? "previousSibling" : "nextSibling" ];
-		}
-
-		position = $( obj ).offset();
-		return [ position.left, position.top ];
-	},
-
-	/* Hide the date picker from view.
-	 * @param  input  element - the input field attached to the date picker
-	 */
-	_hideDatepicker: function( input ) {
-		var showAnim, duration, postProcess, onClose,
-			inst = this._curInst;
-
-		if ( !inst || ( input && inst !== $.data( input, "datepicker" ) ) ) {
-			return;
-		}
-
-		if ( this._datepickerShowing ) {
-			showAnim = this._get( inst, "showAnim" );
-			duration = this._get( inst, "duration" );
-			postProcess = function() {
-				$.datepicker._tidyDialog( inst );
-			};
-
-			// DEPRECATED: after BC for 1.8.x $.effects[ showAnim ] is not needed
-			if ( $.effects && ( $.effects.effect[ showAnim ] || $.effects[ showAnim ] ) ) {
-				inst.dpDiv.hide( showAnim, $.datepicker._get( inst, "showOptions" ), duration, postProcess );
-			} else {
-				inst.dpDiv[ ( showAnim === "slideDown" ? "slideUp" :
-					( showAnim === "fadeIn" ? "fadeOut" : "hide" ) ) ]( ( showAnim ? duration : null ), postProcess );
-			}
-
-			if ( !showAnim ) {
-				postProcess();
-			}
-			this._datepickerShowing = false;
-
-			onClose = this._get( inst, "onClose" );
-			if ( onClose ) {
-				onClose.apply( ( inst.input ? inst.input[ 0 ] : null ), [ ( inst.input ? inst.input.val() : "" ), inst ] );
-			}
-
-			this._lastInput = null;
-			if ( this._inDialog ) {
-				this._dialogInput.css( { position: "absolute", left: "0", top: "-100px" } );
-				if ( $.blockUI ) {
-					$.unblockUI();
-					$( "body" ).append( this.dpDiv );
-				}
-			}
-			this._inDialog = false;
-		}
-	},
-
-	/* Tidy up after a dialog display. */
-	_tidyDialog: function( inst ) {
-		inst.dpDiv.removeClass( this._dialogClass ).off( ".ui-datepicker-calendar" );
-	},
-
-	/* Close date picker if clicked elsewhere. */
-	_checkExternalClick: function( event ) {
-		if ( !$.datepicker._curInst ) {
-			return;
-		}
-
-		var $target = $( event.target ),
-			inst = $.datepicker._getInst( $target[ 0 ] );
-
-		if ( ( ( $target[ 0 ].id !== $.datepicker._mainDivId &&
-				$target.parents( "#" + $.datepicker._mainDivId ).length === 0 &&
-				!$target.hasClass( $.datepicker.markerClassName ) &&
-				!$target.closest( "." + $.datepicker._triggerClass ).length &&
-				$.datepicker._datepickerShowing && !( $.datepicker._inDialog && $.blockUI ) ) ) ||
-			( $target.hasClass( $.datepicker.markerClassName ) && $.datepicker._curInst !== inst ) ) {
-				$.datepicker._hideDatepicker();
-		}
-	},
-
-	/* Adjust one of the date sub-fields. */
-	_adjustDate: function( id, offset, period ) {
-		var target = $( id ),
-			inst = this._getInst( target[ 0 ] );
-
-		if ( this._isDisabledDatepicker( target[ 0 ] ) ) {
-			return;
-		}
-		this._adjustInstDate( inst, offset +
-			( period === "M" ? this._get( inst, "showCurrentAtPos" ) : 0 ), // undo positioning
-			period );
-		this._updateDatepicker( inst );
-	},
-
-	/* Action for current link. */
-	_gotoToday: function( id ) {
-		var date,
-			target = $( id ),
-			inst = this._getInst( target[ 0 ] );
-
-		if ( this._get( inst, "gotoCurrent" ) && inst.currentDay ) {
-			inst.selectedDay = inst.currentDay;
-			inst.drawMonth = inst.selectedMonth = inst.currentMonth;
-			inst.drawYear = inst.selectedYear = inst.currentYear;
-		} else {
-			date = new Date();
-			inst.selectedDay = date.getDate();
-			inst.drawMonth = inst.selectedMonth = date.getMonth();
-			inst.drawYear = inst.selectedYear = date.getFullYear();
-		}
-		this._notifyChange( inst );
-		this._adjustDate( target );
-	},
-
-	/* Action for selecting a new month/year. */
-	_selectMonthYear: function( id, select, period ) {
-		var target = $( id ),
-			inst = this._getInst( target[ 0 ] );
-
-		inst[ "selected" + ( period === "M" ? "Month" : "Year" ) ] =
-		inst[ "draw" + ( period === "M" ? "Month" : "Year" ) ] =
-			parseInt( select.options[ select.selectedIndex ].value, 10 );
-
-		this._notifyChange( inst );
-		this._adjustDate( target );
-	},
-
-	/* Action for selecting a day. */
-	_selectDay: function( id, month, year, td ) {
-		var inst,
-			target = $( id );
-
-		if ( $( td ).hasClass( this._unselectableClass ) || this._isDisabledDatepicker( target[ 0 ] ) ) {
-			return;
-		}
-
-		inst = this._getInst( target[ 0 ] );
-		inst.selectedDay = inst.currentDay = $( "a", td ).html();
-		inst.selectedMonth = inst.currentMonth = month;
-		inst.selectedYear = inst.currentYear = year;
-		this._selectDate( id, this._formatDate( inst,
-			inst.currentDay, inst.currentMonth, inst.currentYear ) );
-	},
-
-	/* Erase the input field and hide the date picker. */
-	_clearDate: function( id ) {
-		var target = $( id );
-		this._selectDate( target, "" );
-	},
-
-	/* Update the input field with the selected date. */
-	_selectDate: function( id, dateStr ) {
-		var onSelect,
-			target = $( id ),
-			inst = this._getInst( target[ 0 ] );
-
-		dateStr = ( dateStr != null ? dateStr : this._formatDate( inst ) );
-		if ( inst.input ) {
-			inst.input.val( dateStr );
-		}
-		this._updateAlternate( inst );
-
-		onSelect = this._get( inst, "onSelect" );
-		if ( onSelect ) {
-			onSelect.apply( ( inst.input ? inst.input[ 0 ] : null ), [ dateStr, inst ] );  // trigger custom callback
-		} else if ( inst.input ) {
-			inst.input.trigger( "change" ); // fire the change event
-		}
-
-		if ( inst.inline ) {
-			this._updateDatepicker( inst );
-		} else {
-			this._hideDatepicker();
-			this._lastInput = inst.input[ 0 ];
-			if ( typeof( inst.input[ 0 ] ) !== "object" ) {
-				inst.input.trigger( "focus" ); // restore focus
-			}
-			this._lastInput = null;
-		}
-	},
-
-	/* Update any alternate field to synchronise with the main field. */
-	_updateAlternate: function( inst ) {
-		var altFormat, date, dateStr,
-			altField = this._get( inst, "altField" );
-
-		if ( altField ) { // update alternate field too
-			altFormat = this._get( inst, "altFormat" ) || this._get( inst, "dateFormat" );
-			date = this._getDate( inst );
-			dateStr = this.formatDate( altFormat, date, this._getFormatConfig( inst ) );
-			$( altField ).val( dateStr );
-		}
-	},
-
-	/* Set as beforeShowDay function to prevent selection of weekends.
-	 * @param  date  Date - the date to customise
-	 * @return [boolean, string] - is this date selectable?, what is its CSS class?
-	 */
-	noWeekends: function( date ) {
-		var day = date.getDay();
-		return [ ( day > 0 && day < 6 ), "" ];
-	},
-
-	/* Set as calculateWeek to determine the week of the year based on the ISO 8601 definition.
-	 * @param  date  Date - the date to get the week for
-	 * @return  number - the number of the week within the year that contains this date
-	 */
-	iso8601Week: function( date ) {
-		var time,
-			checkDate = new Date( date.getTime() );
-
-		// Find Thursday of this week starting on Monday
-		checkDate.setDate( checkDate.getDate() + 4 - ( checkDate.getDay() || 7 ) );
-
-		time = checkDate.getTime();
-		checkDate.setMonth( 0 ); // Compare with Jan 1
-		checkDate.setDate( 1 );
-		return Math.floor( Math.round( ( time - checkDate ) / 86400000 ) / 7 ) + 1;
-	},
-
-	/* Parse a string value into a date object.
-	 * See formatDate below for the possible formats.
-	 *
-	 * @param  format string - the expected format of the date
-	 * @param  value string - the date in the above format
-	 * @param  settings Object - attributes include:
-	 *					shortYearCutoff  number - the cutoff year for determining the century (optional)
-	 *					dayNamesShort	string[7] - abbreviated names of the days from Sunday (optional)
-	 *					dayNames		string[7] - names of the days from Sunday (optional)
-	 *					monthNamesShort string[12] - abbreviated names of the months (optional)
-	 *					monthNames		string[12] - names of the months (optional)
-	 * @return  Date - the extracted date value or null if value is blank
-	 */
-	parseDate: function( format, value, settings ) {
-		if ( format == null || value == null ) {
-			throw "Invalid arguments";
-		}
-
-		value = ( typeof value === "object" ? value.toString() : value + "" );
-		if ( value === "" ) {
-			return null;
-		}
-
-		var iFormat, dim, extra,
-			iValue = 0,
-			shortYearCutoffTemp = ( settings ? settings.shortYearCutoff : null ) || this._defaults.shortYearCutoff,
-			shortYearCutoff = ( typeof shortYearCutoffTemp !== "string" ? shortYearCutoffTemp :
-				new Date().getFullYear() % 100 + parseInt( shortYearCutoffTemp, 10 ) ),
-			dayNamesShort = ( settings ? settings.dayNamesShort : null ) || this._defaults.dayNamesShort,
-			dayNames = ( settings ? settings.dayNames : null ) || this._defaults.dayNames,
-			monthNamesShort = ( settings ? settings.monthNamesShort : null ) || this._defaults.monthNamesShort,
-			monthNames = ( settings ? settings.monthNames : null ) || this._defaults.monthNames,
-			year = -1,
-			month = -1,
-			day = -1,
-			doy = -1,
-			literal = false,
-			date,
-
-			// Check whether a format character is doubled
-			lookAhead = function( match ) {
-				var matches = ( iFormat + 1 < format.length && format.charAt( iFormat + 1 ) === match );
-				if ( matches ) {
-					iFormat++;
-				}
-				return matches;
-			},
-
-			// Extract a number from the string value
-			getNumber = function( match ) {
-				var isDoubled = lookAhead( match ),
-					size = ( match === "@" ? 14 : ( match === "!" ? 20 :
-					( match === "y" && isDoubled ? 4 : ( match === "o" ? 3 : 2 ) ) ) ),
-					minSize = ( match === "y" ? size : 1 ),
-					digits = new RegExp( "^\\d{" + minSize + "," + size + "}" ),
-					num = value.substring( iValue ).match( digits );
-				if ( !num ) {
-					throw "Missing number at position " + iValue;
-				}
-				iValue += num[ 0 ].length;
-				return parseInt( num[ 0 ], 10 );
-			},
-
-			// Extract a name from the string value and convert to an index
-			getName = function( match, shortNames, longNames ) {
-				var index = -1,
-					names = $.map( lookAhead( match ) ? longNames : shortNames, function( v, k ) {
-						return [ [ k, v ] ];
-					} ).sort( function( a, b ) {
-						return -( a[ 1 ].length - b[ 1 ].length );
-					} );
-
-				$.each( names, function( i, pair ) {
-					var name = pair[ 1 ];
-					if ( value.substr( iValue, name.length ).toLowerCase() === name.toLowerCase() ) {
-						index = pair[ 0 ];
-						iValue += name.length;
-						return false;
-					}
-				} );
-				if ( index !== -1 ) {
-					return index + 1;
-				} else {
-					throw "Unknown name at position " + iValue;
-				}
-			},
-
-			// Confirm that a literal character matches the string value
-			checkLiteral = function() {
-				if ( value.charAt( iValue ) !== format.charAt( iFormat ) ) {
-					throw "Unexpected literal at position " + iValue;
-				}
-				iValue++;
-			};
-
-		for ( iFormat = 0; iFormat < format.length; iFormat++ ) {
-			if ( literal ) {
-				if ( format.charAt( iFormat ) === "'" && !lookAhead( "'" ) ) {
-					literal = false;
-				} else {
-					checkLiteral();
-				}
-			} else {
-				switch ( format.charAt( iFormat ) ) {
-					case "d":
-						day = getNumber( "d" );
-						break;
-					case "D":
-						getName( "D", dayNamesShort, dayNames );
-						break;
-					case "o":
-						doy = getNumber( "o" );
-						break;
-					case "m":
-						month = getNumber( "m" );
-						break;
-					case "M":
-						month = getName( "M", monthNamesShort, monthNames );
-						break;
-					case "y":
-						year = getNumber( "y" );
-						break;
-					case "@":
-						date = new Date( getNumber( "@" ) );
-						year = date.getFullYear();
-						month = date.getMonth() + 1;
-						day = date.getDate();
-						break;
-					case "!":
-						date = new Date( ( getNumber( "!" ) - this._ticksTo1970 ) / 10000 );
-						year = date.getFullYear();
-						month = date.getMonth() + 1;
-						day = date.getDate();
-						break;
-					case "'":
-						if ( lookAhead( "'" ) ) {
-							checkLiteral();
-						} else {
-							literal = true;
-						}
-						break;
-					default:
-						checkLiteral();
-				}
-			}
-		}
-
-		if ( iValue < value.length ) {
-			extra = value.substr( iValue );
-			if ( !/^\s+/.test( extra ) ) {
-				throw "Extra/unparsed characters found in date: " + extra;
-			}
-		}
-
-		if ( year === -1 ) {
-			year = new Date().getFullYear();
-		} else if ( year < 100 ) {
-			year += new Date().getFullYear() - new Date().getFullYear() % 100 +
-				( year <= shortYearCutoff ? 0 : -100 );
-		}
-
-		if ( doy > -1 ) {
-			month = 1;
-			day = doy;
-			do {
-				dim = this._getDaysInMonth( year, month - 1 );
-				if ( day <= dim ) {
-					break;
-				}
-				month++;
-				day -= dim;
-			} while ( true );
-		}
-
-		date = this._daylightSavingAdjust( new Date( year, month - 1, day ) );
-		if ( date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day ) {
-			throw "Invalid date"; // E.g. 31/02/00
-		}
-		return date;
-	},
-
-	/* Standard date formats. */
-	ATOM: "yy-mm-dd", // RFC 3339 (ISO 8601)
-	COOKIE: "D, dd M yy",
-	ISO_8601: "yy-mm-dd",
-	RFC_822: "D, d M y",
-	RFC_850: "DD, dd-M-y",
-	RFC_1036: "D, d M y",
-	RFC_1123: "D, d M yy",
-	RFC_2822: "D, d M yy",
-	RSS: "D, d M y", // RFC 822
-	TICKS: "!",
-	TIMESTAMP: "@",
-	W3C: "yy-mm-dd", // ISO 8601
-
-	_ticksTo1970: ( ( ( 1970 - 1 ) * 365 + Math.floor( 1970 / 4 ) - Math.floor( 1970 / 100 ) +
-		Math.floor( 1970 / 400 ) ) * 24 * 60 * 60 * 10000000 ),
-
-	/* Format a date object into a string value.
-	 * The format can be combinations of the following:
-	 * d  - day of month (no leading zero)
-	 * dd - day of month (two digit)
-	 * o  - day of year (no leading zeros)
-	 * oo - day of year (three digit)
-	 * D  - day name short
-	 * DD - day name long
-	 * m  - month of year (no leading zero)
-	 * mm - month of year (two digit)
-	 * M  - month name short
-	 * MM - month name long
-	 * y  - year (two digit)
-	 * yy - year (four digit)
-	 * @ - Unix timestamp (ms since 01/01/1970)
-	 * ! - Windows ticks (100ns since 01/01/0001)
-	 * "..." - literal text
-	 * '' - single quote
-	 *
-	 * @param  format string - the desired format of the date
-	 * @param  date Date - the date value to format
-	 * @param  settings Object - attributes include:
-	 *					dayNamesShort	string[7] - abbreviated names of the days from Sunday (optional)
-	 *					dayNames		string[7] - names of the days from Sunday (optional)
-	 *					monthNamesShort string[12] - abbreviated names of the months (optional)
-	 *					monthNames		string[12] - names of the months (optional)
-	 * @return  string - the date in the above format
-	 */
-	formatDate: function( format, date, settings ) {
-		if ( !date ) {
-			return "";
-		}
-
-		var iFormat,
-			dayNamesShort = ( settings ? settings.dayNamesShort : null ) || this._defaults.dayNamesShort,
-			dayNames = ( settings ? settings.dayNames : null ) || this._defaults.dayNames,
-			monthNamesShort = ( settings ? settings.monthNamesShort : null ) || this._defaults.monthNamesShort,
-			monthNames = ( settings ? settings.monthNames : null ) || this._defaults.monthNames,
-
-			// Check whether a format character is doubled
-			lookAhead = function( match ) {
-				var matches = ( iFormat + 1 < format.length && format.charAt( iFormat + 1 ) === match );
-				if ( matches ) {
-					iFormat++;
-				}
-				return matches;
-			},
-
-			// Format a number, with leading zero if necessary
-			formatNumber = function( match, value, len ) {
-				var num = "" + value;
-				if ( lookAhead( match ) ) {
-					while ( num.length < len ) {
-						num = "0" + num;
-					}
-				}
-				return num;
-			},
-
-			// Format a name, short or long as requested
-			formatName = function( match, value, shortNames, longNames ) {
-				return ( lookAhead( match ) ? longNames[ value ] : shortNames[ value ] );
-			},
-			output = "",
-			literal = false;
-
-		if ( date ) {
-			for ( iFormat = 0; iFormat < format.length; iFormat++ ) {
-				if ( literal ) {
-					if ( format.charAt( iFormat ) === "'" && !lookAhead( "'" ) ) {
-						literal = false;
-					} else {
-						output += format.charAt( iFormat );
-					}
-				} else {
-					switch ( format.charAt( iFormat ) ) {
-						case "d":
-							output += formatNumber( "d", date.getDate(), 2 );
-							break;
-						case "D":
-							output += formatName( "D", date.getDay(), dayNamesShort, dayNames );
-							break;
-						case "o":
-							output += formatNumber( "o",
-								Math.round( ( new Date( date.getFullYear(), date.getMonth(), date.getDate() ).getTime() - new Date( date.getFullYear(), 0, 0 ).getTime() ) / 86400000 ), 3 );
-							break;
-						case "m":
-							output += formatNumber( "m", date.getMonth() + 1, 2 );
-							break;
-						case "M":
-							output += formatName( "M", date.getMonth(), monthNamesShort, monthNames );
-							break;
-						case "y":
-							output += ( lookAhead( "y" ) ? date.getFullYear() :
-								( date.getFullYear() % 100 < 10 ? "0" : "" ) + date.getFullYear() % 100 );
-							break;
-						case "@":
-							output += date.getTime();
-							break;
-						case "!":
-							output += date.getTime() * 10000 + this._ticksTo1970;
-							break;
-						case "'":
-							if ( lookAhead( "'" ) ) {
-								output += "'";
-							} else {
-								literal = true;
-							}
-							break;
-						default:
-							output += format.charAt( iFormat );
-					}
-				}
-			}
-		}
-		return output;
-	},
-
-	/* Extract all possible characters from the date format. */
-	_possibleChars: function( format ) {
-		var iFormat,
-			chars = "",
-			literal = false,
-
-			// Check whether a format character is doubled
-			lookAhead = function( match ) {
-				var matches = ( iFormat + 1 < format.length && format.charAt( iFormat + 1 ) === match );
-				if ( matches ) {
-					iFormat++;
-				}
-				return matches;
-			};
-
-		for ( iFormat = 0; iFormat < format.length; iFormat++ ) {
-			if ( literal ) {
-				if ( format.charAt( iFormat ) === "'" && !lookAhead( "'" ) ) {
-					literal = false;
-				} else {
-					chars += format.charAt( iFormat );
-				}
-			} else {
-				switch ( format.charAt( iFormat ) ) {
-					case "d": case "m": case "y": case "@":
-						chars += "0123456789";
-						break;
-					case "D": case "M":
-						return null; // Accept anything
-					case "'":
-						if ( lookAhead( "'" ) ) {
-							chars += "'";
-						} else {
-							literal = true;
-						}
-						break;
-					default:
-						chars += format.charAt( iFormat );
-				}
-			}
-		}
-		return chars;
-	},
-
-	/* Get a setting value, defaulting if necessary. */
-	_get: function( inst, name ) {
-		return inst.settings[ name ] !== undefined ?
-			inst.settings[ name ] : this._defaults[ name ];
-	},
-
-	/* Parse existing date and initialise date picker. */
-	_setDateFromField: function( inst, noDefault ) {
-		if ( inst.input.val() === inst.lastVal ) {
-			return;
-		}
-
-		var dateFormat = this._get( inst, "dateFormat" ),
-			dates = inst.lastVal = inst.input ? inst.input.val() : null,
-			defaultDate = this._getDefaultDate( inst ),
-			date = defaultDate,
-			settings = this._getFormatConfig( inst );
-
-		try {
-			date = this.parseDate( dateFormat, dates, settings ) || defaultDate;
-		} catch ( event ) {
-			dates = ( noDefault ? "" : dates );
-		}
-		inst.selectedDay = date.getDate();
-		inst.drawMonth = inst.selectedMonth = date.getMonth();
-		inst.drawYear = inst.selectedYear = date.getFullYear();
-		inst.currentDay = ( dates ? date.getDate() : 0 );
-		inst.currentMonth = ( dates ? date.getMonth() : 0 );
-		inst.currentYear = ( dates ? date.getFullYear() : 0 );
-		this._adjustInstDate( inst );
-	},
-
-	/* Retrieve the default date shown on opening. */
-	_getDefaultDate: function( inst ) {
-		return this._restrictMinMax( inst,
-			this._determineDate( inst, this._get( inst, "defaultDate" ), new Date() ) );
-	},
-
-	/* A date may be specified as an exact value or a relative one. */
-	_determineDate: function( inst, date, defaultDate ) {
-		var offsetNumeric = function( offset ) {
-				var date = new Date();
-				date.setDate( date.getDate() + offset );
-				return date;
-			},
-			offsetString = function( offset ) {
-				try {
-					return $.datepicker.parseDate( $.datepicker._get( inst, "dateFormat" ),
-						offset, $.datepicker._getFormatConfig( inst ) );
-				}
-				catch ( e ) {
-
-					// Ignore
-				}
-
-				var date = ( offset.toLowerCase().match( /^c/ ) ?
-					$.datepicker._getDate( inst ) : null ) || new Date(),
-					year = date.getFullYear(),
-					month = date.getMonth(),
-					day = date.getDate(),
-					pattern = /([+\-]?[0-9]+)\s*(d|D|w|W|m|M|y|Y)?/g,
-					matches = pattern.exec( offset );
-
-				while ( matches ) {
-					switch ( matches[ 2 ] || "d" ) {
-						case "d" : case "D" :
-							day += parseInt( matches[ 1 ], 10 ); break;
-						case "w" : case "W" :
-							day += parseInt( matches[ 1 ], 10 ) * 7; break;
-						case "m" : case "M" :
-							month += parseInt( matches[ 1 ], 10 );
-							day = Math.min( day, $.datepicker._getDaysInMonth( year, month ) );
-							break;
-						case "y": case "Y" :
-							year += parseInt( matches[ 1 ], 10 );
-							day = Math.min( day, $.datepicker._getDaysInMonth( year, month ) );
-							break;
-					}
-					matches = pattern.exec( offset );
-				}
-				return new Date( year, month, day );
-			},
-			newDate = ( date == null || date === "" ? defaultDate : ( typeof date === "string" ? offsetString( date ) :
-				( typeof date === "number" ? ( isNaN( date ) ? defaultDate : offsetNumeric( date ) ) : new Date( date.getTime() ) ) ) );
-
-		newDate = ( newDate && newDate.toString() === "Invalid Date" ? defaultDate : newDate );
-		if ( newDate ) {
-			newDate.setHours( 0 );
-			newDate.setMinutes( 0 );
-			newDate.setSeconds( 0 );
-			newDate.setMilliseconds( 0 );
-		}
-		return this._daylightSavingAdjust( newDate );
-	},
-
-	/* Handle switch to/from daylight saving.
-	 * Hours may be non-zero on daylight saving cut-over:
-	 * > 12 when midnight changeover, but then cannot generate
-	 * midnight datetime, so jump to 1AM, otherwise reset.
-	 * @param  date  (Date) the date to check
-	 * @return  (Date) the corrected date
-	 */
-	_daylightSavingAdjust: function( date ) {
-		if ( !date ) {
-			return null;
-		}
-		date.setHours( date.getHours() > 12 ? date.getHours() + 2 : 0 );
-		return date;
-	},
-
-	/* Set the date(s) directly. */
-	_setDate: function( inst, date, noChange ) {
-		var clear = !date,
-			origMonth = inst.selectedMonth,
-			origYear = inst.selectedYear,
-			newDate = this._restrictMinMax( inst, this._determineDate( inst, date, new Date() ) );
-
-		inst.selectedDay = inst.currentDay = newDate.getDate();
-		inst.drawMonth = inst.selectedMonth = inst.currentMonth = newDate.getMonth();
-		inst.drawYear = inst.selectedYear = inst.currentYear = newDate.getFullYear();
-		if ( ( origMonth !== inst.selectedMonth || origYear !== inst.selectedYear ) && !noChange ) {
-			this._notifyChange( inst );
-		}
-		this._adjustInstDate( inst );
-		if ( inst.input ) {
-			inst.input.val( clear ? "" : this._formatDate( inst ) );
-		}
-	},
-
-	/* Retrieve the date(s) directly. */
-	_getDate: function( inst ) {
-		var startDate = ( !inst.currentYear || ( inst.input && inst.input.val() === "" ) ? null :
-			this._daylightSavingAdjust( new Date(
-			inst.currentYear, inst.currentMonth, inst.currentDay ) ) );
-			return startDate;
-	},
-
-	/* Attach the onxxx handlers.  These are declared statically so
-	 * they work with static code transformers like Caja.
-	 */
-	_attachHandlers: function( inst ) {
-		var stepMonths = this._get( inst, "stepMonths" ),
-			id = "#" + inst.id.replace( /\\\\/g, "\\" );
-		inst.dpDiv.find( "[data-handler]" ).map( function() {
-			var handler = {
-				prev: function() {
-					$.datepicker._adjustDate( id, -stepMonths, "M" );
-				},
-				next: function() {
-					$.datepicker._adjustDate( id, +stepMonths, "M" );
-				},
-				hide: function() {
-					$.datepicker._hideDatepicker();
-				},
-				today: function() {
-					$.datepicker._gotoToday( id );
-				},
-				selectDay: function() {
-					$.datepicker._selectDay( id, +this.getAttribute( "data-month" ), +this.getAttribute( "data-year" ), this );
-					return false;
-				},
-				selectMonth: function() {
-					$.datepicker._selectMonthYear( id, this, "M" );
-					return false;
-				},
-				selectYear: function() {
-					$.datepicker._selectMonthYear( id, this, "Y" );
-					return false;
-				}
-			};
-			$( this ).on( this.getAttribute( "data-event" ), handler[ this.getAttribute( "data-handler" ) ] );
-		} );
-	},
-
-	/* Generate the HTML for the current state of the date picker. */
-	_generateHTML: function( inst ) {
-		var maxDraw, prevText, prev, nextText, next, currentText, gotoDate,
-			controls, buttonPanel, firstDay, showWeek, dayNames, dayNamesMin,
-			monthNames, monthNamesShort, beforeShowDay, showOtherMonths,
-			selectOtherMonths, defaultDate, html, dow, row, group, col, selectedDate,
-			cornerClass, calender, thead, day, daysInMonth, leadDays, curRows, numRows,
-			printDate, dRow, tbody, daySettings, otherMonth, unselectable,
-			tempDate = new Date(),
-			today = this._daylightSavingAdjust(
-				new Date( tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate() ) ), // clear time
-			isRTL = this._get( inst, "isRTL" ),
-			showButtonPanel = this._get( inst, "showButtonPanel" ),
-			hideIfNoPrevNext = this._get( inst, "hideIfNoPrevNext" ),
-			navigationAsDateFormat = this._get( inst, "navigationAsDateFormat" ),
-			numMonths = this._getNumberOfMonths( inst ),
-			showCurrentAtPos = this._get( inst, "showCurrentAtPos" ),
-			stepMonths = this._get( inst, "stepMonths" ),
-			isMultiMonth = ( numMonths[ 0 ] !== 1 || numMonths[ 1 ] !== 1 ),
-			currentDate = this._daylightSavingAdjust( ( !inst.currentDay ? new Date( 9999, 9, 9 ) :
-				new Date( inst.currentYear, inst.currentMonth, inst.currentDay ) ) ),
-			minDate = this._getMinMaxDate( inst, "min" ),
-			maxDate = this._getMinMaxDate( inst, "max" ),
-			drawMonth = inst.drawMonth - showCurrentAtPos,
-			drawYear = inst.drawYear;
-
-		if ( drawMonth < 0 ) {
-			drawMonth += 12;
-			drawYear--;
-		}
-		if ( maxDate ) {
-			maxDraw = this._daylightSavingAdjust( new Date( maxDate.getFullYear(),
-				maxDate.getMonth() - ( numMonths[ 0 ] * numMonths[ 1 ] ) + 1, maxDate.getDate() ) );
-			maxDraw = ( minDate && maxDraw < minDate ? minDate : maxDraw );
-			while ( this._daylightSavingAdjust( new Date( drawYear, drawMonth, 1 ) ) > maxDraw ) {
-				drawMonth--;
-				if ( drawMonth < 0 ) {
-					drawMonth = 11;
-					drawYear--;
-				}
-			}
-		}
-		inst.drawMonth = drawMonth;
-		inst.drawYear = drawYear;
-
-		prevText = this._get( inst, "prevText" );
-		prevText = ( !navigationAsDateFormat ? prevText : this.formatDate( prevText,
-			this._daylightSavingAdjust( new Date( drawYear, drawMonth - stepMonths, 1 ) ),
-			this._getFormatConfig( inst ) ) );
-
-		prev = ( this._canAdjustMonth( inst, -1, drawYear, drawMonth ) ?
-			"<a class='ui-datepicker-prev ui-corner-all' data-handler='prev' data-event='click'" +
-			" title='" + prevText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "e" : "w" ) + "'>" + prevText + "</span></a>" :
-			( hideIfNoPrevNext ? "" : "<a class='ui-datepicker-prev ui-corner-all ui-state-disabled' title='" + prevText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "e" : "w" ) + "'>" + prevText + "</span></a>" ) );
-
-		nextText = this._get( inst, "nextText" );
-		nextText = ( !navigationAsDateFormat ? nextText : this.formatDate( nextText,
-			this._daylightSavingAdjust( new Date( drawYear, drawMonth + stepMonths, 1 ) ),
-			this._getFormatConfig( inst ) ) );
-
-		next = ( this._canAdjustMonth( inst, +1, drawYear, drawMonth ) ?
-			"<a class='ui-datepicker-next ui-corner-all' data-handler='next' data-event='click'" +
-			" title='" + nextText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "w" : "e" ) + "'>" + nextText + "</span></a>" :
-			( hideIfNoPrevNext ? "" : "<a class='ui-datepicker-next ui-corner-all ui-state-disabled' title='" + nextText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "w" : "e" ) + "'>" + nextText + "</span></a>" ) );
-
-		currentText = this._get( inst, "currentText" );
-		gotoDate = ( this._get( inst, "gotoCurrent" ) && inst.currentDay ? currentDate : today );
-		currentText = ( !navigationAsDateFormat ? currentText :
-			this.formatDate( currentText, gotoDate, this._getFormatConfig( inst ) ) );
-
-		controls = ( !inst.inline ? "<button type='button' class='ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all' data-handler='hide' data-event='click'>" +
-			this._get( inst, "closeText" ) + "</button>" : "" );
-
-		buttonPanel = ( showButtonPanel ) ? "<div class='ui-datepicker-buttonpane ui-widget-content'>" + ( isRTL ? controls : "" ) +
-			( this._isInRange( inst, gotoDate ) ? "<button type='button' class='ui-datepicker-current ui-state-default ui-priority-secondary ui-corner-all' data-handler='today' data-event='click'" +
-			">" + currentText + "</button>" : "" ) + ( isRTL ? "" : controls ) + "</div>" : "";
-
-		firstDay = parseInt( this._get( inst, "firstDay" ), 10 );
-		firstDay = ( isNaN( firstDay ) ? 0 : firstDay );
-
-		showWeek = this._get( inst, "showWeek" );
-		dayNames = this._get( inst, "dayNames" );
-		dayNamesMin = this._get( inst, "dayNamesMin" );
-		monthNames = this._get( inst, "monthNames" );
-		monthNamesShort = this._get( inst, "monthNamesShort" );
-		beforeShowDay = this._get( inst, "beforeShowDay" );
-		showOtherMonths = this._get( inst, "showOtherMonths" );
-		selectOtherMonths = this._get( inst, "selectOtherMonths" );
-		defaultDate = this._getDefaultDate( inst );
-		html = "";
-
-		for ( row = 0; row < numMonths[ 0 ]; row++ ) {
-			group = "";
-			this.maxRows = 4;
-			for ( col = 0; col < numMonths[ 1 ]; col++ ) {
-				selectedDate = this._daylightSavingAdjust( new Date( drawYear, drawMonth, inst.selectedDay ) );
-				cornerClass = " ui-corner-all";
-				calender = "";
-				if ( isMultiMonth ) {
-					calender += "<div class='ui-datepicker-group";
-					if ( numMonths[ 1 ] > 1 ) {
-						switch ( col ) {
-							case 0: calender += " ui-datepicker-group-first";
-								cornerClass = " ui-corner-" + ( isRTL ? "right" : "left" ); break;
-							case numMonths[ 1 ] - 1: calender += " ui-datepicker-group-last";
-								cornerClass = " ui-corner-" + ( isRTL ? "left" : "right" ); break;
-							default: calender += " ui-datepicker-group-middle"; cornerClass = ""; break;
-						}
-					}
-					calender += "'>";
-				}
-				calender += "<div class='ui-datepicker-header ui-widget-header ui-helper-clearfix" + cornerClass + "'>" +
-					( /all|left/.test( cornerClass ) && row === 0 ? ( isRTL ? next : prev ) : "" ) +
-					( /all|right/.test( cornerClass ) && row === 0 ? ( isRTL ? prev : next ) : "" ) +
-					this._generateMonthYearHeader( inst, drawMonth, drawYear, minDate, maxDate,
-					row > 0 || col > 0, monthNames, monthNamesShort ) + // draw month headers
-					"</div><table class='ui-datepicker-calendar'><thead>" +
-					"<tr>";
-				thead = ( showWeek ? "<th class='ui-datepicker-week-col'>" + this._get( inst, "weekHeader" ) + "</th>" : "" );
-				for ( dow = 0; dow < 7; dow++ ) { // days of the week
-					day = ( dow + firstDay ) % 7;
-					thead += "<th scope='col'" + ( ( dow + firstDay + 6 ) % 7 >= 5 ? " class='ui-datepicker-week-end'" : "" ) + ">" +
-						"<span title='" + dayNames[ day ] + "'>" + dayNamesMin[ day ] + "</span></th>";
-				}
-				calender += thead + "</tr></thead><tbody>";
-				daysInMonth = this._getDaysInMonth( drawYear, drawMonth );
-				if ( drawYear === inst.selectedYear && drawMonth === inst.selectedMonth ) {
-					inst.selectedDay = Math.min( inst.selectedDay, daysInMonth );
-				}
-				leadDays = ( this._getFirstDayOfMonth( drawYear, drawMonth ) - firstDay + 7 ) % 7;
-				curRows = Math.ceil( ( leadDays + daysInMonth ) / 7 ); // calculate the number of rows to generate
-				numRows = ( isMultiMonth ? this.maxRows > curRows ? this.maxRows : curRows : curRows ); //If multiple months, use the higher number of rows (see #7043)
-				this.maxRows = numRows;
-				printDate = this._daylightSavingAdjust( new Date( drawYear, drawMonth, 1 - leadDays ) );
-				for ( dRow = 0; dRow < numRows; dRow++ ) { // create date picker rows
-					calender += "<tr>";
-					tbody = ( !showWeek ? "" : "<td class='ui-datepicker-week-col'>" +
-						this._get( inst, "calculateWeek" )( printDate ) + "</td>" );
-					for ( dow = 0; dow < 7; dow++ ) { // create date picker days
-						daySettings = ( beforeShowDay ?
-							beforeShowDay.apply( ( inst.input ? inst.input[ 0 ] : null ), [ printDate ] ) : [ true, "" ] );
-						otherMonth = ( printDate.getMonth() !== drawMonth );
-						unselectable = ( otherMonth && !selectOtherMonths ) || !daySettings[ 0 ] ||
-							( minDate && printDate < minDate ) || ( maxDate && printDate > maxDate );
-						tbody += "<td class='" +
-							( ( dow + firstDay + 6 ) % 7 >= 5 ? " ui-datepicker-week-end" : "" ) + // highlight weekends
-							( otherMonth ? " ui-datepicker-other-month" : "" ) + // highlight days from other months
-							( ( printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent ) || // user pressed key
-							( defaultDate.getTime() === printDate.getTime() && defaultDate.getTime() === selectedDate.getTime() ) ?
-
-							// or defaultDate is current printedDate and defaultDate is selectedDate
-							" " + this._dayOverClass : "" ) + // highlight selected day
-							( unselectable ? " " + this._unselectableClass + " ui-state-disabled" : "" ) +  // highlight unselectable days
-							( otherMonth && !showOtherMonths ? "" : " " + daySettings[ 1 ] + // highlight custom dates
-							( printDate.getTime() === currentDate.getTime() ? " " + this._currentClass : "" ) + // highlight selected day
-							( printDate.getTime() === today.getTime() ? " ui-datepicker-today" : "" ) ) + "'" + // highlight today (if different)
-							( ( !otherMonth || showOtherMonths ) && daySettings[ 2 ] ? " title='" + daySettings[ 2 ].replace( /'/g, "&#39;" ) + "'" : "" ) + // cell title
-							( unselectable ? "" : " data-handler='selectDay' data-event='click' data-month='" + printDate.getMonth() + "' data-year='" + printDate.getFullYear() + "'" ) + ">" + // actions
-							( otherMonth && !showOtherMonths ? "&#xa0;" : // display for other months
-							( unselectable ? "<span class='ui-state-default'>" + printDate.getDate() + "</span>" : "<a class='ui-state-default" +
-							( printDate.getTime() === today.getTime() ? " ui-state-highlight" : "" ) +
-							( printDate.getTime() === currentDate.getTime() ? " ui-state-active" : "" ) + // highlight selected day
-							( otherMonth ? " ui-priority-secondary" : "" ) + // distinguish dates from other months
-							"' href='#'>" + printDate.getDate() + "</a>" ) ) + "</td>"; // display selectable date
-						printDate.setDate( printDate.getDate() + 1 );
-						printDate = this._daylightSavingAdjust( printDate );
-					}
-					calender += tbody + "</tr>";
-				}
-				drawMonth++;
-				if ( drawMonth > 11 ) {
-					drawMonth = 0;
-					drawYear++;
-				}
-				calender += "</tbody></table>" + ( isMultiMonth ? "</div>" +
-							( ( numMonths[ 0 ] > 0 && col === numMonths[ 1 ] - 1 ) ? "<div class='ui-datepicker-row-break'></div>" : "" ) : "" );
-				group += calender;
-			}
-			html += group;
-		}
-		html += buttonPanel;
-		inst._keyEvent = false;
-		return html;
-	},
-
-	/* Generate the month and year header. */
-	_generateMonthYearHeader: function( inst, drawMonth, drawYear, minDate, maxDate,
-			secondary, monthNames, monthNamesShort ) {
-
-		var inMinYear, inMaxYear, month, years, thisYear, determineYear, year, endYear,
-			changeMonth = this._get( inst, "changeMonth" ),
-			changeYear = this._get( inst, "changeYear" ),
-			showMonthAfterYear = this._get( inst, "showMonthAfterYear" ),
-			html = "<div class='ui-datepicker-title'>",
-			monthHtml = "";
-
-		// Month selection
-		if ( secondary || !changeMonth ) {
-			monthHtml += "<span class='ui-datepicker-month'>" + monthNames[ drawMonth ] + "</span>";
-		} else {
-			inMinYear = ( minDate && minDate.getFullYear() === drawYear );
-			inMaxYear = ( maxDate && maxDate.getFullYear() === drawYear );
-			monthHtml += "<select class='ui-datepicker-month' data-handler='selectMonth' data-event='change'>";
-			for ( month = 0; month < 12; month++ ) {
-				if ( ( !inMinYear || month >= minDate.getMonth() ) && ( !inMaxYear || month <= maxDate.getMonth() ) ) {
-					monthHtml += "<option value='" + month + "'" +
-						( month === drawMonth ? " selected='selected'" : "" ) +
-						">" + monthNamesShort[ month ] + "</option>";
-				}
-			}
-			monthHtml += "</select>";
-		}
-
-		if ( !showMonthAfterYear ) {
-			html += monthHtml + ( secondary || !( changeMonth && changeYear ) ? "&#xa0;" : "" );
-		}
-
-		// Year selection
-		if ( !inst.yearshtml ) {
-			inst.yearshtml = "";
-			if ( secondary || !changeYear ) {
-				html += "<span class='ui-datepicker-year'>" + drawYear + "</span>";
-			} else {
-
-				// determine range of years to display
-				years = this._get( inst, "yearRange" ).split( ":" );
-				thisYear = new Date().getFullYear();
-				determineYear = function( value ) {
-					var year = ( value.match( /c[+\-].*/ ) ? drawYear + parseInt( value.substring( 1 ), 10 ) :
-						( value.match( /[+\-].*/ ) ? thisYear + parseInt( value, 10 ) :
-						parseInt( value, 10 ) ) );
-					return ( isNaN( year ) ? thisYear : year );
-				};
-				year = determineYear( years[ 0 ] );
-				endYear = Math.max( year, determineYear( years[ 1 ] || "" ) );
-				year = ( minDate ? Math.max( year, minDate.getFullYear() ) : year );
-				endYear = ( maxDate ? Math.min( endYear, maxDate.getFullYear() ) : endYear );
-				inst.yearshtml += "<select class='ui-datepicker-year' data-handler='selectYear' data-event='change'>";
-				for ( ; year <= endYear; year++ ) {
-					inst.yearshtml += "<option value='" + year + "'" +
-						( year === drawYear ? " selected='selected'" : "" ) +
-						">" + year + "</option>";
-				}
-				inst.yearshtml += "</select>";
-
-				html += inst.yearshtml;
-				inst.yearshtml = null;
-			}
-		}
-
-		html += this._get( inst, "yearSuffix" );
-		if ( showMonthAfterYear ) {
-			html += ( secondary || !( changeMonth && changeYear ) ? "&#xa0;" : "" ) + monthHtml;
-		}
-		html += "</div>"; // Close datepicker_header
-		return html;
-	},
-
-	/* Adjust one of the date sub-fields. */
-	_adjustInstDate: function( inst, offset, period ) {
-		var year = inst.selectedYear + ( period === "Y" ? offset : 0 ),
-			month = inst.selectedMonth + ( period === "M" ? offset : 0 ),
-			day = Math.min( inst.selectedDay, this._getDaysInMonth( year, month ) ) + ( period === "D" ? offset : 0 ),
-			date = this._restrictMinMax( inst, this._daylightSavingAdjust( new Date( year, month, day ) ) );
-
-		inst.selectedDay = date.getDate();
-		inst.drawMonth = inst.selectedMonth = date.getMonth();
-		inst.drawYear = inst.selectedYear = date.getFullYear();
-		if ( period === "M" || period === "Y" ) {
-			this._notifyChange( inst );
-		}
-	},
-
-	/* Ensure a date is within any min/max bounds. */
-	_restrictMinMax: function( inst, date ) {
-		var minDate = this._getMinMaxDate( inst, "min" ),
-			maxDate = this._getMinMaxDate( inst, "max" ),
-			newDate = ( minDate && date < minDate ? minDate : date );
-		return ( maxDate && newDate > maxDate ? maxDate : newDate );
-	},
-
-	/* Notify change of month/year. */
-	_notifyChange: function( inst ) {
-		var onChange = this._get( inst, "onChangeMonthYear" );
-		if ( onChange ) {
-			onChange.apply( ( inst.input ? inst.input[ 0 ] : null ),
-				[ inst.selectedYear, inst.selectedMonth + 1, inst ] );
-		}
-	},
-
-	/* Determine the number of months to show. */
-	_getNumberOfMonths: function( inst ) {
-		var numMonths = this._get( inst, "numberOfMonths" );
-		return ( numMonths == null ? [ 1, 1 ] : ( typeof numMonths === "number" ? [ 1, numMonths ] : numMonths ) );
-	},
-
-	/* Determine the current maximum date - ensure no time components are set. */
-	_getMinMaxDate: function( inst, minMax ) {
-		return this._determineDate( inst, this._get( inst, minMax + "Date" ), null );
-	},
-
-	/* Find the number of days in a given month. */
-	_getDaysInMonth: function( year, month ) {
-		return 32 - this._daylightSavingAdjust( new Date( year, month, 32 ) ).getDate();
-	},
-
-	/* Find the day of the week of the first of a month. */
-	_getFirstDayOfMonth: function( year, month ) {
-		return new Date( year, month, 1 ).getDay();
-	},
-
-	/* Determines if we should allow a "next/prev" month display change. */
-	_canAdjustMonth: function( inst, offset, curYear, curMonth ) {
-		var numMonths = this._getNumberOfMonths( inst ),
-			date = this._daylightSavingAdjust( new Date( curYear,
-			curMonth + ( offset < 0 ? offset : numMonths[ 0 ] * numMonths[ 1 ] ), 1 ) );
-
-		if ( offset < 0 ) {
-			date.setDate( this._getDaysInMonth( date.getFullYear(), date.getMonth() ) );
-		}
-		return this._isInRange( inst, date );
-	},
-
-	/* Is the given date in the accepted range? */
-	_isInRange: function( inst, date ) {
-		var yearSplit, currentYear,
-			minDate = this._getMinMaxDate( inst, "min" ),
-			maxDate = this._getMinMaxDate( inst, "max" ),
-			minYear = null,
-			maxYear = null,
-			years = this._get( inst, "yearRange" );
-			if ( years ) {
-				yearSplit = years.split( ":" );
-				currentYear = new Date().getFullYear();
-				minYear = parseInt( yearSplit[ 0 ], 10 );
-				maxYear = parseInt( yearSplit[ 1 ], 10 );
-				if ( yearSplit[ 0 ].match( /[+\-].*/ ) ) {
-					minYear += currentYear;
-				}
-				if ( yearSplit[ 1 ].match( /[+\-].*/ ) ) {
-					maxYear += currentYear;
-				}
-			}
-
-		return ( ( !minDate || date.getTime() >= minDate.getTime() ) &&
-			( !maxDate || date.getTime() <= maxDate.getTime() ) &&
-			( !minYear || date.getFullYear() >= minYear ) &&
-			( !maxYear || date.getFullYear() <= maxYear ) );
-	},
-
-	/* Provide the configuration settings for formatting/parsing. */
-	_getFormatConfig: function( inst ) {
-		var shortYearCutoff = this._get( inst, "shortYearCutoff" );
-		shortYearCutoff = ( typeof shortYearCutoff !== "string" ? shortYearCutoff :
-			new Date().getFullYear() % 100 + parseInt( shortYearCutoff, 10 ) );
-		return { shortYearCutoff: shortYearCutoff,
-			dayNamesShort: this._get( inst, "dayNamesShort" ), dayNames: this._get( inst, "dayNames" ),
-			monthNamesShort: this._get( inst, "monthNamesShort" ), monthNames: this._get( inst, "monthNames" ) };
-	},
-
-	/* Format the given date for display. */
-	_formatDate: function( inst, day, month, year ) {
-		if ( !day ) {
-			inst.currentDay = inst.selectedDay;
-			inst.currentMonth = inst.selectedMonth;
-			inst.currentYear = inst.selectedYear;
-		}
-		var date = ( day ? ( typeof day === "object" ? day :
-			this._daylightSavingAdjust( new Date( year, month, day ) ) ) :
-			this._daylightSavingAdjust( new Date( inst.currentYear, inst.currentMonth, inst.currentDay ) ) );
-		return this.formatDate( this._get( inst, "dateFormat" ), date, this._getFormatConfig( inst ) );
-	}
-} );
-
-/*
- * Bind hover events for datepicker elements.
- * Done via delegate so the binding only occurs once in the lifetime of the parent div.
- * Global datepicker_instActive, set by _updateDatepicker allows the handlers to find their way back to the active picker.
- */
-function datepicker_bindHover( dpDiv ) {
-	var selector = "button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a";
-	return dpDiv.on( "mouseout", selector, function() {
-			$( this ).removeClass( "ui-state-hover" );
-			if ( this.className.indexOf( "ui-datepicker-prev" ) !== -1 ) {
-				$( this ).removeClass( "ui-datepicker-prev-hover" );
-			}
-			if ( this.className.indexOf( "ui-datepicker-next" ) !== -1 ) {
-				$( this ).removeClass( "ui-datepicker-next-hover" );
-			}
-		} )
-		.on( "mouseover", selector, datepicker_handleMouseover );
-}
-
-function datepicker_handleMouseover() {
-	if ( !$.datepicker._isDisabledDatepicker( datepicker_instActive.inline ? datepicker_instActive.dpDiv.parent()[ 0 ] : datepicker_instActive.input[ 0 ] ) ) {
-		$( this ).parents( ".ui-datepicker-calendar" ).find( "a" ).removeClass( "ui-state-hover" );
-		$( this ).addClass( "ui-state-hover" );
-		if ( this.className.indexOf( "ui-datepicker-prev" ) !== -1 ) {
-			$( this ).addClass( "ui-datepicker-prev-hover" );
-		}
-		if ( this.className.indexOf( "ui-datepicker-next" ) !== -1 ) {
-			$( this ).addClass( "ui-datepicker-next-hover" );
-		}
-	}
-}
-
-/* jQuery extend now ignores nulls! */
-function datepicker_extendRemove( target, props ) {
-	$.extend( target, props );
-	for ( var name in props ) {
-		if ( props[ name ] == null ) {
-			target[ name ] = props[ name ];
-		}
-	}
-	return target;
-}
-
-/* Invoke the datepicker functionality.
-   @param  options  string - a command, optionally followed by additional parameters or
-					Object - settings for attaching new datepicker functionality
-   @return  jQuery object */
-$.fn.datepicker = function( options ) {
-
-	/* Verify an empty collection wasn't passed - Fixes #6976 */
-	if ( !this.length ) {
-		return this;
-	}
-
-	/* Initialise the date picker. */
-	if ( !$.datepicker.initialized ) {
-		$( document ).on( "mousedown", $.datepicker._checkExternalClick );
-		$.datepicker.initialized = true;
-	}
-
-	/* Append datepicker main container to body if not exist. */
-	if ( $( "#" + $.datepicker._mainDivId ).length === 0 ) {
-		$( "body" ).append( $.datepicker.dpDiv );
-	}
-
-	var otherArgs = Array.prototype.slice.call( arguments, 1 );
-	if ( typeof options === "string" && ( options === "isDisabled" || options === "getDate" || options === "widget" ) ) {
-		return $.datepicker[ "_" + options + "Datepicker" ].
-			apply( $.datepicker, [ this[ 0 ] ].concat( otherArgs ) );
-	}
-	if ( options === "option" && arguments.length === 2 && typeof arguments[ 1 ] === "string" ) {
-		return $.datepicker[ "_" + options + "Datepicker" ].
-			apply( $.datepicker, [ this[ 0 ] ].concat( otherArgs ) );
-	}
-	return this.each( function() {
-		typeof options === "string" ?
-			$.datepicker[ "_" + options + "Datepicker" ].
-				apply( $.datepicker, [ this ].concat( otherArgs ) ) :
-			$.datepicker._attachDatepicker( this, options );
-	} );
-};
-
-$.datepicker = new Datepicker(); // singleton instance
-$.datepicker.initialized = false;
-$.datepicker.uuid = new Date().getTime();
-$.datepicker.version = "1.12.1";
-
-return $.datepicker;
-
-} ) );
-
-
-/***/ }),
-
-/***/ 235:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jQuery UI Keycode 1.12.1
- * http://jqueryui.com
- *
- * Copyright jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- */
-
-//>>label: Keycode
-//>>group: Core
-//>>description: Provide keycodes as keynames
-//>>docs: http://api.jqueryui.com/jQuery.ui.keyCode/
-
-( function( factory ) {
-	if ( true ) {
-
-		// AMD. Register as an anonymous module.
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(0), __webpack_require__(216) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {
-
-		// Browser globals
-		factory( jQuery );
-	}
-} ( function( $ ) {
-return $.ui.keyCode = {
-	BACKSPACE: 8,
-	COMMA: 188,
-	DELETE: 46,
-	DOWN: 40,
-	END: 35,
-	ENTER: 13,
-	ESCAPE: 27,
-	HOME: 36,
-	LEFT: 37,
-	PAGE_DOWN: 34,
-	PAGE_UP: 33,
-	PERIOD: 190,
-	RIGHT: 39,
-	SPACE: 32,
-	TAB: 9,
-	UP: 38
-};
-
-} ) );
-
-
-/***/ }),
-
-/***/ 236:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(237)
-/* script */
-var __vue_script__ = __webpack_require__(238)
-/* template */
-var __vue_template__ = __webpack_require__(239)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/DatePicker.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5b6a2d5a", Component.options)
-  } else {
-    hotAPI.reload("data-v-5b6a2d5a", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 237:
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-
-/***/ 238:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($, jQuery) {//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    methods: {
-        updateValue: function updateValue(value) {
-            // Atttach validation + sanitization here.
-            this.$emit('input', value);
-        }
-    },
-    props: {
-        'value': { default: '' },
-        'dateFormat': { default: 'yy-mm-dd' },
-        'changeMonth': { default: true },
-        'changeYear': { default: true }
-
-    },
-    mounted: function mounted() {
-        $(this.$el).datepicker({
-            showButtonPanel: true,
-            changeMonth: this.changeMonth,
-            changeYear: this.changeYear,
-            dateFormat: this.dateFormat,
-            onSelect: function onSelect(date) {
-                this.$emit('update-date', date);
-            }
-        });
-        +function ($, el) {
-            var self = this;
-        }(jQuery, this);
-    }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
-
-/***/ }),
-
-/***/ 239:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("input", {
-    ref: "input",
-    attrs: { type: "text" },
-    domProps: { value: _vm.value },
-    on: {
-      input: function($event) {
-        _vm.updateValue($event.target.value)
-      }
-    }
-  })
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5b6a2d5a", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 3:
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-
-/***/ 35:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/**
-* jQuery asAccordion v0.2.2
-* https://github.com/amazingSurge/jquery-asAccordion
-*
-* Copyright (c) amazingSurge
-* Released under the LGPL-3.0 license
-*/
-
-
-var DEFAULTS = {
-  namespace: 'accordion',
-  skin: null,
-  mobileBreakpoint: 768,
-  initialIndex: 0,
-  easing: 'ease-in-out',
-  speed: 500,
-  direction: 'vertical',
-  event: 'click',
-  multiple: false
-};
-
-function transition() {
-  let e;
-  let end;
-  let prefix = '';
-  let supported = false;
-  const el = document.createElement("fakeelement");
-
-  const transitions = {
-    "WebkitTransition": "webkitTransitionEnd",
-    "MozTransition": "transitionend",
-    "OTransition": "oTransitionend",
-    "transition": "transitionend"
-  };
-
-  for (e in transitions) {
-    if (el.style[e] !== undefined) {
-      end = transitions[e];
-      supported = true;
-      break;
-    }
-  }
-  if (/(WebKit)/i.test(window.navigator.userAgent)) {
-    prefix = '-webkit-';
-  }
-  return {
-    prefix,
-    end,
-    supported
-  };
-}
-
-function throttle(func, wait) {
-  const _now = Date.now || function() {
-    return new Date().getTime();
-  };
-
-  let timeout;
-  let context;
-  let args;
-  let result;
-  let previous = 0;
-  let later = function() {
-    previous = _now();
-    timeout = null;
-    result = func.apply(context, args);
-    if (!timeout) {
-      context = args = null;
-    }
-  };
-
-  return (...params) => {
-    /*eslint consistent-this: "off"*/
-    let now = _now();
-    let remaining = wait - (now - previous);
-    context = this;
-    args = params;
-    if (remaining <= 0 || remaining > wait) {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      previous = now;
-      result = func.apply(context, args);
-      if (!timeout) {
-        context = args = null;
-      }
-    } else if (!timeout) {
-      timeout = setTimeout(later, remaining);
-    }
-    return result;
-  };
-}
-
-const NAMESPACE$1 = 'asAccordion';
-
-/**
- * Plugin constructor
- **/
-class asAccordion {
-  constructor(element, options) {
-    this.element = element;
-    this.$element = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(element);
-
-    this.options = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({}, DEFAULTS, options, this.$element.data());
-
-    this.namespace = this.options.namespace;
-    this.initialIndex = this.options.initialIndex;
-    this.initialized = false;
-    this.disabled = false;
-    this.current = null;
-
-    this.classes = {
-      // status
-      skin: `${this.namespace}--${this.options.skin}`,
-      direction: `${this.namespace}--${this.options.direction}`,
-      active: `${this.namespace}--active`,
-      disabled: `${this.namespace}--disabled`
-    };
-
-    this.$panel = this.$element.children('li');
-    this.$heading = this.$panel.children('span');
-    this.$expander = this.$panel.children('div');
-
-    this.size = this.$panel.length;
-
-    this.$element.addClass(this.classes.direction);
-    this.$panel.addClass(`${this.namespace}__panel`);
-    this.$heading.addClass(`${this.namespace}__heading`);
-    this.$expander.addClass(`${this.namespace}__expander`);
-
-    if (this.options.skin) {
-      this.$element.addClass(this.classes.skin);
-    }
-
-    this.transition = transition();
-
-    this._trigger('init');
-    this.init();
-  }
-
-  init() {
-    const style = {};
-
-    this.distance = this.$heading.outerHeight();
-    if (this.options.direction === 'vertical') {
-      this.animateProperty = 'height';
-    } else {
-      this.animateProperty = 'width';
-    }
-
-    style[this.animateProperty] = this.distance;
-
-    this.$panel.css(style);
-
-    this.$heading.on(this.options.event, e => {
-      if (this.disabled) {
-        return false;
-      }
-
-      const index = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(e.currentTarget).parent().index();
-      this.set(index);
-      return false;
-    });
-
-    this.set(this.initialIndex);
-    this.current = this.initialIndex;
-
-    this.initialized = true;
-
-    this.responsiveCheck();
-
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(window).on('resize', throttle(() => {
-      this.responsiveCheck();
-    }, 250));
-
-    this._trigger('ready');
-  }
-
-  responsiveCheck() {
-    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default()('html, body').outerWidth() <= this.options.mobileBreakpoint && !this.responsive) {
-      if (this.options.direction === 'vertical') {
-        return;
-      }
-      this.responsive = true;
-
-      this.resize();
-    } else {
-      if (typeof this.defaultDirection === 'undefined' || this.defaultDirection === 'vertical') {
-        return;
-      }
-      this.responsive = false;
-
-      this.resize();
-    }
-  }
-
-  resize() {
-    const style = {};
-    this.defaultDirection = this.options.direction;
-    if (this.options.direction === 'vertical') {
-      this.options.direction = 'horizontal';
-      this.animateProperty = 'width';
-      this.$panel.css('height', '100%');
-    }else {
-      this.options.direction = 'vertical';
-      this.animateProperty = 'height';
-      this.$panel.css('width', 'auto');
-    }
-
-    this.$element.removeClass(this.classes.direction);
-    this.classes.direction = `${this.namespace}--${this.options.direction}`;
-    this.$element.addClass(this.classes.direction);
-
-    style[this.animateProperty] = this.distance;
-    this.$panel.css(style).removeClass(this.classes.active);
-
-    if (this.current.length >= 0 || this.current >= 0) {
-      const index = this.current;
-      this.current = this.current.length >= 0? [] : null;
-      this.set(index);
-    }
-  }
-
-  set(index) {
-    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(index)) {
-      for(let i of index) {
-        this.set(i);
-      }
-    } else {
-      if (index >= this.size || index < 0) {
-        return;
-      }
-
-      const that = this;
-      const $panel = this.$panel.eq(index);
-      const $oldPanel = this.$element.find(`.${this.classes.active}`);
-      let distance;
-      let duration;
-      const style = {};
-      const oldStyle = {};
-
-      const moveEnd = () => {
-        that.$element.trigger('moveEnd');
-      };
-
-      if (typeof duration === 'undefined') {
-        duration = this.options.speed;
-      }
-      duration = Math.ceil(duration);
-
-      if ($panel.hasClass(this.classes.active)) {
-        distance = this.distance;
-        $panel.removeClass(this.classes.active);
-
-        if (this.options.multiple) {
-          for (var key in this.current) {
-            if (this.current[key] === index) {
-              
-            } else {
-              continue;
-            }
-            this.current.splice(key, 1);
-          }
-        } else {
-          this.current = null;
-        }
-      } else {
-        if (this.options.direction === 'vertical') {
-          distance = $panel.find('.' + this.namespace + '__expander').outerHeight() + this.distance;
-        } else {
-          distance = $panel.find('.' + this.namespace + '__expander').outerWidth() + this.distance;
-        }
-
-        if (this.options.multiple && __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(this.current)) {
-          this.current.push(index);
-        } else {
-          this.current = index;
-        }
-
-        if (this.options.multiple) {
-          $panel.addClass(this.classes.active);
-        } else {
-          oldStyle[this.animateProperty] = this.distance;  // used to remove the original distance
-          this.animate($oldPanel, oldStyle, duration, this.options.easing, moveEnd);
-
-          $panel.addClass(this.classes.active).siblings().removeClass(this.classes.active);
-        }
-      }
-
-      style[this.animateProperty] = distance;
-
-      this.animate($panel, style, duration, this.options.easing, moveEnd);
-    }
-  }
-
-  animate($el, properties, duration, easing, callback) {
-    const that = this;
-
-    if(this.transition.supported){
-      window.setTimeout(() => {
-        that.insertRule(`.transition_${easing} {${that.transition.prefix}transition: all ${duration}ms ${easing} 0s;}`);
-
-        $el.addClass(`transition_${easing}`).one(that.transition.end, function() {
-          $el.removeClass(`transition_${easing}`);
-
-          callback.call(this);
-        });
-        $el.css(properties);
-      }, 10);
-    } else {
-      $el.animate(properties, duration, easing, callback);
-    }
-  }
-
-  insertRule(rule) {
-    if (this.rules && this.rules[rule]) {
-      return;
-    } else if (this.rules === undefined) {
-      this.rules = {};
-    } else {
-      this.rules[rule] = true;
-    }
-
-    if (document.styleSheets && document.styleSheets.length) {
-      document.styleSheets[0].insertRule(rule, 0);
-    } else {
-      const style = document.createElement('style');
-      style.innerHTML = rule;
-      document.head.appendChild(style);
-    }
-  }
-
-  _trigger(eventType, ...params) {
-    let data = [this].concat(params);
-
-    // event
-    this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
-
-    // callback
-    eventType = eventType.replace(/\b\w+\b/g, (word) => {
-      return word.substring(0, 1).toUpperCase() + word.substring(1);
-    });
-    let onFunction = `on${eventType}`;
-
-    if (typeof this.options[onFunction] === 'function') {
-      this.options[onFunction].apply(this, params);
-    }
-  }
-
-  enable() {
-    this.disabled = false;
-    this.$element.removeClass(this.classes.disabled);
-    this._trigger('enable');
-  }
-
-  disable() {
-    this.disabled = true;
-    this.$element.addClass(this.classes.disabled);
-    this._trigger('disable');
-  }
-
-  destroy() {
-    this.$element.data(NAMESPACE$1, null);
-    this.$element.remove();
-    this._trigger('destroy');
-  }
-
-  static setDefaults(options) {
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend(DEFAULTS, __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isPlainObject(options) && options);
-  }
-}
-
-var info = {
-  version:'0.2.2'
-};
-
-const NAMESPACE = 'asAccordion';
-const OtherAsAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion;
-
-const jQueryAsAccordion = function(options, ...args) {
-  if (typeof options === 'string') {
-    const method = options;
-
-    if (/^_/.test(method)) {
-      return false;
-    } else if ((/^(get)/.test(method))) {
-      const instance = this.first().data(NAMESPACE);
-      if (instance && typeof instance[method] === 'function') {
-        return instance[method](...args);
-      }
-    } else {
-      return this.each(function() {
-        const instance = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.data(this, NAMESPACE);
-        if (instance && typeof instance[method] === 'function') {
-          instance[method](...args);
-        }
-      });
-    }
-  }
-
-  return this.each(function() {
-    if (!__WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE)) {
-      __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE, new asAccordion(this, options));
-    }
-  });
-};
-
-__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = jQueryAsAccordion;
-
-__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({
-  setDefaults: asAccordion.setDefaults,
-  noConflict: function() {
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = OtherAsAccordion;
-    return jQueryAsAccordion;
-  }
-}, info);
-
-
-/***/ }),
-
-/***/ 36:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
-* Parsley.js
-* Version 2.8.1 - built Sat, Feb 3rd 2018, 2:27 pm
-* http://parsleyjs.org
-* Guillaume Potier - <guillaume@wisembly.com>
-* Marc-Andre Lafortune - <petroselinum@marc-andre.ca>
-* MIT Licensed
-*/
-
-// The source code below is generated by babel as
-// Parsley is written in ECMAScript 6
-//
-var _slice = Array.prototype.slice;
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
-(function (global, factory) {
-   true ? module.exports = factory(__webpack_require__(0)) : typeof define === 'function' && define.amd ? define(['jquery'], factory) : global.parsley = factory(global.jQuery);
-})(this, function ($) {
-  'use strict';
-
-  var globalID = 1;
-  var pastWarnings = {};
-
-  var Utils = {
-    // Parsley DOM-API
-    // returns object from dom attributes and values
-    attr: function attr(element, namespace, obj) {
-      var i;
-      var attribute;
-      var attributes;
-      var regex = new RegExp('^' + namespace, 'i');
-
-      if ('undefined' === typeof obj) obj = {};else {
-        // Clear all own properties. This won't affect prototype's values
-        for (i in obj) {
-          if (obj.hasOwnProperty(i)) delete obj[i];
-        }
-      }
-
-      if (!element) return obj;
-
-      attributes = element.attributes;
-      for (i = attributes.length; i--;) {
-        attribute = attributes[i];
-
-        if (attribute && attribute.specified && regex.test(attribute.name)) {
-          obj[this.camelize(attribute.name.slice(namespace.length))] = this.deserializeValue(attribute.value);
-        }
-      }
-
-      return obj;
-    },
-
-    checkAttr: function checkAttr(element, namespace, _checkAttr) {
-      return element.hasAttribute(namespace + _checkAttr);
-    },
-
-    setAttr: function setAttr(element, namespace, attr, value) {
-      element.setAttribute(this.dasherize(namespace + attr), String(value));
-    },
-
-    getType: function getType(element) {
-      return element.getAttribute('type') || 'text';
-    },
-
-    generateID: function generateID() {
-      return '' + globalID++;
-    },
-
-    /** Third party functions **/
-    deserializeValue: function deserializeValue(value) {
-      var num;
-
-      try {
-        return value ? value == "true" || (value == "false" ? false : value == "null" ? null : !isNaN(num = Number(value)) ? num : /^[\[\{]/.test(value) ? JSON.parse(value) : value) : value;
-      } catch (e) {
-        return value;
-      }
-    },
-
-    // Zepto camelize function
-    camelize: function camelize(str) {
-      return str.replace(/-+(.)?/g, function (match, chr) {
-        return chr ? chr.toUpperCase() : '';
-      });
-    },
-
-    // Zepto dasherize function
-    dasherize: function dasherize(str) {
-      return str.replace(/::/g, '/').replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2').replace(/([a-z\d])([A-Z])/g, '$1_$2').replace(/_/g, '-').toLowerCase();
-    },
-
-    warn: function warn() {
-      var _window$console;
-
-      if (window.console && 'function' === typeof window.console.warn) (_window$console = window.console).warn.apply(_window$console, arguments);
-    },
-
-    warnOnce: function warnOnce(msg) {
-      if (!pastWarnings[msg]) {
-        pastWarnings[msg] = true;
-        this.warn.apply(this, arguments);
-      }
-    },
-
-    _resetWarnings: function _resetWarnings() {
-      pastWarnings = {};
-    },
-
-    trimString: function trimString(string) {
-      return string.replace(/^\s+|\s+$/g, '');
-    },
-
-    parse: {
-      date: function date(string) {
-        var parsed = string.match(/^(\d{4,})-(\d\d)-(\d\d)$/);
-        if (!parsed) return null;
-
-        var _parsed$map = parsed.map(function (x) {
-          return parseInt(x, 10);
-        });
-
-        var _parsed$map2 = _slicedToArray(_parsed$map, 4);
-
-        var _ = _parsed$map2[0];
-        var year = _parsed$map2[1];
-        var month = _parsed$map2[2];
-        var day = _parsed$map2[3];
-
-        var date = new Date(year, month - 1, day);
-        if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) return null;
-        return date;
-      },
-      string: function string(_string) {
-        return _string;
-      },
-      integer: function integer(string) {
-        if (isNaN(string)) return null;
-        return parseInt(string, 10);
-      },
-      number: function number(string) {
-        if (isNaN(string)) throw null;
-        return parseFloat(string);
-      },
-      'boolean': function _boolean(string) {
-        return !/^\s*false\s*$/i.test(string);
-      },
-      object: function object(string) {
-        return Utils.deserializeValue(string);
-      },
-      regexp: function regexp(_regexp) {
-        var flags = '';
-
-        // Test if RegExp is literal, if not, nothing to be done, otherwise, we need to isolate flags and pattern
-        if (/^\/.*\/(?:[gimy]*)$/.test(_regexp)) {
-          // Replace the regexp literal string with the first match group: ([gimy]*)
-          // If no flag is present, this will be a blank string
-          flags = _regexp.replace(/.*\/([gimy]*)$/, '$1');
-          // Again, replace the regexp literal string with the first match group:
-          // everything excluding the opening and closing slashes and the flags
-          _regexp = _regexp.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
-        } else {
-          // Anchor regexp:
-          _regexp = '^' + _regexp + '$';
-        }
-        return new RegExp(_regexp, flags);
-      }
-    },
-
-    parseRequirement: function parseRequirement(requirementType, string) {
-      var converter = this.parse[requirementType || 'string'];
-      if (!converter) throw 'Unknown requirement specification: "' + requirementType + '"';
-      var converted = converter(string);
-      if (converted === null) throw 'Requirement is not a ' + requirementType + ': "' + string + '"';
-      return converted;
-    },
-
-    namespaceEvents: function namespaceEvents(events, namespace) {
-      events = this.trimString(events || '').split(/\s+/);
-      if (!events[0]) return '';
-      return $.map(events, function (evt) {
-        return evt + '.' + namespace;
-      }).join(' ');
-    },
-
-    difference: function difference(array, remove) {
-      // This is O(N^2), should be optimized
-      var result = [];
-      $.each(array, function (_, elem) {
-        if (remove.indexOf(elem) == -1) result.push(elem);
-      });
-      return result;
-    },
-
-    // Alter-ego to native Promise.all, but for jQuery
-    all: function all(promises) {
-      // jQuery treats $.when() and $.when(singlePromise) differently; let's avoid that and add spurious elements
-      return $.when.apply($, _toConsumableArray(promises).concat([42, 42]));
-    },
-
-    // Object.create polyfill, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
-    objectCreate: Object.create || (function () {
-      var Object = function Object() {};
-      return function (prototype) {
-        if (arguments.length > 1) {
-          throw Error('Second argument not supported');
-        }
-        if (typeof prototype != 'object') {
-          throw TypeError('Argument must be an object');
-        }
-        Object.prototype = prototype;
-        var result = new Object();
-        Object.prototype = null;
-        return result;
-      };
-    })(),
-
-    _SubmitSelector: 'input[type="submit"], button:submit'
-  };
-
-  // All these options could be overriden and specified directly in DOM using
-  // `data-parsley-` default DOM-API
-  // eg: `inputs` can be set in DOM using `data-parsley-inputs="input, textarea"`
-  // eg: `data-parsley-stop-on-first-failing-constraint="false"`
-
-  var Defaults = {
-    // ### General
-
-    // Default data-namespace for DOM API
-    namespace: 'data-parsley-',
-
-    // Supported inputs by default
-    inputs: 'input, textarea, select',
-
-    // Excluded inputs by default
-    excluded: 'input[type=button], input[type=submit], input[type=reset], input[type=hidden]',
-
-    // Stop validating field on highest priority failing constraint
-    priorityEnabled: true,
-
-    // ### Field only
-
-    // identifier used to group together inputs (e.g. radio buttons...)
-    multiple: null,
-
-    // identifier (or array of identifiers) used to validate only a select group of inputs
-    group: null,
-
-    // ### UI
-    // Enable\Disable error messages
-    uiEnabled: true,
-
-    // Key events threshold before validation
-    validationThreshold: 3,
-
-    // Focused field on form validation error. 'first'|'last'|'none'
-    focus: 'first',
-
-    // event(s) that will trigger validation before first failure. eg: `input`...
-    trigger: false,
-
-    // event(s) that will trigger validation after first failure.
-    triggerAfterFailure: 'input',
-
-    // Class that would be added on every failing validation Parsley field
-    errorClass: 'parsley-error',
-
-    // Same for success validation
-    successClass: 'parsley-success',
-
-    // Return the `$element` that will receive these above success or error classes
-    // Could also be (and given directly from DOM) a valid selector like `'#div'`
-    classHandler: function classHandler(Field) {},
-
-    // Return the `$element` where errors will be appended
-    // Could also be (and given directly from DOM) a valid selector like `'#div'`
-    errorsContainer: function errorsContainer(Field) {},
-
-    // ul elem that would receive errors' list
-    errorsWrapper: '<ul class="parsley-errors-list"></ul>',
-
-    // li elem that would receive error message
-    errorTemplate: '<li></li>'
-  };
-
-  var Base = function Base() {
-    this.__id__ = Utils.generateID();
-  };
-
-  Base.prototype = {
-    asyncSupport: true, // Deprecated
-
-    _pipeAccordingToValidationResult: function _pipeAccordingToValidationResult() {
-      var _this = this;
-
-      var pipe = function pipe() {
-        var r = $.Deferred();
-        if (true !== _this.validationResult) r.reject();
-        return r.resolve().promise();
-      };
-      return [pipe, pipe];
-    },
-
-    actualizeOptions: function actualizeOptions() {
-      Utils.attr(this.element, this.options.namespace, this.domOptions);
-      if (this.parent && this.parent.actualizeOptions) this.parent.actualizeOptions();
-      return this;
-    },
-
-    _resetOptions: function _resetOptions(initOptions) {
-      this.domOptions = Utils.objectCreate(this.parent.options);
-      this.options = Utils.objectCreate(this.domOptions);
-      // Shallow copy of ownProperties of initOptions:
-      for (var i in initOptions) {
-        if (initOptions.hasOwnProperty(i)) this.options[i] = initOptions[i];
-      }
-      this.actualizeOptions();
-    },
-
-    _listeners: null,
-
-    // Register a callback for the given event name
-    // Callback is called with context as the first argument and the `this`
-    // The context is the current parsley instance, or window.Parsley if global
-    // A return value of `false` will interrupt the calls
-    on: function on(name, fn) {
-      this._listeners = this._listeners || {};
-      var queue = this._listeners[name] = this._listeners[name] || [];
-      queue.push(fn);
-
-      return this;
-    },
-
-    // Deprecated. Use `on` instead
-    subscribe: function subscribe(name, fn) {
-      $.listenTo(this, name.toLowerCase(), fn);
-    },
-
-    // Unregister a callback (or all if none is given) for the given event name
-    off: function off(name, fn) {
-      var queue = this._listeners && this._listeners[name];
-      if (queue) {
-        if (!fn) {
-          delete this._listeners[name];
-        } else {
-          for (var i = queue.length; i--;) if (queue[i] === fn) queue.splice(i, 1);
-        }
-      }
-      return this;
-    },
-
-    // Deprecated. Use `off`
-    unsubscribe: function unsubscribe(name, fn) {
-      $.unsubscribeTo(this, name.toLowerCase());
-    },
-
-    // Trigger an event of the given name
-    // A return value of `false` interrupts the callback chain
-    // Returns false if execution was interrupted
-    trigger: function trigger(name, target, extraArg) {
-      target = target || this;
-      var queue = this._listeners && this._listeners[name];
-      var result;
-      var parentResult;
-      if (queue) {
-        for (var i = queue.length; i--;) {
-          result = queue[i].call(target, target, extraArg);
-          if (result === false) return result;
-        }
-      }
-      if (this.parent) {
-        return this.parent.trigger(name, target, extraArg);
-      }
-      return true;
-    },
-
-    asyncIsValid: function asyncIsValid(group, force) {
-      Utils.warnOnce("asyncIsValid is deprecated; please use whenValid instead");
-      return this.whenValid({ group: group, force: force });
-    },
-
-    _findRelated: function _findRelated() {
-      return this.options.multiple ? $(this.parent.element.querySelectorAll('[' + this.options.namespace + 'multiple="' + this.options.multiple + '"]')) : this.$element;
-    }
-  };
-
-  var convertArrayRequirement = function convertArrayRequirement(string, length) {
-    var m = string.match(/^\s*\[(.*)\]\s*$/);
-    if (!m) throw 'Requirement is not an array: "' + string + '"';
-    var values = m[1].split(',').map(Utils.trimString);
-    if (values.length !== length) throw 'Requirement has ' + values.length + ' values when ' + length + ' are needed';
-    return values;
-  };
-
-  var convertExtraOptionRequirement = function convertExtraOptionRequirement(requirementSpec, string, extraOptionReader) {
-    var main = null;
-    var extra = {};
-    for (var key in requirementSpec) {
-      if (key) {
-        var value = extraOptionReader(key);
-        if ('string' === typeof value) value = Utils.parseRequirement(requirementSpec[key], value);
-        extra[key] = value;
-      } else {
-        main = Utils.parseRequirement(requirementSpec[key], string);
-      }
-    }
-    return [main, extra];
-  };
-
-  // A Validator needs to implement the methods `validate` and `parseRequirements`
-
-  var Validator = function Validator(spec) {
-    $.extend(true, this, spec);
-  };
-
-  Validator.prototype = {
-    // Returns `true` iff the given `value` is valid according the given requirements.
-    validate: function validate(value, requirementFirstArg) {
-      if (this.fn) {
-        // Legacy style validator
-
-        if (arguments.length > 3) // If more args then value, requirement, instance...
-          requirementFirstArg = [].slice.call(arguments, 1, -1); // Skip first arg (value) and last (instance), combining the rest
-        return this.fn(value, requirementFirstArg);
-      }
-
-      if (Array.isArray(value)) {
-        if (!this.validateMultiple) throw 'Validator `' + this.name + '` does not handle multiple values';
-        return this.validateMultiple.apply(this, arguments);
-      } else {
-        var instance = arguments[arguments.length - 1];
-        if (this.validateDate && instance._isDateInput()) {
-          arguments[0] = Utils.parse.date(arguments[0]);
-          if (arguments[0] === null) return false;
-          return this.validateDate.apply(this, arguments);
-        }
-        if (this.validateNumber) {
-          if (isNaN(value)) return false;
-          arguments[0] = parseFloat(arguments[0]);
-          return this.validateNumber.apply(this, arguments);
-        }
-        if (this.validateString) {
-          return this.validateString.apply(this, arguments);
-        }
-        throw 'Validator `' + this.name + '` only handles multiple values';
-      }
-    },
-
-    // Parses `requirements` into an array of arguments,
-    // according to `this.requirementType`
-    parseRequirements: function parseRequirements(requirements, extraOptionReader) {
-      if ('string' !== typeof requirements) {
-        // Assume requirement already parsed
-        // but make sure we return an array
-        return Array.isArray(requirements) ? requirements : [requirements];
-      }
-      var type = this.requirementType;
-      if (Array.isArray(type)) {
-        var values = convertArrayRequirement(requirements, type.length);
-        for (var i = 0; i < values.length; i++) values[i] = Utils.parseRequirement(type[i], values[i]);
-        return values;
-      } else if ($.isPlainObject(type)) {
-        return convertExtraOptionRequirement(type, requirements, extraOptionReader);
-      } else {
-        return [Utils.parseRequirement(type, requirements)];
-      }
-    },
-    // Defaults:
-    requirementType: 'string',
-
-    priority: 2
-
-  };
-
-  var ValidatorRegistry = function ValidatorRegistry(validators, catalog) {
-    this.__class__ = 'ValidatorRegistry';
-
-    // Default Parsley locale is en
-    this.locale = 'en';
-
-    this.init(validators || {}, catalog || {});
-  };
-
-  var typeTesters = {
-    email: /^((([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/,
-
-    // Follow https://www.w3.org/TR/html5/infrastructure.html#floating-point-numbers
-    number: /^-?(\d*\.)?\d+(e[-+]?\d+)?$/i,
-
-    integer: /^-?\d+$/,
-
-    digits: /^\d+$/,
-
-    alphanum: /^\w+$/i,
-
-    date: {
-      test: function test(value) {
-        return Utils.parse.date(value) !== null;
-      }
-    },
-
-    url: new RegExp("^" +
-    // protocol identifier
-    "(?:(?:https?|ftp)://)?" + // ** mod: make scheme optional
-    // user:pass authentication
-    "(?:\\S+(?::\\S*)?@)?" + "(?:" +
-    // IP address exclusion
-    // private & local networks
-    // "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +   // ** mod: allow local networks
-    // "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
-    // "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
-    // IP address dotted notation octets
-    // excludes loopback network 0.0.0.0
-    // excludes reserved space >= 224.0.0.0
-    // excludes network & broacast addresses
-    // (first & last IP address of each class)
-    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" + "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" + "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" + "|" +
-    // host name
-    '(?:(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)' +
-    // domain name
-    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)*' +
-    // TLD identifier
-    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff]{2,}))' + ")" +
-    // port number
-    "(?::\\d{2,5})?" +
-    // resource path
-    "(?:/\\S*)?" + "$")
-  };
-  typeTesters.range = typeTesters.number;
-
-  // See http://stackoverflow.com/a/10454560/8279
-  var decimalPlaces = function decimalPlaces(num) {
-    var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-    if (!match) {
-      return 0;
-    }
-    return Math.max(0,
-    // Number of digits right of decimal point.
-    (match[1] ? match[1].length : 0) - (
-    // Adjust for scientific notation.
-    match[2] ? +match[2] : 0));
-  };
-
-  // parseArguments('number', ['1', '2']) => [1, 2]
-  var ValidatorRegistry__parseArguments = function ValidatorRegistry__parseArguments(type, args) {
-    return args.map(Utils.parse[type]);
-  };
-  // operatorToValidator returns a validating function for an operator function, applied to the given type
-  var ValidatorRegistry__operatorToValidator = function ValidatorRegistry__operatorToValidator(type, operator) {
-    return function (value) {
-      for (var _len = arguments.length, requirementsAndInput = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        requirementsAndInput[_key - 1] = arguments[_key];
-      }
-
-      requirementsAndInput.pop(); // Get rid of `input` argument
-      return operator.apply(undefined, [value].concat(_toConsumableArray(ValidatorRegistry__parseArguments(type, requirementsAndInput))));
-    };
-  };
-
-  var ValidatorRegistry__comparisonOperator = function ValidatorRegistry__comparisonOperator(operator) {
-    return {
-      validateDate: ValidatorRegistry__operatorToValidator('date', operator),
-      validateNumber: ValidatorRegistry__operatorToValidator('number', operator),
-      requirementType: operator.length <= 2 ? 'string' : ['string', 'string'], // Support operators with a 1 or 2 requirement(s)
-      priority: 30
-    };
-  };
-
-  ValidatorRegistry.prototype = {
-    init: function init(validators, catalog) {
-      this.catalog = catalog;
-      // Copy prototype's validators:
-      this.validators = _extends({}, this.validators);
-
-      for (var name in validators) this.addValidator(name, validators[name].fn, validators[name].priority);
-
-      window.Parsley.trigger('parsley:validator:init');
-    },
-
-    // Set new messages locale if we have dictionary loaded in ParsleyConfig.i18n
-    setLocale: function setLocale(locale) {
-      if ('undefined' === typeof this.catalog[locale]) throw new Error(locale + ' is not available in the catalog');
-
-      this.locale = locale;
-
-      return this;
-    },
-
-    // Add a new messages catalog for a given locale. Set locale for this catalog if set === `true`
-    addCatalog: function addCatalog(locale, messages, set) {
-      if ('object' === typeof messages) this.catalog[locale] = messages;
-
-      if (true === set) return this.setLocale(locale);
-
-      return this;
-    },
-
-    // Add a specific message for a given constraint in a given locale
-    addMessage: function addMessage(locale, name, message) {
-      if ('undefined' === typeof this.catalog[locale]) this.catalog[locale] = {};
-
-      this.catalog[locale][name] = message;
-
-      return this;
-    },
-
-    // Add messages for a given locale
-    addMessages: function addMessages(locale, nameMessageObject) {
-      for (var name in nameMessageObject) this.addMessage(locale, name, nameMessageObject[name]);
-
-      return this;
-    },
-
-    // Add a new validator
-    //
-    //    addValidator('custom', {
-    //        requirementType: ['integer', 'integer'],
-    //        validateString: function(value, from, to) {},
-    //        priority: 22,
-    //        messages: {
-    //          en: "Hey, that's no good",
-    //          fr: "Aye aye, pas bon du tout",
-    //        }
-    //    })
-    //
-    // Old API was addValidator(name, function, priority)
-    //
-    addValidator: function addValidator(name, arg1, arg2) {
-      if (this.validators[name]) Utils.warn('Validator "' + name + '" is already defined.');else if (Defaults.hasOwnProperty(name)) {
-        Utils.warn('"' + name + '" is a restricted keyword and is not a valid validator name.');
-        return;
-      }
-      return this._setValidator.apply(this, arguments);
-    },
-
-    hasValidator: function hasValidator(name) {
-      return !!this.validators[name];
-    },
-
-    updateValidator: function updateValidator(name, arg1, arg2) {
-      if (!this.validators[name]) {
-        Utils.warn('Validator "' + name + '" is not already defined.');
-        return this.addValidator.apply(this, arguments);
-      }
-      return this._setValidator.apply(this, arguments);
-    },
-
-    removeValidator: function removeValidator(name) {
-      if (!this.validators[name]) Utils.warn('Validator "' + name + '" is not defined.');
-
-      delete this.validators[name];
-
-      return this;
-    },
-
-    _setValidator: function _setValidator(name, validator, priority) {
-      if ('object' !== typeof validator) {
-        // Old style validator, with `fn` and `priority`
-        validator = {
-          fn: validator,
-          priority: priority
-        };
-      }
-      if (!validator.validate) {
-        validator = new Validator(validator);
-      }
-      this.validators[name] = validator;
-
-      for (var locale in validator.messages || {}) this.addMessage(locale, name, validator.messages[locale]);
-
-      return this;
-    },
-
-    getErrorMessage: function getErrorMessage(constraint) {
-      var message;
-
-      // Type constraints are a bit different, we have to match their requirements too to find right error message
-      if ('type' === constraint.name) {
-        var typeMessages = this.catalog[this.locale][constraint.name] || {};
-        message = typeMessages[constraint.requirements];
-      } else message = this.formatMessage(this.catalog[this.locale][constraint.name], constraint.requirements);
-
-      return message || this.catalog[this.locale].defaultMessage || this.catalog.en.defaultMessage;
-    },
-
-    // Kind of light `sprintf()` implementation
-    formatMessage: function formatMessage(string, parameters) {
-      if ('object' === typeof parameters) {
-        for (var i in parameters) string = this.formatMessage(string, parameters[i]);
-
-        return string;
-      }
-
-      return 'string' === typeof string ? string.replace(/%s/i, parameters) : '';
-    },
-
-    // Here is the Parsley default validators list.
-    // A validator is an object with the following key values:
-    //  - priority: an integer
-    //  - requirement: 'string' (default), 'integer', 'number', 'regexp' or an Array of these
-    //  - validateString, validateMultiple, validateNumber: functions returning `true`, `false` or a promise
-    // Alternatively, a validator can be a function that returns such an object
-    //
-    validators: {
-      notblank: {
-        validateString: function validateString(value) {
-          return (/\S/.test(value)
-          );
-        },
-        priority: 2
-      },
-      required: {
-        validateMultiple: function validateMultiple(values) {
-          return values.length > 0;
-        },
-        validateString: function validateString(value) {
-          return (/\S/.test(value)
-          );
-        },
-        priority: 512
-      },
-      type: {
-        validateString: function validateString(value, type) {
-          var _ref = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-          var _ref$step = _ref.step;
-          var step = _ref$step === undefined ? 'any' : _ref$step;
-          var _ref$base = _ref.base;
-          var base = _ref$base === undefined ? 0 : _ref$base;
-
-          var tester = typeTesters[type];
-          if (!tester) {
-            throw new Error('validator type `' + type + '` is not supported');
-          }
-          if (!tester.test(value)) return false;
-          if ('number' === type) {
-            if (!/^any$/i.test(step || '')) {
-              var nb = Number(value);
-              var decimals = Math.max(decimalPlaces(step), decimalPlaces(base));
-              if (decimalPlaces(nb) > decimals) // Value can't have too many decimals
-                return false;
-              // Be careful of rounding errors by using integers.
-              var toInt = function toInt(f) {
-                return Math.round(f * Math.pow(10, decimals));
-              };
-              if ((toInt(nb) - toInt(base)) % toInt(step) != 0) return false;
-            }
-          }
-          return true;
-        },
-        requirementType: {
-          '': 'string',
-          step: 'string',
-          base: 'number'
-        },
-        priority: 256
-      },
-      pattern: {
-        validateString: function validateString(value, regexp) {
-          return regexp.test(value);
-        },
-        requirementType: 'regexp',
-        priority: 64
-      },
-      minlength: {
-        validateString: function validateString(value, requirement) {
-          return value.length >= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      maxlength: {
-        validateString: function validateString(value, requirement) {
-          return value.length <= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      length: {
-        validateString: function validateString(value, min, max) {
-          return value.length >= min && value.length <= max;
-        },
-        requirementType: ['integer', 'integer'],
-        priority: 30
-      },
-      mincheck: {
-        validateMultiple: function validateMultiple(values, requirement) {
-          return values.length >= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      maxcheck: {
-        validateMultiple: function validateMultiple(values, requirement) {
-          return values.length <= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      check: {
-        validateMultiple: function validateMultiple(values, min, max) {
-          return values.length >= min && values.length <= max;
-        },
-        requirementType: ['integer', 'integer'],
-        priority: 30
-      },
-      min: ValidatorRegistry__comparisonOperator(function (value, requirement) {
-        return value >= requirement;
-      }),
-      max: ValidatorRegistry__comparisonOperator(function (value, requirement) {
-        return value <= requirement;
-      }),
-      range: ValidatorRegistry__comparisonOperator(function (value, min, max) {
-        return value >= min && value <= max;
-      }),
-      equalto: {
-        validateString: function validateString(value, refOrValue) {
-          var $reference = $(refOrValue);
-          if ($reference.length) return value === $reference.val();else return value === refOrValue;
-        },
-        priority: 256
-      }
-    }
-  };
-
-  var UI = {};
-
-  var diffResults = function diffResults(newResult, oldResult, deep) {
-    var added = [];
-    var kept = [];
-
-    for (var i = 0; i < newResult.length; i++) {
-      var found = false;
-
-      for (var j = 0; j < oldResult.length; j++) if (newResult[i].assert.name === oldResult[j].assert.name) {
-        found = true;
-        break;
-      }
-
-      if (found) kept.push(newResult[i]);else added.push(newResult[i]);
-    }
-
-    return {
-      kept: kept,
-      added: added,
-      removed: !deep ? diffResults(oldResult, newResult, true).added : []
-    };
-  };
-
-  UI.Form = {
-
-    _actualizeTriggers: function _actualizeTriggers() {
-      var _this2 = this;
-
-      this.$element.on('submit.Parsley', function (evt) {
-        _this2.onSubmitValidate(evt);
-      });
-      this.$element.on('click.Parsley', Utils._SubmitSelector, function (evt) {
-        _this2.onSubmitButton(evt);
-      });
-
-      // UI could be disabled
-      if (false === this.options.uiEnabled) return;
-
-      this.element.setAttribute('novalidate', '');
-    },
-
-    focus: function focus() {
-      this._focusedField = null;
-
-      if (true === this.validationResult || 'none' === this.options.focus) return null;
-
-      for (var i = 0; i < this.fields.length; i++) {
-        var field = this.fields[i];
-        if (true !== field.validationResult && field.validationResult.length > 0 && 'undefined' === typeof field.options.noFocus) {
-          this._focusedField = field.$element;
-          if ('first' === this.options.focus) break;
-        }
-      }
-
-      if (null === this._focusedField) return null;
-
-      return this._focusedField.focus();
-    },
-
-    _destroyUI: function _destroyUI() {
-      // Reset all event listeners
-      this.$element.off('.Parsley');
-    }
-
-  };
-
-  UI.Field = {
-
-    _reflowUI: function _reflowUI() {
-      this._buildUI();
-
-      // If this field doesn't have an active UI don't bother doing something
-      if (!this._ui) return;
-
-      // Diff between two validation results
-      var diff = diffResults(this.validationResult, this._ui.lastValidationResult);
-
-      // Then store current validation result for next reflow
-      this._ui.lastValidationResult = this.validationResult;
-
-      // Handle valid / invalid / none field class
-      this._manageStatusClass();
-
-      // Add, remove, updated errors messages
-      this._manageErrorsMessages(diff);
-
-      // Triggers impl
-      this._actualizeTriggers();
-
-      // If field is not valid for the first time, bind keyup trigger to ease UX and quickly inform user
-      if ((diff.kept.length || diff.added.length) && !this._failedOnce) {
-        this._failedOnce = true;
-        this._actualizeTriggers();
-      }
-    },
-
-    // Returns an array of field's error message(s)
-    getErrorsMessages: function getErrorsMessages() {
-      // No error message, field is valid
-      if (true === this.validationResult) return [];
-
-      var messages = [];
-
-      for (var i = 0; i < this.validationResult.length; i++) messages.push(this.validationResult[i].errorMessage || this._getErrorMessage(this.validationResult[i].assert));
-
-      return messages;
-    },
-
-    // It's a goal of Parsley that this method is no longer required [#1073]
-    addError: function addError(name) {
-      var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var message = _ref2.message;
-      var assert = _ref2.assert;
-      var _ref2$updateClass = _ref2.updateClass;
-      var updateClass = _ref2$updateClass === undefined ? true : _ref2$updateClass;
-
-      this._buildUI();
-      this._addError(name, { message: message, assert: assert });
-
-      if (updateClass) this._errorClass();
-    },
-
-    // It's a goal of Parsley that this method is no longer required [#1073]
-    updateError: function updateError(name) {
-      var _ref3 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var message = _ref3.message;
-      var assert = _ref3.assert;
-      var _ref3$updateClass = _ref3.updateClass;
-      var updateClass = _ref3$updateClass === undefined ? true : _ref3$updateClass;
-
-      this._buildUI();
-      this._updateError(name, { message: message, assert: assert });
-
-      if (updateClass) this._errorClass();
-    },
-
-    // It's a goal of Parsley that this method is no longer required [#1073]
-    removeError: function removeError(name) {
-      var _ref4 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var _ref4$updateClass = _ref4.updateClass;
-      var updateClass = _ref4$updateClass === undefined ? true : _ref4$updateClass;
-
-      this._buildUI();
-      this._removeError(name);
-
-      // edge case possible here: remove a standard Parsley error that is still failing in this.validationResult
-      // but highly improbable cuz' manually removing a well Parsley handled error makes no sense.
-      if (updateClass) this._manageStatusClass();
-    },
-
-    _manageStatusClass: function _manageStatusClass() {
-      if (this.hasConstraints() && this.needsValidation() && true === this.validationResult) this._successClass();else if (this.validationResult.length > 0) this._errorClass();else this._resetClass();
-    },
-
-    _manageErrorsMessages: function _manageErrorsMessages(diff) {
-      if ('undefined' !== typeof this.options.errorsMessagesDisabled) return;
-
-      // Case where we have errorMessage option that configure an unique field error message, regardless failing validators
-      if ('undefined' !== typeof this.options.errorMessage) {
-        if (diff.added.length || diff.kept.length) {
-          this._insertErrorWrapper();
-
-          if (0 === this._ui.$errorsWrapper.find('.parsley-custom-error-message').length) this._ui.$errorsWrapper.append($(this.options.errorTemplate).addClass('parsley-custom-error-message'));
-
-          return this._ui.$errorsWrapper.addClass('filled').find('.parsley-custom-error-message').html(this.options.errorMessage);
-        }
-
-        return this._ui.$errorsWrapper.removeClass('filled').find('.parsley-custom-error-message').remove();
-      }
-
-      // Show, hide, update failing constraints messages
-      for (var i = 0; i < diff.removed.length; i++) this._removeError(diff.removed[i].assert.name);
-
-      for (i = 0; i < diff.added.length; i++) this._addError(diff.added[i].assert.name, { message: diff.added[i].errorMessage, assert: diff.added[i].assert });
-
-      for (i = 0; i < diff.kept.length; i++) this._updateError(diff.kept[i].assert.name, { message: diff.kept[i].errorMessage, assert: diff.kept[i].assert });
-    },
-
-    _addError: function _addError(name, _ref5) {
-      var message = _ref5.message;
-      var assert = _ref5.assert;
-
-      this._insertErrorWrapper();
-      this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
-      this._ui.$errorsWrapper.addClass('filled').append($(this.options.errorTemplate).addClass('parsley-' + name).html(message || this._getErrorMessage(assert)));
-    },
-
-    _updateError: function _updateError(name, _ref6) {
-      var message = _ref6.message;
-      var assert = _ref6.assert;
-
-      this._ui.$errorsWrapper.addClass('filled').find('.parsley-' + name).html(message || this._getErrorMessage(assert));
-    },
-
-    _removeError: function _removeError(name) {
-      this._ui.$errorClassHandler.removeAttr('aria-describedby');
-      this._ui.$errorsWrapper.removeClass('filled').find('.parsley-' + name).remove();
-    },
-
-    _getErrorMessage: function _getErrorMessage(constraint) {
-      var customConstraintErrorMessage = constraint.name + 'Message';
-
-      if ('undefined' !== typeof this.options[customConstraintErrorMessage]) return window.Parsley.formatMessage(this.options[customConstraintErrorMessage], constraint.requirements);
-
-      return window.Parsley.getErrorMessage(constraint);
-    },
-
-    _buildUI: function _buildUI() {
-      // UI could be already built or disabled
-      if (this._ui || false === this.options.uiEnabled) return;
-
-      var _ui = {};
-
-      // Give field its Parsley id in DOM
-      this.element.setAttribute(this.options.namespace + 'id', this.__id__);
-
-      /** Generate important UI elements and store them in this **/
-      // $errorClassHandler is the $element that woul have parsley-error and parsley-success classes
-      _ui.$errorClassHandler = this._manageClassHandler();
-
-      // $errorsWrapper is a div that would contain the various field errors, it will be appended into $errorsContainer
-      _ui.errorsWrapperId = 'parsley-id-' + (this.options.multiple ? 'multiple-' + this.options.multiple : this.__id__);
-      _ui.$errorsWrapper = $(this.options.errorsWrapper).attr('id', _ui.errorsWrapperId);
-
-      // ValidationResult UI storage to detect what have changed bwt two validations, and update DOM accordingly
-      _ui.lastValidationResult = [];
-      _ui.validationInformationVisible = false;
-
-      // Store it in this for later
-      this._ui = _ui;
-    },
-
-    // Determine which element will have `parsley-error` and `parsley-success` classes
-    _manageClassHandler: function _manageClassHandler() {
-      // Class handled could also be determined by function given in Parsley options
-      if ('string' === typeof this.options.classHandler && $(this.options.classHandler).length) return $(this.options.classHandler);
-
-      // Class handled could also be determined by function given in Parsley options
-      var $handlerFunction = this.options.classHandler;
-
-      // It might also be the function name of a global function
-      if ('string' === typeof this.options.classHandler && 'function' === typeof window[this.options.classHandler]) $handlerFunction = window[this.options.classHandler];
-
-      if ('function' === typeof $handlerFunction) {
-        var $handler = $handlerFunction.call(this, this);
-
-        // If this function returned a valid existing DOM element, go for it
-        if ('undefined' !== typeof $handler && $handler.length) return $handler;
-      } else if ('object' === typeof $handlerFunction && $handlerFunction instanceof jQuery && $handlerFunction.length) {
-        return $handlerFunction;
-      } else if ($handlerFunction) {
-        Utils.warn('The class handler `' + $handlerFunction + '` does not exist in DOM nor as a global JS function');
-      }
-
-      return this._inputHolder();
-    },
-
-    _inputHolder: function _inputHolder() {
-      // if simple element (input, texatrea, select...) it will perfectly host the classes and precede the error container
-      if (!this.options.multiple || this.element.nodeName === 'SELECT') return this.$element;
-
-      // But if multiple element (radio, checkbox), that would be their parent
-      return this.$element.parent();
-    },
-
-    _insertErrorWrapper: function _insertErrorWrapper() {
-      var $errorsContainer = this.options.errorsContainer;
-
-      // Nothing to do if already inserted
-      if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
-
-      if ('string' === typeof $errorsContainer) {
-        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else if ('function' === typeof window[$errorsContainer]) $errorsContainer = window[$errorsContainer];else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM nor as a global JS function');
-      }
-
-      if ('function' === typeof $errorsContainer) $errorsContainer = $errorsContainer.call(this, this);
-
-      if ('object' === typeof $errorsContainer && $errorsContainer.length) return $errorsContainer.append(this._ui.$errorsWrapper);
-
-      return this._inputHolder().after(this._ui.$errorsWrapper);
-    },
-
-    _actualizeTriggers: function _actualizeTriggers() {
-      var _this3 = this;
-
-      var $toBind = this._findRelated();
-      var trigger;
-
-      // Remove Parsley events already bound on this field
-      $toBind.off('.Parsley');
-      if (this._failedOnce) $toBind.on(Utils.namespaceEvents(this.options.triggerAfterFailure, 'Parsley'), function () {
-        _this3._validateIfNeeded();
-      });else if (trigger = Utils.namespaceEvents(this.options.trigger, 'Parsley')) {
-        $toBind.on(trigger, function (event) {
-          _this3._validateIfNeeded(event);
-        });
-      }
-    },
-
-    _validateIfNeeded: function _validateIfNeeded(event) {
-      var _this4 = this;
-
-      // For keyup, keypress, keydown, input... events that could be a little bit obstrusive
-      // do not validate if val length < min threshold on first validation. Once field have been validated once and info
-      // about success or failure have been displayed, always validate with this trigger to reflect every yalidation change.
-      if (event && /key|input/.test(event.type)) if (!(this._ui && this._ui.validationInformationVisible) && this.getValue().length <= this.options.validationThreshold) return;
-
-      if (this.options.debounce) {
-        window.clearTimeout(this._debounced);
-        this._debounced = window.setTimeout(function () {
-          return _this4.validate();
-        }, this.options.debounce);
-      } else this.validate();
-    },
-
-    _resetUI: function _resetUI() {
-      // Reset all event listeners
-      this._failedOnce = false;
-      this._actualizeTriggers();
-
-      // Nothing to do if UI never initialized for this field
-      if ('undefined' === typeof this._ui) return;
-
-      // Reset all errors' li
-      this._ui.$errorsWrapper.removeClass('filled').children().remove();
-
-      // Reset validation class
-      this._resetClass();
-
-      // Reset validation flags and last validation result
-      this._ui.lastValidationResult = [];
-      this._ui.validationInformationVisible = false;
-    },
-
-    _destroyUI: function _destroyUI() {
-      this._resetUI();
-
-      if ('undefined' !== typeof this._ui) this._ui.$errorsWrapper.remove();
-
-      delete this._ui;
-    },
-
-    _successClass: function _successClass() {
-      this._ui.validationInformationVisible = true;
-      this._ui.$errorClassHandler.removeClass(this.options.errorClass).addClass(this.options.successClass);
-    },
-    _errorClass: function _errorClass() {
-      this._ui.validationInformationVisible = true;
-      this._ui.$errorClassHandler.removeClass(this.options.successClass).addClass(this.options.errorClass);
-    },
-    _resetClass: function _resetClass() {
-      this._ui.$errorClassHandler.removeClass(this.options.successClass).removeClass(this.options.errorClass);
-    }
-  };
-
-  var Form = function Form(element, domOptions, options) {
-    this.__class__ = 'Form';
-
-    this.element = element;
-    this.$element = $(element);
-    this.domOptions = domOptions;
-    this.options = options;
-    this.parent = window.Parsley;
-
-    this.fields = [];
-    this.validationResult = null;
-  };
-
-  var Form__statusMapping = { pending: null, resolved: true, rejected: false };
-
-  Form.prototype = {
-    onSubmitValidate: function onSubmitValidate(event) {
-      var _this5 = this;
-
-      // This is a Parsley generated submit event, do not validate, do not prevent, simply exit and keep normal behavior
-      if (true === event.parsley) return;
-
-      // If we didn't come here through a submit button, use the first one in the form
-      var submitSource = this._submitSource || this.$element.find(Utils._SubmitSelector)[0];
-      this._submitSource = null;
-      this.$element.find('.parsley-synthetic-submit-button').prop('disabled', true);
-      if (submitSource && null !== submitSource.getAttribute('formnovalidate')) return;
-
-      window.Parsley._remoteCache = {};
-
-      var promise = this.whenValidate({ event: event });
-
-      if ('resolved' === promise.state() && false !== this._trigger('submit')) {
-        // All good, let event go through. We make this distinction because browsers
-        // differ in their handling of `submit` being called from inside a submit event [#1047]
-      } else {
-          // Rejected or pending: cancel this submit
-          event.stopImmediatePropagation();
-          event.preventDefault();
-          if ('pending' === promise.state()) promise.done(function () {
-            _this5._submit(submitSource);
-          });
-        }
-    },
-
-    onSubmitButton: function onSubmitButton(event) {
-      this._submitSource = event.currentTarget;
-    },
-    // internal
-    // _submit submits the form, this time without going through the validations.
-    // Care must be taken to "fake" the actual submit button being clicked.
-    _submit: function _submit(submitSource) {
-      if (false === this._trigger('submit')) return;
-      // Add submit button's data
-      if (submitSource) {
-        var $synthetic = this.$element.find('.parsley-synthetic-submit-button').prop('disabled', false);
-        if (0 === $synthetic.length) $synthetic = $('<input class="parsley-synthetic-submit-button" type="hidden">').appendTo(this.$element);
-        $synthetic.attr({
-          name: submitSource.getAttribute('name'),
-          value: submitSource.getAttribute('value')
-        });
-      }
-
-      this.$element.trigger(_extends($.Event('submit'), { parsley: true }));
-    },
-
-    // Performs validation on fields while triggering events.
-    // @returns `true` if all validations succeeds, `false`
-    // if a failure is immediately detected, or `null`
-    // if dependant on a promise.
-    // Consider using `whenValidate` instead.
-    validate: function validate(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling validate on a parsley form without passing arguments as an object is deprecated.');
-
-        var _arguments = _slice.call(arguments);
-
-        var group = _arguments[0];
-        var force = _arguments[1];
-        var event = _arguments[2];
-
-        options = { group: group, force: force, event: event };
-      }
-      return Form__statusMapping[this.whenValidate(options).state()];
-    },
-
-    whenValidate: function whenValidate() {
-      var _Utils$all$done$fail$always,
-          _this6 = this;
-
-      var _ref7 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var group = _ref7.group;
-      var force = _ref7.force;
-      var event = _ref7.event;
-
-      this.submitEvent = event;
-      if (event) {
-        this.submitEvent = _extends({}, event, { preventDefault: function preventDefault() {
-            Utils.warnOnce("Using `this.submitEvent.preventDefault()` is deprecated; instead, call `this.validationResult = false`");
-            _this6.validationResult = false;
-          } });
-      }
-      this.validationResult = true;
-
-      // fire validate event to eventually modify things before every validation
-      this._trigger('validate');
-
-      // Refresh form DOM options and form's fields that could have changed
-      this._refreshFields();
-
-      var promises = this._withoutReactualizingFormOptions(function () {
-        return $.map(_this6.fields, function (field) {
-          return field.whenValidate({ force: force, group: group });
-        });
-      });
-
-      return (_Utils$all$done$fail$always = Utils.all(promises).done(function () {
-        _this6._trigger('success');
-      }).fail(function () {
-        _this6.validationResult = false;
-        _this6.focus();
-        _this6._trigger('error');
-      }).always(function () {
-        _this6._trigger('validated');
-      })).pipe.apply(_Utils$all$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
-    },
-
-    // Iterate over refreshed fields, and stop on first failure.
-    // Returns `true` if all fields are valid, `false` if a failure is detected
-    // or `null` if the result depends on an unresolved promise.
-    // Prefer using `whenValid` instead.
-    isValid: function isValid(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling isValid on a parsley form without passing arguments as an object is deprecated.');
-
-        var _arguments2 = _slice.call(arguments);
-
-        var group = _arguments2[0];
-        var force = _arguments2[1];
-
-        options = { group: group, force: force };
-      }
-      return Form__statusMapping[this.whenValid(options).state()];
-    },
-
-    // Iterate over refreshed fields and validate them.
-    // Returns a promise.
-    // A validation that immediately fails will interrupt the validations.
-    whenValid: function whenValid() {
-      var _this7 = this;
-
-      var _ref8 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var group = _ref8.group;
-      var force = _ref8.force;
-
-      this._refreshFields();
-
-      var promises = this._withoutReactualizingFormOptions(function () {
-        return $.map(_this7.fields, function (field) {
-          return field.whenValid({ group: group, force: force });
-        });
-      });
-      return Utils.all(promises);
-    },
-
-    refresh: function refresh() {
-      this._refreshFields();
-      return this;
-    },
-
-    // Reset UI
-    reset: function reset() {
-      // Form case: emit a reset event for each field
-      for (var i = 0; i < this.fields.length; i++) this.fields[i].reset();
-
-      this._trigger('reset');
-    },
-
-    // Destroy Parsley instance (+ UI)
-    destroy: function destroy() {
-      // Field case: emit destroy event to clean UI and then destroy stored instance
-      this._destroyUI();
-
-      // Form case: destroy all its fields and then destroy stored instance
-      for (var i = 0; i < this.fields.length; i++) this.fields[i].destroy();
-
-      this.$element.removeData('Parsley');
-      this._trigger('destroy');
-    },
-
-    _refreshFields: function _refreshFields() {
-      return this.actualizeOptions()._bindFields();
-    },
-
-    _bindFields: function _bindFields() {
-      var _this8 = this;
-
-      var oldFields = this.fields;
-
-      this.fields = [];
-      this.fieldsMappedById = {};
-
-      this._withoutReactualizingFormOptions(function () {
-        _this8.$element.find(_this8.options.inputs).not(_this8.options.excluded).each(function (_, element) {
-          var fieldInstance = new window.Parsley.Factory(element, {}, _this8);
-
-          // Only add valid and not excluded `Field` and `FieldMultiple` children
-          if (('Field' === fieldInstance.__class__ || 'FieldMultiple' === fieldInstance.__class__) && true !== fieldInstance.options.excluded) {
-            var uniqueId = fieldInstance.__class__ + '-' + fieldInstance.__id__;
-            if ('undefined' === typeof _this8.fieldsMappedById[uniqueId]) {
-              _this8.fieldsMappedById[uniqueId] = fieldInstance;
-              _this8.fields.push(fieldInstance);
-            }
-          }
-        });
-
-        $.each(Utils.difference(oldFields, _this8.fields), function (_, field) {
-          field.reset();
-        });
-      });
-      return this;
-    },
-
-    // Internal only.
-    // Looping on a form's fields to do validation or similar
-    // will trigger reactualizing options on all of them, which
-    // in turn will reactualize the form's options.
-    // To avoid calling actualizeOptions so many times on the form
-    // for nothing, _withoutReactualizingFormOptions temporarily disables
-    // the method actualizeOptions on this form while `fn` is called.
-    _withoutReactualizingFormOptions: function _withoutReactualizingFormOptions(fn) {
-      var oldActualizeOptions = this.actualizeOptions;
-      this.actualizeOptions = function () {
-        return this;
-      };
-      var result = fn();
-      this.actualizeOptions = oldActualizeOptions;
-      return result;
-    },
-
-    // Internal only.
-    // Shortcut to trigger an event
-    // Returns true iff event is not interrupted and default not prevented.
-    _trigger: function _trigger(eventName) {
-      return this.trigger('form:' + eventName);
-    }
-
-  };
-
-  var Constraint = function Constraint(parsleyField, name, requirements, priority, isDomConstraint) {
-    var validatorSpec = window.Parsley._validatorRegistry.validators[name];
-    var validator = new Validator(validatorSpec);
-    priority = priority || parsleyField.options[name + 'Priority'] || validator.priority;
-    isDomConstraint = true === isDomConstraint;
-
-    _extends(this, {
-      validator: validator,
-      name: name,
-      requirements: requirements,
-      priority: priority,
-      isDomConstraint: isDomConstraint
-    });
-    this._parseRequirements(parsleyField.options);
-  };
-
-  var capitalize = function capitalize(str) {
-    var cap = str[0].toUpperCase();
-    return cap + str.slice(1);
-  };
-
-  Constraint.prototype = {
-    validate: function validate(value, instance) {
-      var _validator;
-
-      return (_validator = this.validator).validate.apply(_validator, [value].concat(_toConsumableArray(this.requirementList), [instance]));
-    },
-
-    _parseRequirements: function _parseRequirements(options) {
-      var _this9 = this;
-
-      this.requirementList = this.validator.parseRequirements(this.requirements, function (key) {
-        return options[_this9.name + capitalize(key)];
-      });
-    }
-  };
-
-  var Field = function Field(field, domOptions, options, parsleyFormInstance) {
-    this.__class__ = 'Field';
-
-    this.element = field;
-    this.$element = $(field);
-
-    // Set parent if we have one
-    if ('undefined' !== typeof parsleyFormInstance) {
-      this.parent = parsleyFormInstance;
-    }
-
-    this.options = options;
-    this.domOptions = domOptions;
-
-    // Initialize some properties
-    this.constraints = [];
-    this.constraintsByName = {};
-    this.validationResult = true;
-
-    // Bind constraints
-    this._bindConstraints();
-  };
-
-  var parsley_field__statusMapping = { pending: null, resolved: true, rejected: false };
-
-  Field.prototype = {
-    // # Public API
-    // Validate field and trigger some events for mainly `UI`
-    // @returns `true`, an array of the validators that failed, or
-    // `null` if validation is not finished. Prefer using whenValidate
-    validate: function validate(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling validate on a parsley field without passing arguments as an object is deprecated.');
-        options = { options: options };
-      }
-      var promise = this.whenValidate(options);
-      if (!promise) // If excluded with `group` option
-        return true;
-      switch (promise.state()) {
-        case 'pending':
-          return null;
-        case 'resolved':
-          return true;
-        case 'rejected':
-          return this.validationResult;
-      }
-    },
-
-    // Validate field and trigger some events for mainly `UI`
-    // @returns a promise that succeeds only when all validations do
-    // or `undefined` if field is not in the given `group`.
-    whenValidate: function whenValidate() {
-      var _whenValid$always$done$fail$always,
-          _this10 = this;
-
-      var _ref9 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var force = _ref9.force;
-      var group = _ref9.group;
-
-      // do not validate a field if not the same as given validation group
-      this.refresh();
-      if (group && !this._isInGroup(group)) return;
-
-      this.value = this.getValue();
-
-      // Field Validate event. `this.value` could be altered for custom needs
-      this._trigger('validate');
-
-      return (_whenValid$always$done$fail$always = this.whenValid({ force: force, value: this.value, _refreshed: true }).always(function () {
-        _this10._reflowUI();
-      }).done(function () {
-        _this10._trigger('success');
-      }).fail(function () {
-        _this10._trigger('error');
-      }).always(function () {
-        _this10._trigger('validated');
-      })).pipe.apply(_whenValid$always$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
-    },
-
-    hasConstraints: function hasConstraints() {
-      return 0 !== this.constraints.length;
-    },
-
-    // An empty optional field does not need validation
-    needsValidation: function needsValidation(value) {
-      if ('undefined' === typeof value) value = this.getValue();
-
-      // If a field is empty and not required, it is valid
-      // Except if `data-parsley-validate-if-empty` explicitely added, useful for some custom validators
-      if (!value.length && !this._isRequired() && 'undefined' === typeof this.options.validateIfEmpty) return false;
-
-      return true;
-    },
-
-    _isInGroup: function _isInGroup(group) {
-      if (Array.isArray(this.options.group)) return -1 !== $.inArray(group, this.options.group);
-      return this.options.group === group;
-    },
-
-    // Just validate field. Do not trigger any event.
-    // Returns `true` iff all constraints pass, `false` if there are failures,
-    // or `null` if the result can not be determined yet (depends on a promise)
-    // See also `whenValid`.
-    isValid: function isValid(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling isValid on a parsley field without passing arguments as an object is deprecated.');
-
-        var _arguments3 = _slice.call(arguments);
-
-        var force = _arguments3[0];
-        var value = _arguments3[1];
-
-        options = { force: force, value: value };
-      }
-      var promise = this.whenValid(options);
-      if (!promise) // Excluded via `group`
-        return true;
-      return parsley_field__statusMapping[promise.state()];
-    },
-
-    // Just validate field. Do not trigger any event.
-    // @returns a promise that succeeds only when all validations do
-    // or `undefined` if the field is not in the given `group`.
-    // The argument `force` will force validation of empty fields.
-    // If a `value` is given, it will be validated instead of the value of the input.
-    whenValid: function whenValid() {
-      var _this11 = this;
-
-      var _ref10 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var _ref10$force = _ref10.force;
-      var force = _ref10$force === undefined ? false : _ref10$force;
-      var value = _ref10.value;
-      var group = _ref10.group;
-      var _refreshed = _ref10._refreshed;
-
-      // Recompute options and rebind constraints to have latest changes
-      if (!_refreshed) this.refresh();
-      // do not validate a field if not the same as given validation group
-      if (group && !this._isInGroup(group)) return;
-
-      this.validationResult = true;
-
-      // A field without constraint is valid
-      if (!this.hasConstraints()) return $.when();
-
-      // Value could be passed as argument, needed to add more power to 'field:validate'
-      if ('undefined' === typeof value || null === value) value = this.getValue();
-
-      if (!this.needsValidation(value) && true !== force) return $.when();
-
-      var groupedConstraints = this._getGroupedConstraints();
-      var promises = [];
-      $.each(groupedConstraints, function (_, constraints) {
-        // Process one group of constraints at a time, we validate the constraints
-        // and combine the promises together.
-        var promise = Utils.all($.map(constraints, function (constraint) {
-          return _this11._validateConstraint(value, constraint);
-        }));
-        promises.push(promise);
-        if (promise.state() === 'rejected') return false; // Interrupt processing if a group has already failed
-      });
-      return Utils.all(promises);
-    },
-
-    // @returns a promise
-    _validateConstraint: function _validateConstraint(value, constraint) {
-      var _this12 = this;
-
-      var result = constraint.validate(value, this);
-      // Map false to a failed promise
-      if (false === result) result = $.Deferred().reject();
-      // Make sure we return a promise and that we record failures
-      return Utils.all([result]).fail(function (errorMessage) {
-        if (!(_this12.validationResult instanceof Array)) _this12.validationResult = [];
-        _this12.validationResult.push({
-          assert: constraint,
-          errorMessage: 'string' === typeof errorMessage && errorMessage
-        });
-      });
-    },
-
-    // @returns Parsley field computed value that could be overrided or configured in DOM
-    getValue: function getValue() {
-      var value;
-
-      // Value could be overriden in DOM or with explicit options
-      if ('function' === typeof this.options.value) value = this.options.value(this);else if ('undefined' !== typeof this.options.value) value = this.options.value;else value = this.$element.val();
-
-      // Handle wrong DOM or configurations
-      if ('undefined' === typeof value || null === value) return '';
-
-      return this._handleWhitespace(value);
-    },
-
-    // Reset UI
-    reset: function reset() {
-      this._resetUI();
-      return this._trigger('reset');
-    },
-
-    // Destroy Parsley instance (+ UI)
-    destroy: function destroy() {
-      // Field case: emit destroy event to clean UI and then destroy stored instance
-      this._destroyUI();
-      this.$element.removeData('Parsley');
-      this.$element.removeData('FieldMultiple');
-      this._trigger('destroy');
-    },
-
-    // Actualize options and rebind constraints
-    refresh: function refresh() {
-      this._refreshConstraints();
-      return this;
-    },
-
-    _refreshConstraints: function _refreshConstraints() {
-      return this.actualizeOptions()._bindConstraints();
-    },
-
-    refreshConstraints: function refreshConstraints() {
-      Utils.warnOnce("Parsley's refreshConstraints is deprecated. Please use refresh");
-      return this.refresh();
-    },
-
-    /**
-    * Add a new constraint to a field
-    *
-    * @param {String}   name
-    * @param {Mixed}    requirements      optional
-    * @param {Number}   priority          optional
-    * @param {Boolean}  isDomConstraint   optional
-    */
-    addConstraint: function addConstraint(name, requirements, priority, isDomConstraint) {
-
-      if (window.Parsley._validatorRegistry.validators[name]) {
-        var constraint = new Constraint(this, name, requirements, priority, isDomConstraint);
-
-        // if constraint already exist, delete it and push new version
-        if ('undefined' !== this.constraintsByName[constraint.name]) this.removeConstraint(constraint.name);
-
-        this.constraints.push(constraint);
-        this.constraintsByName[constraint.name] = constraint;
-      }
-
-      return this;
-    },
-
-    // Remove a constraint
-    removeConstraint: function removeConstraint(name) {
-      for (var i = 0; i < this.constraints.length; i++) if (name === this.constraints[i].name) {
-        this.constraints.splice(i, 1);
-        break;
-      }
-      delete this.constraintsByName[name];
-      return this;
-    },
-
-    // Update a constraint (Remove + re-add)
-    updateConstraint: function updateConstraint(name, parameters, priority) {
-      return this.removeConstraint(name).addConstraint(name, parameters, priority);
-    },
-
-    // # Internals
-
-    // Internal only.
-    // Bind constraints from config + options + DOM
-    _bindConstraints: function _bindConstraints() {
-      var constraints = [];
-      var constraintsByName = {};
-
-      // clean all existing DOM constraints to only keep javascript user constraints
-      for (var i = 0; i < this.constraints.length; i++) if (false === this.constraints[i].isDomConstraint) {
-        constraints.push(this.constraints[i]);
-        constraintsByName[this.constraints[i].name] = this.constraints[i];
-      }
-
-      this.constraints = constraints;
-      this.constraintsByName = constraintsByName;
-
-      // then re-add Parsley DOM-API constraints
-      for (var name in this.options) this.addConstraint(name, this.options[name], undefined, true);
-
-      // finally, bind special HTML5 constraints
-      return this._bindHtml5Constraints();
-    },
-
-    // Internal only.
-    // Bind specific HTML5 constraints to be HTML5 compliant
-    _bindHtml5Constraints: function _bindHtml5Constraints() {
-      // html5 required
-      if (null !== this.element.getAttribute('required')) this.addConstraint('required', true, undefined, true);
-
-      // html5 pattern
-      if (null !== this.element.getAttribute('pattern')) this.addConstraint('pattern', this.element.getAttribute('pattern'), undefined, true);
-
-      // range
-      var min = this.element.getAttribute('min');
-      var max = this.element.getAttribute('max');
-      if (null !== min && null !== max) this.addConstraint('range', [min, max], undefined, true);
-
-      // HTML5 min
-      else if (null !== min) this.addConstraint('min', min, undefined, true);
-
-        // HTML5 max
-        else if (null !== max) this.addConstraint('max', max, undefined, true);
-
-      // length
-      if (null !== this.element.getAttribute('minlength') && null !== this.element.getAttribute('maxlength')) this.addConstraint('length', [this.element.getAttribute('minlength'), this.element.getAttribute('maxlength')], undefined, true);
-
-      // HTML5 minlength
-      else if (null !== this.element.getAttribute('minlength')) this.addConstraint('minlength', this.element.getAttribute('minlength'), undefined, true);
-
-        // HTML5 maxlength
-        else if (null !== this.element.getAttribute('maxlength')) this.addConstraint('maxlength', this.element.getAttribute('maxlength'), undefined, true);
-
-      // html5 types
-      var type = Utils.getType(this.element);
-
-      // Small special case here for HTML5 number: integer validator if step attribute is undefined or an integer value, number otherwise
-      if ('number' === type) {
-        return this.addConstraint('type', ['number', {
-          step: this.element.getAttribute('step') || '1',
-          base: min || this.element.getAttribute('value')
-        }], undefined, true);
-        // Regular other HTML5 supported types
-      } else if (/^(email|url|range|date)$/i.test(type)) {
-          return this.addConstraint('type', type, undefined, true);
-        }
-      return this;
-    },
-
-    // Internal only.
-    // Field is required if have required constraint without `false` value
-    _isRequired: function _isRequired() {
-      if ('undefined' === typeof this.constraintsByName.required) return false;
-
-      return false !== this.constraintsByName.required.requirements;
-    },
-
-    // Internal only.
-    // Shortcut to trigger an event
-    _trigger: function _trigger(eventName) {
-      return this.trigger('field:' + eventName);
-    },
-
-    // Internal only
-    // Handles whitespace in a value
-    // Use `data-parsley-whitespace="squish"` to auto squish input value
-    // Use `data-parsley-whitespace="trim"` to auto trim input value
-    _handleWhitespace: function _handleWhitespace(value) {
-      if (true === this.options.trimValue) Utils.warnOnce('data-parsley-trim-value="true" is deprecated, please use data-parsley-whitespace="trim"');
-
-      if ('squish' === this.options.whitespace) value = value.replace(/\s{2,}/g, ' ');
-
-      if ('trim' === this.options.whitespace || 'squish' === this.options.whitespace || true === this.options.trimValue) value = Utils.trimString(value);
-
-      return value;
-    },
-
-    _isDateInput: function _isDateInput() {
-      var c = this.constraintsByName.type;
-      return c && c.requirements === 'date';
-    },
-
-    // Internal only.
-    // Returns the constraints, grouped by descending priority.
-    // The result is thus an array of arrays of constraints.
-    _getGroupedConstraints: function _getGroupedConstraints() {
-      if (false === this.options.priorityEnabled) return [this.constraints];
-
-      var groupedConstraints = [];
-      var index = {};
-
-      // Create array unique of priorities
-      for (var i = 0; i < this.constraints.length; i++) {
-        var p = this.constraints[i].priority;
-        if (!index[p]) groupedConstraints.push(index[p] = []);
-        index[p].push(this.constraints[i]);
-      }
-      // Sort them by priority DESC
-      groupedConstraints.sort(function (a, b) {
-        return b[0].priority - a[0].priority;
-      });
-
-      return groupedConstraints;
-    }
-
-  };
-
-  var parsley_field = Field;
-
-  var Multiple = function Multiple() {
-    this.__class__ = 'FieldMultiple';
-  };
-
-  Multiple.prototype = {
-    // Add new `$element` sibling for multiple field
-    addElement: function addElement($element) {
-      this.$elements.push($element);
-
-      return this;
-    },
-
-    // See `Field._refreshConstraints()`
-    _refreshConstraints: function _refreshConstraints() {
-      var fieldConstraints;
-
-      this.constraints = [];
-
-      // Select multiple special treatment
-      if (this.element.nodeName === 'SELECT') {
-        this.actualizeOptions()._bindConstraints();
-
-        return this;
-      }
-
-      // Gather all constraints for each input in the multiple group
-      for (var i = 0; i < this.$elements.length; i++) {
-
-        // Check if element have not been dynamically removed since last binding
-        if (!$('html').has(this.$elements[i]).length) {
-          this.$elements.splice(i, 1);
-          continue;
-        }
-
-        fieldConstraints = this.$elements[i].data('FieldMultiple')._refreshConstraints().constraints;
-
-        for (var j = 0; j < fieldConstraints.length; j++) this.addConstraint(fieldConstraints[j].name, fieldConstraints[j].requirements, fieldConstraints[j].priority, fieldConstraints[j].isDomConstraint);
-      }
-
-      return this;
-    },
-
-    // See `Field.getValue()`
-    getValue: function getValue() {
-      // Value could be overriden in DOM
-      if ('function' === typeof this.options.value) return this.options.value(this);else if ('undefined' !== typeof this.options.value) return this.options.value;
-
-      // Radio input case
-      if (this.element.nodeName === 'INPUT') {
-        var type = Utils.getType(this.element);
-        if (type === 'radio') return this._findRelated().filter(':checked').val() || '';
-
-        // checkbox input case
-        if (type === 'checkbox') {
-          var values = [];
-
-          this._findRelated().filter(':checked').each(function () {
-            values.push($(this).val());
-          });
-
-          return values;
-        }
-      }
-
-      // Select multiple case
-      if (this.element.nodeName === 'SELECT' && null === this.$element.val()) return [];
-
-      // Default case that should never happen
-      return this.$element.val();
-    },
-
-    _init: function _init() {
-      this.$elements = [this.$element];
-
-      return this;
-    }
-  };
-
-  var Factory = function Factory(element, options, parsleyFormInstance) {
-    this.element = element;
-    this.$element = $(element);
-
-    // If the element has already been bound, returns its saved Parsley instance
-    var savedparsleyFormInstance = this.$element.data('Parsley');
-    if (savedparsleyFormInstance) {
-
-      // If the saved instance has been bound without a Form parent and there is one given in this call, add it
-      if ('undefined' !== typeof parsleyFormInstance && savedparsleyFormInstance.parent === window.Parsley) {
-        savedparsleyFormInstance.parent = parsleyFormInstance;
-        savedparsleyFormInstance._resetOptions(savedparsleyFormInstance.options);
-      }
-
-      if ('object' === typeof options) {
-        _extends(savedparsleyFormInstance.options, options);
-      }
-
-      return savedparsleyFormInstance;
-    }
-
-    // Parsley must be instantiated with a DOM element or jQuery $element
-    if (!this.$element.length) throw new Error('You must bind Parsley on an existing element.');
-
-    if ('undefined' !== typeof parsleyFormInstance && 'Form' !== parsleyFormInstance.__class__) throw new Error('Parent instance must be a Form instance');
-
-    this.parent = parsleyFormInstance || window.Parsley;
-    return this.init(options);
-  };
-
-  Factory.prototype = {
-    init: function init(options) {
-      this.__class__ = 'Parsley';
-      this.__version__ = '2.8.1';
-      this.__id__ = Utils.generateID();
-
-      // Pre-compute options
-      this._resetOptions(options);
-
-      // A Form instance is obviously a `<form>` element but also every node that is not an input and has the `data-parsley-validate` attribute
-      if (this.element.nodeName === 'FORM' || Utils.checkAttr(this.element, this.options.namespace, 'validate') && !this.$element.is(this.options.inputs)) return this.bind('parsleyForm');
-
-      // Every other element is bound as a `Field` or `FieldMultiple`
-      return this.isMultiple() ? this.handleMultiple() : this.bind('parsleyField');
-    },
-
-    isMultiple: function isMultiple() {
-      var type = Utils.getType(this.element);
-      return type === 'radio' || type === 'checkbox' || this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple');
-    },
-
-    // Multiples fields are a real nightmare :(
-    // Maybe some refactoring would be appreciated here...
-    handleMultiple: function handleMultiple() {
-      var _this13 = this;
-
-      var name;
-      var multiple;
-      var parsleyMultipleInstance;
-
-      // Handle multiple name
-      this.options.multiple = this.options.multiple || (name = this.element.getAttribute('name')) || this.element.getAttribute('id');
-
-      // Special select multiple input
-      if (this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple')) {
-        this.options.multiple = this.options.multiple || this.__id__;
-        return this.bind('parsleyFieldMultiple');
-
-        // Else for radio / checkboxes, we need a `name` or `data-parsley-multiple` to properly bind it
-      } else if (!this.options.multiple) {
-          Utils.warn('To be bound by Parsley, a radio, a checkbox and a multiple select input must have either a name or a multiple option.', this.$element);
-          return this;
-        }
-
-      // Remove special chars
-      this.options.multiple = this.options.multiple.replace(/(:|\.|\[|\]|\{|\}|\$)/g, '');
-
-      // Add proper `data-parsley-multiple` to siblings if we have a valid multiple name
-      if (name) {
-        $('input[name="' + name + '"]').each(function (i, input) {
-          var type = Utils.getType(input);
-          if (type === 'radio' || type === 'checkbox') input.setAttribute(_this13.options.namespace + 'multiple', _this13.options.multiple);
-        });
-      }
-
-      // Check here if we don't already have a related multiple instance saved
-      var $previouslyRelated = this._findRelated();
-      for (var i = 0; i < $previouslyRelated.length; i++) {
-        parsleyMultipleInstance = $($previouslyRelated.get(i)).data('Parsley');
-        if ('undefined' !== typeof parsleyMultipleInstance) {
-
-          if (!this.$element.data('FieldMultiple')) {
-            parsleyMultipleInstance.addElement(this.$element);
-          }
-
-          break;
-        }
-      }
-
-      // Create a secret Field instance for every multiple field. It will be stored in `data('FieldMultiple')`
-      // And will be useful later to access classic `Field` stuff while being in a `FieldMultiple` instance
-      this.bind('parsleyField', true);
-
-      return parsleyMultipleInstance || this.bind('parsleyFieldMultiple');
-    },
-
-    // Return proper `Form`, `Field` or `FieldMultiple`
-    bind: function bind(type, doNotStore) {
-      var parsleyInstance;
-
-      switch (type) {
-        case 'parsleyForm':
-          parsleyInstance = $.extend(new Form(this.element, this.domOptions, this.options), new Base(), window.ParsleyExtend)._bindFields();
-          break;
-        case 'parsleyField':
-          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Base(), window.ParsleyExtend);
-          break;
-        case 'parsleyFieldMultiple':
-          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Multiple(), new Base(), window.ParsleyExtend)._init();
-          break;
-        default:
-          throw new Error(type + 'is not a supported Parsley type');
-      }
-
-      if (this.options.multiple) Utils.setAttr(this.element, this.options.namespace, 'multiple', this.options.multiple);
-
-      if ('undefined' !== typeof doNotStore) {
-        this.$element.data('FieldMultiple', parsleyInstance);
-
-        return parsleyInstance;
-      }
-
-      // Store the freshly bound instance in a DOM element for later access using jQuery `data()`
-      this.$element.data('Parsley', parsleyInstance);
-
-      // Tell the world we have a new Form or Field instance!
-      parsleyInstance._actualizeTriggers();
-      parsleyInstance._trigger('init');
-
-      return parsleyInstance;
-    }
-  };
-
-  var vernums = $.fn.jquery.split('.');
-  if (parseInt(vernums[0]) <= 1 && parseInt(vernums[1]) < 8) {
-    throw "The loaded version of jQuery is too old. Please upgrade to 1.8.x or better.";
-  }
-  if (!vernums.forEach) {
-    Utils.warn('Parsley requires ES5 to run properly. Please include https://github.com/es-shims/es5-shim');
-  }
-  // Inherit `on`, `off` & `trigger` to Parsley:
-  var Parsley = _extends(new Base(), {
-    element: document,
-    $element: $(document),
-    actualizeOptions: null,
-    _resetOptions: null,
-    Factory: Factory,
-    version: '2.8.1'
-  });
-
-  // Supplement Field and Form with Base
-  // This way, the constructors will have access to those methods
-  _extends(parsley_field.prototype, UI.Field, Base.prototype);
-  _extends(Form.prototype, UI.Form, Base.prototype);
-  // Inherit actualizeOptions and _resetOptions:
-  _extends(Factory.prototype, Base.prototype);
-
-  // ### jQuery API
-  // `$('.elem').parsley(options)` or `$('.elem').psly(options)`
-  $.fn.parsley = $.fn.psly = function (options) {
-    if (this.length > 1) {
-      var instances = [];
-
-      this.each(function () {
-        instances.push($(this).parsley(options));
-      });
-
-      return instances;
-    }
-
-    // Return undefined if applied to non existing DOM element
-    if (this.length == 0) {
-      return;
-    }
-
-    return new Factory(this[0], options);
-  };
-
-  // ### Field and Form extension
-  // Ensure the extension is now defined if it wasn't previously
-  if ('undefined' === typeof window.ParsleyExtend) window.ParsleyExtend = {};
-
-  // ### Parsley config
-  // Inherit from ParsleyDefault, and copy over any existing values
-  Parsley.options = _extends(Utils.objectCreate(Defaults), window.ParsleyConfig);
-  window.ParsleyConfig = Parsley.options; // Old way of accessing global options
-
-  // ### Globals
-  window.Parsley = window.psly = Parsley;
-  Parsley.Utils = Utils;
-  window.ParsleyUtils = {};
-  $.each(Utils, function (key, value) {
-    if ('function' === typeof value) {
-      window.ParsleyUtils[key] = function () {
-        Utils.warnOnce('Accessing `window.ParsleyUtils` is deprecated. Use `window.Parsley.Utils` instead.');
-        return Utils[key].apply(Utils, arguments);
-      };
-    }
-  });
-
-  // ### Define methods that forward to the registry, and deprecate all access except through window.Parsley
-  var registry = window.Parsley._validatorRegistry = new ValidatorRegistry(window.ParsleyConfig.validators, window.ParsleyConfig.i18n);
-  window.ParsleyValidator = {};
-  $.each('setLocale addCatalog addMessage addMessages getErrorMessage formatMessage addValidator updateValidator removeValidator hasValidator'.split(' '), function (i, method) {
-    window.Parsley[method] = function () {
-      return registry[method].apply(registry, arguments);
-    };
-    window.ParsleyValidator[method] = function () {
-      var _window$Parsley;
-
-      Utils.warnOnce('Accessing the method \'' + method + '\' through Validator is deprecated. Simply call \'window.Parsley.' + method + '(...)\'');
-      return (_window$Parsley = window.Parsley)[method].apply(_window$Parsley, arguments);
-    };
-  });
-
-  // ### UI
-  // Deprecated global object
-  window.Parsley.UI = UI;
-  window.ParsleyUI = {
-    removeError: function removeError(instance, name, doNotUpdateClass) {
-      var updateClass = true !== doNotUpdateClass;
-      Utils.warnOnce('Accessing UI is deprecated. Call \'removeError\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
-      return instance.removeError(name, { updateClass: updateClass });
-    },
-    getErrorsMessages: function getErrorsMessages(instance) {
-      Utils.warnOnce('Accessing UI is deprecated. Call \'getErrorsMessages\' on the instance directly.');
-      return instance.getErrorsMessages();
-    }
-  };
-  $.each('addError updateError'.split(' '), function (i, method) {
-    window.ParsleyUI[method] = function (instance, name, message, assert, doNotUpdateClass) {
-      var updateClass = true !== doNotUpdateClass;
-      Utils.warnOnce('Accessing UI is deprecated. Call \'' + method + '\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
-      return instance[method](name, { message: message, assert: assert, updateClass: updateClass });
-    };
-  });
-
-  // ### PARSLEY auto-binding
-  // Prevent it by setting `ParsleyConfig.autoBind` to `false`
-  if (false !== window.ParsleyConfig.autoBind) {
-    $(function () {
-      // Works only on `data-parsley-validate`.
-      if ($('[data-parsley-validate]').length) $('[data-parsley-validate]').parsley();
-    });
-  }
-
-  var o = $({});
-  var deprecated = function deprecated() {
-    Utils.warnOnce("Parsley's pubsub module is deprecated; use the 'on' and 'off' methods on parsley instances or window.Parsley");
-  };
-
-  // Returns an event handler that calls `fn` with the arguments it expects
-  function adapt(fn, context) {
-    // Store to allow unbinding
-    if (!fn.parsleyAdaptedCallback) {
-      fn.parsleyAdaptedCallback = function () {
-        var args = Array.prototype.slice.call(arguments, 0);
-        args.unshift(this);
-        fn.apply(context || o, args);
-      };
-    }
-    return fn.parsleyAdaptedCallback;
-  }
-
-  var eventPrefix = 'parsley:';
-  // Converts 'parsley:form:validate' into 'form:validate'
-  function eventName(name) {
-    if (name.lastIndexOf(eventPrefix, 0) === 0) return name.substr(eventPrefix.length);
-    return name;
-  }
-
-  // $.listen is deprecated. Use Parsley.on instead.
-  $.listen = function (name, callback) {
-    var context;
-    deprecated();
-    if ('object' === typeof arguments[1] && 'function' === typeof arguments[2]) {
-      context = arguments[1];
-      callback = arguments[2];
-    }
-
-    if ('function' !== typeof callback) throw new Error('Wrong parameters');
-
-    window.Parsley.on(eventName(name), adapt(callback, context));
-  };
-
-  $.listenTo = function (instance, name, fn) {
-    deprecated();
-    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
-
-    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong parameters');
-
-    instance.on(eventName(name), adapt(fn));
-  };
-
-  $.unsubscribe = function (name, fn) {
-    deprecated();
-    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong arguments');
-    window.Parsley.off(eventName(name), fn.parsleyAdaptedCallback);
-  };
-
-  $.unsubscribeTo = function (instance, name) {
-    deprecated();
-    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
-    instance.off(eventName(name));
-  };
-
-  $.unsubscribeAll = function (name) {
-    deprecated();
-    window.Parsley.off(eventName(name));
-    $('form,input,textarea,select').each(function () {
-      var instance = $(this).data('Parsley');
-      if (instance) {
-        instance.off(eventName(name));
-      }
-    });
-  };
-
-  // $.emit is deprecated. Use jQuery events instead.
-  $.emit = function (name, instance) {
-    var _instance;
-
-    deprecated();
-    var instanceGiven = instance instanceof parsley_field || instance instanceof Form;
-    var args = Array.prototype.slice.call(arguments, instanceGiven ? 2 : 1);
-    args.unshift(eventName(name));
-    if (!instanceGiven) {
-      instance = window.Parsley;
-    }
-    (_instance = instance).trigger.apply(_instance, _toConsumableArray(args));
-  };
-
-  var pubsub = {};
-
-  $.extend(true, Parsley, {
-    asyncValidators: {
-      'default': {
-        fn: function fn(xhr) {
-          // By default, only status 2xx are deemed successful.
-          // Note: we use status instead of state() because responses with status 200
-          // but invalid messages (e.g. an empty body for content type set to JSON) will
-          // result in state() === 'rejected'.
-          return xhr.status >= 200 && xhr.status < 300;
-        },
-        url: false
-      },
-      reverse: {
-        fn: function fn(xhr) {
-          // If reverse option is set, a failing ajax request is considered successful
-          return xhr.status < 200 || xhr.status >= 300;
-        },
-        url: false
-      }
-    },
-
-    addAsyncValidator: function addAsyncValidator(name, fn, url, options) {
-      Parsley.asyncValidators[name] = {
-        fn: fn,
-        url: url || false,
-        options: options || {}
-      };
-
-      return this;
-    }
-
-  });
-
-  Parsley.addValidator('remote', {
-    requirementType: {
-      '': 'string',
-      'validator': 'string',
-      'reverse': 'boolean',
-      'options': 'object'
-    },
-
-    validateString: function validateString(value, url, options, instance) {
-      var data = {};
-      var ajaxOptions;
-      var csr;
-      var validator = options.validator || (true === options.reverse ? 'reverse' : 'default');
-
-      if ('undefined' === typeof Parsley.asyncValidators[validator]) throw new Error('Calling an undefined async validator: `' + validator + '`');
-
-      url = Parsley.asyncValidators[validator].url || url;
-
-      // Fill current value
-      if (url.indexOf('{value}') > -1) {
-        url = url.replace('{value}', encodeURIComponent(value));
-      } else {
-        data[instance.element.getAttribute('name') || instance.element.getAttribute('id')] = value;
-      }
-
-      // Merge options passed in from the function with the ones in the attribute
-      var remoteOptions = $.extend(true, options.options || {}, Parsley.asyncValidators[validator].options);
-
-      // All `$.ajax(options)` could be overridden or extended directly from DOM in `data-parsley-remote-options`
-      ajaxOptions = $.extend(true, {}, {
-        url: url,
-        data: data,
-        type: 'GET'
-      }, remoteOptions);
-
-      // Generate store key based on ajax options
-      instance.trigger('field:ajaxoptions', instance, ajaxOptions);
-
-      csr = $.param(ajaxOptions);
-
-      // Initialise querry cache
-      if ('undefined' === typeof Parsley._remoteCache) Parsley._remoteCache = {};
-
-      // Try to retrieve stored xhr
-      var xhr = Parsley._remoteCache[csr] = Parsley._remoteCache[csr] || $.ajax(ajaxOptions);
-
-      var handleXhr = function handleXhr() {
-        var result = Parsley.asyncValidators[validator].fn.call(instance, xhr, url, options);
-        if (!result) // Map falsy results to rejected promise
-          result = $.Deferred().reject();
-        return $.when(result);
-      };
-
-      return xhr.then(handleXhr, handleXhr);
-    },
-
-    priority: -1
-  });
-
-  Parsley.on('form:submit', function () {
-    Parsley._remoteCache = {};
-  });
-
-  Base.prototype.addAsyncValidator = function () {
-    Utils.warnOnce('Accessing the method `addAsyncValidator` through an instance is deprecated. Simply call `Parsley.addAsyncValidator(...)`');
-    return Parsley.addAsyncValidator.apply(Parsley, arguments);
-  };
-
-  // This is included with the Parsley library itself,
-  // thus there is no use in adding it to your project.
-  Parsley.addMessages('en', {
-    defaultMessage: "This value seems to be invalid.",
-    type: {
-      email: "This value should be a valid email.",
-      url: "This value should be a valid url.",
-      number: "This value should be a valid number.",
-      integer: "This value should be a valid integer.",
-      digits: "This value should be digits.",
-      alphanum: "This value should be alphanumeric."
-    },
-    notblank: "This value should not be blank.",
-    required: "This value is required.",
-    pattern: "This value seems to be invalid.",
-    min: "This value should be greater than or equal to %s.",
-    max: "This value should be lower than or equal to %s.",
-    range: "This value should be between %s and %s.",
-    minlength: "This value is too short. It should have %s characters or more.",
-    maxlength: "This value is too long. It should have %s characters or fewer.",
-    length: "This value length is invalid. It should be between %s and %s characters long.",
-    mincheck: "You must select at least %s choices.",
-    maxcheck: "You must select %s choices or fewer.",
-    check: "You must select between %s and %s choices.",
-    equalto: "This value should be the same."
-  });
-
-  Parsley.setLocale('en');
-
-  /**
-   * inputevent - Alleviate browser bugs for input events
-   * https://github.com/marcandre/inputevent
-   * @version v0.0.3 - (built Thu, Apr 14th 2016, 5:58 pm)
-   * @author Marc-Andre Lafortune <github@marc-andre.ca>
-   * @license MIT
-   */
-
-  function InputEvent() {
-    var _this14 = this;
-
-    var globals = window || global;
-
-    // Slightly odd way construct our object. This way methods are force bound.
-    // Used to test for duplicate library.
-    _extends(this, {
-
-      // For browsers that do not support isTrusted, assumes event is native.
-      isNativeEvent: function isNativeEvent(evt) {
-        return evt.originalEvent && evt.originalEvent.isTrusted !== false;
-      },
-
-      fakeInputEvent: function fakeInputEvent(evt) {
-        if (_this14.isNativeEvent(evt)) {
-          $(evt.target).trigger('input');
-        }
-      },
-
-      misbehaves: function misbehaves(evt) {
-        if (_this14.isNativeEvent(evt)) {
-          _this14.behavesOk(evt);
-          $(document).on('change.inputevent', evt.data.selector, _this14.fakeInputEvent);
-          _this14.fakeInputEvent(evt);
-        }
-      },
-
-      behavesOk: function behavesOk(evt) {
-        if (_this14.isNativeEvent(evt)) {
-          $(document) // Simply unbinds the testing handler
-          .off('input.inputevent', evt.data.selector, _this14.behavesOk).off('change.inputevent', evt.data.selector, _this14.misbehaves);
-        }
-      },
-
-      // Bind the testing handlers
-      install: function install() {
-        if (globals.inputEventPatched) {
-          return;
-        }
-        globals.inputEventPatched = '0.0.3';
-        var _arr = ['select', 'input[type="checkbox"]', 'input[type="radio"]', 'input[type="file"]'];
-        for (var _i = 0; _i < _arr.length; _i++) {
-          var selector = _arr[_i];
-          $(document).on('input.inputevent', selector, { selector: selector }, _this14.behavesOk).on('change.inputevent', selector, { selector: selector }, _this14.misbehaves);
-        }
-      },
-
-      uninstall: function uninstall() {
-        delete globals.inputEventPatched;
-        $(document).off('.inputevent');
-      }
-
-    });
-  };
-
-  var inputevent = new InputEvent();
-
-  inputevent.install();
-
-  var parsley = Parsley;
-
-  return parsley;
-});
-//# sourceMappingURL=parsley.js.map
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(2)))
-
-/***/ }),
-
-/***/ 4:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(7);
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-
-/***/ 6:
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27530,11 +20875,80 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(4).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(3).setImmediate))
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/***/ 7:
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(4);
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -27724,9 +21138,6590 @@ module.exports = Vue;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(5)))
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
+/**
+* jQuery asAccordion v0.2.2
+* https://github.com/amazingSurge/jquery-asAccordion
+*
+* Copyright (c) amazingSurge
+* Released under the LGPL-3.0 license
+*/
+
+
+var DEFAULTS = {
+  namespace: 'accordion',
+  skin: null,
+  mobileBreakpoint: 768,
+  initialIndex: 0,
+  easing: 'ease-in-out',
+  speed: 500,
+  direction: 'vertical',
+  event: 'click',
+  multiple: false
+};
+
+function transition() {
+  let e;
+  let end;
+  let prefix = '';
+  let supported = false;
+  const el = document.createElement("fakeelement");
+
+  const transitions = {
+    "WebkitTransition": "webkitTransitionEnd",
+    "MozTransition": "transitionend",
+    "OTransition": "oTransitionend",
+    "transition": "transitionend"
+  };
+
+  for (e in transitions) {
+    if (el.style[e] !== undefined) {
+      end = transitions[e];
+      supported = true;
+      break;
+    }
+  }
+  if (/(WebKit)/i.test(window.navigator.userAgent)) {
+    prefix = '-webkit-';
+  }
+  return {
+    prefix,
+    end,
+    supported
+  };
+}
+
+function throttle(func, wait) {
+  const _now = Date.now || function() {
+    return new Date().getTime();
+  };
+
+  let timeout;
+  let context;
+  let args;
+  let result;
+  let previous = 0;
+  let later = function() {
+    previous = _now();
+    timeout = null;
+    result = func.apply(context, args);
+    if (!timeout) {
+      context = args = null;
+    }
+  };
+
+  return (...params) => {
+    /*eslint consistent-this: "off"*/
+    let now = _now();
+    let remaining = wait - (now - previous);
+    context = this;
+    args = params;
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = now;
+      result = func.apply(context, args);
+      if (!timeout) {
+        context = args = null;
+      }
+    } else if (!timeout) {
+      timeout = setTimeout(later, remaining);
+    }
+    return result;
+  };
+}
+
+const NAMESPACE$1 = 'asAccordion';
+
+/**
+ * Plugin constructor
+ **/
+class asAccordion {
+  constructor(element, options) {
+    this.element = element;
+    this.$element = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(element);
+
+    this.options = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({}, DEFAULTS, options, this.$element.data());
+
+    this.namespace = this.options.namespace;
+    this.initialIndex = this.options.initialIndex;
+    this.initialized = false;
+    this.disabled = false;
+    this.current = null;
+
+    this.classes = {
+      // status
+      skin: `${this.namespace}--${this.options.skin}`,
+      direction: `${this.namespace}--${this.options.direction}`,
+      active: `${this.namespace}--active`,
+      disabled: `${this.namespace}--disabled`
+    };
+
+    this.$panel = this.$element.children('li');
+    this.$heading = this.$panel.children('span');
+    this.$expander = this.$panel.children('div');
+
+    this.size = this.$panel.length;
+
+    this.$element.addClass(this.classes.direction);
+    this.$panel.addClass(`${this.namespace}__panel`);
+    this.$heading.addClass(`${this.namespace}__heading`);
+    this.$expander.addClass(`${this.namespace}__expander`);
+
+    if (this.options.skin) {
+      this.$element.addClass(this.classes.skin);
+    }
+
+    this.transition = transition();
+
+    this._trigger('init');
+    this.init();
+  }
+
+  init() {
+    const style = {};
+
+    this.distance = this.$heading.outerHeight();
+    if (this.options.direction === 'vertical') {
+      this.animateProperty = 'height';
+    } else {
+      this.animateProperty = 'width';
+    }
+
+    style[this.animateProperty] = this.distance;
+
+    this.$panel.css(style);
+
+    this.$heading.on(this.options.event, e => {
+      if (this.disabled) {
+        return false;
+      }
+
+      const index = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(e.currentTarget).parent().index();
+      this.set(index);
+      return false;
+    });
+
+    this.set(this.initialIndex);
+    this.current = this.initialIndex;
+
+    this.initialized = true;
+
+    this.responsiveCheck();
+
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(window).on('resize', throttle(() => {
+      this.responsiveCheck();
+    }, 250));
+
+    this._trigger('ready');
+  }
+
+  responsiveCheck() {
+    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default()('html, body').outerWidth() <= this.options.mobileBreakpoint && !this.responsive) {
+      if (this.options.direction === 'vertical') {
+        return;
+      }
+      this.responsive = true;
+
+      this.resize();
+    } else {
+      if (typeof this.defaultDirection === 'undefined' || this.defaultDirection === 'vertical') {
+        return;
+      }
+      this.responsive = false;
+
+      this.resize();
+    }
+  }
+
+  resize() {
+    const style = {};
+    this.defaultDirection = this.options.direction;
+    if (this.options.direction === 'vertical') {
+      this.options.direction = 'horizontal';
+      this.animateProperty = 'width';
+      this.$panel.css('height', '100%');
+    }else {
+      this.options.direction = 'vertical';
+      this.animateProperty = 'height';
+      this.$panel.css('width', 'auto');
+    }
+
+    this.$element.removeClass(this.classes.direction);
+    this.classes.direction = `${this.namespace}--${this.options.direction}`;
+    this.$element.addClass(this.classes.direction);
+
+    style[this.animateProperty] = this.distance;
+    this.$panel.css(style).removeClass(this.classes.active);
+
+    if (this.current.length >= 0 || this.current >= 0) {
+      const index = this.current;
+      this.current = this.current.length >= 0? [] : null;
+      this.set(index);
+    }
+  }
+
+  set(index) {
+    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(index)) {
+      for(let i of index) {
+        this.set(i);
+      }
+    } else {
+      if (index >= this.size || index < 0) {
+        return;
+      }
+
+      const that = this;
+      const $panel = this.$panel.eq(index);
+      const $oldPanel = this.$element.find(`.${this.classes.active}`);
+      let distance;
+      let duration;
+      const style = {};
+      const oldStyle = {};
+
+      const moveEnd = () => {
+        that.$element.trigger('moveEnd');
+      };
+
+      if (typeof duration === 'undefined') {
+        duration = this.options.speed;
+      }
+      duration = Math.ceil(duration);
+
+      if ($panel.hasClass(this.classes.active)) {
+        distance = this.distance;
+        $panel.removeClass(this.classes.active);
+
+        if (this.options.multiple) {
+          for (var key in this.current) {
+            if (this.current[key] === index) {
+              
+            } else {
+              continue;
+            }
+            this.current.splice(key, 1);
+          }
+        } else {
+          this.current = null;
+        }
+      } else {
+        if (this.options.direction === 'vertical') {
+          distance = $panel.find('.' + this.namespace + '__expander').outerHeight() + this.distance;
+        } else {
+          distance = $panel.find('.' + this.namespace + '__expander').outerWidth() + this.distance;
+        }
+
+        if (this.options.multiple && __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(this.current)) {
+          this.current.push(index);
+        } else {
+          this.current = index;
+        }
+
+        if (this.options.multiple) {
+          $panel.addClass(this.classes.active);
+        } else {
+          oldStyle[this.animateProperty] = this.distance;  // used to remove the original distance
+          this.animate($oldPanel, oldStyle, duration, this.options.easing, moveEnd);
+
+          $panel.addClass(this.classes.active).siblings().removeClass(this.classes.active);
+        }
+      }
+
+      style[this.animateProperty] = distance;
+
+      this.animate($panel, style, duration, this.options.easing, moveEnd);
+    }
+  }
+
+  animate($el, properties, duration, easing, callback) {
+    const that = this;
+
+    if(this.transition.supported){
+      window.setTimeout(() => {
+        that.insertRule(`.transition_${easing} {${that.transition.prefix}transition: all ${duration}ms ${easing} 0s;}`);
+
+        $el.addClass(`transition_${easing}`).one(that.transition.end, function() {
+          $el.removeClass(`transition_${easing}`);
+
+          callback.call(this);
+        });
+        $el.css(properties);
+      }, 10);
+    } else {
+      $el.animate(properties, duration, easing, callback);
+    }
+  }
+
+  insertRule(rule) {
+    if (this.rules && this.rules[rule]) {
+      return;
+    } else if (this.rules === undefined) {
+      this.rules = {};
+    } else {
+      this.rules[rule] = true;
+    }
+
+    if (document.styleSheets && document.styleSheets.length) {
+      document.styleSheets[0].insertRule(rule, 0);
+    } else {
+      const style = document.createElement('style');
+      style.innerHTML = rule;
+      document.head.appendChild(style);
+    }
+  }
+
+  _trigger(eventType, ...params) {
+    let data = [this].concat(params);
+
+    // event
+    this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
+
+    // callback
+    eventType = eventType.replace(/\b\w+\b/g, (word) => {
+      return word.substring(0, 1).toUpperCase() + word.substring(1);
+    });
+    let onFunction = `on${eventType}`;
+
+    if (typeof this.options[onFunction] === 'function') {
+      this.options[onFunction].apply(this, params);
+    }
+  }
+
+  enable() {
+    this.disabled = false;
+    this.$element.removeClass(this.classes.disabled);
+    this._trigger('enable');
+  }
+
+  disable() {
+    this.disabled = true;
+    this.$element.addClass(this.classes.disabled);
+    this._trigger('disable');
+  }
+
+  destroy() {
+    this.$element.data(NAMESPACE$1, null);
+    this.$element.remove();
+    this._trigger('destroy');
+  }
+
+  static setDefaults(options) {
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend(DEFAULTS, __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isPlainObject(options) && options);
+  }
+}
+
+var info = {
+  version:'0.2.2'
+};
+
+const NAMESPACE = 'asAccordion';
+const OtherAsAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion;
+
+const jQueryAsAccordion = function(options, ...args) {
+  if (typeof options === 'string') {
+    const method = options;
+
+    if (/^_/.test(method)) {
+      return false;
+    } else if ((/^(get)/.test(method))) {
+      const instance = this.first().data(NAMESPACE);
+      if (instance && typeof instance[method] === 'function') {
+        return instance[method](...args);
+      }
+    } else {
+      return this.each(function() {
+        const instance = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.data(this, NAMESPACE);
+        if (instance && typeof instance[method] === 'function') {
+          instance[method](...args);
+        }
+      });
+    }
+  }
+
+  return this.each(function() {
+    if (!__WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE)) {
+      __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE, new asAccordion(this, options));
+    }
+  });
+};
+
+__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = jQueryAsAccordion;
+
+__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({
+  setDefaults: asAccordion.setDefaults,
+  noConflict: function() {
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = OtherAsAccordion;
+    return jQueryAsAccordion;
+  }
+}, info);
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * jquery.sumoselect - v3.0.3
+ * http://hemantnegi.github.io/jquery.sumoselect
+ * 2016-12-12
+ *
+ * Copyright 2015 Hemant Negi
+ * Email : hemant.frnz@gmail.com
+ * Compressor http://refresh-sf.com/
+ */
+
+(function (factory) {
+    'use strict';
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports !== 'undefined') {
+        module.exports = factory(require('jquery'));
+    } else {
+        factory(jQuery);
+    }
+
+})(function ($) {
+
+    'namespace sumo';
+    $.fn.SumoSelect = function (options) {
+
+        // This is the easiest way to have default options.
+        var settings = $.extend({
+            placeholder: 'Select Here',   // Dont change it here.
+            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
+            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
+            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
+            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
+            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
+            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
+            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
+            csvSepChar: ',',              // separation char in csv mode
+            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
+            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
+            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
+            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
+
+            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
+            searchText: 'Search...',      // placeholder for search input
+            searchFn: function(haystack, needle) { // search function
+                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
+            },
+            noMatch: 'No matches for "{0}"',
+            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
+            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
+            up: false,                    // set true to open upside.
+            showTitle: true               // set to false to prevent title (tooltip) from appearing
+        }, options);
+
+        var ret = this.each(function () {
+            var selObj = this; // the original select object.
+            if (this.sumo || !$(this).is('select')) return; //already initialized
+
+            this.sumo = {
+                E: $(selObj),   //the jquery object of original select element.
+                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
+                select: '',
+                caption: '',
+                placeholder: '',
+                optDiv: '',
+                CaptionCont: '',
+                ul: '',
+                is_floating: false,
+                is_opened: false,
+                //backdrop: '',
+                mob: false, // if to open device default select
+                Pstate: [],
+                lastUnselected: null,
+
+                createElems: function () {
+                    var O = this;
+                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
+                    O.select = O.E.parent();
+                    O.caption = $('<span>');
+                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
+                        .attr('style', O.E.attr('style'))
+                        .prepend(O.caption);
+                    O.select.append(O.CaptionCont);
+
+                    // default turn off if no multiselect
+                    if (!O.is_multi) settings.okCancelInMulti = false
+
+                    if (O.E.attr('disabled'))
+                        O.select.addClass('disabled').removeAttr('tabindex');
+
+                    //if output as csv and is a multiselect.
+                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
+                        //create a hidden field to store csv value.
+                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
+
+                        // so it can not post the original select.
+                        O.E.removeAttr('name');
+                    }
+
+                    //break for mobile rendring.. if forceCustomRendering is false
+                    if (O.isMobile() && !settings.forceCustomRendering) {
+                        O.setNativeMobile();
+                        return;
+                    }
+
+                    // if there is a name attr in select add a class to container div
+                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
+
+                    //hide original select
+                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
+
+                    //## Creating the list...
+                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
+
+                    //branch for floating list in low res devices.
+                    O.floatingList();
+
+                    //Creating the markup for the available options
+                    O.ul = $('<ul class="options">');
+                    O.optDiv.append(O.ul);
+
+                    // Select all functionality
+                    if (settings.selectAll && O.is_multi) O.SelAll();
+
+                    // search functionality
+                    if (settings.search) O.Search();
+
+                    O.ul.append(O.prepItems(O.E.children()));
+
+                    //if multiple then add the class multiple and add OK / CANCEL button
+                    if (O.is_multi) O.multiSelelect();
+
+                    O.select.append(O.optDiv);
+                    O.basicEvents();
+                    O.selAllState();
+                },
+
+                prepItems: function (opts, d) {
+                    var lis = [], O = this;
+                    $(opts).each(function (i, opt) {       // parsing options to li
+                        opt = $(opt);
+                        lis.push(opt.is('optgroup') ?
+                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
+                                .find('ul')
+                                .append(O.prepItems(opt.children(), opt[0].disabled))
+                                .end()
+                            :
+                            O.createLi(opt, d)
+                        );
+                    });
+                    return lis;
+                },
+
+                //## Creates a LI element from a given option and binds events to it
+                //## returns the jquery instance of li (not inserted in dom)
+                createLi: function (opt, d) {
+                    var O = this;
+
+                    if (!opt.attr('value')) opt.attr('value', opt.val());
+                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
+
+                    li.data('opt', opt);    // store a direct reference to option.
+                    opt.data('li', li);    // store a direct reference to list item.
+                    if (O.is_multi) li.prepend('<span><i></i></span>');
+
+                    if (opt[0].disabled || d)
+                        li = li.addClass('disabled');
+
+                    O.onOptClick(li);
+
+                    if (opt[0].selected)
+                        li.addClass('selected');
+
+                    if (opt.attr('class'))
+                        li.addClass(opt.attr('class'));
+
+                    if (opt.attr('title'))
+                        li.attr('title', opt.attr('title'));
+
+                    return li;
+                },
+
+                //## Returns the selected items as string in a Multiselect.
+                getSelStr: function () {
+                    // get the pre selected items.
+                    var sopt = [];
+                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
+                    return sopt.join(settings.csvSepChar);
+                },
+
+                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
+                multiSelelect: function () {
+                    var O = this;
+                    O.optDiv.addClass('multiple');
+                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
+                        //if combined change event is set.
+                        O._okbtn();
+                        O.hideOpts();
+                    });
+                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
+                        O._cnbtn();
+                        O.hideOpts();
+                    });
+                    var btns = O.okbtn.add(O.cancelBtn);
+                    O.optDiv.append($('<div class="MultiControls">').append(btns));
+
+                    // handling keyboard navigation on ok cancel buttons.
+                    btns.on('keydown.sumo', function (e) {
+                        var el = $(this);
+                        switch (e.which) {
+                            case 32: // space
+                            case 13: // enter
+                                el.trigger('click');
+                                break;
+
+                            case 9:  //tab
+                                if (el.hasClass('btnOk')) return;
+                            case 27: // esc
+                                O._cnbtn();
+                                O.hideOpts();
+                                return;
+                        }
+                        e.stopPropagation();
+                        e.preventDefault();
+                    });
+                },
+
+                _okbtn: function () {
+                    var O = this, cg = 0;
+                    //if combined change event is set.
+                    if (settings.triggerChangeCombined) {
+                        //check for a change in the selection.
+                        if (O.E.find('option:selected').length !== O.Pstate.length) {
+                            cg = 1;
+                        }
+                        else {
+                            O.E.find('option').each(function (i, e) {
+                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
+                            });
+                        }
+
+                        if (cg) {
+                            O.callChange();
+                            O.setText();
+                        }
+                    }
+                },
+                _cnbtn: function () {
+                    var O = this;
+                    //remove all selections
+                    O.E.find('option:selected').each(function () { this.selected = false; });
+                    O.optDiv.find('li.selected').removeClass('selected')
+
+                    //restore selections from saved state.
+                    for (var i = 0; i < O.Pstate.length; i++) {
+                        O.E.find('option')[O.Pstate[i]].selected = true;
+                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
+                    }
+                    O.selAllState();
+                },
+
+                SelAll: function () {
+                    var O = this;
+                    if (!O.is_multi) return;
+                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
+                    O.optDiv.addClass('selall');
+                    O.selAll.on('click', function () {
+                        O.selAll.toggleClass('selected');
+                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
+                        //O.selAllState();
+                    });
+
+                    O.optDiv.prepend(O.selAll);
+                },
+
+                // search module (can be removed if not required.)
+                Search: function () {
+                    var O = this,
+                        cc = O.CaptionCont.addClass('search'),
+                        P = $('<p class="no-match">'),
+                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
+
+                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
+                        .on('click', function (e) {
+                            e.stopPropagation();
+                        });
+                    cc.append(O.ftxt);
+                    O.optDiv.children('ul').after(P);
+
+                    O.ftxt.on('keyup.sumo', function () {
+                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
+                            var e = $(e),
+                                opt = e.data('opt')[0];
+                            opt.hidden = fn(e.text(), O.ftxt.val());
+                            e.toggleClass('hidden', opt.hidden);
+                        }).not('.hidden');
+
+                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
+                        P.find('em').text(O.ftxt.val());
+                        O.selAllState();
+                    });
+                },
+
+                selAllState: function () {
+                    var O = this;
+                    if (settings.selectAll && O.is_multi) {
+                        var sc = 0, vc = 0;
+                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
+                            if ($(e).hasClass('selected')) sc++;
+                            if (!$(e).hasClass('disabled')) vc++;
+                        });
+                        //select all checkbox state change.
+                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
+                        else if (sc === 0) O.selAll.removeClass('selected partial');
+                        else O.selAll.addClass('partial')//.removeClass('selected');
+                    }
+                },
+
+                showOpts: function () {
+                    var O = this;
+                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
+                    O.E.trigger('sumo:opening', O);
+                    O.is_opened = true;
+                    O.select.addClass('open').attr('aria-expanded', 'true');
+                    O.E.trigger('sumo:opened', O);
+
+                    if (O.ftxt) O.ftxt.focus();
+                    else O.select.focus();
+
+                    // hide options on click outside.
+                    $(document).on('click.sumo', function (e) {
+                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
+                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
+                            if (!O.is_opened) return;
+                            O.hideOpts();
+                            if (settings.okCancelInMulti) {
+                                if (settings.isClickAwayOk)
+                                    O._okbtn();
+                                else
+                                    O._cnbtn();
+                            }
+                        }
+                    });
+
+                    if (O.is_floating) {
+                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
+                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
+                        O.optDiv.css('height', H);
+                        $('body').addClass('sumoStopScroll');
+                    }
+
+                    O.setPstate();
+                },
+
+                //maintain state when ok/cancel buttons are available storing the indexes.
+                setPstate: function () {
+                    var O = this;
+                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
+                        O.Pstate = [];
+                        // assuming that find returns elements in tree order
+                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
+                    }
+                },
+
+                callChange: function () {
+                    this.E.trigger('change').trigger('click');
+                },
+
+                hideOpts: function () {
+                    var O = this;
+                    if (O.is_opened) {
+                        O.E.trigger('sumo:closing', O);
+                        O.is_opened = false;
+                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
+                        O.E.trigger('sumo:closed', O);
+                        $(document).off('click.sumo');
+                        O.select.focus();
+                        $('body').removeClass('sumoStopScroll');
+
+                        // clear the search
+                        if (settings.search) {
+                            O.ftxt.val('');
+                            O.ftxt.trigger('keyup.sumo');
+                        }
+                    }
+                },
+                setOnOpen: function () {
+                    var O = this,
+                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
+                    if (li.hasClass('disabled')) {
+                        li = li.next(':not(disabled)')
+                        if (!li.length) return;
+                    }
+                    O.optDiv.find('li.sel').removeClass('sel');
+                    li.addClass('sel');
+                    O.showOpts();
+                },
+                nav: function (up) {
+                    var O = this, c,
+                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
+                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
+                        idx = s.index(sel);
+                    if (O.is_opened && sel.length) {
+
+                        if (up && idx > 0)
+                            c = s.eq(idx - 1);
+                        else if (!up && idx < s.length - 1 && idx > -1)
+                            c = s.eq(idx + 1);
+                        else return; // if no items before or after
+
+                        sel.removeClass('sel');
+                        sel = c.addClass('sel');
+
+                        // setting sel item to visible view.
+                        var ul = O.ul,
+                            st = ul.scrollTop(),
+                            t = sel.position().top + st;
+                        if (t >= st + ul.height() - sel.outerHeight())
+                            ul.scrollTop(t - ul.height() + sel.outerHeight());
+                        if (t < st)
+                            ul.scrollTop(t);
+
+                    }
+                    else
+                        O.setOnOpen();
+                },
+
+                basicEvents: function () {
+                    var O = this;
+                    O.CaptionCont.click(function (evt) {
+                        O.E.trigger('click');
+                        if (O.is_opened) O.hideOpts(); else O.showOpts();
+                        evt.stopPropagation();
+                    });
+
+                    O.select.on('keydown.sumo', function (e) {
+                        switch (e.which) {
+                            case 38: // up
+                                O.nav(true);
+                                break;
+
+                            case 40: // down
+                                O.nav(false);
+                                break;
+
+                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
+                                if (O.is_multi && e.ctrlKey) {
+                                    O.toggSelAll(!e.shiftKey, 1);
+                                    break;
+                                }
+                                else
+                                    return;
+
+                            case 32: // space
+                                if (settings.search && O.ftxt.is(e.target)) return;
+                            case 13: // enter
+                                if (O.is_opened)
+                                    O.optDiv.find('ul li.sel').trigger('click');
+                                else
+                                    O.setOnOpen();
+                                break;
+                            case 9:	 //tab
+                                if (!settings.okCancelInMulti)
+                                    O.hideOpts();
+                                return;
+                            case 27: // esc
+                                if (settings.okCancelInMulti) O._cnbtn();
+                                O.hideOpts();
+                                return;
+
+                            default:
+                                return; // exit this handler for other keys
+                        }
+                        e.preventDefault(); // prevent the default action (scroll / move caret)
+                    });
+
+                    $(window).on('resize.sumo', function () {
+                        O.floatingList();
+                    });
+                },
+
+                onOptClick: function (li) {
+                    var O = this;
+                    li.click(function () {
+                        var li = $(this);
+                        if (li.hasClass('disabled')) return;
+                        var txt = "";
+                        if (O.is_multi) {
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = li.hasClass('selected');
+                            if (li.data('opt')[0].selected === false) {
+                                O.lastUnselected = li.data('opt')[0].textContent;
+                            }
+                            O.selAllState();
+                        }
+                        else {
+                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = true;
+                        }
+
+                        //branch for combined change event.
+                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
+                            O.setText();
+                            O.callChange();
+                        }
+
+                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
+                    });
+                },
+
+                // fixed some variables that were not explicitly typed (michc)
+                setText: function () {
+                    var O = this;
+                    O.placeholder = "";
+                    if (O.is_multi) {
+                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
+
+                        for (var i = 0; i < sels.length; i++) {
+                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
+                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
+                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
+                                } else {
+                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
+                                }
+
+                                break;
+                            }
+                            else O.placeholder += $(sels[i]).text() + ", ";
+                        }
+                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
+                    }
+                    else {
+                        O.placeholder = O.E.find(':selected').not(':disabled').text();
+                    }
+
+                    var is_placeholder = false;
+
+                    if (!O.placeholder) {
+
+                        is_placeholder = true;
+
+                        O.placeholder = O.E.attr('placeholder');
+                        if (!O.placeholder)                  //if placeholder is there then set it
+                            O.placeholder = O.E.find('option:disabled:selected').text();
+                    }
+
+                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
+
+                    //set display text
+                    O.caption.html(O.placeholder);
+                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
+
+                    //set the hidden field if post as csv is true.
+                    var csvField = O.select.find('input.HEMANT123');
+                    if (csvField.length) csvField.val(O.getSelStr());
+
+                    //add class placeholder if its a placeholder text.
+                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
+                    return O.placeholder;
+                },
+
+                isMobile: function () {
+
+                    // Adapted from http://www.detectmobilebrowsers.com
+                    var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
+                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
+                    return false;
+                },
+
+                setNativeMobile: function () {
+                    var O = this;
+                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
+                    O.mob = true;
+                    O.E.change(function () {
+                        O.setText();
+                    });
+                },
+
+                floatingList: function () {
+                    var O = this;
+                    //called on init and also on resize.
+                    //O.is_floating = true if window width is < specified float width
+                    O.is_floating = $(window).width() <= settings.floatWidth;
+
+                    //set class isFloating
+                    O.optDiv.toggleClass('isFloating', O.is_floating);
+
+                    //remove height if not floating
+                    if (!O.is_floating) O.optDiv.css('height', '');
+
+                    //toggle class according to okCancelInMulti flag only when it is not floating
+                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
+                },
+
+                //HELPERS FOR OUTSIDERS
+                // validates range of given item operations
+                vRange: function (i) {
+                    var O = this;
+                    var opts = O.E.find('option');
+                    if (opts.length <= i || i < 0) throw "index out of bounds"
+                    return O;
+                },
+
+                //toggles selection on c as boolean.
+                toggSel: function (c, i) {
+                    var O = this;
+                    var opt;
+                    if (typeof (i) === "number") {
+                        O.vRange(i);
+                        opt = O.E.find('option')[i];
+                    }
+                    else {
+                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
+                    }
+                    if (!opt || opt.disabled)
+                        return;
+
+                    if (opt.selected !== c) {
+                        opt.selected = c;
+                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
+
+                        O.callChange();
+                        O.setPstate();
+                        O.setText();
+                        O.selAllState();
+                    }
+                },
+
+                //toggles disabled on c as boolean.
+                toggDis: function (c, i) {
+                    var O = this.vRange(i);
+                    O.E.find('option')[i].disabled = c;
+                    if (c) O.E.find('option')[i].selected = false;
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
+                    O.setText();
+                },
+
+                // toggle disable/enable on complete select control
+                toggSumo: function (val) {
+                    var O = this;
+                    O.enabled = val;
+                    O.select.toggleClass('disabled', val);
+
+                    if (val) {
+                        O.E.attr('disabled', 'disabled');
+                        O.select.removeAttr('tabindex');
+                    }
+                    else {
+                        O.E.removeAttr('disabled');
+                        O.select.attr('tabindex', '0');
+                    }
+
+                    return O;
+                },
+
+                // toggles all option on c as boolean.
+                // set direct=false/0 bypasses okCancelInMulti behaviour.
+                toggSelAll: function (c, direct) {
+                    var O = this;
+                    O.E.find('option:not(:disabled,:hidden)')
+                        .each(function (ix, e) {
+                            var is_selected = e.selected,
+                                e = $(e).data('li');
+                            if (e.hasClass('hidden')) return;
+                            if (!!c) {
+                                if (!is_selected) e.trigger('click');
+                            }
+                            else {
+                                if (is_selected) e.trigger('click');
+                            }
+                        });
+
+                    if (!direct) {
+                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
+                        O.callChange();
+                        O.setText();
+                        O.setPstate();
+                    }
+                },
+
+                /* outside accessibility options
+                 which can be accessed from the element instance.
+                 */
+                reload: function () {
+                    var elm = this.unload();
+                    return $(elm).SumoSelect(settings);
+                },
+
+                unload: function () {
+                    var O = this;
+                    O.select.before(O.E);
+                    O.E.show();
+
+                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
+                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
+                    }
+                    O.select.remove();
+                    delete selObj.sumo;
+                    return selObj;
+                },
+
+                //## add a new option to select at a given index.
+                add: function (val, txt, i) {
+                    if (typeof val === "undefined") throw "No value to add"
+
+                    var O = this;
+                    var opts = O.E.find('option')
+                    if (typeof txt === "number") { i = txt; txt = val; }
+                    if (typeof txt === "undefined") { txt = val; }
+
+                    var opt = $("<option></option>").val(val).html(txt);
+
+                    if (opts.length < i) throw "index out of bounds"
+
+                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
+                        O.E.append(opt);
+                        if (!O.mob) O.ul.append(O.createLi(opt));
+                    }
+                    else {
+                        opts.eq(i).before(opt);
+                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
+                    }
+
+                    return selObj;
+                },
+
+                //## removes an item at a given index.
+                remove: function (i) {
+                    var O = this.vRange(i);
+                    O.E.find('option').eq(i).remove();
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
+                    O.setText();
+                },
+
+                // removes all but the selected one
+                removeAll: function () {
+                    var O = this;
+                    var options = O.E.find('option');
+
+                    for (var x = (options.length - 1); x >= 0; x--) {
+                        if (options[x].selected !== true) {
+                            O.remove(x);
+                        }
+                    }
+
+                },
+
+
+                find: function (val) {
+                    var O = this;
+                    var options = O.E.find('option');
+                    for (var x in options) {
+                        if (options[x].value === val) {
+                            return parseInt(x);
+                        }
+                    }
+
+                    return -1;
+
+                },
+
+                //## Select an item at a given index.
+                selectItem: function (i) { this.toggSel(true, i); },
+
+                //## UnSelect an iten at a given index.
+                unSelectItem: function (i) { this.toggSel(false, i); },
+
+                //## Select all items  of the select.
+                selectAll: function () { this.toggSelAll(true); },
+
+                //## UnSelect all items of the select.
+                unSelectAll: function () { this.toggSelAll(false); },
+
+                //## Disable an iten at a given index.
+                disableItem: function (i) { this.toggDis(true, i) },
+
+                //## Removes disabled an iten at a given index.
+                enableItem: function (i) { this.toggDis(false, i) },
+
+                //## New simple methods as getter and setter are not working fine in ie8-
+                //## variable to check state of control if enabled or disabled.
+                enabled: true,
+                //## Enables the control
+                enable: function () { return this.toggSumo(false) },
+
+                //## Disables the control
+                disable: function () { return this.toggSumo(true) },
+
+
+                init: function () {
+                    var O = this;
+                    O.createElems();
+                    O.setText();
+                    return O
+                }
+
+            };
+
+            selObj.sumo.init();
+        });
+
+        return ret.length === 1 ? ret[0] : ret;
+    };
+
+
+});
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
+* Parsley.js
+* Version 2.8.1 - built Sat, Feb 3rd 2018, 2:27 pm
+* http://parsleyjs.org
+* Guillaume Potier - <guillaume@wisembly.com>
+* Marc-Andre Lafortune - <petroselinum@marc-andre.ca>
+* MIT Licensed
+*/
+
+// The source code below is generated by babel as
+// Parsley is written in ECMAScript 6
+//
+var _slice = Array.prototype.slice;
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+(function (global, factory) {
+   true ? module.exports = factory(__webpack_require__(0)) : typeof define === 'function' && define.amd ? define(['jquery'], factory) : global.parsley = factory(global.jQuery);
+})(this, function ($) {
+  'use strict';
+
+  var globalID = 1;
+  var pastWarnings = {};
+
+  var Utils = {
+    // Parsley DOM-API
+    // returns object from dom attributes and values
+    attr: function attr(element, namespace, obj) {
+      var i;
+      var attribute;
+      var attributes;
+      var regex = new RegExp('^' + namespace, 'i');
+
+      if ('undefined' === typeof obj) obj = {};else {
+        // Clear all own properties. This won't affect prototype's values
+        for (i in obj) {
+          if (obj.hasOwnProperty(i)) delete obj[i];
+        }
+      }
+
+      if (!element) return obj;
+
+      attributes = element.attributes;
+      for (i = attributes.length; i--;) {
+        attribute = attributes[i];
+
+        if (attribute && attribute.specified && regex.test(attribute.name)) {
+          obj[this.camelize(attribute.name.slice(namespace.length))] = this.deserializeValue(attribute.value);
+        }
+      }
+
+      return obj;
+    },
+
+    checkAttr: function checkAttr(element, namespace, _checkAttr) {
+      return element.hasAttribute(namespace + _checkAttr);
+    },
+
+    setAttr: function setAttr(element, namespace, attr, value) {
+      element.setAttribute(this.dasherize(namespace + attr), String(value));
+    },
+
+    getType: function getType(element) {
+      return element.getAttribute('type') || 'text';
+    },
+
+    generateID: function generateID() {
+      return '' + globalID++;
+    },
+
+    /** Third party functions **/
+    deserializeValue: function deserializeValue(value) {
+      var num;
+
+      try {
+        return value ? value == "true" || (value == "false" ? false : value == "null" ? null : !isNaN(num = Number(value)) ? num : /^[\[\{]/.test(value) ? JSON.parse(value) : value) : value;
+      } catch (e) {
+        return value;
+      }
+    },
+
+    // Zepto camelize function
+    camelize: function camelize(str) {
+      return str.replace(/-+(.)?/g, function (match, chr) {
+        return chr ? chr.toUpperCase() : '';
+      });
+    },
+
+    // Zepto dasherize function
+    dasherize: function dasherize(str) {
+      return str.replace(/::/g, '/').replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2').replace(/([a-z\d])([A-Z])/g, '$1_$2').replace(/_/g, '-').toLowerCase();
+    },
+
+    warn: function warn() {
+      var _window$console;
+
+      if (window.console && 'function' === typeof window.console.warn) (_window$console = window.console).warn.apply(_window$console, arguments);
+    },
+
+    warnOnce: function warnOnce(msg) {
+      if (!pastWarnings[msg]) {
+        pastWarnings[msg] = true;
+        this.warn.apply(this, arguments);
+      }
+    },
+
+    _resetWarnings: function _resetWarnings() {
+      pastWarnings = {};
+    },
+
+    trimString: function trimString(string) {
+      return string.replace(/^\s+|\s+$/g, '');
+    },
+
+    parse: {
+      date: function date(string) {
+        var parsed = string.match(/^(\d{4,})-(\d\d)-(\d\d)$/);
+        if (!parsed) return null;
+
+        var _parsed$map = parsed.map(function (x) {
+          return parseInt(x, 10);
+        });
+
+        var _parsed$map2 = _slicedToArray(_parsed$map, 4);
+
+        var _ = _parsed$map2[0];
+        var year = _parsed$map2[1];
+        var month = _parsed$map2[2];
+        var day = _parsed$map2[3];
+
+        var date = new Date(year, month - 1, day);
+        if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) return null;
+        return date;
+      },
+      string: function string(_string) {
+        return _string;
+      },
+      integer: function integer(string) {
+        if (isNaN(string)) return null;
+        return parseInt(string, 10);
+      },
+      number: function number(string) {
+        if (isNaN(string)) throw null;
+        return parseFloat(string);
+      },
+      'boolean': function _boolean(string) {
+        return !/^\s*false\s*$/i.test(string);
+      },
+      object: function object(string) {
+        return Utils.deserializeValue(string);
+      },
+      regexp: function regexp(_regexp) {
+        var flags = '';
+
+        // Test if RegExp is literal, if not, nothing to be done, otherwise, we need to isolate flags and pattern
+        if (/^\/.*\/(?:[gimy]*)$/.test(_regexp)) {
+          // Replace the regexp literal string with the first match group: ([gimy]*)
+          // If no flag is present, this will be a blank string
+          flags = _regexp.replace(/.*\/([gimy]*)$/, '$1');
+          // Again, replace the regexp literal string with the first match group:
+          // everything excluding the opening and closing slashes and the flags
+          _regexp = _regexp.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
+        } else {
+          // Anchor regexp:
+          _regexp = '^' + _regexp + '$';
+        }
+        return new RegExp(_regexp, flags);
+      }
+    },
+
+    parseRequirement: function parseRequirement(requirementType, string) {
+      var converter = this.parse[requirementType || 'string'];
+      if (!converter) throw 'Unknown requirement specification: "' + requirementType + '"';
+      var converted = converter(string);
+      if (converted === null) throw 'Requirement is not a ' + requirementType + ': "' + string + '"';
+      return converted;
+    },
+
+    namespaceEvents: function namespaceEvents(events, namespace) {
+      events = this.trimString(events || '').split(/\s+/);
+      if (!events[0]) return '';
+      return $.map(events, function (evt) {
+        return evt + '.' + namespace;
+      }).join(' ');
+    },
+
+    difference: function difference(array, remove) {
+      // This is O(N^2), should be optimized
+      var result = [];
+      $.each(array, function (_, elem) {
+        if (remove.indexOf(elem) == -1) result.push(elem);
+      });
+      return result;
+    },
+
+    // Alter-ego to native Promise.all, but for jQuery
+    all: function all(promises) {
+      // jQuery treats $.when() and $.when(singlePromise) differently; let's avoid that and add spurious elements
+      return $.when.apply($, _toConsumableArray(promises).concat([42, 42]));
+    },
+
+    // Object.create polyfill, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
+    objectCreate: Object.create || (function () {
+      var Object = function Object() {};
+      return function (prototype) {
+        if (arguments.length > 1) {
+          throw Error('Second argument not supported');
+        }
+        if (typeof prototype != 'object') {
+          throw TypeError('Argument must be an object');
+        }
+        Object.prototype = prototype;
+        var result = new Object();
+        Object.prototype = null;
+        return result;
+      };
+    })(),
+
+    _SubmitSelector: 'input[type="submit"], button:submit'
+  };
+
+  // All these options could be overriden and specified directly in DOM using
+  // `data-parsley-` default DOM-API
+  // eg: `inputs` can be set in DOM using `data-parsley-inputs="input, textarea"`
+  // eg: `data-parsley-stop-on-first-failing-constraint="false"`
+
+  var Defaults = {
+    // ### General
+
+    // Default data-namespace for DOM API
+    namespace: 'data-parsley-',
+
+    // Supported inputs by default
+    inputs: 'input, textarea, select',
+
+    // Excluded inputs by default
+    excluded: 'input[type=button], input[type=submit], input[type=reset], input[type=hidden]',
+
+    // Stop validating field on highest priority failing constraint
+    priorityEnabled: true,
+
+    // ### Field only
+
+    // identifier used to group together inputs (e.g. radio buttons...)
+    multiple: null,
+
+    // identifier (or array of identifiers) used to validate only a select group of inputs
+    group: null,
+
+    // ### UI
+    // Enable\Disable error messages
+    uiEnabled: true,
+
+    // Key events threshold before validation
+    validationThreshold: 3,
+
+    // Focused field on form validation error. 'first'|'last'|'none'
+    focus: 'first',
+
+    // event(s) that will trigger validation before first failure. eg: `input`...
+    trigger: false,
+
+    // event(s) that will trigger validation after first failure.
+    triggerAfterFailure: 'input',
+
+    // Class that would be added on every failing validation Parsley field
+    errorClass: 'parsley-error',
+
+    // Same for success validation
+    successClass: 'parsley-success',
+
+    // Return the `$element` that will receive these above success or error classes
+    // Could also be (and given directly from DOM) a valid selector like `'#div'`
+    classHandler: function classHandler(Field) {},
+
+    // Return the `$element` where errors will be appended
+    // Could also be (and given directly from DOM) a valid selector like `'#div'`
+    errorsContainer: function errorsContainer(Field) {},
+
+    // ul elem that would receive errors' list
+    errorsWrapper: '<ul class="parsley-errors-list"></ul>',
+
+    // li elem that would receive error message
+    errorTemplate: '<li></li>'
+  };
+
+  var Base = function Base() {
+    this.__id__ = Utils.generateID();
+  };
+
+  Base.prototype = {
+    asyncSupport: true, // Deprecated
+
+    _pipeAccordingToValidationResult: function _pipeAccordingToValidationResult() {
+      var _this = this;
+
+      var pipe = function pipe() {
+        var r = $.Deferred();
+        if (true !== _this.validationResult) r.reject();
+        return r.resolve().promise();
+      };
+      return [pipe, pipe];
+    },
+
+    actualizeOptions: function actualizeOptions() {
+      Utils.attr(this.element, this.options.namespace, this.domOptions);
+      if (this.parent && this.parent.actualizeOptions) this.parent.actualizeOptions();
+      return this;
+    },
+
+    _resetOptions: function _resetOptions(initOptions) {
+      this.domOptions = Utils.objectCreate(this.parent.options);
+      this.options = Utils.objectCreate(this.domOptions);
+      // Shallow copy of ownProperties of initOptions:
+      for (var i in initOptions) {
+        if (initOptions.hasOwnProperty(i)) this.options[i] = initOptions[i];
+      }
+      this.actualizeOptions();
+    },
+
+    _listeners: null,
+
+    // Register a callback for the given event name
+    // Callback is called with context as the first argument and the `this`
+    // The context is the current parsley instance, or window.Parsley if global
+    // A return value of `false` will interrupt the calls
+    on: function on(name, fn) {
+      this._listeners = this._listeners || {};
+      var queue = this._listeners[name] = this._listeners[name] || [];
+      queue.push(fn);
+
+      return this;
+    },
+
+    // Deprecated. Use `on` instead
+    subscribe: function subscribe(name, fn) {
+      $.listenTo(this, name.toLowerCase(), fn);
+    },
+
+    // Unregister a callback (or all if none is given) for the given event name
+    off: function off(name, fn) {
+      var queue = this._listeners && this._listeners[name];
+      if (queue) {
+        if (!fn) {
+          delete this._listeners[name];
+        } else {
+          for (var i = queue.length; i--;) if (queue[i] === fn) queue.splice(i, 1);
+        }
+      }
+      return this;
+    },
+
+    // Deprecated. Use `off`
+    unsubscribe: function unsubscribe(name, fn) {
+      $.unsubscribeTo(this, name.toLowerCase());
+    },
+
+    // Trigger an event of the given name
+    // A return value of `false` interrupts the callback chain
+    // Returns false if execution was interrupted
+    trigger: function trigger(name, target, extraArg) {
+      target = target || this;
+      var queue = this._listeners && this._listeners[name];
+      var result;
+      var parentResult;
+      if (queue) {
+        for (var i = queue.length; i--;) {
+          result = queue[i].call(target, target, extraArg);
+          if (result === false) return result;
+        }
+      }
+      if (this.parent) {
+        return this.parent.trigger(name, target, extraArg);
+      }
+      return true;
+    },
+
+    asyncIsValid: function asyncIsValid(group, force) {
+      Utils.warnOnce("asyncIsValid is deprecated; please use whenValid instead");
+      return this.whenValid({ group: group, force: force });
+    },
+
+    _findRelated: function _findRelated() {
+      return this.options.multiple ? $(this.parent.element.querySelectorAll('[' + this.options.namespace + 'multiple="' + this.options.multiple + '"]')) : this.$element;
+    }
+  };
+
+  var convertArrayRequirement = function convertArrayRequirement(string, length) {
+    var m = string.match(/^\s*\[(.*)\]\s*$/);
+    if (!m) throw 'Requirement is not an array: "' + string + '"';
+    var values = m[1].split(',').map(Utils.trimString);
+    if (values.length !== length) throw 'Requirement has ' + values.length + ' values when ' + length + ' are needed';
+    return values;
+  };
+
+  var convertExtraOptionRequirement = function convertExtraOptionRequirement(requirementSpec, string, extraOptionReader) {
+    var main = null;
+    var extra = {};
+    for (var key in requirementSpec) {
+      if (key) {
+        var value = extraOptionReader(key);
+        if ('string' === typeof value) value = Utils.parseRequirement(requirementSpec[key], value);
+        extra[key] = value;
+      } else {
+        main = Utils.parseRequirement(requirementSpec[key], string);
+      }
+    }
+    return [main, extra];
+  };
+
+  // A Validator needs to implement the methods `validate` and `parseRequirements`
+
+  var Validator = function Validator(spec) {
+    $.extend(true, this, spec);
+  };
+
+  Validator.prototype = {
+    // Returns `true` iff the given `value` is valid according the given requirements.
+    validate: function validate(value, requirementFirstArg) {
+      if (this.fn) {
+        // Legacy style validator
+
+        if (arguments.length > 3) // If more args then value, requirement, instance...
+          requirementFirstArg = [].slice.call(arguments, 1, -1); // Skip first arg (value) and last (instance), combining the rest
+        return this.fn(value, requirementFirstArg);
+      }
+
+      if (Array.isArray(value)) {
+        if (!this.validateMultiple) throw 'Validator `' + this.name + '` does not handle multiple values';
+        return this.validateMultiple.apply(this, arguments);
+      } else {
+        var instance = arguments[arguments.length - 1];
+        if (this.validateDate && instance._isDateInput()) {
+          arguments[0] = Utils.parse.date(arguments[0]);
+          if (arguments[0] === null) return false;
+          return this.validateDate.apply(this, arguments);
+        }
+        if (this.validateNumber) {
+          if (isNaN(value)) return false;
+          arguments[0] = parseFloat(arguments[0]);
+          return this.validateNumber.apply(this, arguments);
+        }
+        if (this.validateString) {
+          return this.validateString.apply(this, arguments);
+        }
+        throw 'Validator `' + this.name + '` only handles multiple values';
+      }
+    },
+
+    // Parses `requirements` into an array of arguments,
+    // according to `this.requirementType`
+    parseRequirements: function parseRequirements(requirements, extraOptionReader) {
+      if ('string' !== typeof requirements) {
+        // Assume requirement already parsed
+        // but make sure we return an array
+        return Array.isArray(requirements) ? requirements : [requirements];
+      }
+      var type = this.requirementType;
+      if (Array.isArray(type)) {
+        var values = convertArrayRequirement(requirements, type.length);
+        for (var i = 0; i < values.length; i++) values[i] = Utils.parseRequirement(type[i], values[i]);
+        return values;
+      } else if ($.isPlainObject(type)) {
+        return convertExtraOptionRequirement(type, requirements, extraOptionReader);
+      } else {
+        return [Utils.parseRequirement(type, requirements)];
+      }
+    },
+    // Defaults:
+    requirementType: 'string',
+
+    priority: 2
+
+  };
+
+  var ValidatorRegistry = function ValidatorRegistry(validators, catalog) {
+    this.__class__ = 'ValidatorRegistry';
+
+    // Default Parsley locale is en
+    this.locale = 'en';
+
+    this.init(validators || {}, catalog || {});
+  };
+
+  var typeTesters = {
+    email: /^((([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/,
+
+    // Follow https://www.w3.org/TR/html5/infrastructure.html#floating-point-numbers
+    number: /^-?(\d*\.)?\d+(e[-+]?\d+)?$/i,
+
+    integer: /^-?\d+$/,
+
+    digits: /^\d+$/,
+
+    alphanum: /^\w+$/i,
+
+    date: {
+      test: function test(value) {
+        return Utils.parse.date(value) !== null;
+      }
+    },
+
+    url: new RegExp("^" +
+    // protocol identifier
+    "(?:(?:https?|ftp)://)?" + // ** mod: make scheme optional
+    // user:pass authentication
+    "(?:\\S+(?::\\S*)?@)?" + "(?:" +
+    // IP address exclusion
+    // private & local networks
+    // "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +   // ** mod: allow local networks
+    // "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
+    // "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
+    // IP address dotted notation octets
+    // excludes loopback network 0.0.0.0
+    // excludes reserved space >= 224.0.0.0
+    // excludes network & broacast addresses
+    // (first & last IP address of each class)
+    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" + "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" + "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" + "|" +
+    // host name
+    '(?:(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)' +
+    // domain name
+    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)*' +
+    // TLD identifier
+    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff]{2,}))' + ")" +
+    // port number
+    "(?::\\d{2,5})?" +
+    // resource path
+    "(?:/\\S*)?" + "$")
+  };
+  typeTesters.range = typeTesters.number;
+
+  // See http://stackoverflow.com/a/10454560/8279
+  var decimalPlaces = function decimalPlaces(num) {
+    var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    if (!match) {
+      return 0;
+    }
+    return Math.max(0,
+    // Number of digits right of decimal point.
+    (match[1] ? match[1].length : 0) - (
+    // Adjust for scientific notation.
+    match[2] ? +match[2] : 0));
+  };
+
+  // parseArguments('number', ['1', '2']) => [1, 2]
+  var ValidatorRegistry__parseArguments = function ValidatorRegistry__parseArguments(type, args) {
+    return args.map(Utils.parse[type]);
+  };
+  // operatorToValidator returns a validating function for an operator function, applied to the given type
+  var ValidatorRegistry__operatorToValidator = function ValidatorRegistry__operatorToValidator(type, operator) {
+    return function (value) {
+      for (var _len = arguments.length, requirementsAndInput = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        requirementsAndInput[_key - 1] = arguments[_key];
+      }
+
+      requirementsAndInput.pop(); // Get rid of `input` argument
+      return operator.apply(undefined, [value].concat(_toConsumableArray(ValidatorRegistry__parseArguments(type, requirementsAndInput))));
+    };
+  };
+
+  var ValidatorRegistry__comparisonOperator = function ValidatorRegistry__comparisonOperator(operator) {
+    return {
+      validateDate: ValidatorRegistry__operatorToValidator('date', operator),
+      validateNumber: ValidatorRegistry__operatorToValidator('number', operator),
+      requirementType: operator.length <= 2 ? 'string' : ['string', 'string'], // Support operators with a 1 or 2 requirement(s)
+      priority: 30
+    };
+  };
+
+  ValidatorRegistry.prototype = {
+    init: function init(validators, catalog) {
+      this.catalog = catalog;
+      // Copy prototype's validators:
+      this.validators = _extends({}, this.validators);
+
+      for (var name in validators) this.addValidator(name, validators[name].fn, validators[name].priority);
+
+      window.Parsley.trigger('parsley:validator:init');
+    },
+
+    // Set new messages locale if we have dictionary loaded in ParsleyConfig.i18n
+    setLocale: function setLocale(locale) {
+      if ('undefined' === typeof this.catalog[locale]) throw new Error(locale + ' is not available in the catalog');
+
+      this.locale = locale;
+
+      return this;
+    },
+
+    // Add a new messages catalog for a given locale. Set locale for this catalog if set === `true`
+    addCatalog: function addCatalog(locale, messages, set) {
+      if ('object' === typeof messages) this.catalog[locale] = messages;
+
+      if (true === set) return this.setLocale(locale);
+
+      return this;
+    },
+
+    // Add a specific message for a given constraint in a given locale
+    addMessage: function addMessage(locale, name, message) {
+      if ('undefined' === typeof this.catalog[locale]) this.catalog[locale] = {};
+
+      this.catalog[locale][name] = message;
+
+      return this;
+    },
+
+    // Add messages for a given locale
+    addMessages: function addMessages(locale, nameMessageObject) {
+      for (var name in nameMessageObject) this.addMessage(locale, name, nameMessageObject[name]);
+
+      return this;
+    },
+
+    // Add a new validator
+    //
+    //    addValidator('custom', {
+    //        requirementType: ['integer', 'integer'],
+    //        validateString: function(value, from, to) {},
+    //        priority: 22,
+    //        messages: {
+    //          en: "Hey, that's no good",
+    //          fr: "Aye aye, pas bon du tout",
+    //        }
+    //    })
+    //
+    // Old API was addValidator(name, function, priority)
+    //
+    addValidator: function addValidator(name, arg1, arg2) {
+      if (this.validators[name]) Utils.warn('Validator "' + name + '" is already defined.');else if (Defaults.hasOwnProperty(name)) {
+        Utils.warn('"' + name + '" is a restricted keyword and is not a valid validator name.');
+        return;
+      }
+      return this._setValidator.apply(this, arguments);
+    },
+
+    hasValidator: function hasValidator(name) {
+      return !!this.validators[name];
+    },
+
+    updateValidator: function updateValidator(name, arg1, arg2) {
+      if (!this.validators[name]) {
+        Utils.warn('Validator "' + name + '" is not already defined.');
+        return this.addValidator.apply(this, arguments);
+      }
+      return this._setValidator.apply(this, arguments);
+    },
+
+    removeValidator: function removeValidator(name) {
+      if (!this.validators[name]) Utils.warn('Validator "' + name + '" is not defined.');
+
+      delete this.validators[name];
+
+      return this;
+    },
+
+    _setValidator: function _setValidator(name, validator, priority) {
+      if ('object' !== typeof validator) {
+        // Old style validator, with `fn` and `priority`
+        validator = {
+          fn: validator,
+          priority: priority
+        };
+      }
+      if (!validator.validate) {
+        validator = new Validator(validator);
+      }
+      this.validators[name] = validator;
+
+      for (var locale in validator.messages || {}) this.addMessage(locale, name, validator.messages[locale]);
+
+      return this;
+    },
+
+    getErrorMessage: function getErrorMessage(constraint) {
+      var message;
+
+      // Type constraints are a bit different, we have to match their requirements too to find right error message
+      if ('type' === constraint.name) {
+        var typeMessages = this.catalog[this.locale][constraint.name] || {};
+        message = typeMessages[constraint.requirements];
+      } else message = this.formatMessage(this.catalog[this.locale][constraint.name], constraint.requirements);
+
+      return message || this.catalog[this.locale].defaultMessage || this.catalog.en.defaultMessage;
+    },
+
+    // Kind of light `sprintf()` implementation
+    formatMessage: function formatMessage(string, parameters) {
+      if ('object' === typeof parameters) {
+        for (var i in parameters) string = this.formatMessage(string, parameters[i]);
+
+        return string;
+      }
+
+      return 'string' === typeof string ? string.replace(/%s/i, parameters) : '';
+    },
+
+    // Here is the Parsley default validators list.
+    // A validator is an object with the following key values:
+    //  - priority: an integer
+    //  - requirement: 'string' (default), 'integer', 'number', 'regexp' or an Array of these
+    //  - validateString, validateMultiple, validateNumber: functions returning `true`, `false` or a promise
+    // Alternatively, a validator can be a function that returns such an object
+    //
+    validators: {
+      notblank: {
+        validateString: function validateString(value) {
+          return (/\S/.test(value)
+          );
+        },
+        priority: 2
+      },
+      required: {
+        validateMultiple: function validateMultiple(values) {
+          return values.length > 0;
+        },
+        validateString: function validateString(value) {
+          return (/\S/.test(value)
+          );
+        },
+        priority: 512
+      },
+      type: {
+        validateString: function validateString(value, type) {
+          var _ref = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+          var _ref$step = _ref.step;
+          var step = _ref$step === undefined ? 'any' : _ref$step;
+          var _ref$base = _ref.base;
+          var base = _ref$base === undefined ? 0 : _ref$base;
+
+          var tester = typeTesters[type];
+          if (!tester) {
+            throw new Error('validator type `' + type + '` is not supported');
+          }
+          if (!tester.test(value)) return false;
+          if ('number' === type) {
+            if (!/^any$/i.test(step || '')) {
+              var nb = Number(value);
+              var decimals = Math.max(decimalPlaces(step), decimalPlaces(base));
+              if (decimalPlaces(nb) > decimals) // Value can't have too many decimals
+                return false;
+              // Be careful of rounding errors by using integers.
+              var toInt = function toInt(f) {
+                return Math.round(f * Math.pow(10, decimals));
+              };
+              if ((toInt(nb) - toInt(base)) % toInt(step) != 0) return false;
+            }
+          }
+          return true;
+        },
+        requirementType: {
+          '': 'string',
+          step: 'string',
+          base: 'number'
+        },
+        priority: 256
+      },
+      pattern: {
+        validateString: function validateString(value, regexp) {
+          return regexp.test(value);
+        },
+        requirementType: 'regexp',
+        priority: 64
+      },
+      minlength: {
+        validateString: function validateString(value, requirement) {
+          return value.length >= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      maxlength: {
+        validateString: function validateString(value, requirement) {
+          return value.length <= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      length: {
+        validateString: function validateString(value, min, max) {
+          return value.length >= min && value.length <= max;
+        },
+        requirementType: ['integer', 'integer'],
+        priority: 30
+      },
+      mincheck: {
+        validateMultiple: function validateMultiple(values, requirement) {
+          return values.length >= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      maxcheck: {
+        validateMultiple: function validateMultiple(values, requirement) {
+          return values.length <= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      check: {
+        validateMultiple: function validateMultiple(values, min, max) {
+          return values.length >= min && values.length <= max;
+        },
+        requirementType: ['integer', 'integer'],
+        priority: 30
+      },
+      min: ValidatorRegistry__comparisonOperator(function (value, requirement) {
+        return value >= requirement;
+      }),
+      max: ValidatorRegistry__comparisonOperator(function (value, requirement) {
+        return value <= requirement;
+      }),
+      range: ValidatorRegistry__comparisonOperator(function (value, min, max) {
+        return value >= min && value <= max;
+      }),
+      equalto: {
+        validateString: function validateString(value, refOrValue) {
+          var $reference = $(refOrValue);
+          if ($reference.length) return value === $reference.val();else return value === refOrValue;
+        },
+        priority: 256
+      }
+    }
+  };
+
+  var UI = {};
+
+  var diffResults = function diffResults(newResult, oldResult, deep) {
+    var added = [];
+    var kept = [];
+
+    for (var i = 0; i < newResult.length; i++) {
+      var found = false;
+
+      for (var j = 0; j < oldResult.length; j++) if (newResult[i].assert.name === oldResult[j].assert.name) {
+        found = true;
+        break;
+      }
+
+      if (found) kept.push(newResult[i]);else added.push(newResult[i]);
+    }
+
+    return {
+      kept: kept,
+      added: added,
+      removed: !deep ? diffResults(oldResult, newResult, true).added : []
+    };
+  };
+
+  UI.Form = {
+
+    _actualizeTriggers: function _actualizeTriggers() {
+      var _this2 = this;
+
+      this.$element.on('submit.Parsley', function (evt) {
+        _this2.onSubmitValidate(evt);
+      });
+      this.$element.on('click.Parsley', Utils._SubmitSelector, function (evt) {
+        _this2.onSubmitButton(evt);
+      });
+
+      // UI could be disabled
+      if (false === this.options.uiEnabled) return;
+
+      this.element.setAttribute('novalidate', '');
+    },
+
+    focus: function focus() {
+      this._focusedField = null;
+
+      if (true === this.validationResult || 'none' === this.options.focus) return null;
+
+      for (var i = 0; i < this.fields.length; i++) {
+        var field = this.fields[i];
+        if (true !== field.validationResult && field.validationResult.length > 0 && 'undefined' === typeof field.options.noFocus) {
+          this._focusedField = field.$element;
+          if ('first' === this.options.focus) break;
+        }
+      }
+
+      if (null === this._focusedField) return null;
+
+      return this._focusedField.focus();
+    },
+
+    _destroyUI: function _destroyUI() {
+      // Reset all event listeners
+      this.$element.off('.Parsley');
+    }
+
+  };
+
+  UI.Field = {
+
+    _reflowUI: function _reflowUI() {
+      this._buildUI();
+
+      // If this field doesn't have an active UI don't bother doing something
+      if (!this._ui) return;
+
+      // Diff between two validation results
+      var diff = diffResults(this.validationResult, this._ui.lastValidationResult);
+
+      // Then store current validation result for next reflow
+      this._ui.lastValidationResult = this.validationResult;
+
+      // Handle valid / invalid / none field class
+      this._manageStatusClass();
+
+      // Add, remove, updated errors messages
+      this._manageErrorsMessages(diff);
+
+      // Triggers impl
+      this._actualizeTriggers();
+
+      // If field is not valid for the first time, bind keyup trigger to ease UX and quickly inform user
+      if ((diff.kept.length || diff.added.length) && !this._failedOnce) {
+        this._failedOnce = true;
+        this._actualizeTriggers();
+      }
+    },
+
+    // Returns an array of field's error message(s)
+    getErrorsMessages: function getErrorsMessages() {
+      // No error message, field is valid
+      if (true === this.validationResult) return [];
+
+      var messages = [];
+
+      for (var i = 0; i < this.validationResult.length; i++) messages.push(this.validationResult[i].errorMessage || this._getErrorMessage(this.validationResult[i].assert));
+
+      return messages;
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    addError: function addError(name) {
+      var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var message = _ref2.message;
+      var assert = _ref2.assert;
+      var _ref2$updateClass = _ref2.updateClass;
+      var updateClass = _ref2$updateClass === undefined ? true : _ref2$updateClass;
+
+      this._buildUI();
+      this._addError(name, { message: message, assert: assert });
+
+      if (updateClass) this._errorClass();
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    updateError: function updateError(name) {
+      var _ref3 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var message = _ref3.message;
+      var assert = _ref3.assert;
+      var _ref3$updateClass = _ref3.updateClass;
+      var updateClass = _ref3$updateClass === undefined ? true : _ref3$updateClass;
+
+      this._buildUI();
+      this._updateError(name, { message: message, assert: assert });
+
+      if (updateClass) this._errorClass();
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    removeError: function removeError(name) {
+      var _ref4 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var _ref4$updateClass = _ref4.updateClass;
+      var updateClass = _ref4$updateClass === undefined ? true : _ref4$updateClass;
+
+      this._buildUI();
+      this._removeError(name);
+
+      // edge case possible here: remove a standard Parsley error that is still failing in this.validationResult
+      // but highly improbable cuz' manually removing a well Parsley handled error makes no sense.
+      if (updateClass) this._manageStatusClass();
+    },
+
+    _manageStatusClass: function _manageStatusClass() {
+      if (this.hasConstraints() && this.needsValidation() && true === this.validationResult) this._successClass();else if (this.validationResult.length > 0) this._errorClass();else this._resetClass();
+    },
+
+    _manageErrorsMessages: function _manageErrorsMessages(diff) {
+      if ('undefined' !== typeof this.options.errorsMessagesDisabled) return;
+
+      // Case where we have errorMessage option that configure an unique field error message, regardless failing validators
+      if ('undefined' !== typeof this.options.errorMessage) {
+        if (diff.added.length || diff.kept.length) {
+          this._insertErrorWrapper();
+
+          if (0 === this._ui.$errorsWrapper.find('.parsley-custom-error-message').length) this._ui.$errorsWrapper.append($(this.options.errorTemplate).addClass('parsley-custom-error-message'));
+
+          return this._ui.$errorsWrapper.addClass('filled').find('.parsley-custom-error-message').html(this.options.errorMessage);
+        }
+
+        return this._ui.$errorsWrapper.removeClass('filled').find('.parsley-custom-error-message').remove();
+      }
+
+      // Show, hide, update failing constraints messages
+      for (var i = 0; i < diff.removed.length; i++) this._removeError(diff.removed[i].assert.name);
+
+      for (i = 0; i < diff.added.length; i++) this._addError(diff.added[i].assert.name, { message: diff.added[i].errorMessage, assert: diff.added[i].assert });
+
+      for (i = 0; i < diff.kept.length; i++) this._updateError(diff.kept[i].assert.name, { message: diff.kept[i].errorMessage, assert: diff.kept[i].assert });
+    },
+
+    _addError: function _addError(name, _ref5) {
+      var message = _ref5.message;
+      var assert = _ref5.assert;
+
+      this._insertErrorWrapper();
+      this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
+      this._ui.$errorsWrapper.addClass('filled').append($(this.options.errorTemplate).addClass('parsley-' + name).html(message || this._getErrorMessage(assert)));
+    },
+
+    _updateError: function _updateError(name, _ref6) {
+      var message = _ref6.message;
+      var assert = _ref6.assert;
+
+      this._ui.$errorsWrapper.addClass('filled').find('.parsley-' + name).html(message || this._getErrorMessage(assert));
+    },
+
+    _removeError: function _removeError(name) {
+      this._ui.$errorClassHandler.removeAttr('aria-describedby');
+      this._ui.$errorsWrapper.removeClass('filled').find('.parsley-' + name).remove();
+    },
+
+    _getErrorMessage: function _getErrorMessage(constraint) {
+      var customConstraintErrorMessage = constraint.name + 'Message';
+
+      if ('undefined' !== typeof this.options[customConstraintErrorMessage]) return window.Parsley.formatMessage(this.options[customConstraintErrorMessage], constraint.requirements);
+
+      return window.Parsley.getErrorMessage(constraint);
+    },
+
+    _buildUI: function _buildUI() {
+      // UI could be already built or disabled
+      if (this._ui || false === this.options.uiEnabled) return;
+
+      var _ui = {};
+
+      // Give field its Parsley id in DOM
+      this.element.setAttribute(this.options.namespace + 'id', this.__id__);
+
+      /** Generate important UI elements and store them in this **/
+      // $errorClassHandler is the $element that woul have parsley-error and parsley-success classes
+      _ui.$errorClassHandler = this._manageClassHandler();
+
+      // $errorsWrapper is a div that would contain the various field errors, it will be appended into $errorsContainer
+      _ui.errorsWrapperId = 'parsley-id-' + (this.options.multiple ? 'multiple-' + this.options.multiple : this.__id__);
+      _ui.$errorsWrapper = $(this.options.errorsWrapper).attr('id', _ui.errorsWrapperId);
+
+      // ValidationResult UI storage to detect what have changed bwt two validations, and update DOM accordingly
+      _ui.lastValidationResult = [];
+      _ui.validationInformationVisible = false;
+
+      // Store it in this for later
+      this._ui = _ui;
+    },
+
+    // Determine which element will have `parsley-error` and `parsley-success` classes
+    _manageClassHandler: function _manageClassHandler() {
+      // Class handled could also be determined by function given in Parsley options
+      if ('string' === typeof this.options.classHandler && $(this.options.classHandler).length) return $(this.options.classHandler);
+
+      // Class handled could also be determined by function given in Parsley options
+      var $handlerFunction = this.options.classHandler;
+
+      // It might also be the function name of a global function
+      if ('string' === typeof this.options.classHandler && 'function' === typeof window[this.options.classHandler]) $handlerFunction = window[this.options.classHandler];
+
+      if ('function' === typeof $handlerFunction) {
+        var $handler = $handlerFunction.call(this, this);
+
+        // If this function returned a valid existing DOM element, go for it
+        if ('undefined' !== typeof $handler && $handler.length) return $handler;
+      } else if ('object' === typeof $handlerFunction && $handlerFunction instanceof jQuery && $handlerFunction.length) {
+        return $handlerFunction;
+      } else if ($handlerFunction) {
+        Utils.warn('The class handler `' + $handlerFunction + '` does not exist in DOM nor as a global JS function');
+      }
+
+      return this._inputHolder();
+    },
+
+    _inputHolder: function _inputHolder() {
+      // if simple element (input, texatrea, select...) it will perfectly host the classes and precede the error container
+      if (!this.options.multiple || this.element.nodeName === 'SELECT') return this.$element;
+
+      // But if multiple element (radio, checkbox), that would be their parent
+      return this.$element.parent();
+    },
+
+    _insertErrorWrapper: function _insertErrorWrapper() {
+      var $errorsContainer = this.options.errorsContainer;
+
+      // Nothing to do if already inserted
+      if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
+
+      if ('string' === typeof $errorsContainer) {
+        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else if ('function' === typeof window[$errorsContainer]) $errorsContainer = window[$errorsContainer];else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM nor as a global JS function');
+      }
+
+      if ('function' === typeof $errorsContainer) $errorsContainer = $errorsContainer.call(this, this);
+
+      if ('object' === typeof $errorsContainer && $errorsContainer.length) return $errorsContainer.append(this._ui.$errorsWrapper);
+
+      return this._inputHolder().after(this._ui.$errorsWrapper);
+    },
+
+    _actualizeTriggers: function _actualizeTriggers() {
+      var _this3 = this;
+
+      var $toBind = this._findRelated();
+      var trigger;
+
+      // Remove Parsley events already bound on this field
+      $toBind.off('.Parsley');
+      if (this._failedOnce) $toBind.on(Utils.namespaceEvents(this.options.triggerAfterFailure, 'Parsley'), function () {
+        _this3._validateIfNeeded();
+      });else if (trigger = Utils.namespaceEvents(this.options.trigger, 'Parsley')) {
+        $toBind.on(trigger, function (event) {
+          _this3._validateIfNeeded(event);
+        });
+      }
+    },
+
+    _validateIfNeeded: function _validateIfNeeded(event) {
+      var _this4 = this;
+
+      // For keyup, keypress, keydown, input... events that could be a little bit obstrusive
+      // do not validate if val length < min threshold on first validation. Once field have been validated once and info
+      // about success or failure have been displayed, always validate with this trigger to reflect every yalidation change.
+      if (event && /key|input/.test(event.type)) if (!(this._ui && this._ui.validationInformationVisible) && this.getValue().length <= this.options.validationThreshold) return;
+
+      if (this.options.debounce) {
+        window.clearTimeout(this._debounced);
+        this._debounced = window.setTimeout(function () {
+          return _this4.validate();
+        }, this.options.debounce);
+      } else this.validate();
+    },
+
+    _resetUI: function _resetUI() {
+      // Reset all event listeners
+      this._failedOnce = false;
+      this._actualizeTriggers();
+
+      // Nothing to do if UI never initialized for this field
+      if ('undefined' === typeof this._ui) return;
+
+      // Reset all errors' li
+      this._ui.$errorsWrapper.removeClass('filled').children().remove();
+
+      // Reset validation class
+      this._resetClass();
+
+      // Reset validation flags and last validation result
+      this._ui.lastValidationResult = [];
+      this._ui.validationInformationVisible = false;
+    },
+
+    _destroyUI: function _destroyUI() {
+      this._resetUI();
+
+      if ('undefined' !== typeof this._ui) this._ui.$errorsWrapper.remove();
+
+      delete this._ui;
+    },
+
+    _successClass: function _successClass() {
+      this._ui.validationInformationVisible = true;
+      this._ui.$errorClassHandler.removeClass(this.options.errorClass).addClass(this.options.successClass);
+    },
+    _errorClass: function _errorClass() {
+      this._ui.validationInformationVisible = true;
+      this._ui.$errorClassHandler.removeClass(this.options.successClass).addClass(this.options.errorClass);
+    },
+    _resetClass: function _resetClass() {
+      this._ui.$errorClassHandler.removeClass(this.options.successClass).removeClass(this.options.errorClass);
+    }
+  };
+
+  var Form = function Form(element, domOptions, options) {
+    this.__class__ = 'Form';
+
+    this.element = element;
+    this.$element = $(element);
+    this.domOptions = domOptions;
+    this.options = options;
+    this.parent = window.Parsley;
+
+    this.fields = [];
+    this.validationResult = null;
+  };
+
+  var Form__statusMapping = { pending: null, resolved: true, rejected: false };
+
+  Form.prototype = {
+    onSubmitValidate: function onSubmitValidate(event) {
+      var _this5 = this;
+
+      // This is a Parsley generated submit event, do not validate, do not prevent, simply exit and keep normal behavior
+      if (true === event.parsley) return;
+
+      // If we didn't come here through a submit button, use the first one in the form
+      var submitSource = this._submitSource || this.$element.find(Utils._SubmitSelector)[0];
+      this._submitSource = null;
+      this.$element.find('.parsley-synthetic-submit-button').prop('disabled', true);
+      if (submitSource && null !== submitSource.getAttribute('formnovalidate')) return;
+
+      window.Parsley._remoteCache = {};
+
+      var promise = this.whenValidate({ event: event });
+
+      if ('resolved' === promise.state() && false !== this._trigger('submit')) {
+        // All good, let event go through. We make this distinction because browsers
+        // differ in their handling of `submit` being called from inside a submit event [#1047]
+      } else {
+          // Rejected or pending: cancel this submit
+          event.stopImmediatePropagation();
+          event.preventDefault();
+          if ('pending' === promise.state()) promise.done(function () {
+            _this5._submit(submitSource);
+          });
+        }
+    },
+
+    onSubmitButton: function onSubmitButton(event) {
+      this._submitSource = event.currentTarget;
+    },
+    // internal
+    // _submit submits the form, this time without going through the validations.
+    // Care must be taken to "fake" the actual submit button being clicked.
+    _submit: function _submit(submitSource) {
+      if (false === this._trigger('submit')) return;
+      // Add submit button's data
+      if (submitSource) {
+        var $synthetic = this.$element.find('.parsley-synthetic-submit-button').prop('disabled', false);
+        if (0 === $synthetic.length) $synthetic = $('<input class="parsley-synthetic-submit-button" type="hidden">').appendTo(this.$element);
+        $synthetic.attr({
+          name: submitSource.getAttribute('name'),
+          value: submitSource.getAttribute('value')
+        });
+      }
+
+      this.$element.trigger(_extends($.Event('submit'), { parsley: true }));
+    },
+
+    // Performs validation on fields while triggering events.
+    // @returns `true` if all validations succeeds, `false`
+    // if a failure is immediately detected, or `null`
+    // if dependant on a promise.
+    // Consider using `whenValidate` instead.
+    validate: function validate(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling validate on a parsley form without passing arguments as an object is deprecated.');
+
+        var _arguments = _slice.call(arguments);
+
+        var group = _arguments[0];
+        var force = _arguments[1];
+        var event = _arguments[2];
+
+        options = { group: group, force: force, event: event };
+      }
+      return Form__statusMapping[this.whenValidate(options).state()];
+    },
+
+    whenValidate: function whenValidate() {
+      var _Utils$all$done$fail$always,
+          _this6 = this;
+
+      var _ref7 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var group = _ref7.group;
+      var force = _ref7.force;
+      var event = _ref7.event;
+
+      this.submitEvent = event;
+      if (event) {
+        this.submitEvent = _extends({}, event, { preventDefault: function preventDefault() {
+            Utils.warnOnce("Using `this.submitEvent.preventDefault()` is deprecated; instead, call `this.validationResult = false`");
+            _this6.validationResult = false;
+          } });
+      }
+      this.validationResult = true;
+
+      // fire validate event to eventually modify things before every validation
+      this._trigger('validate');
+
+      // Refresh form DOM options and form's fields that could have changed
+      this._refreshFields();
+
+      var promises = this._withoutReactualizingFormOptions(function () {
+        return $.map(_this6.fields, function (field) {
+          return field.whenValidate({ force: force, group: group });
+        });
+      });
+
+      return (_Utils$all$done$fail$always = Utils.all(promises).done(function () {
+        _this6._trigger('success');
+      }).fail(function () {
+        _this6.validationResult = false;
+        _this6.focus();
+        _this6._trigger('error');
+      }).always(function () {
+        _this6._trigger('validated');
+      })).pipe.apply(_Utils$all$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
+    },
+
+    // Iterate over refreshed fields, and stop on first failure.
+    // Returns `true` if all fields are valid, `false` if a failure is detected
+    // or `null` if the result depends on an unresolved promise.
+    // Prefer using `whenValid` instead.
+    isValid: function isValid(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling isValid on a parsley form without passing arguments as an object is deprecated.');
+
+        var _arguments2 = _slice.call(arguments);
+
+        var group = _arguments2[0];
+        var force = _arguments2[1];
+
+        options = { group: group, force: force };
+      }
+      return Form__statusMapping[this.whenValid(options).state()];
+    },
+
+    // Iterate over refreshed fields and validate them.
+    // Returns a promise.
+    // A validation that immediately fails will interrupt the validations.
+    whenValid: function whenValid() {
+      var _this7 = this;
+
+      var _ref8 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var group = _ref8.group;
+      var force = _ref8.force;
+
+      this._refreshFields();
+
+      var promises = this._withoutReactualizingFormOptions(function () {
+        return $.map(_this7.fields, function (field) {
+          return field.whenValid({ group: group, force: force });
+        });
+      });
+      return Utils.all(promises);
+    },
+
+    refresh: function refresh() {
+      this._refreshFields();
+      return this;
+    },
+
+    // Reset UI
+    reset: function reset() {
+      // Form case: emit a reset event for each field
+      for (var i = 0; i < this.fields.length; i++) this.fields[i].reset();
+
+      this._trigger('reset');
+    },
+
+    // Destroy Parsley instance (+ UI)
+    destroy: function destroy() {
+      // Field case: emit destroy event to clean UI and then destroy stored instance
+      this._destroyUI();
+
+      // Form case: destroy all its fields and then destroy stored instance
+      for (var i = 0; i < this.fields.length; i++) this.fields[i].destroy();
+
+      this.$element.removeData('Parsley');
+      this._trigger('destroy');
+    },
+
+    _refreshFields: function _refreshFields() {
+      return this.actualizeOptions()._bindFields();
+    },
+
+    _bindFields: function _bindFields() {
+      var _this8 = this;
+
+      var oldFields = this.fields;
+
+      this.fields = [];
+      this.fieldsMappedById = {};
+
+      this._withoutReactualizingFormOptions(function () {
+        _this8.$element.find(_this8.options.inputs).not(_this8.options.excluded).each(function (_, element) {
+          var fieldInstance = new window.Parsley.Factory(element, {}, _this8);
+
+          // Only add valid and not excluded `Field` and `FieldMultiple` children
+          if (('Field' === fieldInstance.__class__ || 'FieldMultiple' === fieldInstance.__class__) && true !== fieldInstance.options.excluded) {
+            var uniqueId = fieldInstance.__class__ + '-' + fieldInstance.__id__;
+            if ('undefined' === typeof _this8.fieldsMappedById[uniqueId]) {
+              _this8.fieldsMappedById[uniqueId] = fieldInstance;
+              _this8.fields.push(fieldInstance);
+            }
+          }
+        });
+
+        $.each(Utils.difference(oldFields, _this8.fields), function (_, field) {
+          field.reset();
+        });
+      });
+      return this;
+    },
+
+    // Internal only.
+    // Looping on a form's fields to do validation or similar
+    // will trigger reactualizing options on all of them, which
+    // in turn will reactualize the form's options.
+    // To avoid calling actualizeOptions so many times on the form
+    // for nothing, _withoutReactualizingFormOptions temporarily disables
+    // the method actualizeOptions on this form while `fn` is called.
+    _withoutReactualizingFormOptions: function _withoutReactualizingFormOptions(fn) {
+      var oldActualizeOptions = this.actualizeOptions;
+      this.actualizeOptions = function () {
+        return this;
+      };
+      var result = fn();
+      this.actualizeOptions = oldActualizeOptions;
+      return result;
+    },
+
+    // Internal only.
+    // Shortcut to trigger an event
+    // Returns true iff event is not interrupted and default not prevented.
+    _trigger: function _trigger(eventName) {
+      return this.trigger('form:' + eventName);
+    }
+
+  };
+
+  var Constraint = function Constraint(parsleyField, name, requirements, priority, isDomConstraint) {
+    var validatorSpec = window.Parsley._validatorRegistry.validators[name];
+    var validator = new Validator(validatorSpec);
+    priority = priority || parsleyField.options[name + 'Priority'] || validator.priority;
+    isDomConstraint = true === isDomConstraint;
+
+    _extends(this, {
+      validator: validator,
+      name: name,
+      requirements: requirements,
+      priority: priority,
+      isDomConstraint: isDomConstraint
+    });
+    this._parseRequirements(parsleyField.options);
+  };
+
+  var capitalize = function capitalize(str) {
+    var cap = str[0].toUpperCase();
+    return cap + str.slice(1);
+  };
+
+  Constraint.prototype = {
+    validate: function validate(value, instance) {
+      var _validator;
+
+      return (_validator = this.validator).validate.apply(_validator, [value].concat(_toConsumableArray(this.requirementList), [instance]));
+    },
+
+    _parseRequirements: function _parseRequirements(options) {
+      var _this9 = this;
+
+      this.requirementList = this.validator.parseRequirements(this.requirements, function (key) {
+        return options[_this9.name + capitalize(key)];
+      });
+    }
+  };
+
+  var Field = function Field(field, domOptions, options, parsleyFormInstance) {
+    this.__class__ = 'Field';
+
+    this.element = field;
+    this.$element = $(field);
+
+    // Set parent if we have one
+    if ('undefined' !== typeof parsleyFormInstance) {
+      this.parent = parsleyFormInstance;
+    }
+
+    this.options = options;
+    this.domOptions = domOptions;
+
+    // Initialize some properties
+    this.constraints = [];
+    this.constraintsByName = {};
+    this.validationResult = true;
+
+    // Bind constraints
+    this._bindConstraints();
+  };
+
+  var parsley_field__statusMapping = { pending: null, resolved: true, rejected: false };
+
+  Field.prototype = {
+    // # Public API
+    // Validate field and trigger some events for mainly `UI`
+    // @returns `true`, an array of the validators that failed, or
+    // `null` if validation is not finished. Prefer using whenValidate
+    validate: function validate(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling validate on a parsley field without passing arguments as an object is deprecated.');
+        options = { options: options };
+      }
+      var promise = this.whenValidate(options);
+      if (!promise) // If excluded with `group` option
+        return true;
+      switch (promise.state()) {
+        case 'pending':
+          return null;
+        case 'resolved':
+          return true;
+        case 'rejected':
+          return this.validationResult;
+      }
+    },
+
+    // Validate field and trigger some events for mainly `UI`
+    // @returns a promise that succeeds only when all validations do
+    // or `undefined` if field is not in the given `group`.
+    whenValidate: function whenValidate() {
+      var _whenValid$always$done$fail$always,
+          _this10 = this;
+
+      var _ref9 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var force = _ref9.force;
+      var group = _ref9.group;
+
+      // do not validate a field if not the same as given validation group
+      this.refresh();
+      if (group && !this._isInGroup(group)) return;
+
+      this.value = this.getValue();
+
+      // Field Validate event. `this.value` could be altered for custom needs
+      this._trigger('validate');
+
+      return (_whenValid$always$done$fail$always = this.whenValid({ force: force, value: this.value, _refreshed: true }).always(function () {
+        _this10._reflowUI();
+      }).done(function () {
+        _this10._trigger('success');
+      }).fail(function () {
+        _this10._trigger('error');
+      }).always(function () {
+        _this10._trigger('validated');
+      })).pipe.apply(_whenValid$always$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
+    },
+
+    hasConstraints: function hasConstraints() {
+      return 0 !== this.constraints.length;
+    },
+
+    // An empty optional field does not need validation
+    needsValidation: function needsValidation(value) {
+      if ('undefined' === typeof value) value = this.getValue();
+
+      // If a field is empty and not required, it is valid
+      // Except if `data-parsley-validate-if-empty` explicitely added, useful for some custom validators
+      if (!value.length && !this._isRequired() && 'undefined' === typeof this.options.validateIfEmpty) return false;
+
+      return true;
+    },
+
+    _isInGroup: function _isInGroup(group) {
+      if (Array.isArray(this.options.group)) return -1 !== $.inArray(group, this.options.group);
+      return this.options.group === group;
+    },
+
+    // Just validate field. Do not trigger any event.
+    // Returns `true` iff all constraints pass, `false` if there are failures,
+    // or `null` if the result can not be determined yet (depends on a promise)
+    // See also `whenValid`.
+    isValid: function isValid(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling isValid on a parsley field without passing arguments as an object is deprecated.');
+
+        var _arguments3 = _slice.call(arguments);
+
+        var force = _arguments3[0];
+        var value = _arguments3[1];
+
+        options = { force: force, value: value };
+      }
+      var promise = this.whenValid(options);
+      if (!promise) // Excluded via `group`
+        return true;
+      return parsley_field__statusMapping[promise.state()];
+    },
+
+    // Just validate field. Do not trigger any event.
+    // @returns a promise that succeeds only when all validations do
+    // or `undefined` if the field is not in the given `group`.
+    // The argument `force` will force validation of empty fields.
+    // If a `value` is given, it will be validated instead of the value of the input.
+    whenValid: function whenValid() {
+      var _this11 = this;
+
+      var _ref10 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref10$force = _ref10.force;
+      var force = _ref10$force === undefined ? false : _ref10$force;
+      var value = _ref10.value;
+      var group = _ref10.group;
+      var _refreshed = _ref10._refreshed;
+
+      // Recompute options and rebind constraints to have latest changes
+      if (!_refreshed) this.refresh();
+      // do not validate a field if not the same as given validation group
+      if (group && !this._isInGroup(group)) return;
+
+      this.validationResult = true;
+
+      // A field without constraint is valid
+      if (!this.hasConstraints()) return $.when();
+
+      // Value could be passed as argument, needed to add more power to 'field:validate'
+      if ('undefined' === typeof value || null === value) value = this.getValue();
+
+      if (!this.needsValidation(value) && true !== force) return $.when();
+
+      var groupedConstraints = this._getGroupedConstraints();
+      var promises = [];
+      $.each(groupedConstraints, function (_, constraints) {
+        // Process one group of constraints at a time, we validate the constraints
+        // and combine the promises together.
+        var promise = Utils.all($.map(constraints, function (constraint) {
+          return _this11._validateConstraint(value, constraint);
+        }));
+        promises.push(promise);
+        if (promise.state() === 'rejected') return false; // Interrupt processing if a group has already failed
+      });
+      return Utils.all(promises);
+    },
+
+    // @returns a promise
+    _validateConstraint: function _validateConstraint(value, constraint) {
+      var _this12 = this;
+
+      var result = constraint.validate(value, this);
+      // Map false to a failed promise
+      if (false === result) result = $.Deferred().reject();
+      // Make sure we return a promise and that we record failures
+      return Utils.all([result]).fail(function (errorMessage) {
+        if (!(_this12.validationResult instanceof Array)) _this12.validationResult = [];
+        _this12.validationResult.push({
+          assert: constraint,
+          errorMessage: 'string' === typeof errorMessage && errorMessage
+        });
+      });
+    },
+
+    // @returns Parsley field computed value that could be overrided or configured in DOM
+    getValue: function getValue() {
+      var value;
+
+      // Value could be overriden in DOM or with explicit options
+      if ('function' === typeof this.options.value) value = this.options.value(this);else if ('undefined' !== typeof this.options.value) value = this.options.value;else value = this.$element.val();
+
+      // Handle wrong DOM or configurations
+      if ('undefined' === typeof value || null === value) return '';
+
+      return this._handleWhitespace(value);
+    },
+
+    // Reset UI
+    reset: function reset() {
+      this._resetUI();
+      return this._trigger('reset');
+    },
+
+    // Destroy Parsley instance (+ UI)
+    destroy: function destroy() {
+      // Field case: emit destroy event to clean UI and then destroy stored instance
+      this._destroyUI();
+      this.$element.removeData('Parsley');
+      this.$element.removeData('FieldMultiple');
+      this._trigger('destroy');
+    },
+
+    // Actualize options and rebind constraints
+    refresh: function refresh() {
+      this._refreshConstraints();
+      return this;
+    },
+
+    _refreshConstraints: function _refreshConstraints() {
+      return this.actualizeOptions()._bindConstraints();
+    },
+
+    refreshConstraints: function refreshConstraints() {
+      Utils.warnOnce("Parsley's refreshConstraints is deprecated. Please use refresh");
+      return this.refresh();
+    },
+
+    /**
+    * Add a new constraint to a field
+    *
+    * @param {String}   name
+    * @param {Mixed}    requirements      optional
+    * @param {Number}   priority          optional
+    * @param {Boolean}  isDomConstraint   optional
+    */
+    addConstraint: function addConstraint(name, requirements, priority, isDomConstraint) {
+
+      if (window.Parsley._validatorRegistry.validators[name]) {
+        var constraint = new Constraint(this, name, requirements, priority, isDomConstraint);
+
+        // if constraint already exist, delete it and push new version
+        if ('undefined' !== this.constraintsByName[constraint.name]) this.removeConstraint(constraint.name);
+
+        this.constraints.push(constraint);
+        this.constraintsByName[constraint.name] = constraint;
+      }
+
+      return this;
+    },
+
+    // Remove a constraint
+    removeConstraint: function removeConstraint(name) {
+      for (var i = 0; i < this.constraints.length; i++) if (name === this.constraints[i].name) {
+        this.constraints.splice(i, 1);
+        break;
+      }
+      delete this.constraintsByName[name];
+      return this;
+    },
+
+    // Update a constraint (Remove + re-add)
+    updateConstraint: function updateConstraint(name, parameters, priority) {
+      return this.removeConstraint(name).addConstraint(name, parameters, priority);
+    },
+
+    // # Internals
+
+    // Internal only.
+    // Bind constraints from config + options + DOM
+    _bindConstraints: function _bindConstraints() {
+      var constraints = [];
+      var constraintsByName = {};
+
+      // clean all existing DOM constraints to only keep javascript user constraints
+      for (var i = 0; i < this.constraints.length; i++) if (false === this.constraints[i].isDomConstraint) {
+        constraints.push(this.constraints[i]);
+        constraintsByName[this.constraints[i].name] = this.constraints[i];
+      }
+
+      this.constraints = constraints;
+      this.constraintsByName = constraintsByName;
+
+      // then re-add Parsley DOM-API constraints
+      for (var name in this.options) this.addConstraint(name, this.options[name], undefined, true);
+
+      // finally, bind special HTML5 constraints
+      return this._bindHtml5Constraints();
+    },
+
+    // Internal only.
+    // Bind specific HTML5 constraints to be HTML5 compliant
+    _bindHtml5Constraints: function _bindHtml5Constraints() {
+      // html5 required
+      if (null !== this.element.getAttribute('required')) this.addConstraint('required', true, undefined, true);
+
+      // html5 pattern
+      if (null !== this.element.getAttribute('pattern')) this.addConstraint('pattern', this.element.getAttribute('pattern'), undefined, true);
+
+      // range
+      var min = this.element.getAttribute('min');
+      var max = this.element.getAttribute('max');
+      if (null !== min && null !== max) this.addConstraint('range', [min, max], undefined, true);
+
+      // HTML5 min
+      else if (null !== min) this.addConstraint('min', min, undefined, true);
+
+        // HTML5 max
+        else if (null !== max) this.addConstraint('max', max, undefined, true);
+
+      // length
+      if (null !== this.element.getAttribute('minlength') && null !== this.element.getAttribute('maxlength')) this.addConstraint('length', [this.element.getAttribute('minlength'), this.element.getAttribute('maxlength')], undefined, true);
+
+      // HTML5 minlength
+      else if (null !== this.element.getAttribute('minlength')) this.addConstraint('minlength', this.element.getAttribute('minlength'), undefined, true);
+
+        // HTML5 maxlength
+        else if (null !== this.element.getAttribute('maxlength')) this.addConstraint('maxlength', this.element.getAttribute('maxlength'), undefined, true);
+
+      // html5 types
+      var type = Utils.getType(this.element);
+
+      // Small special case here for HTML5 number: integer validator if step attribute is undefined or an integer value, number otherwise
+      if ('number' === type) {
+        return this.addConstraint('type', ['number', {
+          step: this.element.getAttribute('step') || '1',
+          base: min || this.element.getAttribute('value')
+        }], undefined, true);
+        // Regular other HTML5 supported types
+      } else if (/^(email|url|range|date)$/i.test(type)) {
+          return this.addConstraint('type', type, undefined, true);
+        }
+      return this;
+    },
+
+    // Internal only.
+    // Field is required if have required constraint without `false` value
+    _isRequired: function _isRequired() {
+      if ('undefined' === typeof this.constraintsByName.required) return false;
+
+      return false !== this.constraintsByName.required.requirements;
+    },
+
+    // Internal only.
+    // Shortcut to trigger an event
+    _trigger: function _trigger(eventName) {
+      return this.trigger('field:' + eventName);
+    },
+
+    // Internal only
+    // Handles whitespace in a value
+    // Use `data-parsley-whitespace="squish"` to auto squish input value
+    // Use `data-parsley-whitespace="trim"` to auto trim input value
+    _handleWhitespace: function _handleWhitespace(value) {
+      if (true === this.options.trimValue) Utils.warnOnce('data-parsley-trim-value="true" is deprecated, please use data-parsley-whitespace="trim"');
+
+      if ('squish' === this.options.whitespace) value = value.replace(/\s{2,}/g, ' ');
+
+      if ('trim' === this.options.whitespace || 'squish' === this.options.whitespace || true === this.options.trimValue) value = Utils.trimString(value);
+
+      return value;
+    },
+
+    _isDateInput: function _isDateInput() {
+      var c = this.constraintsByName.type;
+      return c && c.requirements === 'date';
+    },
+
+    // Internal only.
+    // Returns the constraints, grouped by descending priority.
+    // The result is thus an array of arrays of constraints.
+    _getGroupedConstraints: function _getGroupedConstraints() {
+      if (false === this.options.priorityEnabled) return [this.constraints];
+
+      var groupedConstraints = [];
+      var index = {};
+
+      // Create array unique of priorities
+      for (var i = 0; i < this.constraints.length; i++) {
+        var p = this.constraints[i].priority;
+        if (!index[p]) groupedConstraints.push(index[p] = []);
+        index[p].push(this.constraints[i]);
+      }
+      // Sort them by priority DESC
+      groupedConstraints.sort(function (a, b) {
+        return b[0].priority - a[0].priority;
+      });
+
+      return groupedConstraints;
+    }
+
+  };
+
+  var parsley_field = Field;
+
+  var Multiple = function Multiple() {
+    this.__class__ = 'FieldMultiple';
+  };
+
+  Multiple.prototype = {
+    // Add new `$element` sibling for multiple field
+    addElement: function addElement($element) {
+      this.$elements.push($element);
+
+      return this;
+    },
+
+    // See `Field._refreshConstraints()`
+    _refreshConstraints: function _refreshConstraints() {
+      var fieldConstraints;
+
+      this.constraints = [];
+
+      // Select multiple special treatment
+      if (this.element.nodeName === 'SELECT') {
+        this.actualizeOptions()._bindConstraints();
+
+        return this;
+      }
+
+      // Gather all constraints for each input in the multiple group
+      for (var i = 0; i < this.$elements.length; i++) {
+
+        // Check if element have not been dynamically removed since last binding
+        if (!$('html').has(this.$elements[i]).length) {
+          this.$elements.splice(i, 1);
+          continue;
+        }
+
+        fieldConstraints = this.$elements[i].data('FieldMultiple')._refreshConstraints().constraints;
+
+        for (var j = 0; j < fieldConstraints.length; j++) this.addConstraint(fieldConstraints[j].name, fieldConstraints[j].requirements, fieldConstraints[j].priority, fieldConstraints[j].isDomConstraint);
+      }
+
+      return this;
+    },
+
+    // See `Field.getValue()`
+    getValue: function getValue() {
+      // Value could be overriden in DOM
+      if ('function' === typeof this.options.value) return this.options.value(this);else if ('undefined' !== typeof this.options.value) return this.options.value;
+
+      // Radio input case
+      if (this.element.nodeName === 'INPUT') {
+        var type = Utils.getType(this.element);
+        if (type === 'radio') return this._findRelated().filter(':checked').val() || '';
+
+        // checkbox input case
+        if (type === 'checkbox') {
+          var values = [];
+
+          this._findRelated().filter(':checked').each(function () {
+            values.push($(this).val());
+          });
+
+          return values;
+        }
+      }
+
+      // Select multiple case
+      if (this.element.nodeName === 'SELECT' && null === this.$element.val()) return [];
+
+      // Default case that should never happen
+      return this.$element.val();
+    },
+
+    _init: function _init() {
+      this.$elements = [this.$element];
+
+      return this;
+    }
+  };
+
+  var Factory = function Factory(element, options, parsleyFormInstance) {
+    this.element = element;
+    this.$element = $(element);
+
+    // If the element has already been bound, returns its saved Parsley instance
+    var savedparsleyFormInstance = this.$element.data('Parsley');
+    if (savedparsleyFormInstance) {
+
+      // If the saved instance has been bound without a Form parent and there is one given in this call, add it
+      if ('undefined' !== typeof parsleyFormInstance && savedparsleyFormInstance.parent === window.Parsley) {
+        savedparsleyFormInstance.parent = parsleyFormInstance;
+        savedparsleyFormInstance._resetOptions(savedparsleyFormInstance.options);
+      }
+
+      if ('object' === typeof options) {
+        _extends(savedparsleyFormInstance.options, options);
+      }
+
+      return savedparsleyFormInstance;
+    }
+
+    // Parsley must be instantiated with a DOM element or jQuery $element
+    if (!this.$element.length) throw new Error('You must bind Parsley on an existing element.');
+
+    if ('undefined' !== typeof parsleyFormInstance && 'Form' !== parsleyFormInstance.__class__) throw new Error('Parent instance must be a Form instance');
+
+    this.parent = parsleyFormInstance || window.Parsley;
+    return this.init(options);
+  };
+
+  Factory.prototype = {
+    init: function init(options) {
+      this.__class__ = 'Parsley';
+      this.__version__ = '2.8.1';
+      this.__id__ = Utils.generateID();
+
+      // Pre-compute options
+      this._resetOptions(options);
+
+      // A Form instance is obviously a `<form>` element but also every node that is not an input and has the `data-parsley-validate` attribute
+      if (this.element.nodeName === 'FORM' || Utils.checkAttr(this.element, this.options.namespace, 'validate') && !this.$element.is(this.options.inputs)) return this.bind('parsleyForm');
+
+      // Every other element is bound as a `Field` or `FieldMultiple`
+      return this.isMultiple() ? this.handleMultiple() : this.bind('parsleyField');
+    },
+
+    isMultiple: function isMultiple() {
+      var type = Utils.getType(this.element);
+      return type === 'radio' || type === 'checkbox' || this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple');
+    },
+
+    // Multiples fields are a real nightmare :(
+    // Maybe some refactoring would be appreciated here...
+    handleMultiple: function handleMultiple() {
+      var _this13 = this;
+
+      var name;
+      var multiple;
+      var parsleyMultipleInstance;
+
+      // Handle multiple name
+      this.options.multiple = this.options.multiple || (name = this.element.getAttribute('name')) || this.element.getAttribute('id');
+
+      // Special select multiple input
+      if (this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple')) {
+        this.options.multiple = this.options.multiple || this.__id__;
+        return this.bind('parsleyFieldMultiple');
+
+        // Else for radio / checkboxes, we need a `name` or `data-parsley-multiple` to properly bind it
+      } else if (!this.options.multiple) {
+          Utils.warn('To be bound by Parsley, a radio, a checkbox and a multiple select input must have either a name or a multiple option.', this.$element);
+          return this;
+        }
+
+      // Remove special chars
+      this.options.multiple = this.options.multiple.replace(/(:|\.|\[|\]|\{|\}|\$)/g, '');
+
+      // Add proper `data-parsley-multiple` to siblings if we have a valid multiple name
+      if (name) {
+        $('input[name="' + name + '"]').each(function (i, input) {
+          var type = Utils.getType(input);
+          if (type === 'radio' || type === 'checkbox') input.setAttribute(_this13.options.namespace + 'multiple', _this13.options.multiple);
+        });
+      }
+
+      // Check here if we don't already have a related multiple instance saved
+      var $previouslyRelated = this._findRelated();
+      for (var i = 0; i < $previouslyRelated.length; i++) {
+        parsleyMultipleInstance = $($previouslyRelated.get(i)).data('Parsley');
+        if ('undefined' !== typeof parsleyMultipleInstance) {
+
+          if (!this.$element.data('FieldMultiple')) {
+            parsleyMultipleInstance.addElement(this.$element);
+          }
+
+          break;
+        }
+      }
+
+      // Create a secret Field instance for every multiple field. It will be stored in `data('FieldMultiple')`
+      // And will be useful later to access classic `Field` stuff while being in a `FieldMultiple` instance
+      this.bind('parsleyField', true);
+
+      return parsleyMultipleInstance || this.bind('parsleyFieldMultiple');
+    },
+
+    // Return proper `Form`, `Field` or `FieldMultiple`
+    bind: function bind(type, doNotStore) {
+      var parsleyInstance;
+
+      switch (type) {
+        case 'parsleyForm':
+          parsleyInstance = $.extend(new Form(this.element, this.domOptions, this.options), new Base(), window.ParsleyExtend)._bindFields();
+          break;
+        case 'parsleyField':
+          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Base(), window.ParsleyExtend);
+          break;
+        case 'parsleyFieldMultiple':
+          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Multiple(), new Base(), window.ParsleyExtend)._init();
+          break;
+        default:
+          throw new Error(type + 'is not a supported Parsley type');
+      }
+
+      if (this.options.multiple) Utils.setAttr(this.element, this.options.namespace, 'multiple', this.options.multiple);
+
+      if ('undefined' !== typeof doNotStore) {
+        this.$element.data('FieldMultiple', parsleyInstance);
+
+        return parsleyInstance;
+      }
+
+      // Store the freshly bound instance in a DOM element for later access using jQuery `data()`
+      this.$element.data('Parsley', parsleyInstance);
+
+      // Tell the world we have a new Form or Field instance!
+      parsleyInstance._actualizeTriggers();
+      parsleyInstance._trigger('init');
+
+      return parsleyInstance;
+    }
+  };
+
+  var vernums = $.fn.jquery.split('.');
+  if (parseInt(vernums[0]) <= 1 && parseInt(vernums[1]) < 8) {
+    throw "The loaded version of jQuery is too old. Please upgrade to 1.8.x or better.";
+  }
+  if (!vernums.forEach) {
+    Utils.warn('Parsley requires ES5 to run properly. Please include https://github.com/es-shims/es5-shim');
+  }
+  // Inherit `on`, `off` & `trigger` to Parsley:
+  var Parsley = _extends(new Base(), {
+    element: document,
+    $element: $(document),
+    actualizeOptions: null,
+    _resetOptions: null,
+    Factory: Factory,
+    version: '2.8.1'
+  });
+
+  // Supplement Field and Form with Base
+  // This way, the constructors will have access to those methods
+  _extends(parsley_field.prototype, UI.Field, Base.prototype);
+  _extends(Form.prototype, UI.Form, Base.prototype);
+  // Inherit actualizeOptions and _resetOptions:
+  _extends(Factory.prototype, Base.prototype);
+
+  // ### jQuery API
+  // `$('.elem').parsley(options)` or `$('.elem').psly(options)`
+  $.fn.parsley = $.fn.psly = function (options) {
+    if (this.length > 1) {
+      var instances = [];
+
+      this.each(function () {
+        instances.push($(this).parsley(options));
+      });
+
+      return instances;
+    }
+
+    // Return undefined if applied to non existing DOM element
+    if (this.length == 0) {
+      return;
+    }
+
+    return new Factory(this[0], options);
+  };
+
+  // ### Field and Form extension
+  // Ensure the extension is now defined if it wasn't previously
+  if ('undefined' === typeof window.ParsleyExtend) window.ParsleyExtend = {};
+
+  // ### Parsley config
+  // Inherit from ParsleyDefault, and copy over any existing values
+  Parsley.options = _extends(Utils.objectCreate(Defaults), window.ParsleyConfig);
+  window.ParsleyConfig = Parsley.options; // Old way of accessing global options
+
+  // ### Globals
+  window.Parsley = window.psly = Parsley;
+  Parsley.Utils = Utils;
+  window.ParsleyUtils = {};
+  $.each(Utils, function (key, value) {
+    if ('function' === typeof value) {
+      window.ParsleyUtils[key] = function () {
+        Utils.warnOnce('Accessing `window.ParsleyUtils` is deprecated. Use `window.Parsley.Utils` instead.');
+        return Utils[key].apply(Utils, arguments);
+      };
+    }
+  });
+
+  // ### Define methods that forward to the registry, and deprecate all access except through window.Parsley
+  var registry = window.Parsley._validatorRegistry = new ValidatorRegistry(window.ParsleyConfig.validators, window.ParsleyConfig.i18n);
+  window.ParsleyValidator = {};
+  $.each('setLocale addCatalog addMessage addMessages getErrorMessage formatMessage addValidator updateValidator removeValidator hasValidator'.split(' '), function (i, method) {
+    window.Parsley[method] = function () {
+      return registry[method].apply(registry, arguments);
+    };
+    window.ParsleyValidator[method] = function () {
+      var _window$Parsley;
+
+      Utils.warnOnce('Accessing the method \'' + method + '\' through Validator is deprecated. Simply call \'window.Parsley.' + method + '(...)\'');
+      return (_window$Parsley = window.Parsley)[method].apply(_window$Parsley, arguments);
+    };
+  });
+
+  // ### UI
+  // Deprecated global object
+  window.Parsley.UI = UI;
+  window.ParsleyUI = {
+    removeError: function removeError(instance, name, doNotUpdateClass) {
+      var updateClass = true !== doNotUpdateClass;
+      Utils.warnOnce('Accessing UI is deprecated. Call \'removeError\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
+      return instance.removeError(name, { updateClass: updateClass });
+    },
+    getErrorsMessages: function getErrorsMessages(instance) {
+      Utils.warnOnce('Accessing UI is deprecated. Call \'getErrorsMessages\' on the instance directly.');
+      return instance.getErrorsMessages();
+    }
+  };
+  $.each('addError updateError'.split(' '), function (i, method) {
+    window.ParsleyUI[method] = function (instance, name, message, assert, doNotUpdateClass) {
+      var updateClass = true !== doNotUpdateClass;
+      Utils.warnOnce('Accessing UI is deprecated. Call \'' + method + '\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
+      return instance[method](name, { message: message, assert: assert, updateClass: updateClass });
+    };
+  });
+
+  // ### PARSLEY auto-binding
+  // Prevent it by setting `ParsleyConfig.autoBind` to `false`
+  if (false !== window.ParsleyConfig.autoBind) {
+    $(function () {
+      // Works only on `data-parsley-validate`.
+      if ($('[data-parsley-validate]').length) $('[data-parsley-validate]').parsley();
+    });
+  }
+
+  var o = $({});
+  var deprecated = function deprecated() {
+    Utils.warnOnce("Parsley's pubsub module is deprecated; use the 'on' and 'off' methods on parsley instances or window.Parsley");
+  };
+
+  // Returns an event handler that calls `fn` with the arguments it expects
+  function adapt(fn, context) {
+    // Store to allow unbinding
+    if (!fn.parsleyAdaptedCallback) {
+      fn.parsleyAdaptedCallback = function () {
+        var args = Array.prototype.slice.call(arguments, 0);
+        args.unshift(this);
+        fn.apply(context || o, args);
+      };
+    }
+    return fn.parsleyAdaptedCallback;
+  }
+
+  var eventPrefix = 'parsley:';
+  // Converts 'parsley:form:validate' into 'form:validate'
+  function eventName(name) {
+    if (name.lastIndexOf(eventPrefix, 0) === 0) return name.substr(eventPrefix.length);
+    return name;
+  }
+
+  // $.listen is deprecated. Use Parsley.on instead.
+  $.listen = function (name, callback) {
+    var context;
+    deprecated();
+    if ('object' === typeof arguments[1] && 'function' === typeof arguments[2]) {
+      context = arguments[1];
+      callback = arguments[2];
+    }
+
+    if ('function' !== typeof callback) throw new Error('Wrong parameters');
+
+    window.Parsley.on(eventName(name), adapt(callback, context));
+  };
+
+  $.listenTo = function (instance, name, fn) {
+    deprecated();
+    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
+
+    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong parameters');
+
+    instance.on(eventName(name), adapt(fn));
+  };
+
+  $.unsubscribe = function (name, fn) {
+    deprecated();
+    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong arguments');
+    window.Parsley.off(eventName(name), fn.parsleyAdaptedCallback);
+  };
+
+  $.unsubscribeTo = function (instance, name) {
+    deprecated();
+    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
+    instance.off(eventName(name));
+  };
+
+  $.unsubscribeAll = function (name) {
+    deprecated();
+    window.Parsley.off(eventName(name));
+    $('form,input,textarea,select').each(function () {
+      var instance = $(this).data('Parsley');
+      if (instance) {
+        instance.off(eventName(name));
+      }
+    });
+  };
+
+  // $.emit is deprecated. Use jQuery events instead.
+  $.emit = function (name, instance) {
+    var _instance;
+
+    deprecated();
+    var instanceGiven = instance instanceof parsley_field || instance instanceof Form;
+    var args = Array.prototype.slice.call(arguments, instanceGiven ? 2 : 1);
+    args.unshift(eventName(name));
+    if (!instanceGiven) {
+      instance = window.Parsley;
+    }
+    (_instance = instance).trigger.apply(_instance, _toConsumableArray(args));
+  };
+
+  var pubsub = {};
+
+  $.extend(true, Parsley, {
+    asyncValidators: {
+      'default': {
+        fn: function fn(xhr) {
+          // By default, only status 2xx are deemed successful.
+          // Note: we use status instead of state() because responses with status 200
+          // but invalid messages (e.g. an empty body for content type set to JSON) will
+          // result in state() === 'rejected'.
+          return xhr.status >= 200 && xhr.status < 300;
+        },
+        url: false
+      },
+      reverse: {
+        fn: function fn(xhr) {
+          // If reverse option is set, a failing ajax request is considered successful
+          return xhr.status < 200 || xhr.status >= 300;
+        },
+        url: false
+      }
+    },
+
+    addAsyncValidator: function addAsyncValidator(name, fn, url, options) {
+      Parsley.asyncValidators[name] = {
+        fn: fn,
+        url: url || false,
+        options: options || {}
+      };
+
+      return this;
+    }
+
+  });
+
+  Parsley.addValidator('remote', {
+    requirementType: {
+      '': 'string',
+      'validator': 'string',
+      'reverse': 'boolean',
+      'options': 'object'
+    },
+
+    validateString: function validateString(value, url, options, instance) {
+      var data = {};
+      var ajaxOptions;
+      var csr;
+      var validator = options.validator || (true === options.reverse ? 'reverse' : 'default');
+
+      if ('undefined' === typeof Parsley.asyncValidators[validator]) throw new Error('Calling an undefined async validator: `' + validator + '`');
+
+      url = Parsley.asyncValidators[validator].url || url;
+
+      // Fill current value
+      if (url.indexOf('{value}') > -1) {
+        url = url.replace('{value}', encodeURIComponent(value));
+      } else {
+        data[instance.element.getAttribute('name') || instance.element.getAttribute('id')] = value;
+      }
+
+      // Merge options passed in from the function with the ones in the attribute
+      var remoteOptions = $.extend(true, options.options || {}, Parsley.asyncValidators[validator].options);
+
+      // All `$.ajax(options)` could be overridden or extended directly from DOM in `data-parsley-remote-options`
+      ajaxOptions = $.extend(true, {}, {
+        url: url,
+        data: data,
+        type: 'GET'
+      }, remoteOptions);
+
+      // Generate store key based on ajax options
+      instance.trigger('field:ajaxoptions', instance, ajaxOptions);
+
+      csr = $.param(ajaxOptions);
+
+      // Initialise querry cache
+      if ('undefined' === typeof Parsley._remoteCache) Parsley._remoteCache = {};
+
+      // Try to retrieve stored xhr
+      var xhr = Parsley._remoteCache[csr] = Parsley._remoteCache[csr] || $.ajax(ajaxOptions);
+
+      var handleXhr = function handleXhr() {
+        var result = Parsley.asyncValidators[validator].fn.call(instance, xhr, url, options);
+        if (!result) // Map falsy results to rejected promise
+          result = $.Deferred().reject();
+        return $.when(result);
+      };
+
+      return xhr.then(handleXhr, handleXhr);
+    },
+
+    priority: -1
+  });
+
+  Parsley.on('form:submit', function () {
+    Parsley._remoteCache = {};
+  });
+
+  Base.prototype.addAsyncValidator = function () {
+    Utils.warnOnce('Accessing the method `addAsyncValidator` through an instance is deprecated. Simply call `Parsley.addAsyncValidator(...)`');
+    return Parsley.addAsyncValidator.apply(Parsley, arguments);
+  };
+
+  // This is included with the Parsley library itself,
+  // thus there is no use in adding it to your project.
+  Parsley.addMessages('en', {
+    defaultMessage: "This value seems to be invalid.",
+    type: {
+      email: "This value should be a valid email.",
+      url: "This value should be a valid url.",
+      number: "This value should be a valid number.",
+      integer: "This value should be a valid integer.",
+      digits: "This value should be digits.",
+      alphanum: "This value should be alphanumeric."
+    },
+    notblank: "This value should not be blank.",
+    required: "This value is required.",
+    pattern: "This value seems to be invalid.",
+    min: "This value should be greater than or equal to %s.",
+    max: "This value should be lower than or equal to %s.",
+    range: "This value should be between %s and %s.",
+    minlength: "This value is too short. It should have %s characters or more.",
+    maxlength: "This value is too long. It should have %s characters or fewer.",
+    length: "This value length is invalid. It should be between %s and %s characters long.",
+    mincheck: "You must select at least %s choices.",
+    maxcheck: "You must select %s choices or fewer.",
+    check: "You must select between %s and %s choices.",
+    equalto: "This value should be the same."
+  });
+
+  Parsley.setLocale('en');
+
+  /**
+   * inputevent - Alleviate browser bugs for input events
+   * https://github.com/marcandre/inputevent
+   * @version v0.0.3 - (built Thu, Apr 14th 2016, 5:58 pm)
+   * @author Marc-Andre Lafortune <github@marc-andre.ca>
+   * @license MIT
+   */
+
+  function InputEvent() {
+    var _this14 = this;
+
+    var globals = window || global;
+
+    // Slightly odd way construct our object. This way methods are force bound.
+    // Used to test for duplicate library.
+    _extends(this, {
+
+      // For browsers that do not support isTrusted, assumes event is native.
+      isNativeEvent: function isNativeEvent(evt) {
+        return evt.originalEvent && evt.originalEvent.isTrusted !== false;
+      },
+
+      fakeInputEvent: function fakeInputEvent(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          $(evt.target).trigger('input');
+        }
+      },
+
+      misbehaves: function misbehaves(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          _this14.behavesOk(evt);
+          $(document).on('change.inputevent', evt.data.selector, _this14.fakeInputEvent);
+          _this14.fakeInputEvent(evt);
+        }
+      },
+
+      behavesOk: function behavesOk(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          $(document) // Simply unbinds the testing handler
+          .off('input.inputevent', evt.data.selector, _this14.behavesOk).off('change.inputevent', evt.data.selector, _this14.misbehaves);
+        }
+      },
+
+      // Bind the testing handlers
+      install: function install() {
+        if (globals.inputEventPatched) {
+          return;
+        }
+        globals.inputEventPatched = '0.0.3';
+        var _arr = ['select', 'input[type="checkbox"]', 'input[type="radio"]', 'input[type="file"]'];
+        for (var _i = 0; _i < _arr.length; _i++) {
+          var selector = _arr[_i];
+          $(document).on('input.inputevent', selector, { selector: selector }, _this14.behavesOk).on('change.inputevent', selector, { selector: selector }, _this14.misbehaves);
+        }
+      },
+
+      uninstall: function uninstall() {
+        delete globals.inputEventPatched;
+        $(document).off('.inputevent');
+      }
+
+    });
+  };
+
+  var inputevent = new InputEvent();
+
+  inputevent.install();
+
+  var parsley = Parsley;
+
+  return parsley;
+});
+//# sourceMappingURL=parsley.js.map
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
+
+/***/ }),
+/* 9 */,
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;( function( factory ) {
+	if ( true ) {
+
+		// AMD. Register as an anonymous module.
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(0) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+} ( function( $ ) {
+
+$.ui = $.ui || {};
+
+return $.ui.version = "1.12.1";
+
+} ) );
+
+
+/***/ }),
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(25);
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery_ui_ui_widgets_datepicker__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue__);
+
+
+
+__webpack_require__(6);
+__webpack_require__(8);
+__webpack_require__(7);
+
+//import Vue from 'vue/dist/vue.common.js';
+window.Vue = __webpack_require__(2);
+
+Vue.config.devtools = false;
+Vue.config.performance = false;
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+var app = new Vue({
+    el: '#accordion-app',
+    data: {
+        qual: {
+            reference: '', description: '', institution: '', obtained_on: '',
+            student_no: ''
+        },
+        quals: []
+    },
+    mounted: function mounted() {
+        //this.quals = JSON.parse(this.$el.dataset.quals);
+
+        +function ($, el) {
+
+            $("#imageUpload").change(function () {
+                readURL(this);
+            });
+            $.fn.mirror = function (selector) {
+                return this.each(function () {
+                    var $this = $(this);
+                    var $selector = $(selector);
+                    $this.bind('keyup change', function () {
+                        $selector.val($this.val());
+                    });
+                });
+            };
+
+            $("#birth_date,#JoinedDate,#TerminationDate").datepicker({
+                showButtonPanel: true,
+                dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true
+            });
+            $("#birth_date").datepicker("option", "yearRange", "-65:-18");
+
+            $(':input[data-mirror]').each(function () {
+                $(this).mirror($(this).data('mirror'));
+            });
+
+            $('.accordion').asAccordion();
+            $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true, search: true });
+
+            window.Parsley.addValidator('requiredIf', {
+                validateString: function validateString(value, requirement) {
+                    if (jQuery(requirement).val()) {
+                        return !!value;
+                    }
+                    return true;
+                }, priority: 33
+            });
+            window.Parsley.addValidator('fileextension', function (value, requirement) {
+                var fileExtension = value.split('.').pop();
+                return fileExtension === requirement;
+            }, 32).addMessage('en', 'fileextension', 'The extension doesn\'t match the required');
+
+            window.Parsley.addValidator('filemaxmegabytes', {
+                requirementType: 'string',
+                validateString: function validateString(value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+                    var maxBytes = requirement * 1048576;
+
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    return file.length === 1 && file[0].size <= maxBytes;
+                },
+                messages: {
+                    en: 'File is too big'
+                }
+            }).addValidator('filemimetypes', {
+                requirementType: 'string',
+                validateString: function validateString(value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    var allowedMimeTypes = requirement.replace(/\s/g, "").split(',');
+                    return allowedMimeTypes.indexOf(file[0].type) !== -1;
+                },
+                messages: {
+                    en: 'File mime type not allowed'
+                }
+            });
+
+            window.Parsley.addAsyncValidator('checkId', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-id');
+            window.Parsley.addAsyncValidator('checkName', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-name');
+            window.Parsley.addAsyncValidator('checkPassport', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-passport');
+            window.Parsley.addAsyncValidator('checkEmployeeNo', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-employeeno');
+            window.Parsley.on('field:ajaxoptions', function (p1, ajaxOptions) {
+                var FirstName = $("[name=first_name]").val(),
+                    Surname = $("[name=surname]").val(),
+                    IdNumber = $("[name=id_number]").val(),
+                    PassportCountryId = $("[name=passport_country_id]").val(),
+                    PassportNo = $("[name=passport_no]").val(),
+                    EmployeeNo = $("[name=employee_no]").val();
+
+                var namedDataMap = {
+                    'id_number': { 'idNumber': IdNumber, 'firstName': FirstName, 'surname': Surname },
+                    'employee_no': { 'employeeNo': EmployeeNo },
+                    'passport_no': { 'passportCountryId': PassportCountryId, 'passportNo': PassportNo, 'firstName': FirstName, 'surname': Surname }
+                };
+
+                ajaxOptions.global = false;
+                ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
+            });
+        }(jQuery, this);
+    },
+    methods: {
+        addNewQual: function addNewQual() {
+            this.quals.push(Vue.util.extend({}, this.qual));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeQual: function removeQual(index) {
+            Vue.delete(this.quals, index);
+        },
+        submitForm: function submitForm(event) {
+            event.preventDefault();
+        },
+        fetchQualifications: function fetchQualifications() {
+            var _this = this;
+
+            fetch('./qualifications').then(function (res) {
+                return res.json();
+            }).then(function (res) {
+                _this.quals = res;
+            });
+        }
+    },
+    created: function created() {
+        this.fetchQualifications();
+    },
+    components: {
+        'datepicker': __WEBPACK_IMPORTED_MODULE_1__components_DatePicker_vue___default.a
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// jscs:disable maximumLineLength
+/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
+/*!
+ * jQuery UI Datepicker 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Datepicker
+//>>group: Widgets
+//>>description: Displays a calendar from an input or inline for selecting dates.
+//>>docs: http://api.jqueryui.com/datepicker/
+//>>demos: http://jqueryui.com/datepicker/
+//>>css.structure: ../../themes/base/core.css
+//>>css.structure: ../../themes/base/datepicker.css
+//>>css.theme: ../../themes/base/theme.css
+
+( function( factory ) {
+	if ( true ) {
+
+		// AMD. Register as an anonymous module.
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+			__webpack_require__(0),
+			__webpack_require__(10),
+			__webpack_require__(27)
+		], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+}( function( $ ) {
+
+$.extend( $.ui, { datepicker: { version: "1.12.1" } } );
+
+var datepicker_instActive;
+
+function datepicker_getZindex( elem ) {
+	var position, value;
+	while ( elem.length && elem[ 0 ] !== document ) {
+
+		// Ignore z-index if position is set to a value where z-index is ignored by the browser
+		// This makes behavior of this function consistent across browsers
+		// WebKit always returns auto if the element is positioned
+		position = elem.css( "position" );
+		if ( position === "absolute" || position === "relative" || position === "fixed" ) {
+
+			// IE returns 0 when zIndex is not specified
+			// other browsers return a string
+			// we ignore the case of nested elements with an explicit value of 0
+			// <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
+			value = parseInt( elem.css( "zIndex" ), 10 );
+			if ( !isNaN( value ) && value !== 0 ) {
+				return value;
+			}
+		}
+		elem = elem.parent();
+	}
+
+	return 0;
+}
+/* Date picker manager.
+   Use the singleton instance of this class, $.datepicker, to interact with the date picker.
+   Settings for (groups of) date pickers are maintained in an instance object,
+   allowing multiple different settings on the same page. */
+
+function Datepicker() {
+	this._curInst = null; // The current instance in use
+	this._keyEvent = false; // If the last event was a key event
+	this._disabledInputs = []; // List of date picker inputs that have been disabled
+	this._datepickerShowing = false; // True if the popup picker is showing , false if not
+	this._inDialog = false; // True if showing within a "dialog", false if not
+	this._mainDivId = "ui-datepicker-div"; // The ID of the main datepicker division
+	this._inlineClass = "ui-datepicker-inline"; // The name of the inline marker class
+	this._appendClass = "ui-datepicker-append"; // The name of the append marker class
+	this._triggerClass = "ui-datepicker-trigger"; // The name of the trigger marker class
+	this._dialogClass = "ui-datepicker-dialog"; // The name of the dialog marker class
+	this._disableClass = "ui-datepicker-disabled"; // The name of the disabled covering marker class
+	this._unselectableClass = "ui-datepicker-unselectable"; // The name of the unselectable cell marker class
+	this._currentClass = "ui-datepicker-current-day"; // The name of the current day marker class
+	this._dayOverClass = "ui-datepicker-days-cell-over"; // The name of the day hover marker class
+	this.regional = []; // Available regional settings, indexed by language code
+	this.regional[ "" ] = { // Default regional settings
+		closeText: "Done", // Display text for close link
+		prevText: "Prev", // Display text for previous month link
+		nextText: "Next", // Display text for next month link
+		currentText: "Today", // Display text for current month link
+		monthNames: [ "January","February","March","April","May","June",
+			"July","August","September","October","November","December" ], // Names of months for drop-down and formatting
+		monthNamesShort: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ], // For formatting
+		dayNames: [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ], // For formatting
+		dayNamesShort: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ], // For formatting
+		dayNamesMin: [ "Su","Mo","Tu","We","Th","Fr","Sa" ], // Column headings for days starting at Sunday
+		weekHeader: "Wk", // Column header for week of the year
+		dateFormat: "mm/dd/yy", // See format options on parseDate
+		firstDay: 0, // The first day of the week, Sun = 0, Mon = 1, ...
+		isRTL: false, // True if right-to-left language, false if left-to-right
+		showMonthAfterYear: false, // True if the year select precedes month, false for month then year
+		yearSuffix: "" // Additional text to append to the year in the month headers
+	};
+	this._defaults = { // Global defaults for all the date picker instances
+		showOn: "focus", // "focus" for popup on focus,
+			// "button" for trigger button, or "both" for either
+		showAnim: "fadeIn", // Name of jQuery animation for popup
+		showOptions: {}, // Options for enhanced animations
+		defaultDate: null, // Used when field is blank: actual date,
+			// +/-number for offset from today, null for today
+		appendText: "", // Display text following the input box, e.g. showing the format
+		buttonText: "...", // Text for trigger button
+		buttonImage: "", // URL for trigger button image
+		buttonImageOnly: false, // True if the image appears alone, false if it appears on a button
+		hideIfNoPrevNext: false, // True to hide next/previous month links
+			// if not applicable, false to just disable them
+		navigationAsDateFormat: false, // True if date formatting applied to prev/today/next links
+		gotoCurrent: false, // True if today link goes back to current selection instead
+		changeMonth: false, // True if month can be selected directly, false if only prev/next
+		changeYear: false, // True if year can be selected directly, false if only prev/next
+		yearRange: "c-10:c+10", // Range of years to display in drop-down,
+			// either relative to today's year (-nn:+nn), relative to currently displayed year
+			// (c-nn:c+nn), absolute (nnnn:nnnn), or a combination of the above (nnnn:-n)
+		showOtherMonths: false, // True to show dates in other months, false to leave blank
+		selectOtherMonths: false, // True to allow selection of dates in other months, false for unselectable
+		showWeek: false, // True to show week of the year, false to not show it
+		calculateWeek: this.iso8601Week, // How to calculate the week of the year,
+			// takes a Date and returns the number of the week for it
+		shortYearCutoff: "+10", // Short year values < this are in the current century,
+			// > this are in the previous century,
+			// string value starting with "+" for current year + value
+		minDate: null, // The earliest selectable date, or null for no limit
+		maxDate: null, // The latest selectable date, or null for no limit
+		duration: "fast", // Duration of display/closure
+		beforeShowDay: null, // Function that takes a date and returns an array with
+			// [0] = true if selectable, false if not, [1] = custom CSS class name(s) or "",
+			// [2] = cell title (optional), e.g. $.datepicker.noWeekends
+		beforeShow: null, // Function that takes an input field and
+			// returns a set of custom settings for the date picker
+		onSelect: null, // Define a callback function when a date is selected
+		onChangeMonthYear: null, // Define a callback function when the month or year is changed
+		onClose: null, // Define a callback function when the datepicker is closed
+		numberOfMonths: 1, // Number of months to show at a time
+		showCurrentAtPos: 0, // The position in multipe months at which to show the current month (starting at 0)
+		stepMonths: 1, // Number of months to step back/forward
+		stepBigMonths: 12, // Number of months to step back/forward for the big links
+		altField: "", // Selector for an alternate field to store selected dates into
+		altFormat: "", // The date format to use for the alternate field
+		constrainInput: true, // The input is constrained by the current date format
+		showButtonPanel: false, // True to show button panel, false to not show it
+		autoSize: false, // True to size the input for the date format, false to leave as is
+		disabled: false // The initial disabled state
+	};
+	$.extend( this._defaults, this.regional[ "" ] );
+	this.regional.en = $.extend( true, {}, this.regional[ "" ] );
+	this.regional[ "en-US" ] = $.extend( true, {}, this.regional.en );
+	this.dpDiv = datepicker_bindHover( $( "<div id='" + this._mainDivId + "' class='ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>" ) );
+}
+
+$.extend( Datepicker.prototype, {
+	/* Class name added to elements to indicate already configured with a date picker. */
+	markerClassName: "hasDatepicker",
+
+	//Keep track of the maximum number of rows displayed (see #7043)
+	maxRows: 4,
+
+	// TODO rename to "widget" when switching to widget factory
+	_widgetDatepicker: function() {
+		return this.dpDiv;
+	},
+
+	/* Override the default settings for all instances of the date picker.
+	 * @param  settings  object - the new settings to use as defaults (anonymous object)
+	 * @return the manager object
+	 */
+	setDefaults: function( settings ) {
+		datepicker_extendRemove( this._defaults, settings || {} );
+		return this;
+	},
+
+	/* Attach the date picker to a jQuery selection.
+	 * @param  target	element - the target input field or division or span
+	 * @param  settings  object - the new settings to use for this date picker instance (anonymous)
+	 */
+	_attachDatepicker: function( target, settings ) {
+		var nodeName, inline, inst;
+		nodeName = target.nodeName.toLowerCase();
+		inline = ( nodeName === "div" || nodeName === "span" );
+		if ( !target.id ) {
+			this.uuid += 1;
+			target.id = "dp" + this.uuid;
+		}
+		inst = this._newInst( $( target ), inline );
+		inst.settings = $.extend( {}, settings || {} );
+		if ( nodeName === "input" ) {
+			this._connectDatepicker( target, inst );
+		} else if ( inline ) {
+			this._inlineDatepicker( target, inst );
+		}
+	},
+
+	/* Create a new instance object. */
+	_newInst: function( target, inline ) {
+		var id = target[ 0 ].id.replace( /([^A-Za-z0-9_\-])/g, "\\\\$1" ); // escape jQuery meta chars
+		return { id: id, input: target, // associated target
+			selectedDay: 0, selectedMonth: 0, selectedYear: 0, // current selection
+			drawMonth: 0, drawYear: 0, // month being drawn
+			inline: inline, // is datepicker inline or not
+			dpDiv: ( !inline ? this.dpDiv : // presentation div
+			datepicker_bindHover( $( "<div class='" + this._inlineClass + " ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>" ) ) ) };
+	},
+
+	/* Attach the date picker to an input field. */
+	_connectDatepicker: function( target, inst ) {
+		var input = $( target );
+		inst.append = $( [] );
+		inst.trigger = $( [] );
+		if ( input.hasClass( this.markerClassName ) ) {
+			return;
+		}
+		this._attachments( input, inst );
+		input.addClass( this.markerClassName ).on( "keydown", this._doKeyDown ).
+			on( "keypress", this._doKeyPress ).on( "keyup", this._doKeyUp );
+		this._autoSize( inst );
+		$.data( target, "datepicker", inst );
+
+		//If disabled option is true, disable the datepicker once it has been attached to the input (see ticket #5665)
+		if ( inst.settings.disabled ) {
+			this._disableDatepicker( target );
+		}
+	},
+
+	/* Make attachments based on settings. */
+	_attachments: function( input, inst ) {
+		var showOn, buttonText, buttonImage,
+			appendText = this._get( inst, "appendText" ),
+			isRTL = this._get( inst, "isRTL" );
+
+		if ( inst.append ) {
+			inst.append.remove();
+		}
+		if ( appendText ) {
+			inst.append = $( "<span class='" + this._appendClass + "'>" + appendText + "</span>" );
+			input[ isRTL ? "before" : "after" ]( inst.append );
+		}
+
+		input.off( "focus", this._showDatepicker );
+
+		if ( inst.trigger ) {
+			inst.trigger.remove();
+		}
+
+		showOn = this._get( inst, "showOn" );
+		if ( showOn === "focus" || showOn === "both" ) { // pop-up date picker when in the marked field
+			input.on( "focus", this._showDatepicker );
+		}
+		if ( showOn === "button" || showOn === "both" ) { // pop-up date picker when button clicked
+			buttonText = this._get( inst, "buttonText" );
+			buttonImage = this._get( inst, "buttonImage" );
+			inst.trigger = $( this._get( inst, "buttonImageOnly" ) ?
+				$( "<img/>" ).addClass( this._triggerClass ).
+					attr( { src: buttonImage, alt: buttonText, title: buttonText } ) :
+				$( "<button type='button'></button>" ).addClass( this._triggerClass ).
+					html( !buttonImage ? buttonText : $( "<img/>" ).attr(
+					{ src:buttonImage, alt:buttonText, title:buttonText } ) ) );
+			input[ isRTL ? "before" : "after" ]( inst.trigger );
+			inst.trigger.on( "click", function() {
+				if ( $.datepicker._datepickerShowing && $.datepicker._lastInput === input[ 0 ] ) {
+					$.datepicker._hideDatepicker();
+				} else if ( $.datepicker._datepickerShowing && $.datepicker._lastInput !== input[ 0 ] ) {
+					$.datepicker._hideDatepicker();
+					$.datepicker._showDatepicker( input[ 0 ] );
+				} else {
+					$.datepicker._showDatepicker( input[ 0 ] );
+				}
+				return false;
+			} );
+		}
+	},
+
+	/* Apply the maximum length for the date format. */
+	_autoSize: function( inst ) {
+		if ( this._get( inst, "autoSize" ) && !inst.inline ) {
+			var findMax, max, maxI, i,
+				date = new Date( 2009, 12 - 1, 20 ), // Ensure double digits
+				dateFormat = this._get( inst, "dateFormat" );
+
+			if ( dateFormat.match( /[DM]/ ) ) {
+				findMax = function( names ) {
+					max = 0;
+					maxI = 0;
+					for ( i = 0; i < names.length; i++ ) {
+						if ( names[ i ].length > max ) {
+							max = names[ i ].length;
+							maxI = i;
+						}
+					}
+					return maxI;
+				};
+				date.setMonth( findMax( this._get( inst, ( dateFormat.match( /MM/ ) ?
+					"monthNames" : "monthNamesShort" ) ) ) );
+				date.setDate( findMax( this._get( inst, ( dateFormat.match( /DD/ ) ?
+					"dayNames" : "dayNamesShort" ) ) ) + 20 - date.getDay() );
+			}
+			inst.input.attr( "size", this._formatDate( inst, date ).length );
+		}
+	},
+
+	/* Attach an inline date picker to a div. */
+	_inlineDatepicker: function( target, inst ) {
+		var divSpan = $( target );
+		if ( divSpan.hasClass( this.markerClassName ) ) {
+			return;
+		}
+		divSpan.addClass( this.markerClassName ).append( inst.dpDiv );
+		$.data( target, "datepicker", inst );
+		this._setDate( inst, this._getDefaultDate( inst ), true );
+		this._updateDatepicker( inst );
+		this._updateAlternate( inst );
+
+		//If disabled option is true, disable the datepicker before showing it (see ticket #5665)
+		if ( inst.settings.disabled ) {
+			this._disableDatepicker( target );
+		}
+
+		// Set display:block in place of inst.dpDiv.show() which won't work on disconnected elements
+		// http://bugs.jqueryui.com/ticket/7552 - A Datepicker created on a detached div has zero height
+		inst.dpDiv.css( "display", "block" );
+	},
+
+	/* Pop-up the date picker in a "dialog" box.
+	 * @param  input element - ignored
+	 * @param  date	string or Date - the initial date to display
+	 * @param  onSelect  function - the function to call when a date is selected
+	 * @param  settings  object - update the dialog date picker instance's settings (anonymous object)
+	 * @param  pos int[2] - coordinates for the dialog's position within the screen or
+	 *					event - with x/y coordinates or
+	 *					leave empty for default (screen centre)
+	 * @return the manager object
+	 */
+	_dialogDatepicker: function( input, date, onSelect, settings, pos ) {
+		var id, browserWidth, browserHeight, scrollX, scrollY,
+			inst = this._dialogInst; // internal instance
+
+		if ( !inst ) {
+			this.uuid += 1;
+			id = "dp" + this.uuid;
+			this._dialogInput = $( "<input type='text' id='" + id +
+				"' style='position: absolute; top: -100px; width: 0px;'/>" );
+			this._dialogInput.on( "keydown", this._doKeyDown );
+			$( "body" ).append( this._dialogInput );
+			inst = this._dialogInst = this._newInst( this._dialogInput, false );
+			inst.settings = {};
+			$.data( this._dialogInput[ 0 ], "datepicker", inst );
+		}
+		datepicker_extendRemove( inst.settings, settings || {} );
+		date = ( date && date.constructor === Date ? this._formatDate( inst, date ) : date );
+		this._dialogInput.val( date );
+
+		this._pos = ( pos ? ( pos.length ? pos : [ pos.pageX, pos.pageY ] ) : null );
+		if ( !this._pos ) {
+			browserWidth = document.documentElement.clientWidth;
+			browserHeight = document.documentElement.clientHeight;
+			scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+			scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+			this._pos = // should use actual width/height below
+				[ ( browserWidth / 2 ) - 100 + scrollX, ( browserHeight / 2 ) - 150 + scrollY ];
+		}
+
+		// Move input on screen for focus, but hidden behind dialog
+		this._dialogInput.css( "left", ( this._pos[ 0 ] + 20 ) + "px" ).css( "top", this._pos[ 1 ] + "px" );
+		inst.settings.onSelect = onSelect;
+		this._inDialog = true;
+		this.dpDiv.addClass( this._dialogClass );
+		this._showDatepicker( this._dialogInput[ 0 ] );
+		if ( $.blockUI ) {
+			$.blockUI( this.dpDiv );
+		}
+		$.data( this._dialogInput[ 0 ], "datepicker", inst );
+		return this;
+	},
+
+	/* Detach a datepicker from its control.
+	 * @param  target	element - the target input field or division or span
+	 */
+	_destroyDatepicker: function( target ) {
+		var nodeName,
+			$target = $( target ),
+			inst = $.data( target, "datepicker" );
+
+		if ( !$target.hasClass( this.markerClassName ) ) {
+			return;
+		}
+
+		nodeName = target.nodeName.toLowerCase();
+		$.removeData( target, "datepicker" );
+		if ( nodeName === "input" ) {
+			inst.append.remove();
+			inst.trigger.remove();
+			$target.removeClass( this.markerClassName ).
+				off( "focus", this._showDatepicker ).
+				off( "keydown", this._doKeyDown ).
+				off( "keypress", this._doKeyPress ).
+				off( "keyup", this._doKeyUp );
+		} else if ( nodeName === "div" || nodeName === "span" ) {
+			$target.removeClass( this.markerClassName ).empty();
+		}
+
+		if ( datepicker_instActive === inst ) {
+			datepicker_instActive = null;
+		}
+	},
+
+	/* Enable the date picker to a jQuery selection.
+	 * @param  target	element - the target input field or division or span
+	 */
+	_enableDatepicker: function( target ) {
+		var nodeName, inline,
+			$target = $( target ),
+			inst = $.data( target, "datepicker" );
+
+		if ( !$target.hasClass( this.markerClassName ) ) {
+			return;
+		}
+
+		nodeName = target.nodeName.toLowerCase();
+		if ( nodeName === "input" ) {
+			target.disabled = false;
+			inst.trigger.filter( "button" ).
+				each( function() { this.disabled = false; } ).end().
+				filter( "img" ).css( { opacity: "1.0", cursor: "" } );
+		} else if ( nodeName === "div" || nodeName === "span" ) {
+			inline = $target.children( "." + this._inlineClass );
+			inline.children().removeClass( "ui-state-disabled" );
+			inline.find( "select.ui-datepicker-month, select.ui-datepicker-year" ).
+				prop( "disabled", false );
+		}
+		this._disabledInputs = $.map( this._disabledInputs,
+			function( value ) { return ( value === target ? null : value ); } ); // delete entry
+	},
+
+	/* Disable the date picker to a jQuery selection.
+	 * @param  target	element - the target input field or division or span
+	 */
+	_disableDatepicker: function( target ) {
+		var nodeName, inline,
+			$target = $( target ),
+			inst = $.data( target, "datepicker" );
+
+		if ( !$target.hasClass( this.markerClassName ) ) {
+			return;
+		}
+
+		nodeName = target.nodeName.toLowerCase();
+		if ( nodeName === "input" ) {
+			target.disabled = true;
+			inst.trigger.filter( "button" ).
+				each( function() { this.disabled = true; } ).end().
+				filter( "img" ).css( { opacity: "0.5", cursor: "default" } );
+		} else if ( nodeName === "div" || nodeName === "span" ) {
+			inline = $target.children( "." + this._inlineClass );
+			inline.children().addClass( "ui-state-disabled" );
+			inline.find( "select.ui-datepicker-month, select.ui-datepicker-year" ).
+				prop( "disabled", true );
+		}
+		this._disabledInputs = $.map( this._disabledInputs,
+			function( value ) { return ( value === target ? null : value ); } ); // delete entry
+		this._disabledInputs[ this._disabledInputs.length ] = target;
+	},
+
+	/* Is the first field in a jQuery collection disabled as a datepicker?
+	 * @param  target	element - the target input field or division or span
+	 * @return boolean - true if disabled, false if enabled
+	 */
+	_isDisabledDatepicker: function( target ) {
+		if ( !target ) {
+			return false;
+		}
+		for ( var i = 0; i < this._disabledInputs.length; i++ ) {
+			if ( this._disabledInputs[ i ] === target ) {
+				return true;
+			}
+		}
+		return false;
+	},
+
+	/* Retrieve the instance data for the target control.
+	 * @param  target  element - the target input field or division or span
+	 * @return  object - the associated instance data
+	 * @throws  error if a jQuery problem getting data
+	 */
+	_getInst: function( target ) {
+		try {
+			return $.data( target, "datepicker" );
+		}
+		catch ( err ) {
+			throw "Missing instance data for this datepicker";
+		}
+	},
+
+	/* Update or retrieve the settings for a date picker attached to an input field or division.
+	 * @param  target  element - the target input field or division or span
+	 * @param  name	object - the new settings to update or
+	 *				string - the name of the setting to change or retrieve,
+	 *				when retrieving also "all" for all instance settings or
+	 *				"defaults" for all global defaults
+	 * @param  value   any - the new value for the setting
+	 *				(omit if above is an object or to retrieve a value)
+	 */
+	_optionDatepicker: function( target, name, value ) {
+		var settings, date, minDate, maxDate,
+			inst = this._getInst( target );
+
+		if ( arguments.length === 2 && typeof name === "string" ) {
+			return ( name === "defaults" ? $.extend( {}, $.datepicker._defaults ) :
+				( inst ? ( name === "all" ? $.extend( {}, inst.settings ) :
+				this._get( inst, name ) ) : null ) );
+		}
+
+		settings = name || {};
+		if ( typeof name === "string" ) {
+			settings = {};
+			settings[ name ] = value;
+		}
+
+		if ( inst ) {
+			if ( this._curInst === inst ) {
+				this._hideDatepicker();
+			}
+
+			date = this._getDateDatepicker( target, true );
+			minDate = this._getMinMaxDate( inst, "min" );
+			maxDate = this._getMinMaxDate( inst, "max" );
+			datepicker_extendRemove( inst.settings, settings );
+
+			// reformat the old minDate/maxDate values if dateFormat changes and a new minDate/maxDate isn't provided
+			if ( minDate !== null && settings.dateFormat !== undefined && settings.minDate === undefined ) {
+				inst.settings.minDate = this._formatDate( inst, minDate );
+			}
+			if ( maxDate !== null && settings.dateFormat !== undefined && settings.maxDate === undefined ) {
+				inst.settings.maxDate = this._formatDate( inst, maxDate );
+			}
+			if ( "disabled" in settings ) {
+				if ( settings.disabled ) {
+					this._disableDatepicker( target );
+				} else {
+					this._enableDatepicker( target );
+				}
+			}
+			this._attachments( $( target ), inst );
+			this._autoSize( inst );
+			this._setDate( inst, date );
+			this._updateAlternate( inst );
+			this._updateDatepicker( inst );
+		}
+	},
+
+	// Change method deprecated
+	_changeDatepicker: function( target, name, value ) {
+		this._optionDatepicker( target, name, value );
+	},
+
+	/* Redraw the date picker attached to an input field or division.
+	 * @param  target  element - the target input field or division or span
+	 */
+	_refreshDatepicker: function( target ) {
+		var inst = this._getInst( target );
+		if ( inst ) {
+			this._updateDatepicker( inst );
+		}
+	},
+
+	/* Set the dates for a jQuery selection.
+	 * @param  target element - the target input field or division or span
+	 * @param  date	Date - the new date
+	 */
+	_setDateDatepicker: function( target, date ) {
+		var inst = this._getInst( target );
+		if ( inst ) {
+			this._setDate( inst, date );
+			this._updateDatepicker( inst );
+			this._updateAlternate( inst );
+		}
+	},
+
+	/* Get the date(s) for the first entry in a jQuery selection.
+	 * @param  target element - the target input field or division or span
+	 * @param  noDefault boolean - true if no default date is to be used
+	 * @return Date - the current date
+	 */
+	_getDateDatepicker: function( target, noDefault ) {
+		var inst = this._getInst( target );
+		if ( inst && !inst.inline ) {
+			this._setDateFromField( inst, noDefault );
+		}
+		return ( inst ? this._getDate( inst ) : null );
+	},
+
+	/* Handle keystrokes. */
+	_doKeyDown: function( event ) {
+		var onSelect, dateStr, sel,
+			inst = $.datepicker._getInst( event.target ),
+			handled = true,
+			isRTL = inst.dpDiv.is( ".ui-datepicker-rtl" );
+
+		inst._keyEvent = true;
+		if ( $.datepicker._datepickerShowing ) {
+			switch ( event.keyCode ) {
+				case 9: $.datepicker._hideDatepicker();
+						handled = false;
+						break; // hide on tab out
+				case 13: sel = $( "td." + $.datepicker._dayOverClass + ":not(." +
+									$.datepicker._currentClass + ")", inst.dpDiv );
+						if ( sel[ 0 ] ) {
+							$.datepicker._selectDay( event.target, inst.selectedMonth, inst.selectedYear, sel[ 0 ] );
+						}
+
+						onSelect = $.datepicker._get( inst, "onSelect" );
+						if ( onSelect ) {
+							dateStr = $.datepicker._formatDate( inst );
+
+							// Trigger custom callback
+							onSelect.apply( ( inst.input ? inst.input[ 0 ] : null ), [ dateStr, inst ] );
+						} else {
+							$.datepicker._hideDatepicker();
+						}
+
+						return false; // don't submit the form
+				case 27: $.datepicker._hideDatepicker();
+						break; // hide on escape
+				case 33: $.datepicker._adjustDate( event.target, ( event.ctrlKey ?
+							-$.datepicker._get( inst, "stepBigMonths" ) :
+							-$.datepicker._get( inst, "stepMonths" ) ), "M" );
+						break; // previous month/year on page up/+ ctrl
+				case 34: $.datepicker._adjustDate( event.target, ( event.ctrlKey ?
+							+$.datepicker._get( inst, "stepBigMonths" ) :
+							+$.datepicker._get( inst, "stepMonths" ) ), "M" );
+						break; // next month/year on page down/+ ctrl
+				case 35: if ( event.ctrlKey || event.metaKey ) {
+							$.datepicker._clearDate( event.target );
+						}
+						handled = event.ctrlKey || event.metaKey;
+						break; // clear on ctrl or command +end
+				case 36: if ( event.ctrlKey || event.metaKey ) {
+							$.datepicker._gotoToday( event.target );
+						}
+						handled = event.ctrlKey || event.metaKey;
+						break; // current on ctrl or command +home
+				case 37: if ( event.ctrlKey || event.metaKey ) {
+							$.datepicker._adjustDate( event.target, ( isRTL ? +1 : -1 ), "D" );
+						}
+						handled = event.ctrlKey || event.metaKey;
+
+						// -1 day on ctrl or command +left
+						if ( event.originalEvent.altKey ) {
+							$.datepicker._adjustDate( event.target, ( event.ctrlKey ?
+								-$.datepicker._get( inst, "stepBigMonths" ) :
+								-$.datepicker._get( inst, "stepMonths" ) ), "M" );
+						}
+
+						// next month/year on alt +left on Mac
+						break;
+				case 38: if ( event.ctrlKey || event.metaKey ) {
+							$.datepicker._adjustDate( event.target, -7, "D" );
+						}
+						handled = event.ctrlKey || event.metaKey;
+						break; // -1 week on ctrl or command +up
+				case 39: if ( event.ctrlKey || event.metaKey ) {
+							$.datepicker._adjustDate( event.target, ( isRTL ? -1 : +1 ), "D" );
+						}
+						handled = event.ctrlKey || event.metaKey;
+
+						// +1 day on ctrl or command +right
+						if ( event.originalEvent.altKey ) {
+							$.datepicker._adjustDate( event.target, ( event.ctrlKey ?
+								+$.datepicker._get( inst, "stepBigMonths" ) :
+								+$.datepicker._get( inst, "stepMonths" ) ), "M" );
+						}
+
+						// next month/year on alt +right
+						break;
+				case 40: if ( event.ctrlKey || event.metaKey ) {
+							$.datepicker._adjustDate( event.target, +7, "D" );
+						}
+						handled = event.ctrlKey || event.metaKey;
+						break; // +1 week on ctrl or command +down
+				default: handled = false;
+			}
+		} else if ( event.keyCode === 36 && event.ctrlKey ) { // display the date picker on ctrl+home
+			$.datepicker._showDatepicker( this );
+		} else {
+			handled = false;
+		}
+
+		if ( handled ) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	},
+
+	/* Filter entered characters - based on date format. */
+	_doKeyPress: function( event ) {
+		var chars, chr,
+			inst = $.datepicker._getInst( event.target );
+
+		if ( $.datepicker._get( inst, "constrainInput" ) ) {
+			chars = $.datepicker._possibleChars( $.datepicker._get( inst, "dateFormat" ) );
+			chr = String.fromCharCode( event.charCode == null ? event.keyCode : event.charCode );
+			return event.ctrlKey || event.metaKey || ( chr < " " || !chars || chars.indexOf( chr ) > -1 );
+		}
+	},
+
+	/* Synchronise manual entry and field/alternate field. */
+	_doKeyUp: function( event ) {
+		var date,
+			inst = $.datepicker._getInst( event.target );
+
+		if ( inst.input.val() !== inst.lastVal ) {
+			try {
+				date = $.datepicker.parseDate( $.datepicker._get( inst, "dateFormat" ),
+					( inst.input ? inst.input.val() : null ),
+					$.datepicker._getFormatConfig( inst ) );
+
+				if ( date ) { // only if valid
+					$.datepicker._setDateFromField( inst );
+					$.datepicker._updateAlternate( inst );
+					$.datepicker._updateDatepicker( inst );
+				}
+			}
+			catch ( err ) {
+			}
+		}
+		return true;
+	},
+
+	/* Pop-up the date picker for a given input field.
+	 * If false returned from beforeShow event handler do not show.
+	 * @param  input  element - the input field attached to the date picker or
+	 *					event - if triggered by focus
+	 */
+	_showDatepicker: function( input ) {
+		input = input.target || input;
+		if ( input.nodeName.toLowerCase() !== "input" ) { // find from button/image trigger
+			input = $( "input", input.parentNode )[ 0 ];
+		}
+
+		if ( $.datepicker._isDisabledDatepicker( input ) || $.datepicker._lastInput === input ) { // already here
+			return;
+		}
+
+		var inst, beforeShow, beforeShowSettings, isFixed,
+			offset, showAnim, duration;
+
+		inst = $.datepicker._getInst( input );
+		if ( $.datepicker._curInst && $.datepicker._curInst !== inst ) {
+			$.datepicker._curInst.dpDiv.stop( true, true );
+			if ( inst && $.datepicker._datepickerShowing ) {
+				$.datepicker._hideDatepicker( $.datepicker._curInst.input[ 0 ] );
+			}
+		}
+
+		beforeShow = $.datepicker._get( inst, "beforeShow" );
+		beforeShowSettings = beforeShow ? beforeShow.apply( input, [ input, inst ] ) : {};
+		if ( beforeShowSettings === false ) {
+			return;
+		}
+		datepicker_extendRemove( inst.settings, beforeShowSettings );
+
+		inst.lastVal = null;
+		$.datepicker._lastInput = input;
+		$.datepicker._setDateFromField( inst );
+
+		if ( $.datepicker._inDialog ) { // hide cursor
+			input.value = "";
+		}
+		if ( !$.datepicker._pos ) { // position below input
+			$.datepicker._pos = $.datepicker._findPos( input );
+			$.datepicker._pos[ 1 ] += input.offsetHeight; // add the height
+		}
+
+		isFixed = false;
+		$( input ).parents().each( function() {
+			isFixed |= $( this ).css( "position" ) === "fixed";
+			return !isFixed;
+		} );
+
+		offset = { left: $.datepicker._pos[ 0 ], top: $.datepicker._pos[ 1 ] };
+		$.datepicker._pos = null;
+
+		//to avoid flashes on Firefox
+		inst.dpDiv.empty();
+
+		// determine sizing offscreen
+		inst.dpDiv.css( { position: "absolute", display: "block", top: "-1000px" } );
+		$.datepicker._updateDatepicker( inst );
+
+		// fix width for dynamic number of date pickers
+		// and adjust position before showing
+		offset = $.datepicker._checkOffset( inst, offset, isFixed );
+		inst.dpDiv.css( { position: ( $.datepicker._inDialog && $.blockUI ?
+			"static" : ( isFixed ? "fixed" : "absolute" ) ), display: "none",
+			left: offset.left + "px", top: offset.top + "px" } );
+
+		if ( !inst.inline ) {
+			showAnim = $.datepicker._get( inst, "showAnim" );
+			duration = $.datepicker._get( inst, "duration" );
+			inst.dpDiv.css( "z-index", datepicker_getZindex( $( input ) ) + 1 );
+			$.datepicker._datepickerShowing = true;
+
+			if ( $.effects && $.effects.effect[ showAnim ] ) {
+				inst.dpDiv.show( showAnim, $.datepicker._get( inst, "showOptions" ), duration );
+			} else {
+				inst.dpDiv[ showAnim || "show" ]( showAnim ? duration : null );
+			}
+
+			if ( $.datepicker._shouldFocusInput( inst ) ) {
+				inst.input.trigger( "focus" );
+			}
+
+			$.datepicker._curInst = inst;
+		}
+	},
+
+	/* Generate the date picker content. */
+	_updateDatepicker: function( inst ) {
+		this.maxRows = 4; //Reset the max number of rows being displayed (see #7043)
+		datepicker_instActive = inst; // for delegate hover events
+		inst.dpDiv.empty().append( this._generateHTML( inst ) );
+		this._attachHandlers( inst );
+
+		var origyearshtml,
+			numMonths = this._getNumberOfMonths( inst ),
+			cols = numMonths[ 1 ],
+			width = 17,
+			activeCell = inst.dpDiv.find( "." + this._dayOverClass + " a" );
+
+		if ( activeCell.length > 0 ) {
+			datepicker_handleMouseover.apply( activeCell.get( 0 ) );
+		}
+
+		inst.dpDiv.removeClass( "ui-datepicker-multi-2 ui-datepicker-multi-3 ui-datepicker-multi-4" ).width( "" );
+		if ( cols > 1 ) {
+			inst.dpDiv.addClass( "ui-datepicker-multi-" + cols ).css( "width", ( width * cols ) + "em" );
+		}
+		inst.dpDiv[ ( numMonths[ 0 ] !== 1 || numMonths[ 1 ] !== 1 ? "add" : "remove" ) +
+			"Class" ]( "ui-datepicker-multi" );
+		inst.dpDiv[ ( this._get( inst, "isRTL" ) ? "add" : "remove" ) +
+			"Class" ]( "ui-datepicker-rtl" );
+
+		if ( inst === $.datepicker._curInst && $.datepicker._datepickerShowing && $.datepicker._shouldFocusInput( inst ) ) {
+			inst.input.trigger( "focus" );
+		}
+
+		// Deffered render of the years select (to avoid flashes on Firefox)
+		if ( inst.yearshtml ) {
+			origyearshtml = inst.yearshtml;
+			setTimeout( function() {
+
+				//assure that inst.yearshtml didn't change.
+				if ( origyearshtml === inst.yearshtml && inst.yearshtml ) {
+					inst.dpDiv.find( "select.ui-datepicker-year:first" ).replaceWith( inst.yearshtml );
+				}
+				origyearshtml = inst.yearshtml = null;
+			}, 0 );
+		}
+	},
+
+	// #6694 - don't focus the input if it's already focused
+	// this breaks the change event in IE
+	// Support: IE and jQuery <1.9
+	_shouldFocusInput: function( inst ) {
+		return inst.input && inst.input.is( ":visible" ) && !inst.input.is( ":disabled" ) && !inst.input.is( ":focus" );
+	},
+
+	/* Check positioning to remain on screen. */
+	_checkOffset: function( inst, offset, isFixed ) {
+		var dpWidth = inst.dpDiv.outerWidth(),
+			dpHeight = inst.dpDiv.outerHeight(),
+			inputWidth = inst.input ? inst.input.outerWidth() : 0,
+			inputHeight = inst.input ? inst.input.outerHeight() : 0,
+			viewWidth = document.documentElement.clientWidth + ( isFixed ? 0 : $( document ).scrollLeft() ),
+			viewHeight = document.documentElement.clientHeight + ( isFixed ? 0 : $( document ).scrollTop() );
+
+		offset.left -= ( this._get( inst, "isRTL" ) ? ( dpWidth - inputWidth ) : 0 );
+		offset.left -= ( isFixed && offset.left === inst.input.offset().left ) ? $( document ).scrollLeft() : 0;
+		offset.top -= ( isFixed && offset.top === ( inst.input.offset().top + inputHeight ) ) ? $( document ).scrollTop() : 0;
+
+		// Now check if datepicker is showing outside window viewport - move to a better place if so.
+		offset.left -= Math.min( offset.left, ( offset.left + dpWidth > viewWidth && viewWidth > dpWidth ) ?
+			Math.abs( offset.left + dpWidth - viewWidth ) : 0 );
+		offset.top -= Math.min( offset.top, ( offset.top + dpHeight > viewHeight && viewHeight > dpHeight ) ?
+			Math.abs( dpHeight + inputHeight ) : 0 );
+
+		return offset;
+	},
+
+	/* Find an object's position on the screen. */
+	_findPos: function( obj ) {
+		var position,
+			inst = this._getInst( obj ),
+			isRTL = this._get( inst, "isRTL" );
+
+		while ( obj && ( obj.type === "hidden" || obj.nodeType !== 1 || $.expr.filters.hidden( obj ) ) ) {
+			obj = obj[ isRTL ? "previousSibling" : "nextSibling" ];
+		}
+
+		position = $( obj ).offset();
+		return [ position.left, position.top ];
+	},
+
+	/* Hide the date picker from view.
+	 * @param  input  element - the input field attached to the date picker
+	 */
+	_hideDatepicker: function( input ) {
+		var showAnim, duration, postProcess, onClose,
+			inst = this._curInst;
+
+		if ( !inst || ( input && inst !== $.data( input, "datepicker" ) ) ) {
+			return;
+		}
+
+		if ( this._datepickerShowing ) {
+			showAnim = this._get( inst, "showAnim" );
+			duration = this._get( inst, "duration" );
+			postProcess = function() {
+				$.datepicker._tidyDialog( inst );
+			};
+
+			// DEPRECATED: after BC for 1.8.x $.effects[ showAnim ] is not needed
+			if ( $.effects && ( $.effects.effect[ showAnim ] || $.effects[ showAnim ] ) ) {
+				inst.dpDiv.hide( showAnim, $.datepicker._get( inst, "showOptions" ), duration, postProcess );
+			} else {
+				inst.dpDiv[ ( showAnim === "slideDown" ? "slideUp" :
+					( showAnim === "fadeIn" ? "fadeOut" : "hide" ) ) ]( ( showAnim ? duration : null ), postProcess );
+			}
+
+			if ( !showAnim ) {
+				postProcess();
+			}
+			this._datepickerShowing = false;
+
+			onClose = this._get( inst, "onClose" );
+			if ( onClose ) {
+				onClose.apply( ( inst.input ? inst.input[ 0 ] : null ), [ ( inst.input ? inst.input.val() : "" ), inst ] );
+			}
+
+			this._lastInput = null;
+			if ( this._inDialog ) {
+				this._dialogInput.css( { position: "absolute", left: "0", top: "-100px" } );
+				if ( $.blockUI ) {
+					$.unblockUI();
+					$( "body" ).append( this.dpDiv );
+				}
+			}
+			this._inDialog = false;
+		}
+	},
+
+	/* Tidy up after a dialog display. */
+	_tidyDialog: function( inst ) {
+		inst.dpDiv.removeClass( this._dialogClass ).off( ".ui-datepicker-calendar" );
+	},
+
+	/* Close date picker if clicked elsewhere. */
+	_checkExternalClick: function( event ) {
+		if ( !$.datepicker._curInst ) {
+			return;
+		}
+
+		var $target = $( event.target ),
+			inst = $.datepicker._getInst( $target[ 0 ] );
+
+		if ( ( ( $target[ 0 ].id !== $.datepicker._mainDivId &&
+				$target.parents( "#" + $.datepicker._mainDivId ).length === 0 &&
+				!$target.hasClass( $.datepicker.markerClassName ) &&
+				!$target.closest( "." + $.datepicker._triggerClass ).length &&
+				$.datepicker._datepickerShowing && !( $.datepicker._inDialog && $.blockUI ) ) ) ||
+			( $target.hasClass( $.datepicker.markerClassName ) && $.datepicker._curInst !== inst ) ) {
+				$.datepicker._hideDatepicker();
+		}
+	},
+
+	/* Adjust one of the date sub-fields. */
+	_adjustDate: function( id, offset, period ) {
+		var target = $( id ),
+			inst = this._getInst( target[ 0 ] );
+
+		if ( this._isDisabledDatepicker( target[ 0 ] ) ) {
+			return;
+		}
+		this._adjustInstDate( inst, offset +
+			( period === "M" ? this._get( inst, "showCurrentAtPos" ) : 0 ), // undo positioning
+			period );
+		this._updateDatepicker( inst );
+	},
+
+	/* Action for current link. */
+	_gotoToday: function( id ) {
+		var date,
+			target = $( id ),
+			inst = this._getInst( target[ 0 ] );
+
+		if ( this._get( inst, "gotoCurrent" ) && inst.currentDay ) {
+			inst.selectedDay = inst.currentDay;
+			inst.drawMonth = inst.selectedMonth = inst.currentMonth;
+			inst.drawYear = inst.selectedYear = inst.currentYear;
+		} else {
+			date = new Date();
+			inst.selectedDay = date.getDate();
+			inst.drawMonth = inst.selectedMonth = date.getMonth();
+			inst.drawYear = inst.selectedYear = date.getFullYear();
+		}
+		this._notifyChange( inst );
+		this._adjustDate( target );
+	},
+
+	/* Action for selecting a new month/year. */
+	_selectMonthYear: function( id, select, period ) {
+		var target = $( id ),
+			inst = this._getInst( target[ 0 ] );
+
+		inst[ "selected" + ( period === "M" ? "Month" : "Year" ) ] =
+		inst[ "draw" + ( period === "M" ? "Month" : "Year" ) ] =
+			parseInt( select.options[ select.selectedIndex ].value, 10 );
+
+		this._notifyChange( inst );
+		this._adjustDate( target );
+	},
+
+	/* Action for selecting a day. */
+	_selectDay: function( id, month, year, td ) {
+		var inst,
+			target = $( id );
+
+		if ( $( td ).hasClass( this._unselectableClass ) || this._isDisabledDatepicker( target[ 0 ] ) ) {
+			return;
+		}
+
+		inst = this._getInst( target[ 0 ] );
+		inst.selectedDay = inst.currentDay = $( "a", td ).html();
+		inst.selectedMonth = inst.currentMonth = month;
+		inst.selectedYear = inst.currentYear = year;
+		this._selectDate( id, this._formatDate( inst,
+			inst.currentDay, inst.currentMonth, inst.currentYear ) );
+	},
+
+	/* Erase the input field and hide the date picker. */
+	_clearDate: function( id ) {
+		var target = $( id );
+		this._selectDate( target, "" );
+	},
+
+	/* Update the input field with the selected date. */
+	_selectDate: function( id, dateStr ) {
+		var onSelect,
+			target = $( id ),
+			inst = this._getInst( target[ 0 ] );
+
+		dateStr = ( dateStr != null ? dateStr : this._formatDate( inst ) );
+		if ( inst.input ) {
+			inst.input.val( dateStr );
+		}
+		this._updateAlternate( inst );
+
+		onSelect = this._get( inst, "onSelect" );
+		if ( onSelect ) {
+			onSelect.apply( ( inst.input ? inst.input[ 0 ] : null ), [ dateStr, inst ] );  // trigger custom callback
+		} else if ( inst.input ) {
+			inst.input.trigger( "change" ); // fire the change event
+		}
+
+		if ( inst.inline ) {
+			this._updateDatepicker( inst );
+		} else {
+			this._hideDatepicker();
+			this._lastInput = inst.input[ 0 ];
+			if ( typeof( inst.input[ 0 ] ) !== "object" ) {
+				inst.input.trigger( "focus" ); // restore focus
+			}
+			this._lastInput = null;
+		}
+	},
+
+	/* Update any alternate field to synchronise with the main field. */
+	_updateAlternate: function( inst ) {
+		var altFormat, date, dateStr,
+			altField = this._get( inst, "altField" );
+
+		if ( altField ) { // update alternate field too
+			altFormat = this._get( inst, "altFormat" ) || this._get( inst, "dateFormat" );
+			date = this._getDate( inst );
+			dateStr = this.formatDate( altFormat, date, this._getFormatConfig( inst ) );
+			$( altField ).val( dateStr );
+		}
+	},
+
+	/* Set as beforeShowDay function to prevent selection of weekends.
+	 * @param  date  Date - the date to customise
+	 * @return [boolean, string] - is this date selectable?, what is its CSS class?
+	 */
+	noWeekends: function( date ) {
+		var day = date.getDay();
+		return [ ( day > 0 && day < 6 ), "" ];
+	},
+
+	/* Set as calculateWeek to determine the week of the year based on the ISO 8601 definition.
+	 * @param  date  Date - the date to get the week for
+	 * @return  number - the number of the week within the year that contains this date
+	 */
+	iso8601Week: function( date ) {
+		var time,
+			checkDate = new Date( date.getTime() );
+
+		// Find Thursday of this week starting on Monday
+		checkDate.setDate( checkDate.getDate() + 4 - ( checkDate.getDay() || 7 ) );
+
+		time = checkDate.getTime();
+		checkDate.setMonth( 0 ); // Compare with Jan 1
+		checkDate.setDate( 1 );
+		return Math.floor( Math.round( ( time - checkDate ) / 86400000 ) / 7 ) + 1;
+	},
+
+	/* Parse a string value into a date object.
+	 * See formatDate below for the possible formats.
+	 *
+	 * @param  format string - the expected format of the date
+	 * @param  value string - the date in the above format
+	 * @param  settings Object - attributes include:
+	 *					shortYearCutoff  number - the cutoff year for determining the century (optional)
+	 *					dayNamesShort	string[7] - abbreviated names of the days from Sunday (optional)
+	 *					dayNames		string[7] - names of the days from Sunday (optional)
+	 *					monthNamesShort string[12] - abbreviated names of the months (optional)
+	 *					monthNames		string[12] - names of the months (optional)
+	 * @return  Date - the extracted date value or null if value is blank
+	 */
+	parseDate: function( format, value, settings ) {
+		if ( format == null || value == null ) {
+			throw "Invalid arguments";
+		}
+
+		value = ( typeof value === "object" ? value.toString() : value + "" );
+		if ( value === "" ) {
+			return null;
+		}
+
+		var iFormat, dim, extra,
+			iValue = 0,
+			shortYearCutoffTemp = ( settings ? settings.shortYearCutoff : null ) || this._defaults.shortYearCutoff,
+			shortYearCutoff = ( typeof shortYearCutoffTemp !== "string" ? shortYearCutoffTemp :
+				new Date().getFullYear() % 100 + parseInt( shortYearCutoffTemp, 10 ) ),
+			dayNamesShort = ( settings ? settings.dayNamesShort : null ) || this._defaults.dayNamesShort,
+			dayNames = ( settings ? settings.dayNames : null ) || this._defaults.dayNames,
+			monthNamesShort = ( settings ? settings.monthNamesShort : null ) || this._defaults.monthNamesShort,
+			monthNames = ( settings ? settings.monthNames : null ) || this._defaults.monthNames,
+			year = -1,
+			month = -1,
+			day = -1,
+			doy = -1,
+			literal = false,
+			date,
+
+			// Check whether a format character is doubled
+			lookAhead = function( match ) {
+				var matches = ( iFormat + 1 < format.length && format.charAt( iFormat + 1 ) === match );
+				if ( matches ) {
+					iFormat++;
+				}
+				return matches;
+			},
+
+			// Extract a number from the string value
+			getNumber = function( match ) {
+				var isDoubled = lookAhead( match ),
+					size = ( match === "@" ? 14 : ( match === "!" ? 20 :
+					( match === "y" && isDoubled ? 4 : ( match === "o" ? 3 : 2 ) ) ) ),
+					minSize = ( match === "y" ? size : 1 ),
+					digits = new RegExp( "^\\d{" + minSize + "," + size + "}" ),
+					num = value.substring( iValue ).match( digits );
+				if ( !num ) {
+					throw "Missing number at position " + iValue;
+				}
+				iValue += num[ 0 ].length;
+				return parseInt( num[ 0 ], 10 );
+			},
+
+			// Extract a name from the string value and convert to an index
+			getName = function( match, shortNames, longNames ) {
+				var index = -1,
+					names = $.map( lookAhead( match ) ? longNames : shortNames, function( v, k ) {
+						return [ [ k, v ] ];
+					} ).sort( function( a, b ) {
+						return -( a[ 1 ].length - b[ 1 ].length );
+					} );
+
+				$.each( names, function( i, pair ) {
+					var name = pair[ 1 ];
+					if ( value.substr( iValue, name.length ).toLowerCase() === name.toLowerCase() ) {
+						index = pair[ 0 ];
+						iValue += name.length;
+						return false;
+					}
+				} );
+				if ( index !== -1 ) {
+					return index + 1;
+				} else {
+					throw "Unknown name at position " + iValue;
+				}
+			},
+
+			// Confirm that a literal character matches the string value
+			checkLiteral = function() {
+				if ( value.charAt( iValue ) !== format.charAt( iFormat ) ) {
+					throw "Unexpected literal at position " + iValue;
+				}
+				iValue++;
+			};
+
+		for ( iFormat = 0; iFormat < format.length; iFormat++ ) {
+			if ( literal ) {
+				if ( format.charAt( iFormat ) === "'" && !lookAhead( "'" ) ) {
+					literal = false;
+				} else {
+					checkLiteral();
+				}
+			} else {
+				switch ( format.charAt( iFormat ) ) {
+					case "d":
+						day = getNumber( "d" );
+						break;
+					case "D":
+						getName( "D", dayNamesShort, dayNames );
+						break;
+					case "o":
+						doy = getNumber( "o" );
+						break;
+					case "m":
+						month = getNumber( "m" );
+						break;
+					case "M":
+						month = getName( "M", monthNamesShort, monthNames );
+						break;
+					case "y":
+						year = getNumber( "y" );
+						break;
+					case "@":
+						date = new Date( getNumber( "@" ) );
+						year = date.getFullYear();
+						month = date.getMonth() + 1;
+						day = date.getDate();
+						break;
+					case "!":
+						date = new Date( ( getNumber( "!" ) - this._ticksTo1970 ) / 10000 );
+						year = date.getFullYear();
+						month = date.getMonth() + 1;
+						day = date.getDate();
+						break;
+					case "'":
+						if ( lookAhead( "'" ) ) {
+							checkLiteral();
+						} else {
+							literal = true;
+						}
+						break;
+					default:
+						checkLiteral();
+				}
+			}
+		}
+
+		if ( iValue < value.length ) {
+			extra = value.substr( iValue );
+			if ( !/^\s+/.test( extra ) ) {
+				throw "Extra/unparsed characters found in date: " + extra;
+			}
+		}
+
+		if ( year === -1 ) {
+			year = new Date().getFullYear();
+		} else if ( year < 100 ) {
+			year += new Date().getFullYear() - new Date().getFullYear() % 100 +
+				( year <= shortYearCutoff ? 0 : -100 );
+		}
+
+		if ( doy > -1 ) {
+			month = 1;
+			day = doy;
+			do {
+				dim = this._getDaysInMonth( year, month - 1 );
+				if ( day <= dim ) {
+					break;
+				}
+				month++;
+				day -= dim;
+			} while ( true );
+		}
+
+		date = this._daylightSavingAdjust( new Date( year, month - 1, day ) );
+		if ( date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day ) {
+			throw "Invalid date"; // E.g. 31/02/00
+		}
+		return date;
+	},
+
+	/* Standard date formats. */
+	ATOM: "yy-mm-dd", // RFC 3339 (ISO 8601)
+	COOKIE: "D, dd M yy",
+	ISO_8601: "yy-mm-dd",
+	RFC_822: "D, d M y",
+	RFC_850: "DD, dd-M-y",
+	RFC_1036: "D, d M y",
+	RFC_1123: "D, d M yy",
+	RFC_2822: "D, d M yy",
+	RSS: "D, d M y", // RFC 822
+	TICKS: "!",
+	TIMESTAMP: "@",
+	W3C: "yy-mm-dd", // ISO 8601
+
+	_ticksTo1970: ( ( ( 1970 - 1 ) * 365 + Math.floor( 1970 / 4 ) - Math.floor( 1970 / 100 ) +
+		Math.floor( 1970 / 400 ) ) * 24 * 60 * 60 * 10000000 ),
+
+	/* Format a date object into a string value.
+	 * The format can be combinations of the following:
+	 * d  - day of month (no leading zero)
+	 * dd - day of month (two digit)
+	 * o  - day of year (no leading zeros)
+	 * oo - day of year (three digit)
+	 * D  - day name short
+	 * DD - day name long
+	 * m  - month of year (no leading zero)
+	 * mm - month of year (two digit)
+	 * M  - month name short
+	 * MM - month name long
+	 * y  - year (two digit)
+	 * yy - year (four digit)
+	 * @ - Unix timestamp (ms since 01/01/1970)
+	 * ! - Windows ticks (100ns since 01/01/0001)
+	 * "..." - literal text
+	 * '' - single quote
+	 *
+	 * @param  format string - the desired format of the date
+	 * @param  date Date - the date value to format
+	 * @param  settings Object - attributes include:
+	 *					dayNamesShort	string[7] - abbreviated names of the days from Sunday (optional)
+	 *					dayNames		string[7] - names of the days from Sunday (optional)
+	 *					monthNamesShort string[12] - abbreviated names of the months (optional)
+	 *					monthNames		string[12] - names of the months (optional)
+	 * @return  string - the date in the above format
+	 */
+	formatDate: function( format, date, settings ) {
+		if ( !date ) {
+			return "";
+		}
+
+		var iFormat,
+			dayNamesShort = ( settings ? settings.dayNamesShort : null ) || this._defaults.dayNamesShort,
+			dayNames = ( settings ? settings.dayNames : null ) || this._defaults.dayNames,
+			monthNamesShort = ( settings ? settings.monthNamesShort : null ) || this._defaults.monthNamesShort,
+			monthNames = ( settings ? settings.monthNames : null ) || this._defaults.monthNames,
+
+			// Check whether a format character is doubled
+			lookAhead = function( match ) {
+				var matches = ( iFormat + 1 < format.length && format.charAt( iFormat + 1 ) === match );
+				if ( matches ) {
+					iFormat++;
+				}
+				return matches;
+			},
+
+			// Format a number, with leading zero if necessary
+			formatNumber = function( match, value, len ) {
+				var num = "" + value;
+				if ( lookAhead( match ) ) {
+					while ( num.length < len ) {
+						num = "0" + num;
+					}
+				}
+				return num;
+			},
+
+			// Format a name, short or long as requested
+			formatName = function( match, value, shortNames, longNames ) {
+				return ( lookAhead( match ) ? longNames[ value ] : shortNames[ value ] );
+			},
+			output = "",
+			literal = false;
+
+		if ( date ) {
+			for ( iFormat = 0; iFormat < format.length; iFormat++ ) {
+				if ( literal ) {
+					if ( format.charAt( iFormat ) === "'" && !lookAhead( "'" ) ) {
+						literal = false;
+					} else {
+						output += format.charAt( iFormat );
+					}
+				} else {
+					switch ( format.charAt( iFormat ) ) {
+						case "d":
+							output += formatNumber( "d", date.getDate(), 2 );
+							break;
+						case "D":
+							output += formatName( "D", date.getDay(), dayNamesShort, dayNames );
+							break;
+						case "o":
+							output += formatNumber( "o",
+								Math.round( ( new Date( date.getFullYear(), date.getMonth(), date.getDate() ).getTime() - new Date( date.getFullYear(), 0, 0 ).getTime() ) / 86400000 ), 3 );
+							break;
+						case "m":
+							output += formatNumber( "m", date.getMonth() + 1, 2 );
+							break;
+						case "M":
+							output += formatName( "M", date.getMonth(), monthNamesShort, monthNames );
+							break;
+						case "y":
+							output += ( lookAhead( "y" ) ? date.getFullYear() :
+								( date.getFullYear() % 100 < 10 ? "0" : "" ) + date.getFullYear() % 100 );
+							break;
+						case "@":
+							output += date.getTime();
+							break;
+						case "!":
+							output += date.getTime() * 10000 + this._ticksTo1970;
+							break;
+						case "'":
+							if ( lookAhead( "'" ) ) {
+								output += "'";
+							} else {
+								literal = true;
+							}
+							break;
+						default:
+							output += format.charAt( iFormat );
+					}
+				}
+			}
+		}
+		return output;
+	},
+
+	/* Extract all possible characters from the date format. */
+	_possibleChars: function( format ) {
+		var iFormat,
+			chars = "",
+			literal = false,
+
+			// Check whether a format character is doubled
+			lookAhead = function( match ) {
+				var matches = ( iFormat + 1 < format.length && format.charAt( iFormat + 1 ) === match );
+				if ( matches ) {
+					iFormat++;
+				}
+				return matches;
+			};
+
+		for ( iFormat = 0; iFormat < format.length; iFormat++ ) {
+			if ( literal ) {
+				if ( format.charAt( iFormat ) === "'" && !lookAhead( "'" ) ) {
+					literal = false;
+				} else {
+					chars += format.charAt( iFormat );
+				}
+			} else {
+				switch ( format.charAt( iFormat ) ) {
+					case "d": case "m": case "y": case "@":
+						chars += "0123456789";
+						break;
+					case "D": case "M":
+						return null; // Accept anything
+					case "'":
+						if ( lookAhead( "'" ) ) {
+							chars += "'";
+						} else {
+							literal = true;
+						}
+						break;
+					default:
+						chars += format.charAt( iFormat );
+				}
+			}
+		}
+		return chars;
+	},
+
+	/* Get a setting value, defaulting if necessary. */
+	_get: function( inst, name ) {
+		return inst.settings[ name ] !== undefined ?
+			inst.settings[ name ] : this._defaults[ name ];
+	},
+
+	/* Parse existing date and initialise date picker. */
+	_setDateFromField: function( inst, noDefault ) {
+		if ( inst.input.val() === inst.lastVal ) {
+			return;
+		}
+
+		var dateFormat = this._get( inst, "dateFormat" ),
+			dates = inst.lastVal = inst.input ? inst.input.val() : null,
+			defaultDate = this._getDefaultDate( inst ),
+			date = defaultDate,
+			settings = this._getFormatConfig( inst );
+
+		try {
+			date = this.parseDate( dateFormat, dates, settings ) || defaultDate;
+		} catch ( event ) {
+			dates = ( noDefault ? "" : dates );
+		}
+		inst.selectedDay = date.getDate();
+		inst.drawMonth = inst.selectedMonth = date.getMonth();
+		inst.drawYear = inst.selectedYear = date.getFullYear();
+		inst.currentDay = ( dates ? date.getDate() : 0 );
+		inst.currentMonth = ( dates ? date.getMonth() : 0 );
+		inst.currentYear = ( dates ? date.getFullYear() : 0 );
+		this._adjustInstDate( inst );
+	},
+
+	/* Retrieve the default date shown on opening. */
+	_getDefaultDate: function( inst ) {
+		return this._restrictMinMax( inst,
+			this._determineDate( inst, this._get( inst, "defaultDate" ), new Date() ) );
+	},
+
+	/* A date may be specified as an exact value or a relative one. */
+	_determineDate: function( inst, date, defaultDate ) {
+		var offsetNumeric = function( offset ) {
+				var date = new Date();
+				date.setDate( date.getDate() + offset );
+				return date;
+			},
+			offsetString = function( offset ) {
+				try {
+					return $.datepicker.parseDate( $.datepicker._get( inst, "dateFormat" ),
+						offset, $.datepicker._getFormatConfig( inst ) );
+				}
+				catch ( e ) {
+
+					// Ignore
+				}
+
+				var date = ( offset.toLowerCase().match( /^c/ ) ?
+					$.datepicker._getDate( inst ) : null ) || new Date(),
+					year = date.getFullYear(),
+					month = date.getMonth(),
+					day = date.getDate(),
+					pattern = /([+\-]?[0-9]+)\s*(d|D|w|W|m|M|y|Y)?/g,
+					matches = pattern.exec( offset );
+
+				while ( matches ) {
+					switch ( matches[ 2 ] || "d" ) {
+						case "d" : case "D" :
+							day += parseInt( matches[ 1 ], 10 ); break;
+						case "w" : case "W" :
+							day += parseInt( matches[ 1 ], 10 ) * 7; break;
+						case "m" : case "M" :
+							month += parseInt( matches[ 1 ], 10 );
+							day = Math.min( day, $.datepicker._getDaysInMonth( year, month ) );
+							break;
+						case "y": case "Y" :
+							year += parseInt( matches[ 1 ], 10 );
+							day = Math.min( day, $.datepicker._getDaysInMonth( year, month ) );
+							break;
+					}
+					matches = pattern.exec( offset );
+				}
+				return new Date( year, month, day );
+			},
+			newDate = ( date == null || date === "" ? defaultDate : ( typeof date === "string" ? offsetString( date ) :
+				( typeof date === "number" ? ( isNaN( date ) ? defaultDate : offsetNumeric( date ) ) : new Date( date.getTime() ) ) ) );
+
+		newDate = ( newDate && newDate.toString() === "Invalid Date" ? defaultDate : newDate );
+		if ( newDate ) {
+			newDate.setHours( 0 );
+			newDate.setMinutes( 0 );
+			newDate.setSeconds( 0 );
+			newDate.setMilliseconds( 0 );
+		}
+		return this._daylightSavingAdjust( newDate );
+	},
+
+	/* Handle switch to/from daylight saving.
+	 * Hours may be non-zero on daylight saving cut-over:
+	 * > 12 when midnight changeover, but then cannot generate
+	 * midnight datetime, so jump to 1AM, otherwise reset.
+	 * @param  date  (Date) the date to check
+	 * @return  (Date) the corrected date
+	 */
+	_daylightSavingAdjust: function( date ) {
+		if ( !date ) {
+			return null;
+		}
+		date.setHours( date.getHours() > 12 ? date.getHours() + 2 : 0 );
+		return date;
+	},
+
+	/* Set the date(s) directly. */
+	_setDate: function( inst, date, noChange ) {
+		var clear = !date,
+			origMonth = inst.selectedMonth,
+			origYear = inst.selectedYear,
+			newDate = this._restrictMinMax( inst, this._determineDate( inst, date, new Date() ) );
+
+		inst.selectedDay = inst.currentDay = newDate.getDate();
+		inst.drawMonth = inst.selectedMonth = inst.currentMonth = newDate.getMonth();
+		inst.drawYear = inst.selectedYear = inst.currentYear = newDate.getFullYear();
+		if ( ( origMonth !== inst.selectedMonth || origYear !== inst.selectedYear ) && !noChange ) {
+			this._notifyChange( inst );
+		}
+		this._adjustInstDate( inst );
+		if ( inst.input ) {
+			inst.input.val( clear ? "" : this._formatDate( inst ) );
+		}
+	},
+
+	/* Retrieve the date(s) directly. */
+	_getDate: function( inst ) {
+		var startDate = ( !inst.currentYear || ( inst.input && inst.input.val() === "" ) ? null :
+			this._daylightSavingAdjust( new Date(
+			inst.currentYear, inst.currentMonth, inst.currentDay ) ) );
+			return startDate;
+	},
+
+	/* Attach the onxxx handlers.  These are declared statically so
+	 * they work with static code transformers like Caja.
+	 */
+	_attachHandlers: function( inst ) {
+		var stepMonths = this._get( inst, "stepMonths" ),
+			id = "#" + inst.id.replace( /\\\\/g, "\\" );
+		inst.dpDiv.find( "[data-handler]" ).map( function() {
+			var handler = {
+				prev: function() {
+					$.datepicker._adjustDate( id, -stepMonths, "M" );
+				},
+				next: function() {
+					$.datepicker._adjustDate( id, +stepMonths, "M" );
+				},
+				hide: function() {
+					$.datepicker._hideDatepicker();
+				},
+				today: function() {
+					$.datepicker._gotoToday( id );
+				},
+				selectDay: function() {
+					$.datepicker._selectDay( id, +this.getAttribute( "data-month" ), +this.getAttribute( "data-year" ), this );
+					return false;
+				},
+				selectMonth: function() {
+					$.datepicker._selectMonthYear( id, this, "M" );
+					return false;
+				},
+				selectYear: function() {
+					$.datepicker._selectMonthYear( id, this, "Y" );
+					return false;
+				}
+			};
+			$( this ).on( this.getAttribute( "data-event" ), handler[ this.getAttribute( "data-handler" ) ] );
+		} );
+	},
+
+	/* Generate the HTML for the current state of the date picker. */
+	_generateHTML: function( inst ) {
+		var maxDraw, prevText, prev, nextText, next, currentText, gotoDate,
+			controls, buttonPanel, firstDay, showWeek, dayNames, dayNamesMin,
+			monthNames, monthNamesShort, beforeShowDay, showOtherMonths,
+			selectOtherMonths, defaultDate, html, dow, row, group, col, selectedDate,
+			cornerClass, calender, thead, day, daysInMonth, leadDays, curRows, numRows,
+			printDate, dRow, tbody, daySettings, otherMonth, unselectable,
+			tempDate = new Date(),
+			today = this._daylightSavingAdjust(
+				new Date( tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate() ) ), // clear time
+			isRTL = this._get( inst, "isRTL" ),
+			showButtonPanel = this._get( inst, "showButtonPanel" ),
+			hideIfNoPrevNext = this._get( inst, "hideIfNoPrevNext" ),
+			navigationAsDateFormat = this._get( inst, "navigationAsDateFormat" ),
+			numMonths = this._getNumberOfMonths( inst ),
+			showCurrentAtPos = this._get( inst, "showCurrentAtPos" ),
+			stepMonths = this._get( inst, "stepMonths" ),
+			isMultiMonth = ( numMonths[ 0 ] !== 1 || numMonths[ 1 ] !== 1 ),
+			currentDate = this._daylightSavingAdjust( ( !inst.currentDay ? new Date( 9999, 9, 9 ) :
+				new Date( inst.currentYear, inst.currentMonth, inst.currentDay ) ) ),
+			minDate = this._getMinMaxDate( inst, "min" ),
+			maxDate = this._getMinMaxDate( inst, "max" ),
+			drawMonth = inst.drawMonth - showCurrentAtPos,
+			drawYear = inst.drawYear;
+
+		if ( drawMonth < 0 ) {
+			drawMonth += 12;
+			drawYear--;
+		}
+		if ( maxDate ) {
+			maxDraw = this._daylightSavingAdjust( new Date( maxDate.getFullYear(),
+				maxDate.getMonth() - ( numMonths[ 0 ] * numMonths[ 1 ] ) + 1, maxDate.getDate() ) );
+			maxDraw = ( minDate && maxDraw < minDate ? minDate : maxDraw );
+			while ( this._daylightSavingAdjust( new Date( drawYear, drawMonth, 1 ) ) > maxDraw ) {
+				drawMonth--;
+				if ( drawMonth < 0 ) {
+					drawMonth = 11;
+					drawYear--;
+				}
+			}
+		}
+		inst.drawMonth = drawMonth;
+		inst.drawYear = drawYear;
+
+		prevText = this._get( inst, "prevText" );
+		prevText = ( !navigationAsDateFormat ? prevText : this.formatDate( prevText,
+			this._daylightSavingAdjust( new Date( drawYear, drawMonth - stepMonths, 1 ) ),
+			this._getFormatConfig( inst ) ) );
+
+		prev = ( this._canAdjustMonth( inst, -1, drawYear, drawMonth ) ?
+			"<a class='ui-datepicker-prev ui-corner-all' data-handler='prev' data-event='click'" +
+			" title='" + prevText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "e" : "w" ) + "'>" + prevText + "</span></a>" :
+			( hideIfNoPrevNext ? "" : "<a class='ui-datepicker-prev ui-corner-all ui-state-disabled' title='" + prevText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "e" : "w" ) + "'>" + prevText + "</span></a>" ) );
+
+		nextText = this._get( inst, "nextText" );
+		nextText = ( !navigationAsDateFormat ? nextText : this.formatDate( nextText,
+			this._daylightSavingAdjust( new Date( drawYear, drawMonth + stepMonths, 1 ) ),
+			this._getFormatConfig( inst ) ) );
+
+		next = ( this._canAdjustMonth( inst, +1, drawYear, drawMonth ) ?
+			"<a class='ui-datepicker-next ui-corner-all' data-handler='next' data-event='click'" +
+			" title='" + nextText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "w" : "e" ) + "'>" + nextText + "</span></a>" :
+			( hideIfNoPrevNext ? "" : "<a class='ui-datepicker-next ui-corner-all ui-state-disabled' title='" + nextText + "'><span class='ui-icon ui-icon-circle-triangle-" + ( isRTL ? "w" : "e" ) + "'>" + nextText + "</span></a>" ) );
+
+		currentText = this._get( inst, "currentText" );
+		gotoDate = ( this._get( inst, "gotoCurrent" ) && inst.currentDay ? currentDate : today );
+		currentText = ( !navigationAsDateFormat ? currentText :
+			this.formatDate( currentText, gotoDate, this._getFormatConfig( inst ) ) );
+
+		controls = ( !inst.inline ? "<button type='button' class='ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all' data-handler='hide' data-event='click'>" +
+			this._get( inst, "closeText" ) + "</button>" : "" );
+
+		buttonPanel = ( showButtonPanel ) ? "<div class='ui-datepicker-buttonpane ui-widget-content'>" + ( isRTL ? controls : "" ) +
+			( this._isInRange( inst, gotoDate ) ? "<button type='button' class='ui-datepicker-current ui-state-default ui-priority-secondary ui-corner-all' data-handler='today' data-event='click'" +
+			">" + currentText + "</button>" : "" ) + ( isRTL ? "" : controls ) + "</div>" : "";
+
+		firstDay = parseInt( this._get( inst, "firstDay" ), 10 );
+		firstDay = ( isNaN( firstDay ) ? 0 : firstDay );
+
+		showWeek = this._get( inst, "showWeek" );
+		dayNames = this._get( inst, "dayNames" );
+		dayNamesMin = this._get( inst, "dayNamesMin" );
+		monthNames = this._get( inst, "monthNames" );
+		monthNamesShort = this._get( inst, "monthNamesShort" );
+		beforeShowDay = this._get( inst, "beforeShowDay" );
+		showOtherMonths = this._get( inst, "showOtherMonths" );
+		selectOtherMonths = this._get( inst, "selectOtherMonths" );
+		defaultDate = this._getDefaultDate( inst );
+		html = "";
+
+		for ( row = 0; row < numMonths[ 0 ]; row++ ) {
+			group = "";
+			this.maxRows = 4;
+			for ( col = 0; col < numMonths[ 1 ]; col++ ) {
+				selectedDate = this._daylightSavingAdjust( new Date( drawYear, drawMonth, inst.selectedDay ) );
+				cornerClass = " ui-corner-all";
+				calender = "";
+				if ( isMultiMonth ) {
+					calender += "<div class='ui-datepicker-group";
+					if ( numMonths[ 1 ] > 1 ) {
+						switch ( col ) {
+							case 0: calender += " ui-datepicker-group-first";
+								cornerClass = " ui-corner-" + ( isRTL ? "right" : "left" ); break;
+							case numMonths[ 1 ] - 1: calender += " ui-datepicker-group-last";
+								cornerClass = " ui-corner-" + ( isRTL ? "left" : "right" ); break;
+							default: calender += " ui-datepicker-group-middle"; cornerClass = ""; break;
+						}
+					}
+					calender += "'>";
+				}
+				calender += "<div class='ui-datepicker-header ui-widget-header ui-helper-clearfix" + cornerClass + "'>" +
+					( /all|left/.test( cornerClass ) && row === 0 ? ( isRTL ? next : prev ) : "" ) +
+					( /all|right/.test( cornerClass ) && row === 0 ? ( isRTL ? prev : next ) : "" ) +
+					this._generateMonthYearHeader( inst, drawMonth, drawYear, minDate, maxDate,
+					row > 0 || col > 0, monthNames, monthNamesShort ) + // draw month headers
+					"</div><table class='ui-datepicker-calendar'><thead>" +
+					"<tr>";
+				thead = ( showWeek ? "<th class='ui-datepicker-week-col'>" + this._get( inst, "weekHeader" ) + "</th>" : "" );
+				for ( dow = 0; dow < 7; dow++ ) { // days of the week
+					day = ( dow + firstDay ) % 7;
+					thead += "<th scope='col'" + ( ( dow + firstDay + 6 ) % 7 >= 5 ? " class='ui-datepicker-week-end'" : "" ) + ">" +
+						"<span title='" + dayNames[ day ] + "'>" + dayNamesMin[ day ] + "</span></th>";
+				}
+				calender += thead + "</tr></thead><tbody>";
+				daysInMonth = this._getDaysInMonth( drawYear, drawMonth );
+				if ( drawYear === inst.selectedYear && drawMonth === inst.selectedMonth ) {
+					inst.selectedDay = Math.min( inst.selectedDay, daysInMonth );
+				}
+				leadDays = ( this._getFirstDayOfMonth( drawYear, drawMonth ) - firstDay + 7 ) % 7;
+				curRows = Math.ceil( ( leadDays + daysInMonth ) / 7 ); // calculate the number of rows to generate
+				numRows = ( isMultiMonth ? this.maxRows > curRows ? this.maxRows : curRows : curRows ); //If multiple months, use the higher number of rows (see #7043)
+				this.maxRows = numRows;
+				printDate = this._daylightSavingAdjust( new Date( drawYear, drawMonth, 1 - leadDays ) );
+				for ( dRow = 0; dRow < numRows; dRow++ ) { // create date picker rows
+					calender += "<tr>";
+					tbody = ( !showWeek ? "" : "<td class='ui-datepicker-week-col'>" +
+						this._get( inst, "calculateWeek" )( printDate ) + "</td>" );
+					for ( dow = 0; dow < 7; dow++ ) { // create date picker days
+						daySettings = ( beforeShowDay ?
+							beforeShowDay.apply( ( inst.input ? inst.input[ 0 ] : null ), [ printDate ] ) : [ true, "" ] );
+						otherMonth = ( printDate.getMonth() !== drawMonth );
+						unselectable = ( otherMonth && !selectOtherMonths ) || !daySettings[ 0 ] ||
+							( minDate && printDate < minDate ) || ( maxDate && printDate > maxDate );
+						tbody += "<td class='" +
+							( ( dow + firstDay + 6 ) % 7 >= 5 ? " ui-datepicker-week-end" : "" ) + // highlight weekends
+							( otherMonth ? " ui-datepicker-other-month" : "" ) + // highlight days from other months
+							( ( printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent ) || // user pressed key
+							( defaultDate.getTime() === printDate.getTime() && defaultDate.getTime() === selectedDate.getTime() ) ?
+
+							// or defaultDate is current printedDate and defaultDate is selectedDate
+							" " + this._dayOverClass : "" ) + // highlight selected day
+							( unselectable ? " " + this._unselectableClass + " ui-state-disabled" : "" ) +  // highlight unselectable days
+							( otherMonth && !showOtherMonths ? "" : " " + daySettings[ 1 ] + // highlight custom dates
+							( printDate.getTime() === currentDate.getTime() ? " " + this._currentClass : "" ) + // highlight selected day
+							( printDate.getTime() === today.getTime() ? " ui-datepicker-today" : "" ) ) + "'" + // highlight today (if different)
+							( ( !otherMonth || showOtherMonths ) && daySettings[ 2 ] ? " title='" + daySettings[ 2 ].replace( /'/g, "&#39;" ) + "'" : "" ) + // cell title
+							( unselectable ? "" : " data-handler='selectDay' data-event='click' data-month='" + printDate.getMonth() + "' data-year='" + printDate.getFullYear() + "'" ) + ">" + // actions
+							( otherMonth && !showOtherMonths ? "&#xa0;" : // display for other months
+							( unselectable ? "<span class='ui-state-default'>" + printDate.getDate() + "</span>" : "<a class='ui-state-default" +
+							( printDate.getTime() === today.getTime() ? " ui-state-highlight" : "" ) +
+							( printDate.getTime() === currentDate.getTime() ? " ui-state-active" : "" ) + // highlight selected day
+							( otherMonth ? " ui-priority-secondary" : "" ) + // distinguish dates from other months
+							"' href='#'>" + printDate.getDate() + "</a>" ) ) + "</td>"; // display selectable date
+						printDate.setDate( printDate.getDate() + 1 );
+						printDate = this._daylightSavingAdjust( printDate );
+					}
+					calender += tbody + "</tr>";
+				}
+				drawMonth++;
+				if ( drawMonth > 11 ) {
+					drawMonth = 0;
+					drawYear++;
+				}
+				calender += "</tbody></table>" + ( isMultiMonth ? "</div>" +
+							( ( numMonths[ 0 ] > 0 && col === numMonths[ 1 ] - 1 ) ? "<div class='ui-datepicker-row-break'></div>" : "" ) : "" );
+				group += calender;
+			}
+			html += group;
+		}
+		html += buttonPanel;
+		inst._keyEvent = false;
+		return html;
+	},
+
+	/* Generate the month and year header. */
+	_generateMonthYearHeader: function( inst, drawMonth, drawYear, minDate, maxDate,
+			secondary, monthNames, monthNamesShort ) {
+
+		var inMinYear, inMaxYear, month, years, thisYear, determineYear, year, endYear,
+			changeMonth = this._get( inst, "changeMonth" ),
+			changeYear = this._get( inst, "changeYear" ),
+			showMonthAfterYear = this._get( inst, "showMonthAfterYear" ),
+			html = "<div class='ui-datepicker-title'>",
+			monthHtml = "";
+
+		// Month selection
+		if ( secondary || !changeMonth ) {
+			monthHtml += "<span class='ui-datepicker-month'>" + monthNames[ drawMonth ] + "</span>";
+		} else {
+			inMinYear = ( minDate && minDate.getFullYear() === drawYear );
+			inMaxYear = ( maxDate && maxDate.getFullYear() === drawYear );
+			monthHtml += "<select class='ui-datepicker-month' data-handler='selectMonth' data-event='change'>";
+			for ( month = 0; month < 12; month++ ) {
+				if ( ( !inMinYear || month >= minDate.getMonth() ) && ( !inMaxYear || month <= maxDate.getMonth() ) ) {
+					monthHtml += "<option value='" + month + "'" +
+						( month === drawMonth ? " selected='selected'" : "" ) +
+						">" + monthNamesShort[ month ] + "</option>";
+				}
+			}
+			monthHtml += "</select>";
+		}
+
+		if ( !showMonthAfterYear ) {
+			html += monthHtml + ( secondary || !( changeMonth && changeYear ) ? "&#xa0;" : "" );
+		}
+
+		// Year selection
+		if ( !inst.yearshtml ) {
+			inst.yearshtml = "";
+			if ( secondary || !changeYear ) {
+				html += "<span class='ui-datepicker-year'>" + drawYear + "</span>";
+			} else {
+
+				// determine range of years to display
+				years = this._get( inst, "yearRange" ).split( ":" );
+				thisYear = new Date().getFullYear();
+				determineYear = function( value ) {
+					var year = ( value.match( /c[+\-].*/ ) ? drawYear + parseInt( value.substring( 1 ), 10 ) :
+						( value.match( /[+\-].*/ ) ? thisYear + parseInt( value, 10 ) :
+						parseInt( value, 10 ) ) );
+					return ( isNaN( year ) ? thisYear : year );
+				};
+				year = determineYear( years[ 0 ] );
+				endYear = Math.max( year, determineYear( years[ 1 ] || "" ) );
+				year = ( minDate ? Math.max( year, minDate.getFullYear() ) : year );
+				endYear = ( maxDate ? Math.min( endYear, maxDate.getFullYear() ) : endYear );
+				inst.yearshtml += "<select class='ui-datepicker-year' data-handler='selectYear' data-event='change'>";
+				for ( ; year <= endYear; year++ ) {
+					inst.yearshtml += "<option value='" + year + "'" +
+						( year === drawYear ? " selected='selected'" : "" ) +
+						">" + year + "</option>";
+				}
+				inst.yearshtml += "</select>";
+
+				html += inst.yearshtml;
+				inst.yearshtml = null;
+			}
+		}
+
+		html += this._get( inst, "yearSuffix" );
+		if ( showMonthAfterYear ) {
+			html += ( secondary || !( changeMonth && changeYear ) ? "&#xa0;" : "" ) + monthHtml;
+		}
+		html += "</div>"; // Close datepicker_header
+		return html;
+	},
+
+	/* Adjust one of the date sub-fields. */
+	_adjustInstDate: function( inst, offset, period ) {
+		var year = inst.selectedYear + ( period === "Y" ? offset : 0 ),
+			month = inst.selectedMonth + ( period === "M" ? offset : 0 ),
+			day = Math.min( inst.selectedDay, this._getDaysInMonth( year, month ) ) + ( period === "D" ? offset : 0 ),
+			date = this._restrictMinMax( inst, this._daylightSavingAdjust( new Date( year, month, day ) ) );
+
+		inst.selectedDay = date.getDate();
+		inst.drawMonth = inst.selectedMonth = date.getMonth();
+		inst.drawYear = inst.selectedYear = date.getFullYear();
+		if ( period === "M" || period === "Y" ) {
+			this._notifyChange( inst );
+		}
+	},
+
+	/* Ensure a date is within any min/max bounds. */
+	_restrictMinMax: function( inst, date ) {
+		var minDate = this._getMinMaxDate( inst, "min" ),
+			maxDate = this._getMinMaxDate( inst, "max" ),
+			newDate = ( minDate && date < minDate ? minDate : date );
+		return ( maxDate && newDate > maxDate ? maxDate : newDate );
+	},
+
+	/* Notify change of month/year. */
+	_notifyChange: function( inst ) {
+		var onChange = this._get( inst, "onChangeMonthYear" );
+		if ( onChange ) {
+			onChange.apply( ( inst.input ? inst.input[ 0 ] : null ),
+				[ inst.selectedYear, inst.selectedMonth + 1, inst ] );
+		}
+	},
+
+	/* Determine the number of months to show. */
+	_getNumberOfMonths: function( inst ) {
+		var numMonths = this._get( inst, "numberOfMonths" );
+		return ( numMonths == null ? [ 1, 1 ] : ( typeof numMonths === "number" ? [ 1, numMonths ] : numMonths ) );
+	},
+
+	/* Determine the current maximum date - ensure no time components are set. */
+	_getMinMaxDate: function( inst, minMax ) {
+		return this._determineDate( inst, this._get( inst, minMax + "Date" ), null );
+	},
+
+	/* Find the number of days in a given month. */
+	_getDaysInMonth: function( year, month ) {
+		return 32 - this._daylightSavingAdjust( new Date( year, month, 32 ) ).getDate();
+	},
+
+	/* Find the day of the week of the first of a month. */
+	_getFirstDayOfMonth: function( year, month ) {
+		return new Date( year, month, 1 ).getDay();
+	},
+
+	/* Determines if we should allow a "next/prev" month display change. */
+	_canAdjustMonth: function( inst, offset, curYear, curMonth ) {
+		var numMonths = this._getNumberOfMonths( inst ),
+			date = this._daylightSavingAdjust( new Date( curYear,
+			curMonth + ( offset < 0 ? offset : numMonths[ 0 ] * numMonths[ 1 ] ), 1 ) );
+
+		if ( offset < 0 ) {
+			date.setDate( this._getDaysInMonth( date.getFullYear(), date.getMonth() ) );
+		}
+		return this._isInRange( inst, date );
+	},
+
+	/* Is the given date in the accepted range? */
+	_isInRange: function( inst, date ) {
+		var yearSplit, currentYear,
+			minDate = this._getMinMaxDate( inst, "min" ),
+			maxDate = this._getMinMaxDate( inst, "max" ),
+			minYear = null,
+			maxYear = null,
+			years = this._get( inst, "yearRange" );
+			if ( years ) {
+				yearSplit = years.split( ":" );
+				currentYear = new Date().getFullYear();
+				minYear = parseInt( yearSplit[ 0 ], 10 );
+				maxYear = parseInt( yearSplit[ 1 ], 10 );
+				if ( yearSplit[ 0 ].match( /[+\-].*/ ) ) {
+					minYear += currentYear;
+				}
+				if ( yearSplit[ 1 ].match( /[+\-].*/ ) ) {
+					maxYear += currentYear;
+				}
+			}
+
+		return ( ( !minDate || date.getTime() >= minDate.getTime() ) &&
+			( !maxDate || date.getTime() <= maxDate.getTime() ) &&
+			( !minYear || date.getFullYear() >= minYear ) &&
+			( !maxYear || date.getFullYear() <= maxYear ) );
+	},
+
+	/* Provide the configuration settings for formatting/parsing. */
+	_getFormatConfig: function( inst ) {
+		var shortYearCutoff = this._get( inst, "shortYearCutoff" );
+		shortYearCutoff = ( typeof shortYearCutoff !== "string" ? shortYearCutoff :
+			new Date().getFullYear() % 100 + parseInt( shortYearCutoff, 10 ) );
+		return { shortYearCutoff: shortYearCutoff,
+			dayNamesShort: this._get( inst, "dayNamesShort" ), dayNames: this._get( inst, "dayNames" ),
+			monthNamesShort: this._get( inst, "monthNamesShort" ), monthNames: this._get( inst, "monthNames" ) };
+	},
+
+	/* Format the given date for display. */
+	_formatDate: function( inst, day, month, year ) {
+		if ( !day ) {
+			inst.currentDay = inst.selectedDay;
+			inst.currentMonth = inst.selectedMonth;
+			inst.currentYear = inst.selectedYear;
+		}
+		var date = ( day ? ( typeof day === "object" ? day :
+			this._daylightSavingAdjust( new Date( year, month, day ) ) ) :
+			this._daylightSavingAdjust( new Date( inst.currentYear, inst.currentMonth, inst.currentDay ) ) );
+		return this.formatDate( this._get( inst, "dateFormat" ), date, this._getFormatConfig( inst ) );
+	}
+} );
+
+/*
+ * Bind hover events for datepicker elements.
+ * Done via delegate so the binding only occurs once in the lifetime of the parent div.
+ * Global datepicker_instActive, set by _updateDatepicker allows the handlers to find their way back to the active picker.
+ */
+function datepicker_bindHover( dpDiv ) {
+	var selector = "button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a";
+	return dpDiv.on( "mouseout", selector, function() {
+			$( this ).removeClass( "ui-state-hover" );
+			if ( this.className.indexOf( "ui-datepicker-prev" ) !== -1 ) {
+				$( this ).removeClass( "ui-datepicker-prev-hover" );
+			}
+			if ( this.className.indexOf( "ui-datepicker-next" ) !== -1 ) {
+				$( this ).removeClass( "ui-datepicker-next-hover" );
+			}
+		} )
+		.on( "mouseover", selector, datepicker_handleMouseover );
+}
+
+function datepicker_handleMouseover() {
+	if ( !$.datepicker._isDisabledDatepicker( datepicker_instActive.inline ? datepicker_instActive.dpDiv.parent()[ 0 ] : datepicker_instActive.input[ 0 ] ) ) {
+		$( this ).parents( ".ui-datepicker-calendar" ).find( "a" ).removeClass( "ui-state-hover" );
+		$( this ).addClass( "ui-state-hover" );
+		if ( this.className.indexOf( "ui-datepicker-prev" ) !== -1 ) {
+			$( this ).addClass( "ui-datepicker-prev-hover" );
+		}
+		if ( this.className.indexOf( "ui-datepicker-next" ) !== -1 ) {
+			$( this ).addClass( "ui-datepicker-next-hover" );
+		}
+	}
+}
+
+/* jQuery extend now ignores nulls! */
+function datepicker_extendRemove( target, props ) {
+	$.extend( target, props );
+	for ( var name in props ) {
+		if ( props[ name ] == null ) {
+			target[ name ] = props[ name ];
+		}
+	}
+	return target;
+}
+
+/* Invoke the datepicker functionality.
+   @param  options  string - a command, optionally followed by additional parameters or
+					Object - settings for attaching new datepicker functionality
+   @return  jQuery object */
+$.fn.datepicker = function( options ) {
+
+	/* Verify an empty collection wasn't passed - Fixes #6976 */
+	if ( !this.length ) {
+		return this;
+	}
+
+	/* Initialise the date picker. */
+	if ( !$.datepicker.initialized ) {
+		$( document ).on( "mousedown", $.datepicker._checkExternalClick );
+		$.datepicker.initialized = true;
+	}
+
+	/* Append datepicker main container to body if not exist. */
+	if ( $( "#" + $.datepicker._mainDivId ).length === 0 ) {
+		$( "body" ).append( $.datepicker.dpDiv );
+	}
+
+	var otherArgs = Array.prototype.slice.call( arguments, 1 );
+	if ( typeof options === "string" && ( options === "isDisabled" || options === "getDate" || options === "widget" ) ) {
+		return $.datepicker[ "_" + options + "Datepicker" ].
+			apply( $.datepicker, [ this[ 0 ] ].concat( otherArgs ) );
+	}
+	if ( options === "option" && arguments.length === 2 && typeof arguments[ 1 ] === "string" ) {
+		return $.datepicker[ "_" + options + "Datepicker" ].
+			apply( $.datepicker, [ this[ 0 ] ].concat( otherArgs ) );
+	}
+	return this.each( function() {
+		typeof options === "string" ?
+			$.datepicker[ "_" + options + "Datepicker" ].
+				apply( $.datepicker, [ this ].concat( otherArgs ) ) :
+			$.datepicker._attachDatepicker( this, options );
+	} );
+};
+
+$.datepicker = new Datepicker(); // singleton instance
+$.datepicker.initialized = false;
+$.datepicker.uuid = new Date().getTime();
+$.datepicker.version = "1.12.1";
+
+return $.datepicker;
+
+} ) );
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * jQuery UI Keycode 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Keycode
+//>>group: Core
+//>>description: Provide keycodes as keynames
+//>>docs: http://api.jqueryui.com/jQuery.ui.keyCode/
+
+( function( factory ) {
+	if ( true ) {
+
+		// AMD. Register as an anonymous module.
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(0), __webpack_require__(10) ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {
+
+		// Browser globals
+		factory( jQuery );
+	}
+} ( function( $ ) {
+return $.ui.keyCode = {
+	BACKSPACE: 8,
+	COMMA: 188,
+	DELETE: 46,
+	DOWN: 40,
+	END: 35,
+	ENTER: 13,
+	ESCAPE: 27,
+	HOME: 36,
+	LEFT: 37,
+	PAGE_DOWN: 34,
+	PAGE_UP: 33,
+	PERIOD: 190,
+	RIGHT: 39,
+	SPACE: 32,
+	TAB: 9,
+	UP: 38
+};
+
+} ) );
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(29)
+/* script */
+var __vue_script__ = __webpack_require__(30)
+/* template */
+var __vue_template__ = __webpack_require__(31)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/DatePicker.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5b6a2d5a", Component.options)
+  } else {
+    hotAPI.reload("data-v-5b6a2d5a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($, jQuery) {//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    methods: {
+        updateValue: function updateValue(value) {
+            // Atttach validation + sanitization here.
+            this.$emit('input', value);
+        }
+    },
+    props: {
+        'value': { default: '' },
+        'dateFormat': { default: 'yy-mm-dd' },
+        'changeMonth': { default: true },
+        'changeYear': { default: true }
+
+    },
+    mounted: function mounted() {
+        $(this.$el).datepicker({
+            showButtonPanel: true,
+            changeMonth: this.changeMonth,
+            changeYear: this.changeYear,
+            dateFormat: this.dateFormat,
+            onSelect: function onSelect(date) {
+                this.$emit('update-date', date);
+            }
+        });
+        +function ($, el) {
+            var self = this;
+        }(jQuery, this);
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("input", {
+    ref: "input",
+    attrs: { type: "text" },
+    domProps: { value: _vm.value },
+    on: {
+      input: function($event) {
+        _vm.updateValue($event.target.value)
+      }
+    }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5b6a2d5a", module.exports)
+  }
+}
 
 /***/ })
-
-/******/ });
+/******/ ]);
 //# sourceMappingURL=employees.js.map

@@ -2,27 +2,24 @@
 @section('title', 'Edit Employee')
 @section('modalTitle', 'Edit Employee')
 
-@section('modalFooter')
-    <a href="{{route('employees.index')}}" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
-@endsection
-
-@section('modalContent')
-    <div class="row">
-        <div class="col-sm-12">
-            @include ('employees.form', [
-                'employee' => $data,
-                'uploader' => $uploader
-            ])
-        </div>
-    </div>
-@endsection
-
 @section('post-body')
 <link href="{{URL::to('/')}}/css/employees.min.css" rel="stylesheet">
 <script src="{{URL::to('/')}}/js/new-employee.min.js"></script>
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script>
+
+    $('.editEmployeeHistoryForm').click(function(event){
+        if ($(this).prop('disabled')) {
+            alert('disabled');
+        } else {
+            editEmployeeHistoryForm('{{$data->id}}', event)
+        }
+    });
+
+    $(window).ready(function(){
+        $('.editEmployeeHistoryForm').attr("disabled", false);
+    });
+
     var initializeFileUpload = function() {
         
         $('#one').fileUploader({
@@ -124,11 +121,22 @@
     <form method="POST" action="{{ route('employees.update', $data->id) }}" id="edit_employee_form" name="edit_employee_form" data-parsley-validate="" accept-charset="UTF-8"  enctype="multipart/form-data"> 
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
-        @yield('modalContent')
+        <div class="row">
+            <div class="col-sm-12">
+                @include ('employees.form', [
+                    'employee' => $data,
+                    'uploader' => $uploader
+                ])
+            </div>
+        </div>
         <p>
             <div class="row">
-                <div class="col-sm-12 text-right"> 
-                @yield('modalFooter')
+                <div class="col-sm-12 text-right">
+                    <a href="#light-modal" class="editEmployeeHistoryForm btn btn-warning" disabled="disabled">Update Timeline History</a>
+                    <a href="{{route('employees.index')}}" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
+                    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+                    @component('partials.index', [])
+                    @endcomponent
                 </div>
             </div>
         </p>

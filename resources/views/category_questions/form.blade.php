@@ -131,6 +131,8 @@
 </div>
 
 @section('post-body')
+    <script src="{{URL::to('/')}}/plugins/jstepper/jquery.jstepper-1.5.3.min.js"></script>
+
     <script>
         $(document).ready(function() {
 
@@ -144,6 +146,7 @@
                     //$('#questionChoices').hide();
                     $('.choicegroup').hide();
                     $('input[name=Indicator]').val("HIDE");
+                    $(".choicegroup :input").prop('required',false);
                 }
                 else
                 {
@@ -151,6 +154,7 @@
                     //$('#questionChoices').show();
                     $('.choicegroup').show();
                     $('input[name=Indicator]').val("SHOW");
+                    $(".choicegroup :input").prop('required',true);
                 }
             };
 
@@ -190,6 +194,27 @@
                         index = $row.attr('data-qual-index');
                 $row.remove(); });
         });
+
+        var Points = $('#points').val();
+        var stepperPointOptions = {allowDecimals:false, minValue:1};
+
+        $('body').on('blur', '#points', function(e) {
+            $(this).jStepper(stepperPointOptions);
+            distributeChildrenPoints($(this));
+        });
+
+        function distributeChildrenPoints(el) {
+            console.log(el);
+            var curElement = $(el).attr('id');
+
+            console.log(curElement);
+
+            var parentPoints = $(el).val();
+            console.log(parentPoints);
+
+            var maxAllowablePoints = 0;
+            var stepperChoiceOptions = {allowDecimals:false, minValue:0};
+        }
 
     </script>
 @endsection
