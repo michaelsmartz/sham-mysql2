@@ -47,9 +47,11 @@
 <?php if (isset($topics) && count($topics)>0): ?>
 @foreach($topics as $module_topics)
     @foreach($module_topics as $topic)
-        @foreach($topic->sections as $section)
-            {!! $section !!}
-        @endforeach
+        @if(isset($topic->sections) && count($topic->sections)>0)
+            @foreach($topic->sections as $section)
+                {!! $section !!}
+            @endforeach
+        @endif
         <?php
         $count = count($topic->assessments);
         $counter = 0;

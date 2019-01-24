@@ -355,10 +355,9 @@ class SSPMyCourseController extends CustomController
                                     //$topic->sections[] = $item->asXML();
                                     $counter++;
                                 }
-                                $topic->sections = $sections;
                             }
                         }
-
+                        $topic->sections = $sections;
                         $all_topic_counter++;
                     }
                     $all_topics[] = $topics;
