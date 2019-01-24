@@ -292,12 +292,12 @@ class SSPMyCourseController extends CustomController
                             $topic->data = "<section><p>No content to display.</p></section>";
                         }
 
-                        $topic_data = preg_replace("/<img([^>]+)\>/is", "<img $1 />", "<section><p>$topic->data</p></section>");
+                        $topic_data = preg_replace("/<img([^>]+)\>/is", "<img $1 />", $topic->data);
                         $topic_data = preg_replace("/<source([^>]+)\>/is", "<source $1 />", $topic_data);
                         $topic_data = preg_replace('/&nbsp/', '&amp;nbsp', $topic_data);
                         $topic_data = str_replace("fragment", " ", $topic_data);
                         $xml = simplexml_load_string("<main>" . $topic_data . "</main>");
-                        $topic->sections = [];
+                        $sections = [];
 
                         $sectioncount = count($xml);
                         $counter = 1;
@@ -307,7 +307,7 @@ class SSPMyCourseController extends CustomController
                             if (!$course->employeeProgress[$all_topic_counter]->is_completed) {
                                 $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
 
-                                foreach ($xml as $item) {
+                                foreach ($xml as $key=>$item) {
                                     //$item['data-last'] = "0";
                                     $item['data-state'] = "";
                                     $item['data-course'] = $course_id;
@@ -350,10 +350,12 @@ class SSPMyCourseController extends CustomController
                                     $innerSection = str_replace("</section", "</div", $innerSection);
                                     $innerSection = "<section" . $innerSection . "</section>";
                                     $innerSection = str_replace('&amp;nbsp', '&nbsp', $innerSection);
-                                    $topic->sections = [$innerSection];
+                                    $sections[] = $innerSection;
+
                                     //$topic->sections[] = $item->asXML();
                                     $counter++;
                                 }
+                                $topic->sections = $sections;
                             }
                         }
 
