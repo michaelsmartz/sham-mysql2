@@ -55,7 +55,7 @@ class SSPMySurveysController extends CustomController
 
         $temp = $this->contextObj::with(['users'])
             ->doesntHave('SurveyResponse')
-            ->where('author_sham_user_id',$userId)
+//            ->where('author_sham_user_id',$userId)
             ->where('final',1)
             ->get()
             ->all();
