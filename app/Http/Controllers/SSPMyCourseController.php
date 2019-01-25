@@ -225,15 +225,19 @@ class SSPMyCourseController extends CustomController
 
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
-        $course = $this->contextObj::with(['modules.topics','employees', 'employeeProgress'])
-            ->whereHas('employees', function($query) use ($employee_id, $course_id) {
-                $query->where('employee_id',$employee_id);
-                $query->where('course_id',$course_id);
-            })
-//            ->whereHas('employeeProgress', function($query){
-//                $query->where('is_completed',0);
-//            })
-            ->get()->first();
+        $course = $this->contextObj::with(['modules.topics',
+            'employees'=> function ($query) use ($employee_id)
+            {
+                return  $query->where('employee_id',$employee_id);
+            },
+            'employeeProgress'=> function ($query) use ($employee_id, $course_id)
+            {
+            return  $query->where('employee_id',$employee_id)
+                          ->where('course_id',$course_id);
+            }
+        ])
+        ->where('id',$course_id)
+        ->get()->first();
 
         if ($course != null) {
             $isFirst = true;
