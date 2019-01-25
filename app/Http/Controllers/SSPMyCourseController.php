@@ -323,7 +323,7 @@ class SSPMyCourseController extends CustomController
                                     $item['data-displaynavtext'] = $displayText;
 
                                     if ($topic->LastTopic && $counter == $sectioncount) {
-                                        if (count($topic->assessments) > 0) {
+                                        if (in_array(true, $topic->assessments)) {
                                             $item['data-lastslideofcourse'] = "0";
                                         } else {
                                             $item['data-lastslideofcourse'] = "1";
@@ -334,7 +334,7 @@ class SSPMyCourseController extends CustomController
 
                                     if ($counter == $sectioncount) {
                                         $item['data-lastslideoftopic'] = "1";
-                                        if (count($topic->assessments) > 0) {
+                                        if (in_array(true, $topic->assessments)) {
                                             $item['data-topichasassessment'] = "true";
                                         } else {
                                             $item['data-topichasassessment'] = "false";
