@@ -46,7 +46,7 @@
             <p><b>Audio File: </b></p>
             <audio controls src="{!! (isset($audio)?$audio:"") !!}"></audio>
         @else
-            <p><b>QA Sample: </b>{{$urlpath}}
+            <p><b>QA Sample: </b>{{$UrlPath}}
             </p>
         @endif
 
