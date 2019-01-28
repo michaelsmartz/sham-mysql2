@@ -127,11 +127,11 @@
         $('input[type="text"], textarea').attr('readonly','readonly');
 
         $('.file-download').click(function() {
-
-            var id =  $(this).closest('tr').data("id");
-            window.location = '{{url()->current()}}/'+id;
-
+            var evaluationid = {{$EvaluationId}};
+            var mediaid = {{isset($mediaid)&& $mediaid !=null ?$mediaid:0}};
+            window.location = '{{url()->to('evaluations')}}/'+evaluationid+'/attachment/'+mediaid;
         });
+
         $('.file-remove').click(function() {
 
             var id =  $(this).closest('tr').data("id");

@@ -902,6 +902,13 @@ class EvaluationsController extends CustomController
                 $qafilepresent = true;
             }
 
+            $medias = $evaluationObj->media()->orderBy('id', 'desc')->get();
+            $mediaid = "";
+
+            if(count($medias) > 0){
+                $mediaid = $medias[0]->id;
+            }
+
             $evaluationid = $evaluationObj->assessors->where('id', $Id)->first()->evaluation_id;
             $assessorId = $evaluationObj->assessors->where('id', $Id)->first()->employee_id;
             $summary = $evaluationObj->assessors->where('id', $Id)->first()->pivot->summary . PHP_EOL;
@@ -1002,6 +1009,7 @@ class EvaluationsController extends CustomController
                 ->with('HeaderDetails', $hearderdetails)
                 ->with('Evaluationid', $evaluationid)
                 ->with('MandatoryQuestionComment', $mandatoryPassQuestionsComment)
+                ->with('mediaid', $mediaid)
                 ->with('AssessmentDetails', $assessmentdetails);
         }
     }
