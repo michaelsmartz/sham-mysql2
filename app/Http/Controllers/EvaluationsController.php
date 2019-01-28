@@ -909,6 +909,12 @@ class EvaluationsController extends CustomController
                 $mediaid = $medias[0]->id;
             }
 
+            $audio = '';
+            if($evaluationObj->is_usecontent == 2){
+                $request->request->add(['file' => $evaluationObj->url_path]);
+                $audio = $this->getaudio($request);
+            }
+
             $evaluationid = $evaluationObj->assessors->where('id', $Id)->first()->evaluation_id;
             $assessorId = $evaluationObj->assessors->where('id', $Id)->first()->employee_id;
             $summary = $evaluationObj->assessors->where('id', $Id)->first()->pivot->summary . PHP_EOL;
@@ -1010,6 +1016,7 @@ class EvaluationsController extends CustomController
                 ->with('Evaluationid', $evaluationid)
                 ->with('MandatoryQuestionComment', $mandatoryPassQuestionsComment)
                 ->with('mediaid', $mediaid)
+                ->with('audio', $audio)
                 ->with('AssessmentDetails', $assessmentdetails);
         }
     }

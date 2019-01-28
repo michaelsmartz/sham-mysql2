@@ -38,12 +38,15 @@
             <div class="col-sm-4">{{ isset($HeaderDetails) && key_exists("feedbackdate",$HeaderDetails) ? $HeaderDetails['feedbackdate'] : ' ' }}</div>
         </div>
 
-        @if($UseContent)
+        @if($UseContent == 1)
             <p><b>Audio File: </b>
                 <button type="button" class="btn btn-default btn-sm file-download">Download</button>
             </p>
+        @elseif($UseContent == 2)
+            <p><b>Audio File: </b></p>
+            <audio controls src="{!! (isset($audio)?$audio:"") !!}"></audio>
         @else
-            <p><b>QA Sample: </b>{{$UrlPath}}
+            <p><b>QA Sample: </b>{{$urlpath}}
             </p>
         @endif
 
