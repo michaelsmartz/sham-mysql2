@@ -79,7 +79,7 @@
                                 <td>{{ optional($evaluation->employee)->full_name }}</td>
                                 <td>{{ optional($evaluation->department)->description }}</td>
                                 <td>{{ $evaluation->feedback_date }}</td>
-                                <td>{{ optional($evaluation->evaluationStatus)->description }}</td>
+                                <td>{!! App\Enums\EvaluationStatusType::getDescription($evaluation->evaluation_status_id) !!}</td>
                             </tr>
 
                         @endforeach
