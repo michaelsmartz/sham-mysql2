@@ -654,6 +654,24 @@ class EvaluationsController extends CustomController
             'is_completed' => 1,
         ]],false);
 
+        $employee_evaluations = $evaluationDetails->assessors()->where('evaluation_id',$EvaluationId)->get()->all();
+
+        if ($employee_evaluations !=null && !empty($employee_evaluations)) {
+            $closed = true;
+            foreach ($employee_evaluations as $result)
+            {
+                if($result->is_completed == false)
+                {
+                    $closed = false;
+                }
+            }
+            if($closed)
+            {
+                $this->contextObj::where('id',$evaluationid)
+                    ->update(['evaluation_status_id'=>EvaluationStatusType::CLOSED]);
+            }
+        }
+
         return Redirect::to('instances');
 
     }
