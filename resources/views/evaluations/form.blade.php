@@ -357,9 +357,9 @@
 
             // DataTable
             var table = $('#datatable').DataTable({
-                pagingType: 'input',
-                pageLength: 5,
-                language: {
+                sPaginationType: "full_numbers",
+                sPageLength: 5,
+                oLanguage: {
                     oPaginate: {
                         sNext: '<i class="fa fa-forward"></i>',
                         sPrevious: '<i class="fa fa-backward"></i>',
