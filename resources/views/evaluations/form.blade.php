@@ -356,7 +356,18 @@
             }
 
             // DataTable
-            var table = $('#datatable').DataTable();
+            var table = $('#datatable').DataTable({
+                pagingType: 'input',
+                pageLength: 5,
+                language: {
+                    oPaginate: {
+                        sNext: '<i class="fa fa-forward"></i>',
+                        sPrevious: '<i class="fa fa-backward"></i>',
+                        sFirst: '<i class="fa fa-step-backward"></i>',
+                        sLast: '<i class="fa fa-step-forward"></i>'
+                    }
+                }
+            });
 
             $("#searchaudio").click(function(){
 
@@ -380,7 +391,7 @@
 
                         if(result[i].recording_filename.length > 0){
                             var dateofrecording = result[i].call_start_date.split(' ')[0];
-                            table.fnAddData([
+                            var a = table.fnAddData([
                                 dateofrecording +'/' + result[i].recording_filename,
                                 result[i].user_id,
                                 result[i].disposition,
@@ -390,9 +401,11 @@
                                 '<audio controls preload="metadata"  name="chataudio" style=" width:300px;"><source src="/getaudio1?file='+dateofrecording + '/' + result[i].recording_filename + '" ></audio>',
                                 '<input type="radio"  value="1" name="selectedaudio" /></label> </td>'
                             ]);
+
+                            var nTr = table.fnSettings().aoData[a[0]].nTr;
+                            nTr.className = "recordingfile";
                         }
                     }
-
                     $('#loading').css({'display': 'none'});
                 })
             });
@@ -415,7 +428,7 @@
 
 
             $("#datatable").on('click', "input[name=selectedaudio]:radio", function() {
-                recordingfilereference = $(this).closest('tr').find('.recordingfile').text();
+                recordingfilereference = $(this).closest('tr').find('td:first-child').text();
             });
 
             if(mode == 'edit')
