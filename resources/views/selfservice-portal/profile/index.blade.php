@@ -902,7 +902,7 @@
                                                 <span data-bind="text: staticPostalAddressComplex"></span>
                                                 <span data-bind="text: staticPostalAddressLine1"></span> <br>
                                                 <span data-bind="text: staticPostalAddressLine2"></span> <br>
-                                                <span data-bind="text: staticPostalAddressCity"></span> <span data-bind="text: staticPostalAddressProvince"></span> {{$employee->PostalAddressProvince or '' }} {{$employee->PostalAddressZipCode or ''}}</p>
+                                                <span data-bind="text: staticPostalAddressCity"></span> <span data-bind="text: staticPostalAddressProvince"></span>  <span data-bind="text: staticPostalAddressZipCode"></span> {{$employee->PostalAddressProvince or '' }} {{$employee->PostalAddressZipCode or ''}}</p>
                                         </div>
 
                                     </div>
@@ -1134,25 +1134,25 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Phone</label>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-8">
                                             <input placeholder=" " id="phone" name="HomeTel" data-bind="value: HomeTel" class="form-control" type="text">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Cell</label>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-8">
                                             <input placeholder=" " id="cell" name="Mobile" data-bind="value: Mobile" class="form-control" type="text">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Emergency</label>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-8">
                                             <input placeholder=" " id="emergency" name="WorkTel" data-bind="value: WorkTel" class="form-control" type="text">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-lg-2 control-label">Email</label>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-8">
                                             <input placeholder=" " id="email" name="HomeEmailAddress" data-bind="value: HomeEmailAddress" class="form-control email" type="email">
                                         </div>
                                     </div>

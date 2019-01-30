@@ -5031,34 +5031,34 @@ CREATE TABLE IF NOT EXISTS `system_sub_modules` (
 --
 
 INSERT INTO `system_sub_modules` (`id`, `description`, `system_module_id`, `is_active`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Employee database', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(1, 'Employees', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (2, 'Workflows', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (3, 'Custom reports', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (4, 'Notifications', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (5, 'Announcements', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
-(6, 'Assets management', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(6, 'Assets Allocation', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (7, 'Organisation structure', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (8, 'Lifecycle management', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
-(9, 'Suggestions', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(9, 'Suggestions', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (10, 'Surveys', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
-(11, 'Compliance management', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(11, 'Compliance', 1, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (12, 'Travel management', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (13, 'Temporary jobs', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (14, 'Company documents', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (15, 'Calendar events', 1, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
-(16, 'My portal', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
-(17, 'My details', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(16, 'My Portal', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(17, 'My Details', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (18, 'My travel requests', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (19, 'My suggestions', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
-(20, 'My courses', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
-(21, 'My surveys', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(20, 'My Courses', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(21, 'My Surveys', 2, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (22, 'My disciplinary records', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (23, 'Vacancies', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (24, 'My assessments', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
-(25, 'My claims', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
-(26, 'My leaves', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
-(27, 'My timesheet', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
-(28, 'My appraisal', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
+(25, 'My Claims', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
+(26, 'My Leaves', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
+(27, 'My Timesheet', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
+(28, 'My Appraisal', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (29, 'Newsletter', 2, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (30, 'Assessments', 3, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (31, 'Assessment Categories', 3, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
@@ -5158,8 +5158,8 @@ INSERT INTO `system_sub_modules` (`id`, `description`, `system_module_id`, `is_a
 (125, 'Link Types', 12, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (126, 'Todo Items', 13, 0, '2018-11-16 11:39:40', '2018-11-16 11:39:40', '2018-11-29 11:11:38'),
 (127, 'Time Period', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
-(128, 'Disciplinary Decision', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL);
-(129, 'Disabilities', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL);
+(128, 'Disciplinary Decision', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
+(129, 'Disabilities', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL),
 (130, 'Disability Category', 12, 1, '2018-11-16 11:39:40', '2018-11-16 11:39:40', NULL);
 
 -- --------------------------------------------------------
@@ -6866,10 +6866,21 @@ ALTER TABLE `disability_employee`
   ADD CONSTRAINT `FK_DisabilityEmployee_Employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `FK_DisabilityEmployee_Disabilities` FOREIGN KEY (`disability_id`) REFERENCES `disabilities` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+UPDATE `system_sub_modules` SET `description` = 'Employees' WHERE (`id` = '1');
+UPDATE `system_sub_modules` SET `description` = 'Assets Allocation' WHERE (`id` = '6');
+UPDATE `system_sub_modules` SET `description` = 'Organisation Charts' WHERE (`id` = '7');
+UPDATE `system_sub_modules` SET `description` = 'Compliance' WHERE (`id` = '11');
+UPDATE `system_sub_modules` SET `deleted_at` = '2018-11-29 11:11:38' WHERE (`id` = '15');
+UPDATE `system_sub_modules` SET `description` = 'My Portal' WHERE (`id` = '16');
+UPDATE `system_sub_modules` SET `description` = 'My Details' WHERE (`id` = '17');
+UPDATE `system_sub_modules` SET `description` = 'My E-learning' WHERE (`id` = '20');
+UPDATE `system_sub_modules` SET `description` = 'My Surveys' WHERE (`id` = '21');
+UPDATE `system_sub_modules` SET `is_active` = '0' WHERE (`id` = '87');
+UPDATE `system_sub_modules` SET `is_active` = '0' WHERE (`id` = '9');
+UPDATE `system_sub_modules` SET `deleted_at` = '2018-11-29 11:11:38' WHERE (`id` = '87');
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 SET GLOBAL FOREIGN_KEY_CHECKS = 1;
-
-
---Test line
