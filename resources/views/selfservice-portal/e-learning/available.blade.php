@@ -164,7 +164,7 @@ if(count($coursesAvailable)>12)
                                                 <span style="width: 65%;"></span>
                                             </div>
 
-                                            <div class="carousel-inner">
+                                            <div class="carousel-inner box" role="listbox">
 
                                                 <div class="metro-tile-page item active fg-white {{$courseBgClasses[$counter]}}" data-slide-number="0">
                                                     <h4>
@@ -197,10 +197,10 @@ if(count($coursesAvailable)>12)
                                                 </div>
                                             </div>
                                             <!-- Carousel nav -->
-                                            <a href="#myCarousel-{{$counter}}" class="left carousel-control" title="previous content" data-slide="prev">
+                                            <a href="#myCarousel-{{$counter}}" class="left carousel-control" title="previous content" data-slide-to="0">
                                                 <span class="fa fa-chevron-left fa-2x"></span>
                                             </a>
-                                            <a href="#myCarousel-{{$counter}}" class="right carousel-control"title="next content" data-slide-to="1">
+                                            <a href="#myCarousel-{{$counter}}" class="right carousel-control" title="next content" data-slide-to="1">
                                                 <span class="fa fa-chevron-right fa-2x"></span>
                                             </a>
                                         </div>

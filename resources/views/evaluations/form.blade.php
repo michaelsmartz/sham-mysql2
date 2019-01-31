@@ -226,6 +226,7 @@
                 <div class="row">
                     <div class="col-xs-12" style="overflow: auto;">
                         <table class="table table-striped table-bordered table-hover" id="datatable">
+                            <thead>
                             <tr>
                                 <th>Filename</th>
                                 <th>User Id</th>
@@ -236,6 +237,7 @@
                                 <th>Player</th>
                                 <th>use</th>
                             </tr>
+                            </thead>
                         </table>
                     </div>
                 </div>
@@ -260,8 +262,11 @@
     <script src="{{url('/')}}/plugins/multiselect/multiselect.min.js"></script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css"/>
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js"></script>
 
     <script>
 
@@ -350,6 +355,20 @@
                 $( "#savecontent" ).click();
             }
 
+            // DataTable
+            var table = $('#datatable').DataTable({
+                sPaginationType: "full_numbers",
+                sPageLength: 5,
+                oLanguage: {
+                    oPaginate: {
+                        sNext: '<i class="fa fa-forward"></i>',
+                        sPrevious: '<i class="fa fa-backward"></i>',
+                        sFirst: '<i class="fa fa-step-backward"></i>',
+                        sLast: '<i class="fa fa-step-forward"></i>'
+                    }
+                }
+            });
+
             $("#searchaudio").click(function(){
 
                 $date = $('#recordingdate').val();
@@ -359,6 +378,8 @@
                 $('#loading').css({'display': 'block', 'width':'2px', 'height':'2px'});
                 //$('#datatable tr').not(':first').not(':last').remove();
                 $('#datatable tr').not(':first').remove();
+
+                table.fnClearTable();
 
                 $.get("/getaudiolist", data, function(result){
 
@@ -370,23 +391,34 @@
 
                         if(result[i].recording_filename.length > 0){
                             var dateofrecording = result[i].call_start_date.split(' ')[0];
-                            html += '<tr>'+
-                                    '<td class="recordingfile">' + dateofrecording + '/' +result[i].recording_filename + '</td>' +
-                                    '<td>' + result[i].user_id + '</td>' +
-                                    '<td>' + result[i].disposition + '</td>' +
-                                    '<td>' + result[i].source_number + '</td>' +
-                                    '<td>' + result[i].destination_number + '</td>' +
-                                    '<td>' + result[i].duration + '</td>' +
-                                    //'<td><audio controls preload="metadata" autobuffer="autobuffer" name="chataudio" style=" width:300px;"><source src="'+ result[i].audio +'" type="audio/mpeg"></audio></td>' +
-                                    '<td><audio controls preload="metadata"  name="chataudio" style=" width:300px;"><source src="/getaudio1?file='+ dateofrecording + '/' +result[i].recording_filename +'" ></audio></td>' +
-                                    '<td> <input type="radio"  value="1" name="selectedaudio" /></label> </td>' +
-                                    '</tr>';
+                            var a = table.fnAddData([
+                                dateofrecording +'/' + result[i].recording_filename,
+                                result[i].user_id,
+                                result[i].disposition,
+                                result[i].source_number,
+                                result[i].destination_number,
+                                result[i].duration,
+                                '<audio controls preload="metadata"  name="chataudio" style=" width:300px;"><source src="/getaudio1?file='+dateofrecording + '/' + result[i].recording_filename + '" ></audio>',
+                                '<input type="radio"  value="1" name="selectedaudio" /></label> </td>'
+                            ]);
+
+                            var nTr = table.fnSettings().aoData[a[0]].nTr;
+                            nTr.className = "recordingfile";
                         }
                     }
-                    $('#datatable tr').first().after(html);
                     $('#loading').css({'display': 'none'});
                 })
             });
+
+            function filterGlobal () {
+                $('#datatable').DataTable().search(
+                    $('#datatable_filter input[type="search"]').val(),
+                ).draw();
+            }
+
+            $('#datatable_filter input[type="search"]').on( 'keyup click', function () {
+                filterGlobal();
+            } );
 
             $("#selectAudioFromModal").click(function(){
                 console.log('Test');
@@ -396,7 +428,7 @@
 
 
             $("#datatable").on('click', "input[name=selectedaudio]:radio", function() {
-                recordingfilereference = $(this).closest('tr').find('.recordingfile').text();
+                recordingfilereference = $(this).closest('tr').find('td:first-child').text();
             });
 
             if(mode == 'edit')

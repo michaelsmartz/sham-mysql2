@@ -180,6 +180,50 @@ class AssessmentsController extends CustomController
 
         return redirect()->back();
     }
-    
+
+    public function duplicates(Request $request)
+    {
+        $categoryids = $request->AssessmentCateoryIds;
+        $questions = [];
+
+        if(isset($categoryids) && is_array($categoryids))
+        {
+            $categoriesobj = AssessmentCategory::with('assessmentCategoryCategoryQuestions')
+                ->whereIn('id',$categoryids)
+                ->get()->all();
+
+            if ($categoriesobj!=null) {
+                foreach ($categoriesobj as $categoryItem) {
+                    if ($categoryItem)
+                    {
+                        foreach ($categoryItem['assessmentCategoryCategoryQuestions'] as $question) {
+                            if (!array_key_exists($question->id, $questions)) {
+                                $questions[$question->id] = new \stdClass();
+                                $questions[$question->id]->categories[] = $categoryItem->name;
+                                $questions[$question->id]->title = $question->title;
+                            }
+                            else{
+                                $questions[$question->id]->categories[] = $categoryItem->name;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $hasDuplicates = false;
+        if(!empty($questions))
+        {
+            foreach ($questions as $key => $value) {
+                if(count($value->categories) == 1){
+                    unset($questions[$key]);
+                }
+                else{
+                    $hasDuplicates = true;
+                }
+            }
+        }
+        return response()->json(['success' => true,'duplicates' => $hasDuplicates,'questions' => $questions], 200);
+    }
     
 }

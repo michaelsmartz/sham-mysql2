@@ -654,6 +654,24 @@ class EvaluationsController extends CustomController
             'is_completed' => 1,
         ]],false);
 
+        $employee_evaluations = $evaluationDetails->assessors()->where('evaluation_id',$EvaluationId)->get()->all();
+
+        if ($employee_evaluations !=null && !empty($employee_evaluations)) {
+            $closed = true;
+            foreach ($employee_evaluations as $result)
+            {
+                if($result->is_completed == false)
+                {
+                    $closed = false;
+                }
+            }
+            if($closed)
+            {
+                $this->contextObj::where('id',$evaluationid)
+                    ->update(['evaluation_status_id'=>EvaluationStatusType::CLOSED]);
+            }
+        }
+
         return Redirect::to('instances');
 
     }
@@ -902,6 +920,19 @@ class EvaluationsController extends CustomController
                 $qafilepresent = true;
             }
 
+            $medias = $evaluationObj->media()->orderBy('id', 'desc')->get();
+            $mediaid = "";
+
+            if(count($medias) > 0){
+                $mediaid = $medias[0]->id;
+            }
+
+            $audio = '';
+            if($evaluationObj->is_usecontent == 2){
+                $request->request->add(['file' => $evaluationObj->url_path]);
+                $audio = $this->getaudio($request);
+            }
+
             $evaluationid = $evaluationObj->assessors->where('id', $Id)->first()->evaluation_id;
             $assessorId = $evaluationObj->assessors->where('id', $Id)->first()->employee_id;
             $summary = $evaluationObj->assessors->where('id', $Id)->first()->pivot->summary . PHP_EOL;
@@ -1002,6 +1033,8 @@ class EvaluationsController extends CustomController
                 ->with('HeaderDetails', $hearderdetails)
                 ->with('Evaluationid', $evaluationid)
                 ->with('MandatoryQuestionComment', $mandatoryPassQuestionsComment)
+                ->with('mediaid', $mediaid)
+                ->with('audio', $audio)
                 ->with('AssessmentDetails', $assessmentdetails);
         }
     }

@@ -53,12 +53,14 @@ class SSPMySurveysController extends CustomController
 
         $surveys = [];
 
-        $temp = $this->contextObj::with(['users'])
-            ->doesntHave('SurveyResponse')
-            ->where('author_sham_user_id',$userId)
-            ->where('final',1)
-            ->get()
-            ->all();
+        $temp = $this->contextObj::with('users')
+        ->whereDoesntHave('SurveyResponse', function ($query) use ($userId)
+        {
+            return  $query->where('sham_user_id', $userId);
+        })
+        ->where('final',1)
+        ->get()
+        ->all();
 
         if ($temp!=null){
             foreach ($temp as $t) {

@@ -44,6 +44,8 @@
 <div class="form-group col-xs-12">
     <div class="text-info" id="indicateCorrectAnswersAlert">For single/multiple choice type questions; please define the choices and indicate the correct answers</div>
     <div class="text-info" id="totalPointsAlert">The total marks for each question should at least be equal to the assessment passmark</div>
+    <div class="text-danger" id="totalPointsAlert">NOTE: Define the choices first. Check the "Mark as correct answer" then enter the question points</div>
+    <div class="text-danger" id="totalPointsAlert">The correct answer points will update automatically</div>
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('data') ? 'has-error' : '' }}">

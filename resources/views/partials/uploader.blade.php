@@ -54,11 +54,13 @@
             },
             langs: {
                 'en': {
-                    intro_msg: "{{$uploader['fieldLabel'] or 'Add attachments...' }}",
-                    dropZone_msg: 
+                    intro_msg: "{{$uploader['fieldLabel']}}",
+                    dropZone_msg:
                         '<p><strong>Drop</strong>&nbsp;your files here or <strong class="text-primary">click</strong>&nbsp;on this area' +
-                        '<br><small class="text-muted">{{ $uploader["restrictionMsg"] or "You can upload any related files" }}.\n' + 
+                        '<br><small class="text-muted">{{ $uploader["restrictionMsg"] or "You can upload any related files" }}.\n' +
                         '   One file can be max {{ $uploader["fileMaxSize"] }} MB</small>\n' +
+                        '<br><b>Allowed File Types: {{ $uploader["acceptedFiles"] }}' +
+                        '</b>\n' +
                         '</p>',
                     maxSizeExceeded_msg: 'File too large',
                     totalMaxSizeExceeded_msg: 'Total size exceeded',

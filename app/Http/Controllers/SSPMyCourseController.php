@@ -225,15 +225,19 @@ class SSPMyCourseController extends CustomController
 
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
-        $course = $this->contextObj::with(['modules.topics','employees', 'employeeProgress'])
-            ->whereHas('employees', function($query) use ($employee_id, $course_id) {
-                $query->where('employee_id',$employee_id);
-                $query->where('course_id',$course_id);
-            })
-//            ->whereHas('employeeProgress', function($query){
-//                $query->where('is_completed',0);
-//            })
-            ->get()->first();
+        $course = $this->contextObj::with(['modules.topics',
+            'employees'=> function ($query) use ($employee_id)
+            {
+                return  $query->where('employee_id',$employee_id);
+            },
+            'employeeProgress'=> function ($query) use ($employee_id, $course_id)
+            {
+            return  $query->where('employee_id',$employee_id)
+                          ->where('course_id',$course_id);
+            }
+        ])
+        ->where('id',$course_id)
+        ->get()->first();
 
         if ($course != null) {
             $isFirst = true;
@@ -292,12 +296,12 @@ class SSPMyCourseController extends CustomController
                             $topic->data = "<section><p>No content to display.</p></section>";
                         }
 
-                        $topic_data = preg_replace("/<img([^>]+)\>/is", "<img $1 />", "<section><p>$topic->data</p></section>");
+                        $topic_data = preg_replace("/<img([^>]+)\>/is", "<img $1 />", $topic->data);
                         $topic_data = preg_replace("/<source([^>]+)\>/is", "<source $1 />", $topic_data);
                         $topic_data = preg_replace('/&nbsp/', '&amp;nbsp', $topic_data);
                         $topic_data = str_replace("fragment", " ", $topic_data);
                         $xml = simplexml_load_string("<main>" . $topic_data . "</main>");
-                        $topic->sections = [];
+                        $sections = [];
 
                         $sectioncount = count($xml);
                         $counter = 1;
@@ -307,7 +311,7 @@ class SSPMyCourseController extends CustomController
                             if (!$course->employeeProgress[$all_topic_counter]->is_completed) {
                                 $displayText = self::getDisplayText($course_id, $topic->pivot->module_id, $topic->id);
 
-                                foreach ($xml as $item) {
+                                foreach ($xml as $key=>$item) {
                                     //$item['data-last'] = "0";
                                     $item['data-state'] = "";
                                     $item['data-course'] = $course_id;
@@ -323,7 +327,7 @@ class SSPMyCourseController extends CustomController
                                     $item['data-displaynavtext'] = $displayText;
 
                                     if ($topic->LastTopic && $counter == $sectioncount) {
-                                        if (count($topic->assessments) > 0) {
+                                        if (in_array(true, $topic->assessments)) {
                                             $item['data-lastslideofcourse'] = "0";
                                         } else {
                                             $item['data-lastslideofcourse'] = "1";
@@ -334,7 +338,7 @@ class SSPMyCourseController extends CustomController
 
                                     if ($counter == $sectioncount) {
                                         $item['data-lastslideoftopic'] = "1";
-                                        if (count($topic->assessments) > 0) {
+                                        if (in_array(true, $topic->assessments)) {
                                             $item['data-topichasassessment'] = "true";
                                         } else {
                                             $item['data-topichasassessment'] = "false";
@@ -350,13 +354,14 @@ class SSPMyCourseController extends CustomController
                                     $innerSection = str_replace("</section", "</div", $innerSection);
                                     $innerSection = "<section" . $innerSection . "</section>";
                                     $innerSection = str_replace('&amp;nbsp', '&nbsp', $innerSection);
-                                    $topic->sections = [$innerSection];
+                                    $sections[] = $innerSection;
+
                                     //$topic->sections[] = $item->asXML();
                                     $counter++;
                                 }
                             }
                         }
-
+                        $topic->sections = $sections;
                         $all_topic_counter++;
                     }
                     $all_topics[] = $topics;

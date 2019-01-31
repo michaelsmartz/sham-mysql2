@@ -56,8 +56,15 @@ trait MediaFiles
                     $name = $temp[0];
                     $ext = $temp[1];
 
+                    $mediaFile = Media::forPathOnDisk($disk, $uModelName.'/'.$file['title'])->first();
+                    if(is_null($mediaFile)) {
+                        $filename = $name;
+                    }else{
+                        $filename = $name.'-'.rand(1, 10);
+                    }
+
                     $media = MediaUploader::fromSource($stream)
-                        ->useFilename($name)
+                        ->useFilename($filename)
                         ->toDestination($disk, $uModelName)
                         ->setStrictTypeChecking(true)
                         // pass the callable
@@ -68,13 +75,12 @@ trait MediaFiles
                             $model->setAttribute('extrable_type', $request->input('Extrable_Type'));
                         })
                         ->upload();
+
+                    $relatedMedias->attachMedia($media, $uModelName);
+
                 } catch (MediaUploadException $e) {
                     Session::put('error', $e->getMessage());
                 }
-
-                //to sync mediable table with media table on upload
-                $relatedMedias->attachMedia($media, $uModelName);
-                //$relatedMedias->syncMedia($media, $modelName);
 
                 $returns[] = $media;
             }

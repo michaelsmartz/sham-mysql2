@@ -44,7 +44,15 @@
         }
 
         .pull-right {
-            position: absolute; right: 10px;
+           /* position: absolute; right: 10px;*/
+            /*float:right!important;*/
+           /* display: inline-block;*/
+
+            /*float: right;*/
+            padding-left: 4px;
+            color:#3097D1;
+
+
         }
         input {
             display:inline;
