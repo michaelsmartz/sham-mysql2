@@ -46799,6 +46799,10 @@ var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
             student_no: ''
         },
         quals: [],
+        employment: {
+            previous_employer: '', position: '', salary: '', reason_leaving: ''
+        },
+        employments: [],
         errors: [],
         titles: ['Mr', 'Miss', 'Mrs'],
         genders: ['Male', 'Female'],
@@ -46879,6 +46883,14 @@ var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
         },
         removeQual: function removeQual(index) {
             __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
+        },
+        addNewEmploy: function addNewEmploy() {
+            this.employments.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.employment));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeEmploy: function removeEmploy(index) {
+            __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.employments, index);
         },
         submitForm: function submitForm(event) {
             event.preventDefault();

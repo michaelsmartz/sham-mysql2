@@ -165,6 +165,10 @@ const rr = new Vue({
             student_no: ''
         },
         quals: [],
+        employment: {
+            previous_employer: '', position: '', salary: '', reason_leaving: ''
+        },
+        employments: [],
         errors: [],
         titles: [
             'Mr',
@@ -285,6 +289,14 @@ const rr = new Vue({
         removeQual: function (index) {
             Vue.delete(this.quals, index);
         },
+        addNewEmploy: function () {
+            this.employments.push(Vue.util.extend({}, this.employment));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeEmploy: function (index) {
+            Vue.delete(this.employments, index);
+        },
         submitForm: function (event) {
             event.preventDefault();
         },
@@ -294,6 +306,14 @@ const rr = new Vue({
                 .then(res => res.json())
                 .then(res => {
                     this.quals = res;
+                })
+        },
+        fetchQPreviousEmployments: function()
+        {
+            fetch('./previous_employments')
+                .then(res => res.json())
+                .then(res => {
+                    this.employments = res;
                 })
         }
     },

@@ -1,4 +1,8 @@
 {
+    "/js/candidates.js": "/js/candidates.js",
+    "/js/candidates.js.map": "/js/candidates.js.map",
+    "/js/recruitment-request.js": "/js/recruitment-request.js",
+    "/js/recruitment-request.js.map": "/js/recruitment-request.js.map",
     "/js/new-employee.js": "/js/new-employee.js",
     "/css/app.css": "/css/app.css",
     "/css/employees.css": "/css/employees.css",
@@ -7,6 +11,8 @@
     "/css/hopscotch.css": "/css/hopscotch.css",
     "/css/import_steps.css": "/css/import_steps.css",
     "/css/nav-wizard.css": "/css/nav-wizard.css",
+    "/css/recruitment-request.css": "/css/recruitment-request.css",
+    "/css/candidates.css": "/css/candidates.css",
     "/js/new-employee.js.map": "/js/new-employee.js.map",
     "/css/app.css.map": "/css/app.css.map",
     "/css/employees.css.map": "/css/employees.css.map",
@@ -15,6 +21,8 @@
     "/css/hopscotch.css.map": "/css/hopscotch.css.map",
     "/css/import_steps.css.map": "/css/import_steps.css.map",
     "/css/nav-wizard.css.map": "/css/nav-wizard.css.map",
+    "/css/recruitment-request.css.map": "/css/recruitment-request.css.map",
+    "/css/candidates.css.map": "/css/candidates.css.map",
     "/js/employees.js": "/js/employees.js",
     "/js/employees.js.map": "/js/employees.js.map",
     "/js/tables.js": "/js/tables.js",
@@ -30,11 +38,15 @@
     "/js/new-employee.min.js": "/js/new-employee.min.js",
     "/js/uploader.min.js": "/js/uploader.min.js",
     "/js/recruitment.min.js": "/js/recruitment.min.js",
+    "/js/recruitment-request.min.js": "/js/recruitment-request.min.js",
+    "/js/candidates.min.js": "/js/candidates.min.js",
     "/css/app.min.css": "/css/app.min.css",
     "/css/employees.min.css": "/css/employees.min.css",
     "/css/dropzone.min.css": "/css/dropzone.min.css",
     "/css/lifecycle.min.css": "/css/lifecycle.min.css",
     "/css/hopscotch.min.css": "/css/hopscotch.min.css",
     "/css/import_steps.min.css": "/css/import_steps.min.css",
-    "/css/nav-wizard.min.css": "/css/nav-wizard.min.css"
+    "/css/nav-wizard.min.css": "/css/nav-wizard.min.css",
+    "/css/recruitment-request.min.css": "/css/recruitment-request.min.css",
+    "/css/candidates.min.css": "/css/candidates.min.css"
 }

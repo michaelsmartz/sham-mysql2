@@ -193,48 +193,51 @@
                 <div class="fileUploader" id="one"></div>
             </div>
 
-            <div class="form-group col-xs-4">
-                <label for="surname">Previous Employer</label>
-                <input
-                        id="previous_employer"
-                        class='form-control'
-                        v-model="previous_employer"
-                        type="text"
-                        name="previous_employer"
-                >
-            </div>
-
-            <div class="form-group col-xs-4">
-                <label for="surname">Position</label>
-                <input
-                        id="position"
-                        class='form-control'
-                        v-model="position"
-                        type="text"
-                        name="position"
-                >
-            </div>
-
-            <div class="form-group col-xs-2">
-                <label for="surname">Salary</label>
-                <input
-                        id="salary"
-                        class='form-control'
-                        v-model="salary"
-                        type="number"
-                        name="salary"
-                >
-            </div>
-
-            <div class="form-group col-xs-2">
-                <label for="surname">Reason for leaving?</label>
-                <textarea
-                        id="reason_leaving"
-                        class='form-control'
-                        v-model="reason_leaving"
-                        type="text"
-                        name="reason_leaving"
-                ></textarea>
+            <div class="form-group col-xs-12">
+                <fieldset>
+                    <legend style="font-size:14px;"><b>Add Previous Employments</b></legend>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <button class="btn btn-default" v-on:click="addNewEmploy" type="button" data-wenk-pos="right"
+                                        data-wenk="Add New Employment">
+                                    <i class="fa fa-plus text-success"></i>
+                                </button>
+                            </div>
+                            <label class="col-sm-3">Previous Employer</label>
+                            <label class="col-sm-3">Position</label>
+                            <label class="col-sm-2">Salary</label>
+                            <label class="col-sm-3">Reason for leaving?</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row" v-for="(employment, index) in employments">
+                            <div class="col-xs-1">
+                                <button type="button" v-on:click="removeEmploy(index)" class="btn btn-default" data-wenk-pos="right"
+                                        data-wenk="Remove Employment">
+                                    <i class="fa fa-minus" style="color:rgb(255,59,48)"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <input v-model="employment.previous_employer" type="text"
+                                       name="previous_employment[][previous_employer]" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <input v-model="employment.position" type="text"
+                                       name="previous_employment[][position]" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <input v-model="employment.salary" type="text"
+                                       name="previous_employment[][salary]" class="form-control">
+                            </div>
+                            <div class="col-sm-3">
+                                <textarea v-model="employment.reason_leaving" type="text"
+                                       name="previous_employment[][reason_leaving]" class="form-control">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
 
             <div class="form-group col-xs-4">
