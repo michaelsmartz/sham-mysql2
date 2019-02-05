@@ -376,5 +376,9 @@
         "model-name": "ModuleAssessmentResponseDetail",
         "resource-file": "module_assessment_response_details.json",
         "table-name": "module_assessment_response_details"
+    },
+    {
+        "model-name": "Candidate",
+        "resource-file": "candidates.json"
     }
 ]

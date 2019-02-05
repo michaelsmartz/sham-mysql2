@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-sm-12">
             @include ('candidates.form', [
-                'requests' => $data,
+                'candidates' => $data,
             ])
         </div>
     </div>

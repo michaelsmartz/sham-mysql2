@@ -46657,94 +46657,96 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue
 __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["Event"]);
 __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
 
-var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
-    el: '#candidates-table',
-    data: function data() {
-        return {
-            columns: ['title', 'gender', 'surname', 'firstName', 'personalEmail', 'phone', 'actions'],
-            subColumns: ['cv'],
-            data: getData(),
-            options: {
-                filter: false,
-                filterByColumn: false,
-                perPage: 2,
-                texts: {
-                    filter: "Filter:",
-                    filterBy: 'Filter by {column}',
-                    count: ' '
+if (document.getElementById("candidates-table")) {
+    var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
+        el: '#candidates-table',
+        data: function data() {
+            return {
+                columns: ['title', 'gender', 'surname', 'firstName', 'personalEmail', 'phone', 'actions'],
+                subColumns: ['cv'],
+                data: getData(),
+                options: {
+                    filter: false,
+                    filterByColumn: false,
+                    perPage: 2,
+                    texts: {
+                        filter: "Filter:",
+                        filterBy: 'Filter by {column}',
+                        count: ' '
+                    },
+                    pagination: { chunk: 10 },
+                    headings: {
+                        title: "Title",
+                        gender: "Gender",
+                        maritalStatus: "Marital Status",
+                        surname: "Surname",
+                        firstName: "FirstName",
+                        dob: "Date of Birth",
+                        personalEmail: "Personal Email",
+                        homeAddress: "Home Address",
+                        phone: "Phone",
+                        idNumber: "ID number",
+                        skills: "Skills",
+                        qualifications: "Qualifications",
+                        disabilities: "Disabilities"
+                    },
+                    // sortable: [
+                    //     'title',
+                    //     'gender',
+                    //     'maritalStatus',
+                    //     'surname',
+                    //     'firstName',
+                    //     'dob',
+                    //     'personalEmail',
+                    //     'homeAddress',
+                    //     'phone',
+                    //     'idNumber',
+                    //     'skills',
+                    //     'disabilities',
+                    // ],
+                    sortable: [],
+                    filterable: false
+                    // filterable: [
+                    // 'title',
+                    // 'gender',
+                    // 'maritalStatus',
+                    // 'surname',
+                    // 'firstName',
+                    // 'dob',
+                    // 'personalEmail',
+                    // 'homeAddress',
+                    // 'phone',
+                    // 'idNumber',
+                    // 'skills',
+                    // 'disabilities'
+                    // ]
                 },
-                pagination: { chunk: 10 },
-                headings: {
-                    title: "Title",
-                    gender: "Gender",
-                    maritalStatus: "Marital Status",
-                    surname: "Surname",
-                    firstName: "FirstName",
-                    dob: "Date of Birth",
-                    personalEmail: "Personal Email",
-                    homeAddress: "Home Address",
-                    phone: "Phone",
-                    idNumber: "ID number",
-                    skills: "Skills",
-                    qualifications: "Qualifications",
-                    disabilities: "Disabilities"
+                subOptions: {
+                    filter: false,
+                    filterByColumn: false,
+                    headings: {
+                        cv: "Filename"
+                    },
+                    filterable: false
                 },
-                // sortable: [
-                //     'title',
-                //     'gender',
-                //     'maritalStatus',
-                //     'surname',
-                //     'firstName',
-                //     'dob',
-                //     'personalEmail',
-                //     'homeAddress',
-                //     'phone',
-                //     'idNumber',
-                //     'skills',
-                //     'disabilities',
-                // ],
-                sortable: [],
-                filterable: false
-                // filterable: [
-                // 'title',
-                // 'gender',
-                // 'maritalStatus',
-                // 'surname',
-                // 'firstName',
-                // 'dob',
-                // 'personalEmail',
-                // 'homeAddress',
-                // 'phone',
-                // 'idNumber',
-                // 'skills',
-                // 'disabilities'
-                // ]
-            },
-            subOptions: {
-                filter: false,
-                filterByColumn: false,
-                headings: {
-                    cv: "Filename"
-                },
-                filterable: false
-            },
-            methods: {
-                stages: function stages(id) {
-                    window.location.href = '/recruitment';
-                },
-                erase: function erase(id) {
-                    alert(id);
-                },
-                edit: function edit(id) {
-                    window.location.href = '/recruitment';
-                },
-                download: function download(id) {
-                    alert(id);
+                methods: {
+                    stages: function stages(id) {
+                        window.location.href = '/recruitment';
+                    },
+                    erase: function erase(id) {
+                        alert(id);
+                    },
+                    edit: function edit(id) {
+                        window.location.href = '/recruitment';
+                    },
+                    download: function download(id) {
+                        alert(id);
+                    }
                 }
-            }
-        };
-    }
-});
+            };
+        }
+    });
+}
 
 function getData() {
     return [{
@@ -46791,129 +46793,143 @@ function getData() {
     }];
 }
 
-var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
-    el: '#candidates',
-    data: {
-        qual: {
-            reference: '', description: '', institution: '', obtained_on: '',
-            student_no: ''
+if (document.getElementById("candidates")) {
+    var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
+        el: '#candidates',
+        data: {
+            qual: {
+                reference: '', description: '', institution: '', obtained_on: '',
+                student_no: ''
+            },
+            quals: [],
+            employment: {
+                previous_employer: '', position: '', salary: '', reason_leaving: ''
+            },
+            employments: [],
+            errors: [],
+            titles: ['Mr', 'Miss', 'Mrs'],
+            genders: ['Male', 'Female'],
+            maritalStatuses: ['married', 'single', 'divorced'],
+            surname: null,
+            firstName: null,
+            dob: null,
+            personalEmail: null,
+            homeAddress: null,
+            phone: null,
+            position_applied: null,
+            date_available: null,
+            salary_expectation: null,
+            idNumber: null,
+            skills: ['php', 'css', 'mysql', 'js', 'angular', 'vue', 'laravel', 'symfony', 'codeigniter', 'zend'],
+            multipleSelectionsDisabilities: ["Optic Atropy", "Full Blown Aids"],
+            disabilities: ["Optic Atropy", "Full Blown Aids", "Tinnitus", "ADHD", "Down syndrome", "Dyslexia"],
+            qualifications: ["Higher School Certificate", "Certificate", "Diploma", "Degree", "Masters", "PhD"],
+            selectedTitle: null,
+            selectedGender: null,
+            selectedMaritalStatus: null,
+            selectedDisability: null,
+            selectedSkill: null,
+            selectedQualification: null
         },
-        quals: [],
-        employment: {
-            previous_employer: '', position: '', salary: '', reason_leaving: ''
-        },
-        employments: [],
-        errors: [],
-        titles: ['Mr', 'Miss', 'Mrs'],
-        genders: ['Male', 'Female'],
-        maritalStatuses: ['married', 'single', 'divorced'],
-        surname: null,
-        firstName: null,
-        dob: null,
-        personalEmail: null,
-        homeAddress: null,
-        phone: null,
-        idNumber: null,
-        skills: ['php', 'css', 'mysql', 'js', 'angular', 'vue', 'laravel', 'symfony', 'codeigniter', 'zend'],
-        multipleSelectionsDisabilities: ["Optic Atropy", "Full Blown Aids"],
-        disabilities: ["Optic Atropy", "Full Blown Aids", "Tinnitus", "ADHD", "Down syndrome", "Dyslexia"],
-        qualifications: ["Higher School Certificate", "Certificate", "Diploma", "Degree", "Masters", "PhD"],
-        selectedTitle: null,
-        selectedGender: null,
-        selectedMaritalStatus: null,
-        selectedDisability: null,
-        selectedSkill: null,
-        selectedQualification: null
-    },
-    methods: {
-        checkForm: function checkForm(e) {
-            if (this.title && this.gender && this.maritalStatus) {
-                return true;
+        methods: {
+            checkForm: function checkForm(e) {
+                if (this.title && this.gender && this.maritalStatus) {
+                    return true;
+                }
+
+                this.errors = [];
+
+                if (this.surname) {
+                    this.errors.push('Surname is required.');
+                }
+
+                if (this.firstName) {
+                    this.errors.push('FirstName is required.');
+                }
+
+                if (!this.selectedDisability) {
+                    this.errors.push('Disability is required.');
+                }
+
+                if (!this.selectedGender) {
+                    this.errors.push('Gender is required.');
+                }
+
+                if (!this.selectedTitle) {
+                    this.errors.push('Title is required.');
+                }
+
+                if (!this.selectedMaritalStatus) {
+                    this.errors.push('Marital Status is required.');
+                }
+
+                if (!this.dob) {
+                    this.errors.push('Date of birth is required.');
+                }
+
+                if (!this.selectedSkill) {
+                    this.errors.push('Skills is required.');
+                }
+
+                e.preventDefault();
+            },
+            selectedDisabilityFunc: function selectedDisabilityFunc() {
+                console.log(this.selectedDisability);
+            },
+            selectedSkillFunc: function selectedSkillFunc() {
+                console.log(this.selectedSkill);
+            },
+            selectedQualificationFunc: function selectedQualificationFunc() {
+                console.log(this.selectedQualification);
+            },
+            addNewQual: function addNewQual() {
+                this.quals.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.qual));
+                //ensure height is enough as accordion sets a height as inline style
+                $('.accordion--active').css("height", "");
+            },
+            removeQual: function removeQual(index) {
+                __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
+            },
+            addNewEmploy: function addNewEmploy() {
+                this.employments.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.employment));
+                //ensure height is enough as accordion sets a height as inline style
+                $('.accordion--active').css("height", "");
+            },
+            removeEmploy: function removeEmploy(index) {
+                __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.employments, index);
+            },
+            submitForm: function submitForm(event) {
+                event.preventDefault();
+            },
+            fetchQualifications: function fetchQualifications() {
+                var _this = this;
+
+                fetch('./qualifications').then(function (res) {
+                    return res.json();
+                }).then(function (res) {
+                    _this.quals = res;
+                });
+            },
+            fetchQPreviousEmployments: function fetchQPreviousEmployments() {
+                var _this2 = this;
+
+                fetch('./previous_employments').then(function (res) {
+                    return res.json();
+                }).then(function (res) {
+                    _this2.employments = res;
+                });
             }
-
-            this.errors = [];
-
-            if (this.surname) {
-                this.errors.push('Surname is required.');
-            }
-
-            if (this.firstName) {
-                this.errors.push('FirstName is required.');
-            }
-
-            if (!this.selectedDisability) {
-                this.errors.push('Disability is required.');
-            }
-
-            if (!this.selectedGender) {
-                this.errors.push('Gender is required.');
-            }
-
-            if (!this.selectedTitle) {
-                this.errors.push('Title is required.');
-            }
-
-            if (!this.selectedMaritalStatus) {
-                this.errors.push('Marital Status is required.');
-            }
-
-            if (!this.dob) {
-                this.errors.push('Date of birth is required.');
-            }
-
-            if (!this.selectedSkill) {
-                this.errors.push('Skills is required.');
-            }
-
-            e.preventDefault();
         },
-        selectedDisabilityFunc: function selectedDisabilityFunc() {
-            console.log(this.selectedDisability);
+        mounted: function mounted() {
+            +function ($, el) {
+                $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
+            }(jQuery, this);
         },
-        selectedSkillFunc: function selectedSkillFunc() {
-            console.log(this.selectedSkill);
-        },
-        selectedQualificationFunc: function selectedQualificationFunc() {
-            console.log(this.selectedQualification);
-        },
-        addNewQual: function addNewQual() {
-            this.quals.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.qual));
-            //ensure height is enough as accordion sets a height as inline style
-            $('.accordion--active').css("height", "");
-        },
-        removeQual: function removeQual(index) {
-            __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
-        },
-        addNewEmploy: function addNewEmploy() {
-            this.employments.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.employment));
-            //ensure height is enough as accordion sets a height as inline style
-            $('.accordion--active').css("height", "");
-        },
-        removeEmploy: function removeEmploy(index) {
-            __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.employments, index);
-        },
-        submitForm: function submitForm(event) {
-            event.preventDefault();
-        },
-        fetchQualifications: function fetchQualifications() {
-            var _this = this;
-
-            fetch('./qualifications').then(function (res) {
-                return res.json();
-            }).then(function (res) {
-                _this.quals = res;
-            });
+        created: function created() {
+            this.fetchQualifications();
         }
-    },
-    mounted: function mounted() {
-        +function ($, el) {
-            $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
-        }(jQuery, this);
-    },
-    created: function created() {
-        this.fetchQualifications();
-    }
-});
+    });
+}
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
 
 /***/ })

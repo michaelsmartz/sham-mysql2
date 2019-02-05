@@ -28,6 +28,7 @@ CREATE TABLE `candidates` (
 `birth_date` DATE NULL DEFAULT NULL,
 `overview` VARCHAR(255) NULL,
 `cover_letter` VARCHAR(255) NULL,
+`picture` LONGTEXT NULL,
 `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
 `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
 `deleted_at` datetime DEFAULT NULL,

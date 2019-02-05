@@ -21,105 +21,73 @@
                 </div>
             </div>
 
-            <div class="form-group col-xs-2">
-                <label for="dob">Date of Birth</label>
-                <input
-                        id="dob"
-                        class='form-control datepicker'
-                        v-model="dob"
-                        type="text"
-                        name="dob"
-                >
+            <div class="col-sm-2">
+                <span class="field">
+                    <label for="birth_date">Date of birth</label>
+                    {!! Form::text('birth_date', old('birth_date', isset($candidate->birth_date) ? $candidate->birth_date : null), ['class'=>'form-control fix-case field-required datepicker', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
+                </span>
             </div>
 
-            <div class="form-group col-xs-2">
-                <label for="title">Select Title</label>
-                <select v-model="selectedTitle" class='form-control'>
-                    <option disabled value="">Please select one</option>
-                    <option v-for="title in titles" :value="title">@{{title}}</option>
-                </select>
+            <div class="col-sm-2">
+                <span class="field">
+                <label for="gender_id">Gender</label>
+                {!! Form::select('gender_id', $genders, old('gender_id', isset($candidate->gender_id) ? $candidate->gender_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Gender..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span class="field">
+                <label for="title_id">Title</label>
+                {!! Form::select('title_id', $titles, old('title_id', isset($candidate->title_id) ? $candidate->title_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Title..', 'data-field-name'=>'Title', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
+                </span>
+            </div>
+            <div class="col-sm-3">
+                <span class="field">
+                    <label for="marital_status_id">Marital Status</label>
+                    {!! Form::select('marital_status_id', $maritalstatuses, old('marital_status_id', isset($candidate->marital_status_id) ? $candidate->marital_status_id : null), ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Marital Status..']) !!}
+                </span>
             </div>
 
-            <div class="form-group col-xs-3">
-                <label for="gender">Select Gender</label>
-                <select v-model="selectedGender" class='form-control'>
-                    <option disabled value="">Please select one</option>
-                    <option v-for="gender in genders" :value="gender">@{{gender}}</option>
-                </select>
-            </div>
-
-            <div class="form-group col-xs-3">
-                <label for="gender">Select Marital Status</label>
-                <select v-model="selectedMaritalStatus" class='form-control'>
-                    <option disabled value="">Please select one</option>
-                    <option v-for="maritalStatus in maritalStatuses" :value="maritalStatus">@{{maritalStatus}}</option>
-                </select>
-            </div>
 
             <div class="form-group col-xs-5">
-                <label for="surname">Surname</label>
-                <input
-                        id="surname"
-                        class='form-control'
-                        v-model="surname"
-                        type="text"
-                        name="surname"
-                >
+                    <span class="field">
+                        <label for="first_name">First Name</label>
+                        {!! Form::text('first_name', old('first_name', isset($candidate->first_name) ? $candidate->first_name : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'First Name', 'required', 'title'=>'Required','id'=>'first_name', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
+                    </span>
+                {!! $errors->first('first_name', '<p class="help-block">:message</p>') !!}
             </div>
-
             <div class="form-group col-xs-5">
-                <label for="firstName">FirstName</label>
-                <input
-                        id="firstName"
-                        class='form-control'
-                        v-model="firstName"
-                        type="text"
-                        name="firstName"
-                >
+                    <span class="field">
+                        <label for="surname">Surname</label>
+                        {!! Form::text('surname', old('surname', isset($candidate->surname) ? $candidate->surname : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Surname', 'required', 'title'=>'Required','id'=>'surname', 'pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-3">
-                <label for="personalEmail">Personal Email</label>
-                <input
-                        id="personalEmail"
-                        class='form-control'
-                        v-model="personalEmail"
-                        type="text"
-                        name="personalEmail"
-                >
+                    <span class="field">
+                        <label for="personalEmail">Personal Email</label>
+                        {!! Form::email('personalEmail', old('personalEmail', isset($candidate->personalEmail) ? $candidate->personalEmail : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-3">
-                <label for="homeAddress">Home Address</label>
-                <input
-                        id="homeAddress"
-                        class='form-control'
-                        v-model="homeAddress"
-                        type="text"
-                        name="homeAddress"
-                >
+                    <span class="field">
+                        <label for="homeAddress">Home Address</label>
+                        {!! Form::text('homeAddress', old('homeAddress', isset($candidate->homeAddress) ? $candidate->homeAddress : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Home Address', 'required', 'title'=>'Required','id'=>'homeAddress', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-2">
-                <label for="phone">Phone Number</label>
-                <input
-                        id="phone"
-                        class='form-control'
-                        v-model="phone"
-                        type="number"
-                        name="phone"
-                >
+                    <span class="field">
+                        <label for="phone">Phone Number</label>
+                        {!! Form::number('phone', old('phone', isset($candidate->phone) ? $candidate->phone : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Phone', 'required', 'title'=>'Required','id'=>'phone', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-2">
-                <label for="idNumber">Id Number</label>
-                <input
-                        id="idNumber"
-                        class='form-control'
-                        v-model="idNumber"
-                        type="number"
-                        name="idNumber"
-                >
+                    <span class="field">
+                        <label for="idNumber">Id Number</label>
+                        {!! Form::text('idNumber', old('idNumber', isset($candidate->idNumber) ? $candidate->idNumber : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Id Number', 'required', 'title'=>'Required','id'=>'idNumber', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-5">
@@ -241,36 +209,24 @@
             </div>
 
             <div class="form-group col-xs-4">
-                <label for="surname">Position Applying For</label>
-                <input
-                        id="surname"
-                        class='form-control'
-                        v-model="position_applied"
-                        type="text"
-                        name="position_applied"
-                >
+                    <span class="field">
+                        <label for="position_applied">Position Applying For</label>
+                        {!! Form::text('position_applied', old('position_applied', isset($candidate->position_applied) ? $candidate->position_applied : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Position Applying For', 'required', 'title'=>'Required','id'=>'position_applied', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-2">
-                <label for="date_available">Date You Can Start</label>
-                <input
-                        id="date_available"
-                        class='form-control datepicker'
-                        v-model="date_available"
-                        type="text"
-                        name="date_available"
-                >
+                    <span class="field">
+                        <label for="date_available">Date Available</label>
+                        {!! Form::text('date_available', old('date_available', isset($candidate->date_available) ? $candidate->date_available : null), ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Date Available', 'required', 'title'=>'Required','id'=>'date_available', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-2">
-                <label for="surname">Salary Expectation</label>
-                <input
-                        id="salary_expectation"
-                        class='form-control'
-                        v-model="salary_expectation"
-                        type="number"
-                        name="salary_expectation"
-                >
+                    <span class="field">
+                        <label for="salary_expectation">Salary Expectation</label>
+                        {!! Form::number('salary_expectation', old('salary_expectation', isset($candidate->salary_expectation) ? $candidate->salary_expectation : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Salary Expectation', 'required', 'title'=>'Required','id'=>'salary_expectation', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-4">
@@ -283,13 +239,17 @@
             </div>
 
             <div class="form-group col-xs-12">
-                <label for="skill">Overview</label>
-                <textarea class="form-control" name="overview" cols="50" rows="4" id="overview" minlength="1" placeholder="Add Overview"></textarea>
+                    <span class="field">
+                        <label for="overview">Overview</label>
+                        {!! Form::textarea('overview', old('overview', isset($candidate->overview) ? $candidate->overview : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Overview', 'required', 'title'=>'Required','id'=>'overview', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-group col-xs-12">
-                <label for="skill">Cover Letter</label>
-                <textarea class="form-control" name="short-description" cols="50" rows="4" id="short-description" minlength="1" placeholder="Add short description why you should be selected"></textarea>
+                    <span class="field">
+                        <label for="cover">Cover Letter</label>
+                        {!! Form::textarea('cover', old('cover', isset($candidate->cover) ? $candidate->cover : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Cover Letter', 'required', 'title'=>'Required','id'=>'cover', 'maxlength' => '50']) !!}
+                    </span>
             </div>
 
             <div class="form-html col-xs-12">
