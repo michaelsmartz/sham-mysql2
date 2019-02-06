@@ -2,13 +2,12 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
 
 class Candidate extends Model
 {
-    
+    use Mediable;
     use SoftDeletes;
 
 
@@ -33,6 +32,9 @@ class Candidate extends Model
      */
     protected $fillable = [
                   'first_name',
+                  'gender_id',
+                  'title_id',
+                  'marital_status_id',
                   'surname',
                   'email',
                   'home_address',
@@ -40,8 +42,12 @@ class Candidate extends Model
                   'position_applying_for',
                   'date_available',
                   'salary_expectation',
+                  'phone',
+                  'preferred_notification_id',
+                  'birth_date',
                   'overview',
-                  'cover_letter'
+                  'cover',
+                  'picture'
               ];
 
     /**
@@ -92,6 +98,42 @@ class Candidate extends Model
     public function getDeletedAtAttribute($value)
     {
         return date('j/n/Y g:i A', strtotime($value));
+    }
+
+    public function disabilities()
+    {
+        return $this->belongsToMany(Disability::class,'candidate_disability','candidate_id','disability_id');
+        //return $this->belongsToMany(Disability::class);
+    }
+
+    public function title()
+    {
+        return $this->belongsTo('App\Title','title_id','id');
+    }
+
+    public function maritalstatus()
+    {
+        return $this->belongsTo('App\Maritalstatus','marital_status_id','id');
+    }
+
+    public function gender()
+    {
+        return $this->belongsTo('App\Gender','gender_id','id');
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class);
+    }
+
+    public function qualifications()
+    {
+        return $this->hasMany('App\CandidateQualification','candidate_id','id');
+    }
+
+    public function previousEmployments()
+    {
+        return $this->hasMany('App\CandidatePreviousEmployment','candidate_id','id');
     }
 
 }

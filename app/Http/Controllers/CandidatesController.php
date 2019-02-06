@@ -11,6 +11,7 @@ use App\Skill;
 use App\Support\Helper;
 use App\SystemSubModule;
 use App\Title;
+use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
@@ -23,6 +24,7 @@ use Exception;
 
 class CandidatesController extends CustomController
 {
+    use MediaFiles;
     /**
      * Create a new controller instance.
      *
@@ -88,20 +90,71 @@ class CandidatesController extends CustomController
     public function store(Request $request)
     {
         try {
-            //$this->validator($request);
-            dd($request);
+            $this->validator($request);
 
-            $input = array_except($request->all(),array('_token'));
-
-            $this->contextObj->addData($input);
+            $this->saveCandidate($request);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
+            dd($exception->getMessage());
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    protected function saveCandidate($request, $id = null) {
+
+        $otherFields = [
+            '_token',
+            '_method',
+            'attachment',
+            'redirectsTo',
+            'date_available_submit',
+            'birth_date_submit',
+            'skills',
+            'disabilities',
+            'qualifications',
+            'previous_employments'
+        ];
+        foreach($otherFields as $field){
+            ${$field} = array_get($request->all(), $field);
+        }
+
+        $input = array_except($request->all(), $otherFields);
+        if ($request->hasFile('picture')) {
+            $image = $request->file('picture');
+            $contents = 'data:' . $image->getMimeType() .';base64,' .base64_encode(file_get_contents($image->getRealPath()));
+            $input['picture'] = $contents;
+        }
+
+        if ($id == null) { // Create
+            $data = $this->contextObj->addData($input);
+        } else { // Update
+            $this->contextObj->updateData($id, $input);
+            $data = Candidate::find($id);
+        }
+
+        $this->attach($request, $data->id);
+
+        if(isset($qualifications)){
+            foreach($qualifications as $qual){
+                $data->qualifications()
+                    ->updateOrCreate(['candidate_id'=>$data->id], $qual);
+            }
+        }
+
+        if(isset($previous_employments)){
+            foreach($previous_employments as $employ){
+                $data->previousEmployments()
+                    ->updateOrCreate(['candidate_id'=>$data->id], $employ);
+            }
+        }
+
+        $data->skills()->sync($skills);
+        $data->disabilities()->sync($disabilities);
+
     }
 
     public function edit(Request $request)
@@ -183,41 +236,25 @@ class CandidatesController extends CustomController
      */
     protected function validator(Request $request)
     {
-        $validateFields = [];
-//        $validateFields = [
-//            'title_id' => 'required',
-//            'profile_pic' => 'nullable|string|min:0|max:10',
-//            'first_name' => 'required|string|min:0|max:50',
-//            'surname' => 'required|string|min:0|max:50',
-//            'known_as' => 'nullable|string|min:0|max:50',
-//            'birth_date' => 'required|date_format:Y-m-d',
-//            'marital_status_id' => 'nullable',
-//            'id_number' => 'required|string|min:1|max:50',
-//            'passport_country_id' => 'nullable|numeric|min:0|max:4294967295',
-//            'nationality' => 'nullable|string|min:0|max:50',
-//            'language_id' => 'nullable|numeric|min:0|max:4294967295',
-//            'gender_id' => 'nullable',
-//            'ethnic_group_id' => 'nullable',
-//            'immigration_status_id' => 'nullable',
-//            'time_group_id' => 'nullable',
-//            'passport_no' => 'nullable|string|min:0|max:50',
-//            'spouse_full_name' => 'nullable|string|min:0|max:50',
-//            'employee_no' => 'required|string|min:1|max:50',
-//            'employee_code' => 'nullable|string|min:1|max:50',
-//            'tax_status_id' => 'nullable',
-//            'tax_number' => 'required_if:tax_status_id,3|min:0|max:50',
-//            'date_joined' => 'nullable|string|min:0',
-//            'date_terminated' => 'nullable|string|min:0',
-//            'department_id' => 'required',
-//            'team_id' => 'required',
-//            'employee_status_id' => 'nullable',
-//            'physical_file_no' => 'nullable|string|min:0|max:50',
-//            'job_title_id' => 'nullable',
-//            'division_id' => 'nullable',
-//            'branch_id' => 'nullable',
-//            'picture' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
-//            'line_manager_id' => 'nullable|numeric|min:0|max:4294967295'
-//        ];
+        $validateFields = [
+            'picture' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
+            'birth_date' => 'required|date_format:Y-m-d',
+            'gender_id' => 'nullable',
+            'preferred_notification_id' => 'nullable',
+            'title_id' => 'required',
+            'marital_status_id' => 'nullable',
+            'first_name' => 'required|string|min:0|max:50',
+            'surname' => 'required|string|min:0|max:50',
+            'home_address' => 'required|string|min:0|max:50',
+            'email' => 'nullable',
+            'phone' => 'nullable',
+            'id_number' => 'required|string|min:1|max:50',
+            'position_applying_for' => 'required|string|min:1|max:50',
+            'date_available' => 'nullable|string|min:0',
+            'salary_expectation' => 'nullable|numeric|min:0',
+            'overview' => 'nullable|string|min:0',
+            'cover' => 'nullable|string|min:0',
+        ];
 
         $this->validate($request, $validateFields);
     }

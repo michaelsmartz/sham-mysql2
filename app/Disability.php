@@ -34,4 +34,9 @@ class Disability extends Model
     {
         return $this->belongsToMany('App\Employee');
     }
+
+    public function candidates()
+    {
+        return $this->belongsToMany('App\Candidate');
+    }
 }

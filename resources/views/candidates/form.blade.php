@@ -11,7 +11,7 @@
             <div class="col-xs-2">
                 <div class="avatar-upload">
                     <div class="avatar-edit">
-                        <input type='file' name="profile_pic" id="imageUpload" accept=".png, .jpg, .jpeg" />
+                        <input type='file' name="picture" id="imageUpload" accept=".png, .jpg, .jpeg" />
                         <label for="imageUpload" title="change profile image"></label>
                     </div>
                     <div class="avatar-preview">
@@ -64,15 +64,15 @@
 
             <div class="form-group col-xs-3">
                     <span class="field">
-                        <label for="personalEmail">Personal Email</label>
-                        {!! Form::email('personalEmail', old('personalEmail', isset($candidate->personalEmail) ? $candidate->personalEmail : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
+                        <label for="email">Personal Email</label>
+                        {!! Form::email('email', old('email', isset($candidate->email) ? $candidate->email : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
             <div class="form-group col-xs-3">
                     <span class="field">
-                        <label for="homeAddress">Home Address</label>
-                        {!! Form::text('homeAddress', old('homeAddress', isset($candidate->homeAddress) ? $candidate->homeAddress : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Home Address', 'required', 'title'=>'Required','id'=>'homeAddress', 'maxlength' => '50']) !!}
+                        <label for="home_address">Home Address</label>
+                        {!! Form::text('home_address', old('home_address', isset($candidate->home_address) ? $candidate->home_address : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Home Address', 'required', 'title'=>'Required','id'=>'homeAddress', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
@@ -85,8 +85,8 @@
 
             <div class="form-group col-xs-2">
                     <span class="field">
-                        <label for="idNumber">Id Number</label>
-                        {!! Form::text('idNumber', old('idNumber', isset($candidate->idNumber) ? $candidate->idNumber : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Id Number', 'required', 'title'=>'Required','id'=>'idNumber', 'maxlength' => '50']) !!}
+                        <label for="id_number">Id Number</label>
+                        {!! Form::text('id_number', old('id_number', isset($candidate->id_number) ? $candidate->id_number : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Id Number', 'required', 'title'=>'Required','id'=>'idNumber', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
@@ -188,20 +188,19 @@
                             </div>
                             <div class="col-md-3">
                                 <input v-model="employment.previous_employer" type="text"
-                                       name="previous_employment[][previous_employer]" class="form-control">
+                                       name="previous_employments[][previous_employer]" class="form-control">
                             </div>
                             <div class="col-md-3">
                                 <input v-model="employment.position" type="text"
-                                       name="previous_employment[][position]" class="form-control">
+                                       name="previous_employments[][position]" class="form-control">
                             </div>
                             <div class="col-md-2">
                                 <input v-model="employment.salary" type="text"
-                                       name="previous_employment[][salary]" class="form-control">
+                                       name="previous_employments[][salary]" class="form-control">
                             </div>
                             <div class="col-sm-3">
-                                <textarea v-model="employment.reason_leaving" type="text"
-                                       name="previous_employment[][reason_leaving]" class="form-control">
-                                </textarea>
+                                <input v-model="employment.reason_leaving" type="text"
+                                       name="previous_employments[][reason_leaving]" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -210,8 +209,8 @@
 
             <div class="form-group col-xs-4">
                     <span class="field">
-                        <label for="position_applied">Position Applying For</label>
-                        {!! Form::text('position_applied', old('position_applied', isset($candidate->position_applied) ? $candidate->position_applied : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Position Applying For', 'required', 'title'=>'Required','id'=>'position_applied', 'maxlength' => '50']) !!}
+                        <label for="position_applying_for">Position Applying For</label>
+                        {!! Form::text('position_applying_for', old('position_applying_for', isset($candidate->position_applying_for) ? $candidate->position_applying_for : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Position Applying For', 'required', 'title'=>'Required','id'=>'position_applied', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
@@ -231,11 +230,11 @@
 
             <div class="form-group col-xs-4">
                 <h5><b>Preferred notification: </b></h5>
-                <label for="internalRecruitment">Mail</label>
-                <input type="checkbox">
+                <label for="preferred_notification_id">Mail</label>
+                <input type="checkbox" id="preferred_notification_id" value="1">
 
-                <label for="externalRecruitment">SMS</label>
-                <input type="checkbox">
+                <label for="preferred_notification_id">SMS</label>
+                <input type="checkbox" id="preferred_notification_id" value="2">
             </div>
 
             <div class="form-group col-xs-12">

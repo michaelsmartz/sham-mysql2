@@ -12,7 +12,7 @@ WHERE  id = 4;
 --
 
 CREATE TABLE `candidates` (
-`id` INT(11) NOT NULL,
+`id` INT(11) NOT NULL AUTO_INCREMENT,
 `title_id` INT(11) NULL DEFAULT NULL,
 `gender_id` INT(11) NULL DEFAULT NULL,
 `marital_status_id` INT(11) NULL DEFAULT NULL,
@@ -21,13 +21,14 @@ CREATE TABLE `candidates` (
 `email` VARCHAR(50) NULL DEFAULT NULL,
 `home_address` VARCHAR(50) NULL DEFAULT NULL,
 `id_number` VARCHAR(50) NULL,
+`phone` VARCHAR(50) NULL,
 `position_applying_for` VARCHAR(50) NULL,
 `date_available` DATE NULL DEFAULT NULL,
 `salary_expectation` INT(10) NULL,
-`prefered_notification_id` enum('1','2') NOT NULL DEFAULT '1' COMMENT '1 - Mail, 2 - SMS',
+`preferred_notification_id` enum('1','2') NOT NULL DEFAULT '1' COMMENT '1 - Mail, 2 - SMS',
 `birth_date` DATE NULL DEFAULT NULL,
 `overview` VARCHAR(255) NULL,
-`cover_letter` VARCHAR(255) NULL,
+`cover` VARCHAR(255) NULL,
 `picture` LONGTEXT NULL,
 `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
 `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -56,7 +57,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 CREATE TABLE `candidate_disability` (
-`id` INT(11) NOT NULL,
+`id` INT(11) NOT NULL AUTO_INCREMENT ,
 `candidate_id` INT(11) NULL DEFAULT NULL,
 `disability_id` INT(11) NULL DEFAULT NULL,
 PRIMARY KEY (`id`),
@@ -97,7 +98,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
-CREATE TABLE `candidate_qualification` (
+CREATE TABLE `candidate_qualifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `candidate_id` int(11) NOT NULL,
   `reference` varchar(50) DEFAULT NULL,
@@ -118,7 +119,7 @@ CREATE TABLE `candidate_qualification` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-CREATE TABLE `candidate_previous_employment` (
+CREATE TABLE `candidate_previous_employments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `candidate_id` int(11) NOT NULL,
   `previous_employer` varchar(50) DEFAULT NULL,
