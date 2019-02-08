@@ -46,7 +46,7 @@ class CandidatesController extends CustomController
     {
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_CANDIDATES);
 
-        $candidates = [];
+        $candidates = $this->contextObj::filtered()->paginate(10);
 
         // handle empty result bug
         if (Input::has('page')) {
@@ -159,22 +159,37 @@ class CandidatesController extends CustomController
 
     public function edit(Request $request)
     {
+
+        $data = $titles = $genders = $maritalstatuses = null;
         $id = Route::current()->parameter('candidate');
-        $data = $this->contextObj->findData($id);
 
-        $requests = [];
+        if(!empty($id)) {
+            // make 2 less queries
+            $this->contextObj->with = [];
 
-        if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('requests','data'))->renderSections();
-            return response()->json([
-                'title' => $view['modalTitle'],
-                'content' => $view['modalContent'],
-                'footer' => $view['modalFooter'],
-                'url' => $view['postModalUrl']
-            ]);
+            $data = $this->contextObj->findData($id);
+
+            if (!isset($data->picture)) {
+                $data->picture = asset('img/avatar.png');
+            }
+            $data->load(['skills','disabilities']);
+
+            $qualifications = $data->qualifications;
+
+            $titles = Title::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+            $genders = Gender::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+            $maritalstatuses = MaritalStatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+            $skills = Skill::pluck('description','id')->all();
+            $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
         }
 
-        return view($this->baseViewPath . '.edit', compact('requests','data'));
+        $candidateSkills = $data->skills->pluck('id');
+
+        $candidateDisabilities = $data->disabilities->pluck('id');
+
+        return view($this->baseViewPath .'.edit',
+            compact('data','titles','genders','maritalstatuses', 'skills',
+                'disabilities', 'candidateSkills','candidateDisabilities','qualifications'));
     }
 
     /**
@@ -189,6 +204,8 @@ class CandidatesController extends CustomController
     {
         try {
             $this->validator($request);
+
+            dd($request);
             
             $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
             

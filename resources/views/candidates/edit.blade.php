@@ -4,7 +4,7 @@
 @section('modalTitle', 'Edit Candidates')
 @section('modalFooter')
     <input class="btn btn-primary pull-right" type="submit" value="Submit">
-    <a href="" class="btn btn-default pull-right" title="Show all Recruitment Request">
+    <a href="{{ route('candidates.index') }}" class="btn btn-default pull-right" title="Show all recruitment requests">
         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
     </a>
 @endsection
@@ -15,15 +15,10 @@
     <div class="row">
         <div class="col-sm-12">
             @include ('candidates.form', [
-                'candidates' => $data,
+                'candidate' => $data,
             ])
         </div>
     </div>
-    @if(!Request::ajax())
-    <div class="box-footer">
-        @yield('modalFooter') 
-    </div>
-    @endif
 @endsection
 
 @section('content')
