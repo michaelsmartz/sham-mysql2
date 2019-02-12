@@ -46657,6 +46657,18 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue
 __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["Event"]);
 __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
 
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 if (document.getElementById("candidates-table")) {
     var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
         el: '#candidates-table',
@@ -46795,7 +46807,7 @@ function getData() {
 
 if (document.getElementById("candidates")) {
     var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
-        el: '#candidates',
+        el: '#candidates-app',
         data: {
             qual: {
                 reference: '', description: '', institution: '', obtained_on: '',
@@ -46904,7 +46916,7 @@ if (document.getElementById("candidates")) {
             fetchQualifications: function fetchQualifications() {
                 var _this = this;
 
-                fetch('./qualifications').then(function (res) {
+                fetch('./candidate-qualifications').then(function (res) {
                     return res.json();
                 }).then(function (res) {
                     _this.quals = res;
@@ -46922,11 +46934,16 @@ if (document.getElementById("candidates")) {
         },
         mounted: function mounted() {
             +function ($, el) {
+                $("#imageUpload").change(function () {
+                    readURL(this);
+                });
+
                 $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
             }(jQuery, this);
         },
         created: function created() {
             this.fetchQualifications();
+            this.fetchQPreviousEmployments();
         }
     });
 }

@@ -1,3 +1,4 @@
+<div class="position-center" id="candidates-app">
 <div class="row">
     <div class="col-sm-12">
         <div class="row">
@@ -251,6 +252,7 @@
         </div>
     </div>
     <div id="date-picker"> </div>
+</div>
 </div>
 
 @section('post-body')

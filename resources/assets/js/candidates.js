@@ -11,6 +11,18 @@ Vue.use(ClientTable);
 Vue.use(Event);
 Vue.use(Vuex);
 
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#imagePreview').css('background-image', 'url('+e.target.result +')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650);
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 if(document.getElementById("candidates-table")) {
     var table = new Vue({
         el: '#candidates-table',
@@ -161,7 +173,7 @@ function getData() {
 
 if(document.getElementById("candidates")) {
     const rr = new Vue({
-        el: '#candidates',
+        el: '#candidates-app',
         data: {
             qual: {
                 reference: '', description: '', institution: '', obtained_on: '',
@@ -307,7 +319,7 @@ if(document.getElementById("candidates")) {
                 event.preventDefault();
             },
             fetchQualifications: function () {
-                fetch('./qualifications')
+                fetch('./candidate-qualifications')
                     .then(res => res.json())
                     .then(res => {
                         this.quals = res;
@@ -323,11 +335,16 @@ if(document.getElementById("candidates")) {
         },
         mounted: function () {
             +function ($, el) {
+                $("#imageUpload").change(function() {
+                    readURL(this);
+                });
+
                 $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
             }(jQuery, this);
         },
         created: function () {
             this.fetchQualifications();
+            this.fetchQPreviousEmployments();
         }
     });
 }

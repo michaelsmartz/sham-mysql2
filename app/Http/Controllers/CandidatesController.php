@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Candidate;
+use App\CandidatePreviousEmployment;
+use App\CandidateQualification;
 use App\DisabilityCategory;
 use App\Gender;
 use App\MaritalStatus;
@@ -75,7 +77,15 @@ class CandidatesController extends CustomController
     public function qualifications(Request $request)
     {
         $id = intval(Route::current()->parameter('candidate'));
-        $result = Qualification::where('employee_id', $id)->get();
+        $result = CandidateQualification::where('candidate_id', $id)->get();
+
+        return Response()->json($result);
+    }
+
+    public function previousEmployments(Request $request)
+    {
+        $id = intval(Route::current()->parameter('candidate'));
+        $result = CandidatePreviousEmployment::where('candidate_id', $id)->get();
 
         return Response()->json($result);
     }
@@ -205,21 +215,16 @@ class CandidatesController extends CustomController
         try {
             $this->validator($request);
 
-            dd($request);
-            
-            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            
-            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
-
-            $this->contextObj->updateData($id, $input);
+            $this->saveCandidate($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            dd($exception->getMessage());
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**

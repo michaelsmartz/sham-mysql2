@@ -144,7 +144,8 @@ return [
             ],
             'extensions' => [
                 'zip',
-                'dat'
+                'dat',
+                'msg'
             ]
         ],
         Plank\Mediable\Media::TYPE_DOCUMENT => [
