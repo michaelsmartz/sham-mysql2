@@ -35,8 +35,50 @@ class AssetsController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $name = $request->get('name', null);
+
+        if(!empty($name)){
+            $request->merge(['name' => '%'.$name.'%']);
+        }
+
+        $tag = $request->get('tag', null);
+
+        if(!empty($tag)){
+            $request->merge(['tag' => '%'.$tag.'%']);
+        }
+
+        $serial_no = $request->get('serial_no', null);
+
+        if(!empty($serial_no)){
+            $request->merge(['serial_no' => '%'.$serial_no.'%']);
+        }
+
+        $purchase_price = $request->get('purchase_price', null);
+
+        if(!empty($purchase_price)){
+            $request->merge(['purchase_price' => '%'.$purchase_price.'%']);
+        }
+
+        $po_number = $request->get('po_number', null);
+
+        if(!empty($po_number)){
+            $request->merge(['po_number' => '%'.$po_number.'%']);
+        }
+
+        $warranty_expiry_date = $request->get('warranty_expiry_date', null);
+
+        if(!empty($warranty_expiry_date)){
+            $request->merge(['warranty_expiry_date' => '%'.$warranty_expiry_date.'%']);
+        }
+
+        $comments = $request->get('comments', null);
+
+        if(!empty($comments)){
+            $request->merge(['comments' => '%'.$comments.'%']);
+        }
+
         $assets = $this->contextObj::filtered()->paginate(10);
 
         $allowedActions = getAllowedActions(SystemSubModule::CONST_ASSETS_MANAGEMENT);
@@ -45,6 +87,10 @@ class AssetsController extends CustomController
         if (Input::has('page') && $assets->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('assets','allowedActions'));
     }
 

@@ -30,8 +30,21 @@ class AssetGroupsController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $name = $request->get('name', null);
+
+        if(!empty($name)){
+            $request->merge(['name' => '%'.$name.'%']);
+        }
+
+
+        $description = $request->get('description', null);
+
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
         $assetGroups = $this->contextObj::filtered()->paginate(10);
 
         $allowedActions = getAllowedActions(SystemSubModule::CONST_ASSETS_MANAGEMENT);
@@ -39,7 +52,11 @@ class AssetGroupsController extends CustomController
         // handle empty result bug
         if (Input::has('page') && $assetGroups->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
-        }        
+        }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('assetGroups','allowedActions'));
     }
 

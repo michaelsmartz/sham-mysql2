@@ -28,6 +28,30 @@ class AssetSuppliersController extends CustomController
     public function index(Request $request)
     {
 
+        $name = $request->get('name', null);
+
+        if(!empty($name)){
+            $request->merge(['name' => '%'.$name.'%']);
+        }
+
+        $email_address = $request->get('email_address', null);
+
+        if(!empty($email_address)){
+            $request->merge(['email_address' => '%'.$email_address.'%']);
+        }
+
+        $comments = $request->get('comments', null);
+
+        if(!empty($comments)){
+            $request->merge(['comments' => '%'.$comments.'%']);
+        }
+
+        $telephone = $request->get('telephone', null);
+
+        if(!empty($telephone)){
+            $request->merge(['telephone' => '%'.$telephone.'%']);
+        }
+
         // /jedrzej/searchable
         $assetSuppliers =  $this->contextObj::filtered()->paginate(10);
 
@@ -37,6 +61,10 @@ class AssetSuppliersController extends CustomController
         if (Input::has('page') && $assetSuppliers->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('assetSuppliers','allowedActions'));
     }
 

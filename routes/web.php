@@ -173,6 +173,7 @@ Auth::routes();
 
         #region Quality
             Route::resource('assessments', 'AssessmentsController' );
+            Route::any('assessments/duplicates/', 'AssessmentsController@duplicates')->name('assessment.duplicates');
             Route::resource('assessment_categories', 'AssessmentCategoriesController');
             Route::resource('category_questions', 'CategoryQuestionsController');
             Route::fileResource('evaluations', 'EvaluationsController');

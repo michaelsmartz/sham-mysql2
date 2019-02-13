@@ -4,6 +4,8 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use San4io\EloquentFilter\Filters\LikeFilter;
+use San4io\EloquentFilter\Filters\WhereFilter;
 
 class Asset extends Model
 {
@@ -41,6 +43,18 @@ class Asset extends Model
         'comments',
         'is_available'
         ];
+
+    protected $filterable = [
+        'name' => LikeFilter::class,
+        'tag' => LikeFilter::class,
+        'serial_no' => LikeFilter::class,
+        'purchase_price' => LikeFilter::class,
+        'po_number' => LikeFilter::class,
+        'warranty_expiry_date' => LikeFilter::class,
+        'comments' => LikeFilter::class,
+        'is_available' => WhereFilter::class
+    ];
+
 
     public function assetGroup()
     {
