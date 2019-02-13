@@ -33,14 +33,6 @@
                                 <li data-filter-column="title">By Title</li>
                             </ul>
                         </li>
-                        <hr>
-                        <li>
-                            <ul class="nav">
-                                <li><p class="menu-label">Quick Filters</p></li>
-                                <li><a href="{{route('surveys.index')}}?is_public=1"><span class="icon circle info"></span>Public</a></li>
-                                <li><a href="{{route('surveys.index')}}?is_public=0"><span class="icon circle default"></span>Private</a></li>
-                            </ul>
-                        </li>
                     </ul>
                 </form>
             </div>

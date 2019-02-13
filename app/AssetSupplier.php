@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use San4io\EloquentFilter\Filters\LikeFilter;
 
 class AssetSupplier extends Model
 {
@@ -25,6 +26,13 @@ class AssetSupplier extends Model
                   'comments'
               ];
 
-  public $searchable = ['name', 'email_address', 'comments', 'telephone'];
+    public $searchable = ['name', 'email_address', 'comments', 'telephone'];
+
+    protected $filterable = [
+        'name' => LikeFilter::class,
+        'email_address' => LikeFilter::class,
+        'comments' => LikeFilter::class,
+        'telephone' => LikeFilter::class
+    ];
   
 }

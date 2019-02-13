@@ -9,7 +9,8 @@
         <li><a href="{{URL::to('/')}}/assets">Asset List</a></li>
         <li><a href="{{URL::to('/')}}/asset_allocations">Asset Allocation</a></li>
     </ul>
-    <div class="flex-wrapper"> @if($allowedActions->contains('List'))
+    <div class="flex-wrapper">
+        @if($allowedActions->contains('List'))
             <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
                 <form action="" class="">
                     <ul style="margin-left:0;padding-left:0" class="list-unstyled">
@@ -37,14 +38,6 @@
                             <ul class="search-column-list">
                                 <li data-filter-column="name">By Name</li>
                                 <li data-filter-column="description">By Description</li>
-                            </ul>
-                        </li>
-                        <hr>
-                        <li>
-                            <ul class="nav">
-                                <li><p class="menu-label">Quick Filters</p></li>
-                                <li><a href="{{route('asset_groups.index')}}?is_public=1"><span class="icon circle info"></span>Public</a></li>
-                                <li><a href="{{route('asset_groups.index')}}?is_public=0"><span class="icon circle default"></span>Private</a></li>
                             </ul>
                         </li>
                     </ul>
