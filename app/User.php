@@ -10,8 +10,9 @@ use App\Events\UserAmended;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Jedrzej\Searchable\SearchableTrait;
 use San4io\EloquentFilter\Traits\Filterable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use SoftDeletes, Notifiable, HasBaseModel, SearchableTrait, Filterable;
 
@@ -76,6 +77,16 @@ class User extends Authenticatable
     public function employee()
     {
         return $this->hasOne('App\Employee','id','employee_id');
+    }
+
+    public function getJWTIdentifier()
+    {
+      return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+      return [];
     }
 
 

@@ -158,3 +158,6 @@ create table `csv_data` (`id` int unsigned not null auto_increment primary key, 
 #-- 12/12/18
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disabilities', '12', '1');
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disability Category ', '12', '1');
+
+#-- 08/02/2019
+create table `tokens` (`id` int unsigned not null auto_increment primary key, `user_id` int not null, `access_token` varchar(255) not null, `refresh_token` varchar(255) not null, `expires_in` datetime not null, `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP, `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP) default character set utf8mb4 collate utf8mb4_unicode_ci;

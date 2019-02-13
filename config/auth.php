@@ -42,9 +42,10 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
+            'driver' => 'jwt',
+            'provider' => 'users', //default provider is 'users'
         ],
+
     ],
 
     /*
@@ -70,6 +71,7 @@ return [
             'driver' => 'cache-user' /*'caching'*/,
             'model' => App\User::class,
         ],
+
 
         // uncommented originally by laravel
         /*

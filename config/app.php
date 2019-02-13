@@ -243,6 +243,8 @@ return [
         //'AsyncWidget' => Arrilot\Widgets\AsyncFacade::class,
         //'SearchTools' => \bnjns\SearchTools\Facades\SearchTools::class,
         //'MediaUploader' => Plank\Mediable\MediaUploaderFacade::class
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class
     ],
 
 ];
