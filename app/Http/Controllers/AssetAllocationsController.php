@@ -31,6 +31,37 @@ class AssetAllocationsController extends CustomController
      */
     public function index(Request $request)
     {
+
+        $name = $request->get('name', null);
+
+        if(!empty($name)){
+            $request->merge(['name' => '%'.$name.'%']);
+        }
+
+        $tag = $request->get('tag', null);
+
+        if(!empty($tag)){
+            $request->merge(['tag' => '%'.$tag.'%']);
+        }
+
+        $full_name = $request->get('full_name', null);
+
+        if(!empty($full_name)){
+            $request->merge(['full_name' => '%'.$full_name.'%']);
+        }
+
+        $date_out = $request->get('date_out', null);
+
+        if(!empty($date_out)){
+            $request->merge(['date_out' => '%'.$date_out.'%']);
+        }
+
+        $date_in = $request->get('date_in', null);
+
+        if(!empty($date_in)){
+            $request->merge(['date_in' => '%'.$date_in.'%']);
+        }
+
         // /jedrzej/searchable
         $assetEmployees =  $this->contextObj::with(['asset','employee'])->filtered()->paginate(10);
 
@@ -40,6 +71,10 @@ class AssetAllocationsController extends CustomController
         if (Input::has('page') && $assetEmployees->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('assetEmployees','allowedActions'));
     }
 
