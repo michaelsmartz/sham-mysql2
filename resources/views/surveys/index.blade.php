@@ -4,20 +4,73 @@
 
 @section('content')
     <div class="flex-wrapper">
+        @if($allowedActions->contains('List'))
+            <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
+                <form action="" class="">
+                    <ul style="margin-left:0;padding-left:0" class="list-unstyled">
+                        <li>
+                            <input type="hidden" name="title" class="submitable-column-name" id="submitable-column-name" value="">
+                            <div class="table-search-form">
+                                <input type="search" name="search-term" value="{{old('search-term', null)}}" placeholder="Search" class="search-input" data-mirror="#submitable-column-name">
+                                <div class="search-option">
+                                    <button type="submit" data-wenk="Do the Search">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                    <a href="{{route('surveys.index')}}" role="button" data-wenk="Reset all Criteria & reload the list">
+                                        <i class="fa fa-refresh"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="table-search-form" style="height:50px">
+                                <button type="button" class="search-column-chooser-btn">
+                                    <p class="search-small">Search by</p>
+                                    <p class="search-large">Title</p>
+                                </button>
+                            </div>
+                            <ul class="search-column-list">
+                                <li data-filter-column="title">By Title</li>
+                            </ul>
+                        </li>
+                        <hr>
+                        <li>
+                            <ul class="nav">
+                                <li><p class="menu-label">Quick Filters</p></li>
+                                <li><a href="{{route('surveys.index')}}?is_public=1"><span class="icon circle info"></span>Public</a></li>
+                                <li><a href="{{route('surveys.index')}}?is_public=0"><span class="icon circle default"></span>Private</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        @endif
         <div id="table-container">
             @if(count($surveys) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
-                    <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
-                        <i class="glyphicon glyphicon-plus"></i> Add New
-                    </button>
+                    @if($allowedActions->contains('List'))
+                        <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
+                            <i class="glyphicon glyphicon-align-left"></i>
+                            <span>Filters</span>
+                        </button>
+                    @endif
+                    @if($allowedActions->contains('Create'))
+                        <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="right">
+                            <i class="glyphicon glyphicon-plus"></i> <strong>Add New</strong>
+                        </button>
+                    @endif
                 </div>
             </div>
             @endif
             <div class="table-responsive">
             @if(count($surveys) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new survey</h4>
-            @else
+                <h4 class="text-center">Its a bit empty here.
+                    @if($allowedActions->contains('Create'))
+                        You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new survey
+                    @endif
+                </h4>
+            @elseif($allowedActions->contains('List'))
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
