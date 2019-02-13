@@ -59,6 +59,15 @@ class CandidatesController extends CustomController
 
     public function create(){
 
+        $uploader = [
+            "fieldLabel" => "Attach Files",
+            "restrictionMsg" => "Upload document files in the format doc, docx, ppt, pptx, pdf",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "1.2", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
+
         if(!isset($this->contextObj->picture)){
             $this->contextObj->picture = asset('/img/avatar.png');
         }
@@ -71,7 +80,7 @@ class CandidatesController extends CustomController
 
         $skills = Skill::pluck('description','id')->all();
 
-        return view($this->baseViewPath .'.create', compact('titles', 'genders', 'maritalstatuses', 'disabilities', 'skills'));
+        return view($this->baseViewPath .'.create', compact('titles', 'uploader', 'genders', 'maritalstatuses', 'disabilities', 'skills'));
     }
 
     public function qualifications(Request $request)
@@ -126,15 +135,17 @@ class CandidatesController extends CustomController
             'skills',
             'disabilities',
             'qualifications',
-            'previous_employments'
+            'previous_employments',
+            'picture',
+            'profile_pic'
         ];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
         }
 
         $input = array_except($request->all(), $otherFields);
-        if ($request->hasFile('picture')) {
-            $image = $request->file('picture');
+        if ($request->hasFile('profile_pic')) {
+            $image = $request->file('profile_pic');
             $contents = 'data:' . $image->getMimeType() .';base64,' .base64_encode(file_get_contents($image->getRealPath()));
             $input['picture'] = $contents;
         }
@@ -173,6 +184,15 @@ class CandidatesController extends CustomController
         $data = $titles = $genders = $maritalstatuses = null;
         $id = Route::current()->parameter('candidate');
 
+        $uploader = [
+            "fieldLabel" => "Attach Files",
+            "restrictionMsg" => "Upload document files in the format doc, docx, ppt, pptx, pdf",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "1.2", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
+
         if(!empty($id)) {
             // make 2 less queries
             $this->contextObj->with = [];
@@ -198,7 +218,7 @@ class CandidatesController extends CustomController
         $candidateDisabilities = $data->disabilities->pluck('id');
 
         return view($this->baseViewPath .'.edit',
-            compact('data','titles','genders','maritalstatuses', 'skills',
+            compact('data', 'uploader', 'titles','genders','maritalstatuses', 'skills',
                 'disabilities', 'candidateSkills','candidateDisabilities','qualifications'));
     }
 

@@ -171,7 +171,7 @@ function getData() {
     ];
 }
 
-if(document.getElementById("candidates")) {
+if(document.getElementById("candidates-app")) {
     const rr = new Vue({
         el: '#candidates-app',
         data: {
@@ -337,6 +337,20 @@ if(document.getElementById("candidates")) {
             +function ($, el) {
                 $("#imageUpload").change(function() {
                     readURL(this);
+                });
+
+                $.fn.mirror = function (selector) {
+                    return this.each(function () {
+                        var $this = $(this);
+                        var $selector = $(selector);
+                        $this.bind('keyup change', function () {
+                            $selector.val($this.val());
+                        });
+                    });
+                };
+
+                $(':input[data-mirror]').each(function () {
+                    $(this).mirror($(this).data('mirror'));
                 });
 
                 $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
