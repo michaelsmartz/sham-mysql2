@@ -2,6 +2,7 @@
 
 namespace App;
 
+use San4io\EloquentFilter\Filters\LikeFilter;
 
 class AssetEmployee extends Model
 {
@@ -28,6 +29,14 @@ class AssetEmployee extends Model
               ];
 
     public $searchable = ['asset:name', 'asset:tag', 'employee:full_name', 'date_out', 'date_in'];
+
+    protected $filterable = [
+        'asset:name' => LikeFilter::class,
+        'asset:tag' => LikeFilter::class,
+        'employee:full_name' => LikeFilter::class,
+        'date_out' => LikeFilter::class,
+        'date_in' => LikeFilter::class
+    ];
 
     public function asset()
     {

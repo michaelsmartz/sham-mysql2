@@ -2,7 +2,7 @@
 
 namespace App;
 
-
+use San4io\EloquentFilter\Filters\LikeFilter;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Survey extends Model
@@ -38,7 +38,13 @@ class Survey extends Model
                   'survey_status_id'
     ];
 
-    public $searchable = ['title'];
+    public $searchable = ['title', 'date_start', 'date_end',];
+
+    protected $filterable = [
+        'title' => LikeFilter::class,
+        'date_start' => LikeFilter::class,
+        'date_end' => LikeFilter::class,
+    ];
 
     /**
      * The attributes that should be mutated to dates.

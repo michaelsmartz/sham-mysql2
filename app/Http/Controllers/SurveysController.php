@@ -36,8 +36,14 @@ class SurveysController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $title = $request->get('title', null);
+
+        if(!empty($title)){
+            $request->merge(['title' => '%'.$title.'%']);
+        }
+
         $surveys = $this->contextObj::with('users.employee')->filtered()->paginate(10);
         
         $allowedActions = getAllowedActions(SystemSubModule::CONST_SURVEYS);
@@ -46,6 +52,10 @@ class SurveysController extends CustomController
         if (Input::has('page') && $surveys->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('surveys','allowedActions'));
     }
 
