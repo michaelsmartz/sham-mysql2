@@ -54,7 +54,7 @@
 
             <div class="table-responsive">
                 @if(count($evaluations) == 0)
-                    <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new evaluation</h4>
+                    <h4 class="text-center"></h4>
                 @elseif($allowedActions->contains('List'))
                     <table id="table" data-toggle="table" data-detail-view="true">
                         <thead>
