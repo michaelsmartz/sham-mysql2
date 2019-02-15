@@ -137,3 +137,129 @@ CREATE TABLE `candidate_previous_employments` (
   ON DELETE NO ACTION
   ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Recruitment
+--
+
+DROP TABLE IF EXISTS `positions`;
+CREATE TABLE `positions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4;
+
+DROP TABLE IF EXISTS `interviews`;
+CREATE TABLE `interviews` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4;
+
+DROP TABLE IF EXISTS `recruitment_qualifications`;
+CREATE TABLE `recruitment_qualifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4;
+
+DROP TABLE IF EXISTS `recruitments`;
+CREATE TABLE `recruitments` (
+`id` INT(11) NOT NULL AUTO_INCREMENT,
+`department_id` INT(11) NULL DEFAULT NULL,
+`position_id` INT(11) NULL DEFAULT NULL,
+`skill_id` INT(11) NULL DEFAULT NULL,
+`qualification_id` INT(11) NULL DEFAULT NULL,
+`job_title` VARCHAR(50) NULL DEFAULT NULL,
+`position` VARCHAR(50) NULL DEFAULT NULL,
+`field_of_study` VARCHAR(50) NULL DEFAULT NULL,
+`description` VARCHAR(255) NULL DEFAULT NULL,
+`year_experience` int(4) NULL DEFAULT NULL,
+`start_date` DATE NULL DEFAULT NULL,
+`min_salary` INT(10) NULL,
+`max_salary` INT(10) NULL,
+`recruitment_type_id` enum('1','2', '3') NOT NULL DEFAULT '1' COMMENT '1 - Internal, 2 - External, 3 - Both',
+`created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+`updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+`deleted_at` datetime DEFAULT NULL,
+PRIMARY KEY (`id`),
+INDEX `FK_Recruitments_Departments` (`department_id` ASC) INVISIBLE,
+INDEX `FK_Recruitments_PositionTypes` (`position_id` ASC) INVISIBLE,
+INDEX `FK_Recruitments_Skills` (`skill_id` ASC) INVISIBLE,
+INDEX `FK_Recruitments_Qualifications` (`qualification_id` ASC) INVISIBLE,
+CONSTRAINT `FK_Recruitments_Departments`
+FOREIGN KEY (`department_id`)
+REFERENCES `departments` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION,
+CONSTRAINT `FK_Recruitments_PositionTypes`
+FOREIGN KEY (`position_id`)
+REFERENCES `positions` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION,
+CONSTRAINT `FK_Recruitments_Skills`
+FOREIGN KEY (`skill_id`)
+REFERENCES `skills` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION,
+CONSTRAINT `FK_Recruitments_Qualifications`
+FOREIGN KEY (`qualification_id`)
+REFERENCES `recruitment_qualifications` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `candidate_recruitment`;
+CREATE TABLE `candidate_recruitment` (
+`id` INT(11) NOT NULL AUTO_INCREMENT,
+`candidate_id` INT(11) NULL DEFAULT NULL,
+`recruitment_id` INT(11) NULL DEFAULT NULL,
+PRIMARY KEY (`id`),
+INDEX `FK_CandidateRecruitment_Candidates` (`candidate_id` ASC) INVISIBLE,
+INDEX `FK_CandidateRecruitment_Recruitments` (`recruitment_id` ASC) INVISIBLE,
+CONSTRAINT `FK_CandidateRecruitment_Candidates`
+FOREIGN KEY (`candidate_id`)
+REFERENCES `candidates` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION,
+CONSTRAINT `FK_CandidateRecruitment_Recruitments`
+FOREIGN KEY (`recruitment_id`)
+REFERENCES `recruitments` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `recruitment_interview`;
+CREATE TABLE `recruitment_interview` (
+`id` INT(11) NOT NULL AUTO_INCREMENT,
+`recruitment_id` INT(11) NULL DEFAULT NULL,
+`interview_id` INT(11) NULL DEFAULT NULL,
+PRIMARY KEY (`id`),
+INDEX `FK_RecruitmentInterview_Recruitments` (`recruitment_id` ASC) INVISIBLE,
+INDEX `FK_RecruitmentInterview_Interviews` (`interview_id` ASC) INVISIBLE,
+CONSTRAINT `FK_RecruitmentInterview_Recruitments`
+FOREIGN KEY (`recruitment_id`)
+REFERENCES `recruitments` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION,
+CONSTRAINT `FK_RecruitmentInterview_Interviews`
+FOREIGN KEY (`interview_id`)
+REFERENCES `interviews` (`id`)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;

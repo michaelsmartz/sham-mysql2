@@ -80,7 +80,9 @@ class CandidatesController extends CustomController
 
         $skills = Skill::pluck('description','id')->all();
 
-        return view($this->baseViewPath .'.create', compact('titles', 'uploader', 'genders', 'maritalstatuses', 'disabilities', 'skills'));
+        $candidate = $this->contextObj;
+
+        return view($this->baseViewPath .'.create', compact('titles', 'candidate', 'uploader', 'genders', 'maritalstatuses', 'disabilities', 'skills'));
     }
 
     public function qualifications(Request $request)
