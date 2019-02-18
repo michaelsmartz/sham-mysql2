@@ -60,12 +60,11 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 217);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 0:
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9886,826 +9885,7 @@ return jQuery;
 
 
 /***/ }),
-
-/***/ 13:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jquery.sumoselect - v3.0.3
- * http://hemantnegi.github.io/jquery.sumoselect
- * 2016-12-12
- *
- * Copyright 2015 Hemant Negi
- * Email : hemant.frnz@gmail.com
- * Compressor http://refresh-sf.com/
- */
-
-(function (factory) {
-    'use strict';
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else if (typeof exports !== 'undefined') {
-        module.exports = factory(require('jquery'));
-    } else {
-        factory(jQuery);
-    }
-
-})(function ($) {
-
-    'namespace sumo';
-    $.fn.SumoSelect = function (options) {
-
-        // This is the easiest way to have default options.
-        var settings = $.extend({
-            placeholder: 'Select Here',   // Dont change it here.
-            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
-            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
-            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
-            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
-            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
-            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
-            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
-            csvSepChar: ',',              // separation char in csv mode
-            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
-            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
-            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
-            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
-
-            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
-            searchText: 'Search...',      // placeholder for search input
-            searchFn: function(haystack, needle) { // search function
-                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
-            },
-            noMatch: 'No matches for "{0}"',
-            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
-            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
-            up: false,                    // set true to open upside.
-            showTitle: true               // set to false to prevent title (tooltip) from appearing
-        }, options);
-
-        var ret = this.each(function () {
-            var selObj = this; // the original select object.
-            if (this.sumo || !$(this).is('select')) return; //already initialized
-
-            this.sumo = {
-                E: $(selObj),   //the jquery object of original select element.
-                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
-                select: '',
-                caption: '',
-                placeholder: '',
-                optDiv: '',
-                CaptionCont: '',
-                ul: '',
-                is_floating: false,
-                is_opened: false,
-                //backdrop: '',
-                mob: false, // if to open device default select
-                Pstate: [],
-                lastUnselected: null,
-
-                createElems: function () {
-                    var O = this;
-                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
-                    O.select = O.E.parent();
-                    O.caption = $('<span>');
-                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
-                        .attr('style', O.E.attr('style'))
-                        .prepend(O.caption);
-                    O.select.append(O.CaptionCont);
-
-                    // default turn off if no multiselect
-                    if (!O.is_multi) settings.okCancelInMulti = false
-
-                    if (O.E.attr('disabled'))
-                        O.select.addClass('disabled').removeAttr('tabindex');
-
-                    //if output as csv and is a multiselect.
-                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
-                        //create a hidden field to store csv value.
-                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
-
-                        // so it can not post the original select.
-                        O.E.removeAttr('name');
-                    }
-
-                    //break for mobile rendring.. if forceCustomRendering is false
-                    if (O.isMobile() && !settings.forceCustomRendering) {
-                        O.setNativeMobile();
-                        return;
-                    }
-
-                    // if there is a name attr in select add a class to container div
-                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
-
-                    //hide original select
-                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
-
-                    //## Creating the list...
-                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
-
-                    //branch for floating list in low res devices.
-                    O.floatingList();
-
-                    //Creating the markup for the available options
-                    O.ul = $('<ul class="options">');
-                    O.optDiv.append(O.ul);
-
-                    // Select all functionality
-                    if (settings.selectAll && O.is_multi) O.SelAll();
-
-                    // search functionality
-                    if (settings.search) O.Search();
-
-                    O.ul.append(O.prepItems(O.E.children()));
-
-                    //if multiple then add the class multiple and add OK / CANCEL button
-                    if (O.is_multi) O.multiSelelect();
-
-                    O.select.append(O.optDiv);
-                    O.basicEvents();
-                    O.selAllState();
-                },
-
-                prepItems: function (opts, d) {
-                    var lis = [], O = this;
-                    $(opts).each(function (i, opt) {       // parsing options to li
-                        opt = $(opt);
-                        lis.push(opt.is('optgroup') ?
-                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
-                                .find('ul')
-                                .append(O.prepItems(opt.children(), opt[0].disabled))
-                                .end()
-                            :
-                            O.createLi(opt, d)
-                        );
-                    });
-                    return lis;
-                },
-
-                //## Creates a LI element from a given option and binds events to it
-                //## returns the jquery instance of li (not inserted in dom)
-                createLi: function (opt, d) {
-                    var O = this;
-
-                    if (!opt.attr('value')) opt.attr('value', opt.val());
-                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
-
-                    li.data('opt', opt);    // store a direct reference to option.
-                    opt.data('li', li);    // store a direct reference to list item.
-                    if (O.is_multi) li.prepend('<span><i></i></span>');
-
-                    if (opt[0].disabled || d)
-                        li = li.addClass('disabled');
-
-                    O.onOptClick(li);
-
-                    if (opt[0].selected)
-                        li.addClass('selected');
-
-                    if (opt.attr('class'))
-                        li.addClass(opt.attr('class'));
-
-                    if (opt.attr('title'))
-                        li.attr('title', opt.attr('title'));
-
-                    return li;
-                },
-
-                //## Returns the selected items as string in a Multiselect.
-                getSelStr: function () {
-                    // get the pre selected items.
-                    var sopt = [];
-                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
-                    return sopt.join(settings.csvSepChar);
-                },
-
-                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
-                multiSelelect: function () {
-                    var O = this;
-                    O.optDiv.addClass('multiple');
-                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
-                        //if combined change event is set.
-                        O._okbtn();
-                        O.hideOpts();
-                    });
-                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
-                        O._cnbtn();
-                        O.hideOpts();
-                    });
-                    var btns = O.okbtn.add(O.cancelBtn);
-                    O.optDiv.append($('<div class="MultiControls">').append(btns));
-
-                    // handling keyboard navigation on ok cancel buttons.
-                    btns.on('keydown.sumo', function (e) {
-                        var el = $(this);
-                        switch (e.which) {
-                            case 32: // space
-                            case 13: // enter
-                                el.trigger('click');
-                                break;
-
-                            case 9:  //tab
-                                if (el.hasClass('btnOk')) return;
-                            case 27: // esc
-                                O._cnbtn();
-                                O.hideOpts();
-                                return;
-                        }
-                        e.stopPropagation();
-                        e.preventDefault();
-                    });
-                },
-
-                _okbtn: function () {
-                    var O = this, cg = 0;
-                    //if combined change event is set.
-                    if (settings.triggerChangeCombined) {
-                        //check for a change in the selection.
-                        if (O.E.find('option:selected').length !== O.Pstate.length) {
-                            cg = 1;
-                        }
-                        else {
-                            O.E.find('option').each(function (i, e) {
-                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
-                            });
-                        }
-
-                        if (cg) {
-                            O.callChange();
-                            O.setText();
-                        }
-                    }
-                },
-                _cnbtn: function () {
-                    var O = this;
-                    //remove all selections
-                    O.E.find('option:selected').each(function () { this.selected = false; });
-                    O.optDiv.find('li.selected').removeClass('selected')
-
-                    //restore selections from saved state.
-                    for (var i = 0; i < O.Pstate.length; i++) {
-                        O.E.find('option')[O.Pstate[i]].selected = true;
-                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
-                    }
-                    O.selAllState();
-                },
-
-                SelAll: function () {
-                    var O = this;
-                    if (!O.is_multi) return;
-                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
-                    O.optDiv.addClass('selall');
-                    O.selAll.on('click', function () {
-                        O.selAll.toggleClass('selected');
-                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
-                        //O.selAllState();
-                    });
-
-                    O.optDiv.prepend(O.selAll);
-                },
-
-                // search module (can be removed if not required.)
-                Search: function () {
-                    var O = this,
-                        cc = O.CaptionCont.addClass('search'),
-                        P = $('<p class="no-match">'),
-                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
-
-                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
-                        .on('click', function (e) {
-                            e.stopPropagation();
-                        });
-                    cc.append(O.ftxt);
-                    O.optDiv.children('ul').after(P);
-
-                    O.ftxt.on('keyup.sumo', function () {
-                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
-                            var e = $(e),
-                                opt = e.data('opt')[0];
-                            opt.hidden = fn(e.text(), O.ftxt.val());
-                            e.toggleClass('hidden', opt.hidden);
-                        }).not('.hidden');
-
-                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
-                        P.find('em').text(O.ftxt.val());
-                        O.selAllState();
-                    });
-                },
-
-                selAllState: function () {
-                    var O = this;
-                    if (settings.selectAll && O.is_multi) {
-                        var sc = 0, vc = 0;
-                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
-                            if ($(e).hasClass('selected')) sc++;
-                            if (!$(e).hasClass('disabled')) vc++;
-                        });
-                        //select all checkbox state change.
-                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
-                        else if (sc === 0) O.selAll.removeClass('selected partial');
-                        else O.selAll.addClass('partial')//.removeClass('selected');
-                    }
-                },
-
-                showOpts: function () {
-                    var O = this;
-                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
-                    O.E.trigger('sumo:opening', O);
-                    O.is_opened = true;
-                    O.select.addClass('open').attr('aria-expanded', 'true');
-                    O.E.trigger('sumo:opened', O);
-
-                    if (O.ftxt) O.ftxt.focus();
-                    else O.select.focus();
-
-                    // hide options on click outside.
-                    $(document).on('click.sumo', function (e) {
-                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
-                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
-                            if (!O.is_opened) return;
-                            O.hideOpts();
-                            if (settings.okCancelInMulti) {
-                                if (settings.isClickAwayOk)
-                                    O._okbtn();
-                                else
-                                    O._cnbtn();
-                            }
-                        }
-                    });
-
-                    if (O.is_floating) {
-                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
-                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
-                        O.optDiv.css('height', H);
-                        $('body').addClass('sumoStopScroll');
-                    }
-
-                    O.setPstate();
-                },
-
-                //maintain state when ok/cancel buttons are available storing the indexes.
-                setPstate: function () {
-                    var O = this;
-                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
-                        O.Pstate = [];
-                        // assuming that find returns elements in tree order
-                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
-                    }
-                },
-
-                callChange: function () {
-                    this.E.trigger('change').trigger('click');
-                },
-
-                hideOpts: function () {
-                    var O = this;
-                    if (O.is_opened) {
-                        O.E.trigger('sumo:closing', O);
-                        O.is_opened = false;
-                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
-                        O.E.trigger('sumo:closed', O);
-                        $(document).off('click.sumo');
-                        O.select.focus();
-                        $('body').removeClass('sumoStopScroll');
-
-                        // clear the search
-                        if (settings.search) {
-                            O.ftxt.val('');
-                            O.ftxt.trigger('keyup.sumo');
-                        }
-                    }
-                },
-                setOnOpen: function () {
-                    var O = this,
-                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
-                    if (li.hasClass('disabled')) {
-                        li = li.next(':not(disabled)')
-                        if (!li.length) return;
-                    }
-                    O.optDiv.find('li.sel').removeClass('sel');
-                    li.addClass('sel');
-                    O.showOpts();
-                },
-                nav: function (up) {
-                    var O = this, c,
-                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
-                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
-                        idx = s.index(sel);
-                    if (O.is_opened && sel.length) {
-
-                        if (up && idx > 0)
-                            c = s.eq(idx - 1);
-                        else if (!up && idx < s.length - 1 && idx > -1)
-                            c = s.eq(idx + 1);
-                        else return; // if no items before or after
-
-                        sel.removeClass('sel');
-                        sel = c.addClass('sel');
-
-                        // setting sel item to visible view.
-                        var ul = O.ul,
-                            st = ul.scrollTop(),
-                            t = sel.position().top + st;
-                        if (t >= st + ul.height() - sel.outerHeight())
-                            ul.scrollTop(t - ul.height() + sel.outerHeight());
-                        if (t < st)
-                            ul.scrollTop(t);
-
-                    }
-                    else
-                        O.setOnOpen();
-                },
-
-                basicEvents: function () {
-                    var O = this;
-                    O.CaptionCont.click(function (evt) {
-                        O.E.trigger('click');
-                        if (O.is_opened) O.hideOpts(); else O.showOpts();
-                        evt.stopPropagation();
-                    });
-
-                    O.select.on('keydown.sumo', function (e) {
-                        switch (e.which) {
-                            case 38: // up
-                                O.nav(true);
-                                break;
-
-                            case 40: // down
-                                O.nav(false);
-                                break;
-
-                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
-                                if (O.is_multi && e.ctrlKey) {
-                                    O.toggSelAll(!e.shiftKey, 1);
-                                    break;
-                                }
-                                else
-                                    return;
-
-                            case 32: // space
-                                if (settings.search && O.ftxt.is(e.target)) return;
-                            case 13: // enter
-                                if (O.is_opened)
-                                    O.optDiv.find('ul li.sel').trigger('click');
-                                else
-                                    O.setOnOpen();
-                                break;
-                            case 9:	 //tab
-                                if (!settings.okCancelInMulti)
-                                    O.hideOpts();
-                                return;
-                            case 27: // esc
-                                if (settings.okCancelInMulti) O._cnbtn();
-                                O.hideOpts();
-                                return;
-
-                            default:
-                                return; // exit this handler for other keys
-                        }
-                        e.preventDefault(); // prevent the default action (scroll / move caret)
-                    });
-
-                    $(window).on('resize.sumo', function () {
-                        O.floatingList();
-                    });
-                },
-
-                onOptClick: function (li) {
-                    var O = this;
-                    li.click(function () {
-                        var li = $(this);
-                        if (li.hasClass('disabled')) return;
-                        var txt = "";
-                        if (O.is_multi) {
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = li.hasClass('selected');
-                            if (li.data('opt')[0].selected === false) {
-                                O.lastUnselected = li.data('opt')[0].textContent;
-                            }
-                            O.selAllState();
-                        }
-                        else {
-                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = true;
-                        }
-
-                        //branch for combined change event.
-                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
-                            O.setText();
-                            O.callChange();
-                        }
-
-                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
-                    });
-                },
-
-                // fixed some variables that were not explicitly typed (michc)
-                setText: function () {
-                    var O = this;
-                    O.placeholder = "";
-                    if (O.is_multi) {
-                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
-
-                        for (var i = 0; i < sels.length; i++) {
-                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
-                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
-                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
-                                } else {
-                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
-                                }
-
-                                break;
-                            }
-                            else O.placeholder += $(sels[i]).text() + ", ";
-                        }
-                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
-                    }
-                    else {
-                        O.placeholder = O.E.find(':selected').not(':disabled').text();
-                    }
-
-                    var is_placeholder = false;
-
-                    if (!O.placeholder) {
-
-                        is_placeholder = true;
-
-                        O.placeholder = O.E.attr('placeholder');
-                        if (!O.placeholder)                  //if placeholder is there then set it
-                            O.placeholder = O.E.find('option:disabled:selected').text();
-                    }
-
-                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
-
-                    //set display text
-                    O.caption.html(O.placeholder);
-                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
-
-                    //set the hidden field if post as csv is true.
-                    var csvField = O.select.find('input.HEMANT123');
-                    if (csvField.length) csvField.val(O.getSelStr());
-
-                    //add class placeholder if its a placeholder text.
-                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
-                    return O.placeholder;
-                },
-
-                isMobile: function () {
-
-                    // Adapted from http://www.detectmobilebrowsers.com
-                    var ua = navigator.userAgent || navigator.vendor || window.opera;
-
-                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
-                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
-                    return false;
-                },
-
-                setNativeMobile: function () {
-                    var O = this;
-                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
-                    O.mob = true;
-                    O.E.change(function () {
-                        O.setText();
-                    });
-                },
-
-                floatingList: function () {
-                    var O = this;
-                    //called on init and also on resize.
-                    //O.is_floating = true if window width is < specified float width
-                    O.is_floating = $(window).width() <= settings.floatWidth;
-
-                    //set class isFloating
-                    O.optDiv.toggleClass('isFloating', O.is_floating);
-
-                    //remove height if not floating
-                    if (!O.is_floating) O.optDiv.css('height', '');
-
-                    //toggle class according to okCancelInMulti flag only when it is not floating
-                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
-                },
-
-                //HELPERS FOR OUTSIDERS
-                // validates range of given item operations
-                vRange: function (i) {
-                    var O = this;
-                    var opts = O.E.find('option');
-                    if (opts.length <= i || i < 0) throw "index out of bounds"
-                    return O;
-                },
-
-                //toggles selection on c as boolean.
-                toggSel: function (c, i) {
-                    var O = this;
-                    var opt;
-                    if (typeof (i) === "number") {
-                        O.vRange(i);
-                        opt = O.E.find('option')[i];
-                    }
-                    else {
-                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
-                    }
-                    if (!opt || opt.disabled)
-                        return;
-
-                    if (opt.selected !== c) {
-                        opt.selected = c;
-                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
-
-                        O.callChange();
-                        O.setPstate();
-                        O.setText();
-                        O.selAllState();
-                    }
-                },
-
-                //toggles disabled on c as boolean.
-                toggDis: function (c, i) {
-                    var O = this.vRange(i);
-                    O.E.find('option')[i].disabled = c;
-                    if (c) O.E.find('option')[i].selected = false;
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
-                    O.setText();
-                },
-
-                // toggle disable/enable on complete select control
-                toggSumo: function (val) {
-                    var O = this;
-                    O.enabled = val;
-                    O.select.toggleClass('disabled', val);
-
-                    if (val) {
-                        O.E.attr('disabled', 'disabled');
-                        O.select.removeAttr('tabindex');
-                    }
-                    else {
-                        O.E.removeAttr('disabled');
-                        O.select.attr('tabindex', '0');
-                    }
-
-                    return O;
-                },
-
-                // toggles all option on c as boolean.
-                // set direct=false/0 bypasses okCancelInMulti behaviour.
-                toggSelAll: function (c, direct) {
-                    var O = this;
-                    O.E.find('option:not(:disabled,:hidden)')
-                        .each(function (ix, e) {
-                            var is_selected = e.selected,
-                                e = $(e).data('li');
-                            if (e.hasClass('hidden')) return;
-                            if (!!c) {
-                                if (!is_selected) e.trigger('click');
-                            }
-                            else {
-                                if (is_selected) e.trigger('click');
-                            }
-                        });
-
-                    if (!direct) {
-                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
-                        O.callChange();
-                        O.setText();
-                        O.setPstate();
-                    }
-                },
-
-                /* outside accessibility options
-                 which can be accessed from the element instance.
-                 */
-                reload: function () {
-                    var elm = this.unload();
-                    return $(elm).SumoSelect(settings);
-                },
-
-                unload: function () {
-                    var O = this;
-                    O.select.before(O.E);
-                    O.E.show();
-
-                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
-                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
-                    }
-                    O.select.remove();
-                    delete selObj.sumo;
-                    return selObj;
-                },
-
-                //## add a new option to select at a given index.
-                add: function (val, txt, i) {
-                    if (typeof val === "undefined") throw "No value to add"
-
-                    var O = this;
-                    var opts = O.E.find('option')
-                    if (typeof txt === "number") { i = txt; txt = val; }
-                    if (typeof txt === "undefined") { txt = val; }
-
-                    var opt = $("<option></option>").val(val).html(txt);
-
-                    if (opts.length < i) throw "index out of bounds"
-
-                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
-                        O.E.append(opt);
-                        if (!O.mob) O.ul.append(O.createLi(opt));
-                    }
-                    else {
-                        opts.eq(i).before(opt);
-                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
-                    }
-
-                    return selObj;
-                },
-
-                //## removes an item at a given index.
-                remove: function (i) {
-                    var O = this.vRange(i);
-                    O.E.find('option').eq(i).remove();
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
-                    O.setText();
-                },
-
-                // removes all but the selected one
-                removeAll: function () {
-                    var O = this;
-                    var options = O.E.find('option');
-
-                    for (var x = (options.length - 1); x >= 0; x--) {
-                        if (options[x].selected !== true) {
-                            O.remove(x);
-                        }
-                    }
-
-                },
-
-
-                find: function (val) {
-                    var O = this;
-                    var options = O.E.find('option');
-                    for (var x in options) {
-                        if (options[x].value === val) {
-                            return parseInt(x);
-                        }
-                    }
-
-                    return -1;
-
-                },
-
-                //## Select an item at a given index.
-                selectItem: function (i) { this.toggSel(true, i); },
-
-                //## UnSelect an iten at a given index.
-                unSelectItem: function (i) { this.toggSel(false, i); },
-
-                //## Select all items  of the select.
-                selectAll: function () { this.toggSelAll(true); },
-
-                //## UnSelect all items of the select.
-                unSelectAll: function () { this.toggSelAll(false); },
-
-                //## Disable an iten at a given index.
-                disableItem: function (i) { this.toggDis(true, i) },
-
-                //## Removes disabled an iten at a given index.
-                enableItem: function (i) { this.toggDis(false, i) },
-
-                //## New simple methods as getter and setter are not working fine in ie8-
-                //## variable to check state of control if enabled or disabled.
-                enabled: true,
-                //## Enables the control
-                enable: function () { return this.toggSumo(false) },
-
-                //## Disables the control
-                disable: function () { return this.toggSumo(true) },
-
-
-                init: function () {
-                    var O = this;
-                    O.createElems();
-                    O.setText();
-                    return O
-                }
-
-            };
-
-            selObj.sumo.init();
-        });
-
-        return ret.length === 1 ? ret[0] : ret;
-    };
-
-
-});
-
-
-/***/ }),
-
-/***/ 2:
+/* 1 */
 /***/ (function(module, exports) {
 
 var g;
@@ -10732,5067 +9912,2513 @@ module.exports = g;
 
 
 /***/ }),
-
-/***/ 215:
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * pickadate.js v3.5.6, 2015/04/20
- * By Amsul, http://amsul.ca
- * Hosted on http://amsul.github.io/pickadate.js
- * Licensed under MIT
- */
-
-(function ( factory ) {
-
-    // AMD.
-    if ( true )
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
-
-    // Node.js/browserify.
-    else if ( typeof exports == 'object' )
-        module.exports = factory( require('jquery') )
-
-    // Browser globals.
-    else this.Picker = factory( jQuery )
-
-}(function( $ ) {
-
-var $window = $( window )
-var $document = $( document )
-var $html = $( document.documentElement )
-var supportsTransitions = document.documentElement.style.transition != null
-
-
-/**
- * The picker constructor that creates a blank picker.
- */
-function PickerConstructor( ELEMENT, NAME, COMPONENT, OPTIONS ) {
-
-    // If there’s no element, return the picker constructor.
-    if ( !ELEMENT ) return PickerConstructor
-
-
-    var
-        IS_DEFAULT_THEME = false,
-
-
-        // The state of the picker.
-        STATE = {
-            id: ELEMENT.id || 'P' + Math.abs( ~~(Math.random() * new Date()) )
-        },
-
-
-        // Merge the defaults and options passed.
-        SETTINGS = COMPONENT ? $.extend( true, {}, COMPONENT.defaults, OPTIONS ) : OPTIONS || {},
-
-
-        // Merge the default classes with the settings classes.
-        CLASSES = $.extend( {}, PickerConstructor.klasses(), SETTINGS.klass ),
-
-
-        // The element node wrapper into a jQuery object.
-        $ELEMENT = $( ELEMENT ),
-
-
-        // Pseudo picker constructor.
-        PickerInstance = function() {
-            return this.start()
-        },
-
-
-        // The picker prototype.
-        P = PickerInstance.prototype = {
-
-            constructor: PickerInstance,
-
-            $node: $ELEMENT,
-
-
-            /**
-             * Initialize everything
-             */
-            start: function() {
-
-                // If it’s already started, do nothing.
-                if ( STATE && STATE.start ) return P
-
-
-                // Update the picker states.
-                STATE.methods = {}
-                STATE.start = true
-                STATE.open = false
-                STATE.type = ELEMENT.type
-
-
-                // Confirm focus state, convert into text input to remove UA stylings,
-                // and set as readonly to prevent keyboard popup.
-                ELEMENT.autofocus = ELEMENT == getActiveElement()
-                ELEMENT.readOnly = !SETTINGS.editable
-                ELEMENT.id = ELEMENT.id || STATE.id
-                if ( ELEMENT.type != 'text' ) {
-                    ELEMENT.type = 'text'
-                }
-
-
-                // Create a new picker component with the settings.
-                P.component = new COMPONENT(P, SETTINGS)
-
-
-                // Create the picker root and then prepare it.
-                P.$root = $( '<div class="' + CLASSES.picker + '" id="' + ELEMENT.id + '_root" />' )
-                prepareElementRoot()
-
-
-                // Create the picker holder and then prepare it.
-                P.$holder = $( createWrappedComponent() ).appendTo( P.$root )
-                prepareElementHolder()
-
-
-                // If there’s a format for the hidden input element, create the element.
-                if ( SETTINGS.formatSubmit ) {
-                    prepareElementHidden()
-                }
-
-
-                // Prepare the input element.
-                prepareElement()
-
-
-                // Insert the hidden input as specified in the settings.
-                if ( SETTINGS.containerHidden ) $( SETTINGS.containerHidden ).append( P._hidden )
-                else $ELEMENT.after( P._hidden )
-
-
-                // Insert the root as specified in the settings.
-                if ( SETTINGS.container ) $( SETTINGS.container ).append( P.$root )
-                else $ELEMENT.after( P.$root )
-
-
-                // Bind the default component and settings events.
-                P.on({
-                    start: P.component.onStart,
-                    render: P.component.onRender,
-                    stop: P.component.onStop,
-                    open: P.component.onOpen,
-                    close: P.component.onClose,
-                    set: P.component.onSet
-                }).on({
-                    start: SETTINGS.onStart,
-                    render: SETTINGS.onRender,
-                    stop: SETTINGS.onStop,
-                    open: SETTINGS.onOpen,
-                    close: SETTINGS.onClose,
-                    set: SETTINGS.onSet
-                })
-
-
-                // Once we’re all set, check the theme in use.
-                IS_DEFAULT_THEME = isUsingDefaultTheme( P.$holder[0] )
-
-
-                // If the element has autofocus, open the picker.
-                if ( ELEMENT.autofocus ) {
-                    P.open()
-                }
-
-
-                // Trigger queued the “start” and “render” events.
-                return P.trigger( 'start' ).trigger( 'render' )
-            }, //start
-
-
-            /**
-             * Render a new picker
-             */
-            render: function( entireComponent ) {
-
-                // Insert a new component holder in the root or box.
-                if ( entireComponent ) {
-                    P.$holder = $( createWrappedComponent() )
-                    prepareElementHolder()
-                    P.$root.html( P.$holder )
-                }
-                else P.$root.find( '.' + CLASSES.box ).html( P.component.nodes( STATE.open ) )
-
-                // Trigger the queued “render” events.
-                return P.trigger( 'render' )
-            }, //render
-
-
-            /**
-             * Destroy everything
-             */
-            stop: function() {
-
-                // If it’s already stopped, do nothing.
-                if ( !STATE.start ) return P
-
-                // Then close the picker.
-                P.close()
-
-                // Remove the hidden field.
-                if ( P._hidden ) {
-                    P._hidden.parentNode.removeChild( P._hidden )
-                }
-
-                // Remove the root.
-                P.$root.remove()
-
-                // Remove the input class, remove the stored data, and unbind
-                // the events (after a tick for IE - see `P.close`).
-                $ELEMENT.removeClass( CLASSES.input ).removeData( NAME )
-                setTimeout( function() {
-                    $ELEMENT.off( '.' + STATE.id )
-                }, 0)
-
-                // Restore the element state
-                ELEMENT.type = STATE.type
-                ELEMENT.readOnly = false
-
-                // Trigger the queued “stop” events.
-                P.trigger( 'stop' )
-
-                // Reset the picker states.
-                STATE.methods = {}
-                STATE.start = false
-
-                return P
-            }, //stop
-
-
-            /**
-             * Open up the picker
-             */
-            open: function( dontGiveFocus ) {
-
-                // If it’s already open, do nothing.
-                if ( STATE.open ) return P
-
-                // Add the “active” class.
-                $ELEMENT.addClass( CLASSES.active )
-                aria( ELEMENT, 'expanded', true )
-
-                // * A Firefox bug, when `html` has `overflow:hidden`, results in
-                //   killing transitions :(. So add the “opened” state on the next tick.
-                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
-                setTimeout( function() {
-
-                    // Add the “opened” class to the picker root.
-                    P.$root.addClass( CLASSES.opened )
-                    aria( P.$root[0], 'hidden', false )
-
-                }, 0 )
-
-                // If we have to give focus, bind the element and doc events.
-                if ( dontGiveFocus !== false ) {
-
-                    // Set it as open.
-                    STATE.open = true
-
-                    // Prevent the page from scrolling.
-                    if ( IS_DEFAULT_THEME ) {
-                        $html.
-                            css( 'overflow', 'hidden' ).
-                            css( 'padding-right', '+=' + getScrollbarWidth() )
-                    }
-
-                    // Pass focus to the root element’s jQuery object.
-                    focusPickerOnceOpened()
-
-                    // Bind the document events.
-                    $document.on( 'click.' + STATE.id + ' focusin.' + STATE.id, function( event ) {
-
-                        var target = event.target
-
-                        // If the target of the event is not the element, close the picker picker.
-                        // * Don’t worry about clicks or focusins on the root because those don’t bubble up.
-                        //   Also, for Firefox, a click on an `option` element bubbles up directly
-                        //   to the doc. So make sure the target wasn't the doc.
-                        // * In Firefox stopPropagation() doesn’t prevent right-click events from bubbling,
-                        //   which causes the picker to unexpectedly close when right-clicking it. So make
-                        //   sure the event wasn’t a right-click.
-                        if ( target != ELEMENT && target != document && event.which != 3 ) {
-
-                            // If the target was the holder that covers the screen,
-                            // keep the element focused to maintain tabindex.
-                            P.close( target === P.$holder[0] )
-                        }
-
-                    }).on( 'keydown.' + STATE.id, function( event ) {
-
-                        var
-                            // Get the keycode.
-                            keycode = event.keyCode,
-
-                            // Translate that to a selection change.
-                            keycodeToMove = P.component.key[ keycode ],
-
-                            // Grab the target.
-                            target = event.target
-
-
-                        // On escape, close the picker and give focus.
-                        if ( keycode == 27 ) {
-                            P.close( true )
-                        }
-
-
-                        // Check if there is a key movement or “enter” keypress on the element.
-                        else if ( target == P.$holder[0] && ( keycodeToMove || keycode == 13 ) ) {
-
-                            // Prevent the default action to stop page movement.
-                            event.preventDefault()
-
-                            // Trigger the key movement action.
-                            if ( keycodeToMove ) {
-                                PickerConstructor._.trigger( P.component.key.go, P, [ PickerConstructor._.trigger( keycodeToMove ) ] )
-                            }
-
-                            // On “enter”, if the highlighted item isn’t disabled, set the value and close.
-                            else if ( !P.$root.find( '.' + CLASSES.highlighted ).hasClass( CLASSES.disabled ) ) {
-                                P.set( 'select', P.component.item.highlight )
-                                if ( SETTINGS.closeOnSelect ) {
-                                    P.close( true )
-                                }
-                            }
-                        }
-
-
-                        // If the target is within the root and “enter” is pressed,
-                        // prevent the default action and trigger a click on the target instead.
-                        else if ( $.contains( P.$root[0], target ) && keycode == 13 ) {
-                            event.preventDefault()
-                            target.click()
-                        }
-                    })
-                }
-
-                // Trigger the queued “open” events.
-                return P.trigger( 'open' )
-            }, //open
-
-
-            /**
-             * Close the picker
-             */
-            close: function( giveFocus ) {
-
-                // If we need to give focus, do it before changing states.
-                if ( giveFocus ) {
-                    if ( SETTINGS.editable ) {
-                        ELEMENT.focus()
-                    }
-                    else {
-                        // ....ah yes! It would’ve been incomplete without a crazy workaround for IE :|
-                        // The focus is triggered *after* the close has completed - causing it
-                        // to open again. So unbind and rebind the event at the next tick.
-                        P.$holder.off( 'focus.toOpen' ).focus()
-                        setTimeout( function() {
-                            P.$holder.on( 'focus.toOpen', handleFocusToOpenEvent )
-                        }, 0 )
-                    }
-                }
-
-                // Remove the “active” class.
-                $ELEMENT.removeClass( CLASSES.active )
-                aria( ELEMENT, 'expanded', false )
-
-                // * A Firefox bug, when `html` has `overflow:hidden`, results in
-                //   killing transitions :(. So remove the “opened” state on the next tick.
-                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
-                setTimeout( function() {
-
-                    // Remove the “opened” and “focused” class from the picker root.
-                    P.$root.removeClass( CLASSES.opened + ' ' + CLASSES.focused )
-                    aria( P.$root[0], 'hidden', true )
-
-                }, 0 )
-
-                // If it’s already closed, do nothing more.
-                if ( !STATE.open ) return P
-
-                // Set it as closed.
-                STATE.open = false
-
-                // Allow the page to scroll.
-                if ( IS_DEFAULT_THEME ) {
-                    $html.
-                        css( 'overflow', '' ).
-                        css( 'padding-right', '-=' + getScrollbarWidth() )
-                }
-
-                // Unbind the document events.
-                $document.off( '.' + STATE.id )
-
-                // Trigger the queued “close” events.
-                return P.trigger( 'close' )
-            }, //close
-
-
-            /**
-             * Clear the values
-             */
-            clear: function( options ) {
-                return P.set( 'clear', null, options )
-            }, //clear
-
-
-            /**
-             * Set something
-             */
-            set: function( thing, value, options ) {
-
-                var thingItem, thingValue,
-                    thingIsObject = $.isPlainObject( thing ),
-                    thingObject = thingIsObject ? thing : {}
-
-                // Make sure we have usable options.
-                options = thingIsObject && $.isPlainObject( value ) ? value : options || {}
-
-                if ( thing ) {
-
-                    // If the thing isn’t an object, make it one.
-                    if ( !thingIsObject ) {
-                        thingObject[ thing ] = value
-                    }
-
-                    // Go through the things of items to set.
-                    for ( thingItem in thingObject ) {
-
-                        // Grab the value of the thing.
-                        thingValue = thingObject[ thingItem ]
-
-                        // First, if the item exists and there’s a value, set it.
-                        if ( thingItem in P.component.item ) {
-                            if ( thingValue === undefined ) thingValue = null
-                            P.component.set( thingItem, thingValue, options )
-                        }
-
-                        // Then, check to update the element value and broadcast a change.
-                        if ( thingItem == 'select' || thingItem == 'clear' ) {
-                            $ELEMENT.
-                                val( thingItem == 'clear' ? '' : P.get( thingItem, SETTINGS.format ) ).
-                                trigger( 'change' )
-                        }
-                    }
-
-                    // Render a new picker.
-                    P.render()
-                }
-
-                // When the method isn’t muted, trigger queued “set” events and pass the `thingObject`.
-                return options.muted ? P : P.trigger( 'set', thingObject )
-            }, //set
-
-
-            /**
-             * Get something
-             */
-            get: function( thing, format ) {
-
-                // Make sure there’s something to get.
-                thing = thing || 'value'
-
-                // If a picker state exists, return that.
-                if ( STATE[ thing ] != null ) {
-                    return STATE[ thing ]
-                }
-
-                // Return the submission value, if that.
-                if ( thing == 'valueSubmit' ) {
-                    if ( P._hidden ) {
-                        return P._hidden.value
-                    }
-                    thing = 'value'
-                }
-
-                // Return the value, if that.
-                if ( thing == 'value' ) {
-                    return ELEMENT.value
-                }
-
-                // Check if a component item exists, return that.
-                if ( thing in P.component.item ) {
-                    if ( typeof format == 'string' ) {
-                        var thingValue = P.component.get( thing )
-                        return thingValue ?
-                            PickerConstructor._.trigger(
-                                P.component.formats.toString,
-                                P.component,
-                                [ format, thingValue ]
-                            ) : ''
-                    }
-                    return P.component.get( thing )
-                }
-            }, //get
-
-
-
-            /**
-             * Bind events on the things.
-             */
-            on: function( thing, method, internal ) {
-
-                var thingName, thingMethod,
-                    thingIsObject = $.isPlainObject( thing ),
-                    thingObject = thingIsObject ? thing : {}
-
-                if ( thing ) {
-
-                    // If the thing isn’t an object, make it one.
-                    if ( !thingIsObject ) {
-                        thingObject[ thing ] = method
-                    }
-
-                    // Go through the things to bind to.
-                    for ( thingName in thingObject ) {
-
-                        // Grab the method of the thing.
-                        thingMethod = thingObject[ thingName ]
-
-                        // If it was an internal binding, prefix it.
-                        if ( internal ) {
-                            thingName = '_' + thingName
-                        }
-
-                        // Make sure the thing methods collection exists.
-                        STATE.methods[ thingName ] = STATE.methods[ thingName ] || []
-
-                        // Add the method to the relative method collection.
-                        STATE.methods[ thingName ].push( thingMethod )
-                    }
-                }
-
-                return P
-            }, //on
-
-
-
-            /**
-             * Unbind events on the things.
-             */
-            off: function() {
-                var i, thingName,
-                    names = arguments;
-                for ( i = 0, namesCount = names.length; i < namesCount; i += 1 ) {
-                    thingName = names[i]
-                    if ( thingName in STATE.methods ) {
-                        delete STATE.methods[thingName]
-                    }
-                }
-                return P
-            },
-
-
-            /**
-             * Fire off method events.
-             */
-            trigger: function( name, data ) {
-                var _trigger = function( name ) {
-                    var methodList = STATE.methods[ name ]
-                    if ( methodList ) {
-                        methodList.map( function( method ) {
-                            PickerConstructor._.trigger( method, P, [ data ] )
-                        })
-                    }
-                }
-                _trigger( '_' + name )
-                _trigger( name )
-                return P
-            } //trigger
-        } //PickerInstance.prototype
-
-
-    /**
-     * Wrap the picker holder components together.
-     */
-    function createWrappedComponent() {
-
-        // Create a picker wrapper holder
-        return PickerConstructor._.node( 'div',
-
-            // Create a picker wrapper node
-            PickerConstructor._.node( 'div',
-
-                // Create a picker frame
-                PickerConstructor._.node( 'div',
-
-                    // Create a picker box node
-                    PickerConstructor._.node( 'div',
-
-                        // Create the components nodes.
-                        P.component.nodes( STATE.open ),
-
-                        // The picker box class
-                        CLASSES.box
-                    ),
-
-                    // Picker wrap class
-                    CLASSES.wrap
-                ),
-
-                // Picker frame class
-                CLASSES.frame
-            ),
-
-            // Picker holder class
-            CLASSES.holder,
-
-            'tabindex="-1"'
-        ) //endreturn
-    } //createWrappedComponent
-
-
-
-    /**
-     * Prepare the input element with all bindings.
-     */
-    function prepareElement() {
-
-        $ELEMENT.
-
-            // Store the picker data by component name.
-            data(NAME, P).
-
-            // Add the “input” class name.
-            addClass(CLASSES.input).
-
-            // If there’s a `data-value`, update the value of the element.
-            val( $ELEMENT.data('value') ?
-                P.get('select', SETTINGS.format) :
-                ELEMENT.value
-            )
-
-
-        // Only bind keydown events if the element isn’t editable.
-        if ( !SETTINGS.editable ) {
-
-            $ELEMENT.
-
-                // On focus/click, open the picker.
-                on( 'focus.' + STATE.id + ' click.' + STATE.id, function(event) {
-                    event.preventDefault()
-                    P.open()
-                }).
-
-                // Handle keyboard event based on the picker being opened or not.
-                on( 'keydown.' + STATE.id, handleKeydownEvent )
-        }
-
-
-        // Update the aria attributes.
-        aria(ELEMENT, {
-            haspopup: true,
-            expanded: false,
-            readonly: false,
-            owns: ELEMENT.id + '_root'
-        })
-    }
-
-
-    /**
-     * Prepare the root picker element with all bindings.
-     */
-    function prepareElementRoot() {
-        aria( P.$root[0], 'hidden', true )
-    }
-
-
-     /**
-      * Prepare the holder picker element with all bindings.
-      */
-    function prepareElementHolder() {
-
-        P.$holder.
-
-            on({
-
-                // For iOS8.
-                keydown: handleKeydownEvent,
-
-                'focus.toOpen': handleFocusToOpenEvent,
-
-                blur: function() {
-                    // Remove the “target” class.
-                    $ELEMENT.removeClass( CLASSES.target )
-                },
-
-                // When something within the holder is focused, stop from bubbling
-                // to the doc and remove the “focused” state from the root.
-                focusin: function( event ) {
-                    P.$root.removeClass( CLASSES.focused )
-                    event.stopPropagation()
-                },
-
-                // When something within the holder is clicked, stop it
-                // from bubbling to the doc.
-                'mousedown click': function( event ) {
-
-                    var target = event.target
-
-                    // Make sure the target isn’t the root holder so it can bubble up.
-                    if ( target != P.$holder[0] ) {
-
-                        event.stopPropagation()
-
-                        // * For mousedown events, cancel the default action in order to
-                        //   prevent cases where focus is shifted onto external elements
-                        //   when using things like jQuery mobile or MagnificPopup (ref: #249 & #120).
-                        //   Also, for Firefox, don’t prevent action on the `option` element.
-                        if ( event.type == 'mousedown' && !$( target ).is( 'input, select, textarea, button, option' )) {
-
-                            event.preventDefault()
-
-                            // Re-focus onto the holder so that users can click away
-                            // from elements focused within the picker.
-                            P.$holder[0].focus()
-                        }
-                    }
-                }
-
-            }).
-
-            // If there’s a click on an actionable element, carry out the actions.
-            on( 'click', '[data-pick], [data-nav], [data-clear], [data-close]', function() {
-
-                var $target = $( this ),
-                    targetData = $target.data(),
-                    targetDisabled = $target.hasClass( CLASSES.navDisabled ) || $target.hasClass( CLASSES.disabled ),
-
-                    // * For IE, non-focusable elements can be active elements as well
-                    //   (http://stackoverflow.com/a/2684561).
-                    activeElement = getActiveElement()
-                    activeElement = activeElement && ( activeElement.type || activeElement.href )
-
-                // If it’s disabled or nothing inside is actively focused, re-focus the element.
-                if ( targetDisabled || activeElement && !$.contains( P.$root[0], activeElement ) ) {
-                    P.$holder[0].focus()
-                }
-
-                // If something is superficially changed, update the `highlight` based on the `nav`.
-                if ( !targetDisabled && targetData.nav ) {
-                    P.set( 'highlight', P.component.item.highlight, { nav: targetData.nav } )
-                }
-
-                // If something is picked, set `select` then close with focus.
-                else if ( !targetDisabled && 'pick' in targetData ) {
-                    P.set( 'select', targetData.pick )
-                    if ( SETTINGS.closeOnSelect ) {
-                        P.close( true )
-                    }
-                }
-
-                // If a “clear” button is pressed, empty the values and close with focus.
-                else if ( targetData.clear ) {
-                    P.clear()
-                    if ( SETTINGS.closeOnClear ) {
-                        P.close( true )
-                    }
-                }
-
-                else if ( targetData.close ) {
-                    P.close( true )
-                }
-
-            }) //P.$holder
-
-    }
-
-
-     /**
-      * Prepare the hidden input element along with all bindings.
-      */
-    function prepareElementHidden() {
-
-        var name
-
-        if ( SETTINGS.hiddenName === true ) {
-            name = ELEMENT.name
-            ELEMENT.name = ''
-        }
-        else {
-            name = [
-                typeof SETTINGS.hiddenPrefix == 'string' ? SETTINGS.hiddenPrefix : '',
-                typeof SETTINGS.hiddenSuffix == 'string' ? SETTINGS.hiddenSuffix : '_submit'
-            ]
-            name = name[0] + ELEMENT.name + name[1]
-        }
-
-        P._hidden = $(
-            '<input ' +
-            'type=hidden ' +
-
-            // Create the name using the original input’s with a prefix and suffix.
-            'name="' + name + '"' +
-
-            // If the element has a value, set the hidden value as well.
-            (
-                $ELEMENT.data('value') || ELEMENT.value ?
-                    ' value="' + P.get('select', SETTINGS.formatSubmit) + '"' :
-                    ''
-            ) +
-            '>'
-        )[0]
-
-        $ELEMENT.
-
-            // If the value changes, update the hidden input with the correct format.
-            on('change.' + STATE.id, function() {
-                P._hidden.value = ELEMENT.value ?
-                    P.get('select', SETTINGS.formatSubmit) :
-                    ''
-            })
-    }
-
-
-    // Wait for transitions to end before focusing the holder. Otherwise, while
-    // using the `container` option, the view jumps to the container.
-    function focusPickerOnceOpened() {
-
-        if (IS_DEFAULT_THEME && supportsTransitions) {
-            P.$holder.find('.' + CLASSES.frame).one('transitionend', function() {
-                P.$holder[0].focus()
-            })
-        }
-        else {
-            P.$holder[0].focus()
-        }
-    }
-
-
-    function handleFocusToOpenEvent(event) {
-
-        // Stop the event from propagating to the doc.
-        event.stopPropagation()
-
-        // Add the “target” class.
-        $ELEMENT.addClass( CLASSES.target )
-
-        // Add the “focused” class to the root.
-        P.$root.addClass( CLASSES.focused )
-
-        // And then finally open the picker.
-        P.open()
-    }
-
-
-    // For iOS8.
-    function handleKeydownEvent( event ) {
-
-        var keycode = event.keyCode,
-
-            // Check if one of the delete keys was pressed.
-            isKeycodeDelete = /^(8|46)$/.test(keycode)
-
-        // For some reason IE clears the input value on “escape”.
-        if ( keycode == 27 ) {
-            P.close( true )
-            return false
-        }
-
-        // Check if `space` or `delete` was pressed or the picker is closed with a key movement.
-        if ( keycode == 32 || isKeycodeDelete || !STATE.open && P.component.key[keycode] ) {
-
-            // Prevent it from moving the page and bubbling to doc.
-            event.preventDefault()
-            event.stopPropagation()
-
-            // If `delete` was pressed, clear the values and close the picker.
-            // Otherwise open the picker.
-            if ( isKeycodeDelete ) { P.clear().close() }
-            else { P.open() }
-        }
-    }
-
-
-    // Return a new picker instance.
-    return new PickerInstance()
-} //PickerConstructor
-
-
-
-/**
- * The default classes and prefix to use for the HTML classes.
- */
-PickerConstructor.klasses = function( prefix ) {
-    prefix = prefix || 'picker'
-    return {
-
-        picker: prefix,
-        opened: prefix + '--opened',
-        focused: prefix + '--focused',
-
-        input: prefix + '__input',
-        active: prefix + '__input--active',
-        target: prefix + '__input--target',
-
-        holder: prefix + '__holder',
-
-        frame: prefix + '__frame',
-        wrap: prefix + '__wrap',
-
-        box: prefix + '__box'
-    }
-} //PickerConstructor.klasses
-
-
-
-/**
- * Check if the default theme is being used.
- */
-function isUsingDefaultTheme( element ) {
-
-    var theme,
-        prop = 'position'
-
-    // For IE.
-    if ( element.currentStyle ) {
-        theme = element.currentStyle[prop]
-    }
-
-    // For normal browsers.
-    else if ( window.getComputedStyle ) {
-        theme = getComputedStyle( element )[prop]
-    }
-
-    return theme == 'fixed'
-}
-
-
-
-/**
- * Get the width of the browser’s scrollbar.
- * Taken from: https://github.com/VodkaBears/Remodal/blob/master/src/jquery.remodal.js
- */
-function getScrollbarWidth() {
-
-    if ( $html.height() <= $window.height() ) {
-        return 0
-    }
-
-    var $outer = $( '<div style="visibility:hidden;width:100px" />' ).
-        appendTo( 'body' )
-
-    // Get the width without scrollbars.
-    var widthWithoutScroll = $outer[0].offsetWidth
-
-    // Force adding scrollbars.
-    $outer.css( 'overflow', 'scroll' )
-
-    // Add the inner div.
-    var $inner = $( '<div style="width:100%" />' ).appendTo( $outer )
-
-    // Get the width with scrollbars.
-    var widthWithScroll = $inner[0].offsetWidth
-
-    // Remove the divs.
-    $outer.remove()
-
-    // Return the difference between the widths.
-    return widthWithoutScroll - widthWithScroll
-}
-
-
-
-/**
- * PickerConstructor helper methods.
- */
-PickerConstructor._ = {
-
-    /**
-     * Create a group of nodes. Expects:
-     * `
-        {
-            min:    {Integer},
-            max:    {Integer},
-            i:      {Integer},
-            node:   {String},
-            item:   {Function}
-        }
-     * `
-     */
-    group: function( groupObject ) {
-
-        var
-            // Scope for the looped object
-            loopObjectScope,
-
-            // Create the nodes list
-            nodesList = '',
-
-            // The counter starts from the `min`
-            counter = PickerConstructor._.trigger( groupObject.min, groupObject )
-
-
-        // Loop from the `min` to `max`, incrementing by `i`
-        for ( ; counter <= PickerConstructor._.trigger( groupObject.max, groupObject, [ counter ] ); counter += groupObject.i ) {
-
-            // Trigger the `item` function within scope of the object
-            loopObjectScope = PickerConstructor._.trigger( groupObject.item, groupObject, [ counter ] )
-
-            // Splice the subgroup and create nodes out of the sub nodes
-            nodesList += PickerConstructor._.node(
-                groupObject.node,
-                loopObjectScope[ 0 ],   // the node
-                loopObjectScope[ 1 ],   // the classes
-                loopObjectScope[ 2 ]    // the attributes
-            )
-        }
-
-        // Return the list of nodes
-        return nodesList
-    }, //group
-
-
-    /**
-     * Create a dom node string
-     */
-    node: function( wrapper, item, klass, attribute ) {
-
-        // If the item is false-y, just return an empty string
-        if ( !item ) return ''
-
-        // If the item is an array, do a join
-        item = $.isArray( item ) ? item.join( '' ) : item
-
-        // Check for the class
-        klass = klass ? ' class="' + klass + '"' : ''
-
-        // Check for any attributes
-        attribute = attribute ? ' ' + attribute : ''
-
-        // Return the wrapped item
-        return '<' + wrapper + klass + attribute + '>' + item + '</' + wrapper + '>'
-    }, //node
-
-
-    /**
-     * Lead numbers below 10 with a zero.
-     */
-    lead: function( number ) {
-        return ( number < 10 ? '0': '' ) + number
-    },
-
-
-    /**
-     * Trigger a function otherwise return the value.
-     */
-    trigger: function( callback, scope, args ) {
-        return typeof callback == 'function' ? callback.apply( scope, args || [] ) : callback
-    },
-
-
-    /**
-     * If the second character is a digit, length is 2 otherwise 1.
-     */
-    digits: function( string ) {
-        return ( /\d/ ).test( string[ 1 ] ) ? 2 : 1
-    },
-
-
-    /**
-     * Tell if something is a date object.
-     */
-    isDate: function( value ) {
-        return {}.toString.call( value ).indexOf( 'Date' ) > -1 && this.isInteger( value.getDate() )
-    },
-
-
-    /**
-     * Tell if something is an integer.
-     */
-    isInteger: function( value ) {
-        return {}.toString.call( value ).indexOf( 'Number' ) > -1 && value % 1 === 0
-    },
-
-
-    /**
-     * Create ARIA attribute strings.
-     */
-    ariaAttr: ariaAttr
-} //PickerConstructor._
-
-
-
-/**
- * Extend the picker with a component and defaults.
- */
-PickerConstructor.extend = function( name, Component ) {
-
-    // Extend jQuery.
-    $.fn[ name ] = function( options, action ) {
-
-        // Grab the component data.
-        var componentData = this.data( name )
-
-        // If the picker is requested, return the data object.
-        if ( options == 'picker' ) {
-            return componentData
-        }
-
-        // If the component data exists and `options` is a string, carry out the action.
-        if ( componentData && typeof options == 'string' ) {
-            return PickerConstructor._.trigger( componentData[ options ], componentData, [ action ] )
-        }
-
-        // Otherwise go through each matched element and if the component
-        // doesn’t exist, create a new picker using `this` element
-        // and merging the defaults and options with a deep copy.
-        return this.each( function() {
-            var $this = $( this )
-            if ( !$this.data( name ) ) {
-                new PickerConstructor( this, name, Component, options )
-            }
-        })
-    }
-
-    // Set the defaults.
-    $.fn[ name ].defaults = Component.defaults
-} //PickerConstructor.extend
-
-
-
-function aria(element, attribute, value) {
-    if ( $.isPlainObject(attribute) ) {
-        for ( var key in attribute ) {
-            ariaSet(element, key, attribute[key])
-        }
-    }
-    else {
-        ariaSet(element, attribute, value)
-    }
-}
-function ariaSet(element, attribute, value) {
-    element.setAttribute(
-        (attribute == 'role' ? '' : 'aria-') + attribute,
-        value
-    )
-}
-function ariaAttr(attribute, data) {
-    if ( !$.isPlainObject(attribute) ) {
-        attribute = { attribute: data }
-    }
-    data = ''
-    for ( var key in attribute ) {
-        var attr = (key == 'role' ? '' : 'aria-') + key,
-            attrVal = attribute[key]
-        data += attrVal == null ? '' : attr + '="' + attribute[key] + '"'
-    }
-    return data
-}
-
-// IE8 bug throws an error for activeElements within iframes.
-function getActiveElement() {
-    try {
-        return document.activeElement
-    } catch ( err ) { }
-}
-
-
-
-// Expose the picker constructor.
-return PickerConstructor
-
-
-}));
-
-
-
-
-
-/***/ }),
-
-/***/ 217:
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(218);
-__webpack_require__(223);
-__webpack_require__(224);
-__webpack_require__(225);
-__webpack_require__(226);
-__webpack_require__(227);
-__webpack_require__(228);
-__webpack_require__(229);
-__webpack_require__(230);
-module.exports = __webpack_require__(231);
-
-
-/***/ }),
-
-/***/ 218:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(219);
-
-
-__webpack_require__(221);
-__webpack_require__(35);
-
-__webpack_require__(215);
-__webpack_require__(222);
-
-__webpack_require__(13);
-
-window.Vue = __webpack_require__(6);
-
-Vue.config.devtools = false;
-Vue.config.performance = false;
-
-function readURL(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-            $('#imagePreview').hide();
-            $('#imagePreview').fadeIn(650);
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-var app = new Vue({
-    el: '#accordion-app',
-    data: {
-        qual: {
-            reference: '', description: '', institution: '', obtained_on: '',
-            student_no: ''
-        },
-        quals: []
-    },
-    mounted: function mounted() {
-        +function ($, el) {
-
-            // Extend the default picker options for all instances.
-            $.extend($.fn.pickadate.defaults, {
-                format: 'yyyy-mm-dd',
-                formatSubmit: 'yyyy-mm-dd',
-                selectYears: 20,
-                selectMonths: true,
-                closeOnSelect: true,
-                container: '#date-picker'
-            });
-
-            // Listen for browser-generated events.
-            Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.datepicker', function (event) {
-                // Use the picker object directly.
-                var picker = $(this).pickadate('picker');
-                if (picker === undefined) {
-                    //$(this).pickadate();
-                }
-            });
-
-            $("#imageUpload").change(function () {
-                readURL(this);
-            });
-            $.fn.mirror = function (selector) {
-                return this.each(function () {
-                    var $this = $(this);
-                    var $selector = $(selector);
-                    $this.bind('keyup change', function () {
-                        $selector.val($this.val());
-                    });
-                });
-            };
-
-            //$("#birth_date").pickadate({min: -65*365, max:-18*365});
-
-            $('.accordion').asAccordion();
-            $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
-
-            $(document).on('change', '.datepicker', function () {
-                //use this line if you create datepickers dynamically
-                if ($(this).data('datepicker_from_or_to') === 'from') {
-                    $('#' + $(this).data('datepicker_to_target')).pickadate('picker').set('min', $(this).val());
-                }
-                if ($(this).data('datepicker_from_or_to') === 'to') {
-                    $('#' + $(this).data('datepicker_from_target')).pickadate('picker').set('max', $(this).val());
-                }
-            });
-
-            $(':input[data-mirror]').each(function () {
-                $(this).mirror($(this).data('mirror'));
-            });
-        }(jQuery, this);
-    },
-    methods: {
-        addNewQual: function addNewQual() {
-            this.quals.push(Vue.util.extend({}, this.qual));
-            //ensure height is enough as accordion sets a height as inline style
-            $('.accordion--active').css("height", "");
-        },
-        removeQual: function removeQual(index) {
-            Vue.delete(this.quals, index);
-        },
-        submitForm: function submitForm(event) {
-            event.preventDefault();
-        },
-        fetchQualifications: function fetchQualifications() {
-            var _this = this;
-
-            fetch('./qualifications').then(function (res) {
-                return res.json();
-            }).then(function (res) {
-                _this.quals = res;
-            });
-        }
-    },
-    created: function created() {
-        this.fetchQualifications();
-    }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
-
-/***/ }),
-
-/***/ 219:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return on; });
-/* unused harmony export off */
-/* unused harmony export fire */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(220);
-
-
-var bubbleEvents = {};
-var captureEvents = {};
-var propagationStopped = new WeakMap();
-var immediatePropagationStopped = new WeakMap();
-var currentTargets = new WeakMap();
-var currentTargetDesc = Object.getOwnPropertyDescriptor(Event.prototype, 'currentTarget');
-
-function before(subject, verb, fn) {
-  var source = subject[verb];
-  subject[verb] = function () {
-    fn.apply(subject, arguments);
-    return source.apply(subject, arguments);
-  };
-  return subject;
-}
-
-function matches(selectors, target, reverse) {
-  var queue = [];
-  var node = target;
-
-  do {
-    if (node.nodeType !== 1) break;
-    var _matches = selectors.matches(node);
-    if (_matches.length) {
-      var matched = { node: node, observers: _matches };
-      if (reverse) {
-        queue.unshift(matched);
-      } else {
-        queue.push(matched);
-      }
-    }
-  } while (node = node.parentElement);
-
-  return queue;
-}
-
-function trackPropagation() {
-  propagationStopped.set(this, true);
-}
-
-function trackImmediate() {
-  propagationStopped.set(this, true);
-  immediatePropagationStopped.set(this, true);
-}
-
-function getCurrentTarget() {
-  return currentTargets.get(this) || null;
-}
-
-function defineCurrentTarget(event, getter) {
-  if (!currentTargetDesc) return;
-
-  Object.defineProperty(event, 'currentTarget', {
-    configurable: true,
-    enumerable: true,
-    get: getter || currentTargetDesc.get
-  });
-}
-
-function dispatch(event) {
-  var events = event.eventPhase === 1 ? captureEvents : bubbleEvents;
-
-  var selectors = events[event.type];
-  if (!selectors) return;
-
-  var queue = matches(selectors, event.target, event.eventPhase === 1);
-  if (!queue.length) return;
-
-  before(event, 'stopPropagation', trackPropagation);
-  before(event, 'stopImmediatePropagation', trackImmediate);
-  defineCurrentTarget(event, getCurrentTarget);
-
-  for (var i = 0, len1 = queue.length; i < len1; i++) {
-    if (propagationStopped.get(event)) break;
-    var matched = queue[i];
-    currentTargets.set(event, matched.node);
-
-    for (var j = 0, len2 = matched.observers.length; j < len2; j++) {
-      if (immediatePropagationStopped.get(event)) break;
-      matched.observers[j].data.call(matched.node, event);
-    }
-  }
-
-  currentTargets.delete(event);
-  defineCurrentTarget(event);
-}
-
-function on(name, selector, fn) {
-  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-
-  var capture = options.capture ? true : false;
-  var events = capture ? captureEvents : bubbleEvents;
-
-  var selectors = events[name];
-  if (!selectors) {
-    selectors = new __WEBPACK_IMPORTED_MODULE_0_selector_set__["a" /* default */]();
-    events[name] = selectors;
-    document.addEventListener(name, dispatch, capture);
-  }
-  selectors.add(selector, fn);
-}
-
-function off(name, selector, fn) {
-  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-
-  var capture = options.capture ? true : false;
-  var events = capture ? captureEvents : bubbleEvents;
-
-  var selectors = events[name];
-  if (!selectors) return;
-  selectors.remove(selector, fn);
-
-  if (selectors.size) return;
-  delete events[name];
-  document.removeEventListener(name, dispatch, capture);
-}
-
-function fire(target, name, detail) {
-  return target.dispatchEvent(new CustomEvent(name, {
-    bubbles: true,
-    cancelable: true,
-    detail: detail
-  }));
-}
-
-
-
-
-/***/ }),
-
-/***/ 220:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = SelectorSet;
-// Public: Create a new SelectorSet.
-function SelectorSet() {
-  // Construct new SelectorSet if called as a function.
-  if (!(this instanceof SelectorSet)) {
-    return new SelectorSet();
-  }
-
-  // Public: Number of selectors added to the set
-  this.size = 0;
-
-  // Internal: Incrementing ID counter
-  this.uid = 0;
-
-  // Internal: Array of String selectors in the set
-  this.selectors = [];
-
-  // Internal: All Object index String names mapping to Index objects.
-  this.indexes = Object.create(this.indexes);
-
-  // Internal: Used Object index String names mapping to Index objects.
-  this.activeIndexes = [];
-}
-
-// Detect prefixed Element#matches function.
-var docElem = window.document.documentElement;
-var matches = (docElem.matches ||
-                docElem.webkitMatchesSelector ||
-                docElem.mozMatchesSelector ||
-                docElem.oMatchesSelector ||
-                docElem.msMatchesSelector);
-
-// Public: Check if element matches selector.
-//
-// Maybe overridden with custom Element.matches function.
-//
-// el       - An Element
-// selector - String CSS selector
-//
-// Returns true or false.
-SelectorSet.prototype.matchesSelector = function(el, selector) {
-  return matches.call(el, selector);
-};
-
-// Public: Find all elements in the context that match the selector.
-//
-// Maybe overridden with custom querySelectorAll function.
-//
-// selectors - String CSS selectors.
-// context   - Element context
-//
-// Returns non-live list of Elements.
-SelectorSet.prototype.querySelectorAll = function(selectors, context) {
-  return context.querySelectorAll(selectors);
-};
-
-
-// Public: Array of indexes.
-//
-// name     - Unique String name
-// selector - Function that takes a String selector and returns a String key
-//            or undefined if it can't be used by the index.
-// element  - Function that takes an Element and returns an Array of String
-//            keys that point to indexed values.
-//
-SelectorSet.prototype.indexes = [];
-
-// Index by element id
-var idRe = /^#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
-SelectorSet.prototype.indexes.push({
-  name: 'ID',
-  selector: function matchIdSelector(sel) {
-    var m;
-    if (m = sel.match(idRe)) {
-      return m[0].slice(1);
-    }
-  },
-  element: function getElementId(el) {
-    if (el.id) {
-      return [el.id];
-    }
-  }
-});
-
-// Index by all of its class names
-var classRe = /^\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
-SelectorSet.prototype.indexes.push({
-  name: 'CLASS',
-  selector: function matchClassSelector(sel) {
-    var m;
-    if (m = sel.match(classRe)) {
-      return m[0].slice(1);
-    }
-  },
-  element: function getElementClassNames(el) {
-    var className = el.className;
-    if (className) {
-      if (typeof className === 'string') {
-        return className.split(/\s/);
-      } else if (typeof className === 'object' && 'baseVal' in className) {
-        // className is a SVGAnimatedString
-        // global SVGAnimatedString is not an exposed global in Opera 12
-        return className.baseVal.split(/\s/);
-      }
-    }
-  }
-});
-
-// Index by tag/node name: `DIV`, `FORM`, `A`
-var tagRe = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
-SelectorSet.prototype.indexes.push({
-  name: 'TAG',
-  selector: function matchTagSelector(sel) {
-    var m;
-    if (m = sel.match(tagRe)) {
-      return m[0].toUpperCase();
-    }
-  },
-  element: function getElementTagName(el) {
-    return [el.nodeName.toUpperCase()];
-  }
-});
-
-// Default index just contains a single array of elements.
-SelectorSet.prototype.indexes['default'] = {
-  name: 'UNIVERSAL',
-  selector: function() {
-    return true;
-  },
-  element: function() {
-    return [true];
-  }
-};
-
-
-// Use ES Maps when supported
-var Map;
-if (typeof window.Map === 'function') {
-  Map = window.Map;
-} else {
-  Map = (function() {
-    function Map() {
-      this.map = {};
-    }
-    Map.prototype.get = function(key) {
-      return this.map[key + ' '];
-    };
-    Map.prototype.set = function(key, value) {
-      this.map[key + ' '] = value;
-    };
-    return Map;
-  })();
-}
-
-
-// Regexps adopted from Sizzle
-//   https://github.com/jquery/sizzle/blob/1.7/sizzle.js
-//
-var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g;
-
-// Internal: Get indexes for selector.
-//
-// selector - String CSS selector
-//
-// Returns Array of {index, key}.
-function parseSelectorIndexes(allIndexes, selector) {
-  allIndexes = allIndexes.slice(0).concat(allIndexes['default']);
-
-  var allIndexesLen = allIndexes.length,
-      i, j, m, dup, rest = selector,
-      key, index, indexes = [];
-
-  do {
-    chunker.exec('');
-    if (m = chunker.exec(rest)) {
-      rest = m[3];
-      if (m[2] || !rest) {
-        for (i = 0; i < allIndexesLen; i++) {
-          index = allIndexes[i];
-          if (key = index.selector(m[1])) {
-            j = indexes.length;
-            dup = false;
-            while (j--) {
-              if (indexes[j].index === index && indexes[j].key === key) {
-                dup = true;
-                break;
-              }
-            }
-            if (!dup) {
-              indexes.push({index: index, key: key});
-            }
-            break;
-          }
-        }
-      }
-    }
-  } while (m);
-
-  return indexes;
-}
-
-// Internal: Find first item in Array that is a prototype of `proto`.
-//
-// ary   - Array of objects
-// proto - Prototype of expected item in `ary`
-//
-// Returns object from `ary` if found. Otherwise returns undefined.
-function findByPrototype(ary, proto) {
-  var i, len, item;
-  for (i = 0, len = ary.length; i < len; i++) {
-    item = ary[i];
-    if (proto.isPrototypeOf(item)) {
-      return item;
-    }
-  }
-}
-
-// Public: Log when added selector falls under the default index.
-//
-// This API should not be considered stable. May change between
-// minor versions.
-//
-// obj - {selector, data} Object
-//
-//   SelectorSet.prototype.logDefaultIndexUsed = function(obj) {
-//     console.warn(obj.selector, "could not be indexed");
-//   };
-//
-// Returns nothing.
-SelectorSet.prototype.logDefaultIndexUsed = function() {};
-
-// Public: Add selector to set.
-//
-// selector - String CSS selector
-// data     - Optional data Object (default: undefined)
-//
-// Returns nothing.
-SelectorSet.prototype.add = function(selector, data) {
-  var obj, i, indexProto, key, index, objs,
-      selectorIndexes, selectorIndex,
-      indexes = this.activeIndexes,
-      selectors = this.selectors;
-
-  if (typeof selector !== 'string') {
-    return;
-  }
-
-  obj = {
-    id: this.uid++,
-    selector: selector,
-    data: data
-  };
-
-  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
-  for (i = 0; i < selectorIndexes.length; i++) {
-    selectorIndex = selectorIndexes[i];
-    key = selectorIndex.key;
-    indexProto = selectorIndex.index;
-
-    index = findByPrototype(indexes, indexProto);
-    if (!index) {
-      index = Object.create(indexProto);
-      index.map = new Map();
-      indexes.push(index);
-    }
-
-    if (indexProto === this.indexes['default']) {
-      this.logDefaultIndexUsed(obj);
-    }
-    objs = index.map.get(key);
-    if (!objs) {
-      objs = [];
-      index.map.set(key, objs);
-    }
-    objs.push(obj);
-  }
-
-  this.size++;
-  selectors.push(selector);
-};
-
-// Public: Remove selector from set.
-//
-// selector - String CSS selector
-// data     - Optional data Object (default: undefined)
-//
-// Returns nothing.
-SelectorSet.prototype.remove = function(selector, data) {
-  if (typeof selector !== 'string') {
-    return;
-  }
-
-  var selectorIndexes, selectorIndex, i, j, k, selIndex, objs, obj;
-  var indexes = this.activeIndexes;
-  var removedIds = {};
-  var removeAll = arguments.length === 1;
-
-  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
-  for (i = 0; i < selectorIndexes.length; i++) {
-    selectorIndex = selectorIndexes[i];
-
-    j = indexes.length;
-    while (j--) {
-      selIndex = indexes[j];
-      if (selectorIndex.index.isPrototypeOf(selIndex)) {
-        objs = selIndex.map.get(selectorIndex.key);
-        if (objs) {
-          k = objs.length;
-          while (k--) {
-            obj = objs[k];
-            if (obj.selector === selector && (removeAll || obj.data === data)) {
-              objs.splice(k, 1);
-              removedIds[obj.id] = true;
-            }
-          }
-        }
-        break;
-      }
-    }
-  }
-
-  this.size -= Object.keys(removedIds).length;
-};
-
-// Sort by id property handler.
-//
-// a - Selector obj.
-// b - Selector obj.
-//
-// Returns Number.
-function sortById(a, b) {
-  return a.id - b.id;
-}
-
-// Public: Find all matching decendants of the context element.
-//
-// context - An Element
-//
-// Returns Array of {selector, data, elements} matches.
-SelectorSet.prototype.queryAll = function(context) {
-  if (!this.selectors.length) {
-    return [];
-  }
-
-  var matches = {}, results = [];
-  var els = this.querySelectorAll(this.selectors.join(', '), context);
-
-  var i, j, len, len2, el, m, match, obj;
-  for (i = 0, len = els.length; i < len; i++) {
-    el = els[i];
-    m = this.matches(el);
-    for (j = 0, len2 = m.length; j < len2; j++) {
-      obj = m[j];
-      if (!matches[obj.id]) {
-        match = {
-          id: obj.id,
-          selector: obj.selector,
-          data: obj.data,
-          elements: []
-        };
-        matches[obj.id] = match;
-        results.push(match);
-      } else {
-        match = matches[obj.id];
-      }
-      match.elements.push(el);
-    }
-  }
-
-  return results.sort(sortById);
-};
-
-// Public: Match element against all selectors in set.
-//
-// el - An Element
-//
-// Returns Array of {selector, data} matches.
-SelectorSet.prototype.matches = function(el) {
-  if (!el) {
-    return [];
-  }
-
-  var i, j, k, len, len2, len3, index, keys, objs, obj, id;
-  var indexes = this.activeIndexes, matchedIds = {}, matches = [];
-
-  for (i = 0, len = indexes.length; i < len; i++) {
-    index = indexes[i];
-    keys = index.element(el);
-    if (keys) {
-      for (j = 0, len2 = keys.length; j < len2; j++) {
-        if (objs = index.map.get(keys[j])) {
-          for (k = 0, len3 = objs.length; k < len3; k++) {
-            obj = objs[k];
-            id = obj.id;
-            if (!matchedIds[id] && this.matchesSelector(el, obj.selector)) {
-              matchedIds[id] = true;
-              matches.push(obj);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  return matches.sort(sortById);
-};
-
-
-/***/ }),
-
-/***/ 221:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {(function($) {
-  var START_EVENT = 'mousedown touchstart MSPointerDown pointerdown'
-    , END_EVENT   = 'mouseup touchend MSPointerUp pointerup'
-    , MOVE_EVENT  = 'mousemove touchmove MSPointerMove pointermove scroll'
-
-  function translate(el, x, y) {
-    vendorify('transform', el, 'translate(' + x + 'px, ' + y + 'px)')
-  }
-
-  function transition(el, val) {
-    vendorify('transition', el, val)
-  }
-
-  function getTouchPageX(e) {
-    e = e.originalEvent || e
-    return window.event && window.event.changedTouches && event.changedTouches[0].pageX || e.pageX
-  }
-
-  function getTouchPageY(e) {
-    e = e.originalEvent || e
-    return window.event && window.event.changedTouches && event.changedTouches[0].pageY || e.pageY
-  }
-
-  function vendorify(property, el, val) {
-    property = property.toLowerCase()
-    var titleCased = property.charAt(0).toUpperCase() + property.substr(1)
-    var vendorPrefixes = ['webkit', 'Moz', 'ms', 'O']
-    var properties = vendorPrefixes.map(function(prefix) {
-      return prefix + titleCased
-    }).concat('transform')
-    for (var i = 0, len = properties.length; i < len; ++i) {
-      if (properties[i] in el.style) {
-        if (val !== undefined) el.style[properties[i]] = val
-        else return el.style[properties[i]]
-        break
-      }
-    }
-  }
-
-  var eventProperties = [
-    'altKey', 'bubbles', 'button', 'cancelable', 'charCode', 'clientX',
-    'clientY', 'ctrlKey', 'currentTarget', 'data', 'detail', 'eventPhase',
-    'metaKey', 'offsetX', 'offsetY', 'originalTarget', 'pageX', 'pageY',
-    'relatedTarget', 'screenX', 'screenY', 'shiftKey', 'target', 'view',
-    'which'
-  ]
-  function trigger(el, name, originalEvent, arg) {
-    if (!el[0]) return
-
-    originalEvent = originalEvent.originalEvent || originalEvent
-    var props = {}
-    eventProperties.forEach(function(prop) {
-      props[prop] = originalEvent[prop]
-    })
-    props.currentTarget = props.target = el[0]
-
-    var win = (el[0].ownerDocument.defaultView || el[0].ownerDocument.parentWindow)
-    var $ = win.Zepto || win.jQuery
-
-    var e = $.Event(name, props)
-    $(el[0]).trigger(e, arg)
-    return e
-  }
-
-  var nextId = 0
-  var Dragging = function() {
-    this.eventHandler = $('<div />')
-    this.parent = this.el = this.handle = null
-    this.origin = { x: 0, y: 0, transition: null, translate: null, offset: { x: 0, y: 0 } }
-    this.lastEntered = this.currentTarget = null
-    this.lastX = this.lastY = this.lastDirection = null
-    this.originalCss = {}
-    this.windows = [window]
-
-    var placeholder
-    Object.defineProperty(this, 'placeholder', {
-      get: function() { return placeholder },
-      set: function(val) {
-        if (placeholder === val) return
-        if (placeholder) placeholder.remove()
-        placeholder = val
-      }
-    })
-  }
-
-  Dragging.prototype.on = function() {
-    this.eventHandler.on.apply(this.eventHandler, Array.prototype.slice.call(arguments))
-    return this
-  }
-
-  Dragging.prototype.off = function() {
-    this.eventHandler.off.apply(this.eventHandler, Array.prototype.slice.call(arguments))
-    return this
-  }
-
-  Dragging.prototype.start = function(parent, el, e, handle) {
-    this.parent = parent
-    this.el = el
-    this.handle = handle
-    var el = this.handle || this.el
-    this.origin.x = getTouchPageX(e)
-    this.origin.y = getTouchPageY(e)
-    this.origin.transform  = vendorify('transform', this.el[0])
-    this.origin.transition = vendorify('transition', this.el[0])
-    var rect = this.el[0].getBoundingClientRect()
-    this.origin.offset.x = rect.left + (window.scrollX || window.pageXOffset) - this.origin.x
-    this.origin.offset.y = rect.top + (window.scrollY || window.pageYOffset) - this.origin.y
-    this.origin.scrollX = (window.scrollX || window.pageXOffset)
-    this.origin.scrollY = (window.scrollY || window.pageYOffset)
-    // the draged element is going to stick right under the cursor
-    // setting the css property `pointer-events` to `none` will let
-    // the pointer events fire on the elements underneath the helper
-    el[0].style.pointerEvents = 'none'
-    this.windows.forEach(function(win) {
-      $(win).on(MOVE_EVENT, $.proxy(this.move, this))
-      $(win).on(END_EVENT, $.proxy(this.stop, this))
-    }, this)
-    transition(el[0], '')
-    trigger(this.eventHandler, 'dragging:start', e)
-    return this.el
-  }
-
-  Dragging.prototype.stop = function(e) {
-    var dropEvent = null
-    var revert = true
-    if (this.last) {
-      var last = this.last
-      this.last = null
-      dropEvent = trigger($(last), 'dragging:drop', e)
-      revert = !dropEvent.isDefaultPrevented()
-    }
-
-    if (!this.el) {
-      return
-    }
-
-    for (var prop in this.originalCss) {
-      this.el.css(prop, this.originalCss[prop])
-      delete this.originalCss[prop]
-    }
-
-    trigger(this.eventHandler, 'dragging:stop', e, this.el)
-    this.placeholder = null
-    if (!this.handle) {
-      this.adjustPlacement(e)
-    }
-
-    var el = this.el
-    if (this.handle) {
-      this.handle.remove()
-    }
-
-    setTimeout((function(el, origin) {
-      transition(el[0], 'all 0.25s ease-in-out 0s')
-      vendorify('transform', el[0], origin.transform || '')
-      setTimeout(transition.bind(null, el[0], origin.transition || ''), 250)
-      el[0].style.pointerEvents = ''
-    }).bind(null, el, this.origin))
-
-    this.windows.forEach(function(win) {
-      $(win).off(MOVE_EVENT, this.move)
-      $(win).off(END_EVENT, this.stop)
-    }, this)
-    this.parent = this.el = this.handle = null
-  }
-
-  Dragging.prototype.move = function(e) {
-    if (!this.el) return
-
-    var doc = this.el[0].ownerDocument
-    var win = doc.defaultView || doc.parentWindow
-
-    if (e.type !== 'scroll') {
-      var pageX = getTouchPageX(e)
-      var pageY = getTouchPageY(e)
-
-      if (e.view !== win && e.view.frameElement) {
-        pageX += e.view.frameElement.offsetLeft
-        pageY += e.view.frameElement.offsetTop
-      }
-
-      var clientX = e.clientX || (e.originalEvent && e.originalEvent.clientX) || window.event && window.event.touches && window.event.touches[0].clientX || 0
-        , clientY = e.clientY || (e.originalEvent && e.originalEvent.clientY) || window.event && window.event.touches && window.event.touches[0].clientY || 0
-
-      var doc = this.el[0].ownerDocument
-      var over
-      if (!isOldIE) {
-        over = e.view.document.elementFromPoint(clientX, clientY)
-      } else {
-        over = e.view.document.msElementsFromPoint(clientX, clientY)
-        over = over[0] === this.el[0] ? over[1] : over[0]
-      }
-
-      var deltaX = this.lastX - pageX
-      var deltaY = this.lastY - pageY
-      var direction = deltaY > 0 && 'up' || deltaY < 0 && 'down'
-                   || deltaX > 0 && 'up'|| deltaX < 0 && 'down'
-                   || this.lastDirection
-      if (!dragging.currentTarget) {
-        this.setCurrent(over)
-      }
-
-      if (this.currentTarget) {
-        if (over !== this.last && this.lastEntered !== this.currentTarget) {
-          trigger($(this.lastEntered), 'dragging:leave', e)
-          trigger($(this.currentTarget), 'dragging:enter', e)
-          this.lastEntered = this.currentTarget
-        } else if (direction !== this.lastDirection) {
-          trigger($(this.currentTarget), 'dragging:diverted', e)
-        }
-      }
-
-      this.last = over
-      this.currentTarget = null
-      this.lastDirection = direction
-      this.lastX = pageX
-      this.lastY = pageY
-      this.origin.scrollX = (window.scrollX || window.pageXOffset)
-      this.origin.scrollY = (window.scrollY || window.pageYOffset)
-    } else {
-      var pageX = this.lastX + ((window.scrollX || window.pageXOffset) - this.origin.scrollX)
-        , pageY = this.lastY + ((window.scrollY || window.pageYOffset) - this.origin.scrollY)
-    }
-
-    // border scrolling only for root window
-    if (e.view !== win && e.view && e.view.frameElement) {
-      var bottom = (pageY - (window.scrollY || window.pageYOffset) - window.innerHeight) * -1
-      var bottomReached = document.documentElement.offsetHeight < (window.scrollY || window.pageYOffset) + window.innerHeight
-      if (bottom <= 10 && !bottomReached) {
-        setTimeout(function() { window.scrollBy(0, 5) }, 50)
-      }
-
-      var top = (pageY - (window.scrollY || window.pageYOffset))
-      var topReached = (window.scrollY || window.pageYOffset) <= 0
-      if (top <= 10 && !topReached) {
-        setTimeout(function() { window.scrollBy(0, -5) }, 50)
-      }
-    }
-
-    var deltaX = pageX - this.origin.x
-      , deltaY = pageY - this.origin.y
-    var el = this.handle || this.el
-
-    translate(el[0], deltaX, deltaY)
-  }
-
-  Dragging.prototype.setCurrent = function(target) {
-    this.currentTarget = target
-  }
-
-  Dragging.prototype.css = function(prop, val) {
-    if (!this.el) return
-    this.originalCss[prop] = this.el.css(prop)
-    this.el.css(prop, val)
-  }
-
-  Dragging.prototype.adjustPlacement = function(e) {
-    var el = this.handle && this.handle[0] || this.el[0]
-    translate(el, 0, 0)
-    var rect = el.getBoundingClientRect()
-    this.origin.x = rect.left + (window.scrollX || window.pageXOffset) - this.origin.offset.x
-    this.origin.y = rect.top + (window.scrollY || window.pageYOffset) - this.origin.offset.y
-    var pageX  = getTouchPageX(e) || this.lastX
-      , pageY  = getTouchPageY(e) || this.lastY
-      , deltaX = pageX - this.origin.x
-      , deltaY = pageY - this.origin.y
-    translate(el, deltaX, deltaY)
-  }
-
-  var dragging
-  try {
-    if (parent.$ && parent.$.dragging) {
-      dragging = parent.$.dragging
-      dragging.windows.push(window)
-    }
-  } catch (e) {}
-
-  dragging = $.dragging = dragging || new Dragging()
-
-  // from https://github.com/rkusa/selector-observer
-  var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
-  function matches(el, selector) {
-    var fn = el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector
-    return fn ? fn.call(el, selector) : false
-  }
-  function toArr(nodeList) {
-    return Array.prototype.slice.call(nodeList)
-  }
-
-  // polyfill for IE < 11
-  var isOldIE = false
-  if (typeof MutationObserver === 'undefined') {
-    MutationObserver = function(callback) {
-      this.targets = []
-      this.onAdded = function(e) {
-        callback([{ addedNodes: [e.target], removedNodes: [] }])
-      }
-      this.onRemoved = function(e) {
-        callback([{ addedNodes: [], removedNodes: [e.target] }])
-      }
-    }
-
-    MutationObserver.prototype.observe = function(target) {
-      target.addEventListener('DOMNodeInserted', this.onAdded)
-      target.addEventListener('DOMNodeRemoved', this.onRemoved)
-      this.targets.push(target)
-    }
-
-    MutationObserver.prototype.disconnect = function() {
-      var target
-      while (target = this.targets.shift()) {
-        target.removeEventListener('DOMNodeInserted', this.onAdded)
-        target.removeEventListener('DOMNodeRemoved', this.onRemoved)
-      }
-    }
-
-    isOldIE = !!~navigator.appName.indexOf('Internet Explorer')
-  }
-
-  var SelectorObserver = function(targets, selector, onAdded, onRemoved) {
-    var self     = this
-    this.targets = targets instanceof NodeList
-                     ? Array.prototype.slice.call(targets)
-                     : [targets]
-
-    // support selectors starting with the childs only selector `>`
-    var childsOnly = selector[0] === '>'
-    var search = childsOnly ? selector.substr(1) : selector
-    var initialized = false
-
-    function query(nodes, deep) {
-      var result = []
-
-      toArr(nodes).forEach(function(node) {
-        //ignore non-element nodes
-        if (node.nodeType !== 1) return;
-
-        // if looking for childs only, the node's parentNode
-        // should be one of our targets
-        if (childsOnly && self.targets.indexOf(node.parentNode) === -1) {
-          return
-        }
-
-        // test if the node itself matches the selector
-        if (matches(node, search)) {
-          result.push(node)
-        }
-
-        if (childsOnly || !deep) {
-          return
-        }
-
-        toArr(node.querySelectorAll(selector)).forEach(function(node) {
-          result.push(node)
-        })
-      })
-
-      return result
-    }
-
-    function apply(nodes, deep, callback) {
-      if (!callback) {
-        return
-      }
-
-      // flatten
-      query(nodes, deep)
-      // filter unique nodes
-      .filter(function(node, i, self) {
-        return self.indexOf(node) === i
-      })
-      // execute callback
-      .forEach(function(node) {
-        callback.call(node)
-      })
-    }
-
-    var timeout      = null
-    var addedNodes   = []
-    var removedNodes = []
-
-    function handle() {
-      self.disconnect()
-
-      // filter moved elements (removed and re-added)
-      for (var i = 0, len = removedNodes.length; i < len; ++i) {
-        var index = addedNodes.indexOf(removedNodes[i])
-        if (index > -1) {
-          addedNodes.splice(index, 1)
-          removedNodes.splice(i--, 1)
-        }
-      }
-
-      //                ↓ IE workarounds ...
-      apply(addedNodes, !(initialized && isOldIE), onAdded)
-      apply(removedNodes, true, onRemoved)
-
-      addedNodes.length   = 0
-      removedNodes.length = 0
-
-      self.observe()
-    }
-
-    this.observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        addedNodes.push.apply(addedNodes, mutation.addedNodes)
-        removedNodes.push.apply(removedNodes, mutation.removedNodes)
-      })
-
-      // IE < 10 fix: wait a cycle to gather all mutations
-      if (timeout) {
-        clearTimeout(timeout)
-      }
-      timeout = setTimeout(handle)
-    })
-
-    // call onAdded for existing elements
-    if (onAdded) {
-      this.targets.forEach(function(target) {
-        apply(target.children, true, onAdded)
-      })
-    }
-
-    initialized = true
-
-    this.observe()
-  }
-
-  SelectorObserver.prototype.disconnect = function() {
-    this.observer.disconnect()
-  }
-
-  SelectorObserver.prototype.observe = function() {
-    var self = this
-    this.targets.forEach(function(target) {
-      self.observer.observe(target, { childList: true, subtree: true })
-    })
-  }
-
-  var Draggable = function(element, opts) {
-    this.id     = nextId++
-    this.el     = $(element)
-    this.opts   = opts
-    this.cancel = opts.handle !== false
-  }
-
-  Draggable.prototype.create = function() {
-    this.el
-    .on(START_EVENT, $.proxy(this.start, this))
-    .css('touch-action', 'double-tap-zoom')
-    .css('-ms-touch-action', 'double-tap-zoom')
-
-    dragging.on('dragging:stop', $.proxy(this.reset, this))
-
-    var self = this
-    setTimeout(function() {
-      self.el.trigger('draggable:create', self)
-    })
-  }
-
-  Draggable.prototype.destroy = function() {
-    this.el.off(START_EVENT, this.start)
-
-    // Todo: Fix Zepto Bug
-    dragging.off('dragging:stop', this.reset)
-  }
-
-  Draggable.prototype.enable = function() {
-    this.opts.disabled = false
-  }
-
-  Draggable.prototype.disable = function() {
-    this.opts.disabled = true
-  }
-
-  Draggable.prototype.start = function(e) {
-    if (this.opts.disabled) {
-      return false
-    }
-
-    // only start on left mouse button
-    if (e.type === 'mousedown' && e.which !== 1) {
-      return false
-    }
-
-    e = e.originalEvent || e // zepto <> jquery compatibility
-
-    if (this.opts.cancel) {
-      var target = $(e.target)
-      while (target[0] !== this.el[0]) {
-        if (target.is(this.opts.cancel)) return
-        target = target.parent()
-      }
-    }
-
-    if (this.opts.handle) {
-      var target = $(e.target), isHandle = false
-      while (target[0] !== this.el[0]) {
-        if (target.is(this.opts.handle)) {
-          isHandle = true
-          break
-        }
-        target = target.parent()
-      }
-      if (!isHandle) return
-    }
-
-    // prevent text selection
-    e.preventDefault()
-
-    var el = this.el, helper
-    if (this.opts.clone) {
-      if (typeof this.opts.clone === 'function') {
-        helper = this.opts.clone.call(this.el)
-      } else {
-        helper = this.el.clone()
-        if (this.opts.cloneClass) {
-          helper.addClass(this.opts.cloneClass)
-        }
-      }
-      var position = this.el.position()
-      helper.css('position', 'absolute')
-            .css('left', position.left).css('top', position.top)
-            .width(this.el.width()).height(this.el.height())
-      helper.insertAfter(this.el)
-    }
-
-    dragging.start(this, this.el, e, helper)
-
-    trigger(this.el, 'draggable:start', e, { item: dragging.el })
-  }
-
-  Draggable.prototype.reset = function(e, last) {
-    if (last === this.el[0]) {
-      trigger(this.el, 'draggable:stop', e, { item: dragging.el })
-    }
-  }
-
-  var Droppable = function(element, opts) {
-    this.id            = nextId++
-    this.el            = $(element)
-    this.opts          = opts
-    this.accept        = false
-  }
-
-  Droppable.prototype.create = function() {
-    this.el
-    .on('dragging:enter', $.proxy(this.enter, this))
-    .on('dragging:leave', $.proxy(this.leave, this))
-    .on('dragging:drop',  $.proxy(this.drop, this))
-
-    dragging
-    .on('dragging:start', $.proxy(this.activate, this))
-    .on('dragging:stop',  $.proxy(this.reset, this))
-
-    var self = this
-    setTimeout(function() {
-      self.el.trigger('droppable:create', self)
-    })
-  }
-
-  Droppable.prototype.destroy = function() {
-    this.el
-    .off('dragging:enter', this.enter)
-    .off('dragging:leave', this.leave)
-    .off('dragging:drop',  this.drop)
-
-    // Todo: Fix Zepto Bug
-    // dragging
-    // .off('dragging:start', this.activate)
-    // .off('dragging:stop',  this.reset)
-  }
-
-  Droppable.prototype.enable = function() {
-    this.opts.disabled = false
-  }
-
-  Droppable.prototype.disable = function() {
-    this.opts.disabled = true
-  }
-
-  Droppable.prototype.activate = function(e) {
-    this.accept = dragging.parent.opts.connectWith && this.el.is(dragging.parent.opts.connectWith)
-
-    if (!this.accept) {
-      var accept = this.opts.accept === '*'
-                || (typeof this.opts.accept === 'function' ? this.opts.accept.call(this.el[0], dragging.el)
-                                                           : dragging.el.is(this.opts.accept))
-      if (this.opts.scope !== 'default') {
-        this.accept = dragging.parent.opts.scope === this.opts.scope
-        if (!this.accept && this.opts.accept !== '*') this.accept = accept
-      } else this.accept = accept
-    }
-
-    if (!this.accept) return
-    if (this.opts.activeClass)
-      this.el.addClass(this.opts.activeClass)
-
-    trigger(this.el, 'droppable:activate', e, { item: dragging.el })
-  }
-
-  Droppable.prototype.reset = function(e) {
-    if (!this.accept) return
-    if (this.opts.activeClass) this.el.removeClass(this.opts.activeClass)
-    if (this.opts.hoverClass)  this.el.removeClass(this.opts.hoverClass)
-
-    trigger(this.el, 'droppable:deactivate', e, { item: dragging.el })
-  }
-
-  Droppable.prototype.enter = function(e) {
-    if (this.opts.disabled) return false
-
-    e.stopPropagation()
-
-    // hide placeholder, if set (e.g. enter the droppable after
-    // entering a sortable)
-    if (dragging.placeholder) dragging.placeholder.hide()
-
-    if (!this.accept) return
-
-    if (this.opts.hoverClass) {
-      this.el.addClass(this.opts.hoverClass)
-    }
-
-    trigger(this.el, 'droppable:over', e, { item: dragging.el })
-  }
-
-  Droppable.prototype.leave = function(e) {
-    if (this.opts.disabled) return false
-    // e.stopPropagation()
-
-    if (this.opts.hoverClass && this.accept) {
-      this.el.removeClass(this.opts.hoverClass)
-    }
-
-    trigger(this.el, 'droppable:out', e, { item: dragging.el })
-  }
-
-  Droppable.prototype.drop = function(e) {
-    if (this.opts.disabled || !this.accept) return false
-
-    if (!dragging.el) return
-
-    var el = dragging.el
-    var handler = typeof this.opts.receiveHandler === 'function' && this.opts.receiveHandler
-    var evtObj = { item: el }
-    var clone = null
-    if (dragging.handle) {
-      evtObj.helper = dragging.handle
-      if (!handler) {
-        clone = evtObj.clone = dragging.el.clone()
-      }
-    }
-
-    var drop = trigger(this.el, 'droppable:drop', e, evtObj)
-
-    if (!drop.isDefaultPrevented()) {
-      if (handler) {
-        handler.call(this.el, evtObj)
-      } else {
-        $(this.el).append(clone || dragging.el)
-      }
-    }
-  }
-
-  var Sortable = function(element, opts) {
-    this.id   = nextId++
-    this.el   = element
-    this.opts = opts
-
-    var tag = this.opts.placeholderTag
-    if (!tag) {
-      try {
-        tag = this.el.find(this.opts.items)[0].tagName
-      } catch(e) {
-        tag = /^ul|ol$/i.test(this.el[0].tagName) ? 'li' : 'div'
-      }
-    }
-
-    this.placeholder = $('<' + tag + ' id="__ph' + this.id + '" class="' + this.opts.placeholder + '" />')
-
-    this.accept = this.index = this.direction = null
-  }
-
-  Sortable.prototype.create = function() {
-    this.el
-    .on(START_EVENT,         this.opts.items, $.proxy(this.start, this))
-    .on('dragging:enter',    this.opts.items, $.proxy(this.enter, this))
-    .on('dragging:diverted', this.opts.items, $.proxy(this.diverted, this))
-    .on('dragging:drop',     this.opts.items, $.proxy(this.drop, this))
-
-    $(this.el).find(this.opts.items)
-    .css('touch-action', 'double-tap-zoom')
-    .css('-ms-touch-action', 'double-tap-zoom')
-
-    this.el
-    .on('dragging:enter',    $.proxy(this.enter, this))
-    .on('dragging:diverted', $.proxy(this.diverted, this))
-    .on('dragging:drop',     $.proxy(this.drop, this))
-
-    dragging
-    .on('dragging:start', $.proxy(this.activate, this))
-    .on('dragging:stop',  $.proxy(this.reset, this))
-
-    var self = this
-    setTimeout(function() {
-      self.el.trigger('sortable:create', self)
-    })
-
-    this.observer = new SelectorObserver(this.el[0], this.opts.items, function() {
-    }, function() {
-      if (this === self.placeholder[0] || (dragging.el && this === dragging.el[0])) {
-        return
-      }
-      var item = $(this)
-      item.css('touch-action', 'double-tap-zoom')
-          .css('-ms-touch-action', 'double-tap-zoom')
-      self.el.trigger('sortable:change', { item: item })
-      self.el.trigger('sortable:update', { item: item, index: -1 })
-    })
-  }
-
-  Sortable.prototype.destroy = function() {
-    this.el
-    .off(START_EVENT,         this.opts.items, this.start)
-    .off('dragging:enter',    this.opts.items, this.enter)
-    .off('dragging:diverted', this.opts.items, this.diverted)
-    .off('dragging:drop',     this.opts.items, this.drop)
-
-    this.el
-    .off('dragging:enter',    this.enter)
-    .off('dragging:diverted', this.diverted)
-    .off('dragging:drop',     this.drop)
-
-    // Todo: Fix Zepto Bug
-    // dragging
-    // .off('dragging:start', this.activate)
-    // .off('dragging:stop',  this.reset)
-
-    this.observer.disconnect()
-  }
-
-  Sortable.prototype.enable = function() {
-    this.opts.disabled = false
-  }
-
-  Sortable.prototype.disable = function() {
-    this.opts.disabled = true
-  }
-
-  Sortable.prototype.activate = function(e) {
-    this.isEmpty = this.el.find(this.opts.items).length === 0
-
-    this.accept = dragging.parent.id === this.id
-
-    if (!this.accept && dragging.parent.opts.connectWith) {
-      this.accept = this.el.is(dragging.parent.opts.connectWith)
-    }
-
-    if (!this.accept) return
-
-    this.accept = dragging.parent.id === this.id
-      || this.opts.accept === '*'
-      || (typeof this.opts.accept === 'function'
-        ? this.opts.accept.call(this.el[0], dragging.el)
-        : dragging.el.is(this.opts.accept))
-
-    if (!this.accept) return
-
-    if (this.opts.activeClass)
-      this.el.addClass(this.opts.activeClass)
-
-    trigger(this.el, 'sortable:activate', e, { item: dragging.el })
-  }
-
-  Sortable.prototype.reset = function(e) {
-    if (!this.accept) return
-    if (this.opts.activeClass) {
-      this.el.removeClass(this.opts.activeClass)
-    }
-
-    trigger(this.el, 'sortable:deactivate', e, { item: dragging.el })
-
-    if (this.index !== null) {
-      trigger(this.el, 'sortable:beforeStop', e, { item: dragging.el })
-      trigger(this.el, 'sortable:stop', e, { item: dragging.el })
-      this.index = null
-    }
-  }
-
-  Sortable.prototype.indexOf = function(el) {
-    return this.el.find(this.opts.items + ', #' + this.placeholder.attr('id')).index(el)
-  }
-
-  Sortable.prototype.start = function(e) {
-    if (this.opts.disabled || dragging.el) {
-      return
-    }
-
-    // only start on left mouse button
-    if (e.type === 'mousedown' && e.which !== 1) {
-      return false
-    }
-
-    if (this.opts.cancel) {
-      var target = $(e.target)
-      while (target[0] !== this.el[0]) {
-        if (target.is(this.opts.cancel)) return
-        target = target.parent()
-      }
-    }
-
-    if (this.opts.handle) {
-      var target = $(e.target), isHandle = false
-      while (target[0] !== this.el[0]) {
-        if (target.is(this.opts.handle)) {
-          isHandle = true
-          break
-        }
-        target = target.parent()
-      }
-      if (!isHandle) return
-    }
-
-    e.stopPropagation()
-    e.preventDefault() // prevent text selection
-
-    // use e.currentTarget instead of e.target because we want the target
-    // the event is bound to, not the target (child) the event is triggered from
-    dragging.start(this, $(e.currentTarget), e)
-
-    this.index = this.indexOf(dragging.el)
-
-    dragging.el.before(dragging.placeholder = this.placeholder.show())
-
-    // if dragging an item that belongs to the current list, hide it while
-    // it is being dragged
-    if (this.index !== null) {
-      // zepto <> jquery compatibility
-      var height = dragging.el.outerHeight ? dragging.el.outerHeight() : dragging.el.height()
-      dragging.css('margin-bottom', -height)
-    }
-
-    if (this.opts.forcePlaceholderSize) {
-      this.placeholder.height(parseFloat(dragging.el.css('height')))
-      this.placeholder.width(parseFloat(dragging.el.css('width')))
-    }
-
-    dragging.adjustPlacement(e)
-
-    trigger(this.el, 'sortable:start', e, { item: dragging.el })
-  }
-
-  Sortable.prototype.enter = function(e) {
-    if (!this.accept || this.opts.disabled) return
-
-    e.stopPropagation()
-
-    // stop if event is fired on the placeholder
-    var child = e.currentTarget, isContainer = child === this.el[0]
-    if (child === this.placeholder[0]) return
-    child = $(child)
-
-    // the container fallback is only necessary for empty sortables
-    if (isContainer && !this.isEmpty && this.placeholder.parent().length) {
-      return
-    }
-
-    dragging.placeholder = this.placeholder
-
-    if (this.opts.forcePlaceholderSize) {
-      this.placeholder.height(parseFloat(dragging.el.css('height')))
-      this.placeholder.width(parseFloat(dragging.el.css('width')))
-    }
-
-    if (!isContainer) {
-      this.diverted(e)
-    } else {
-      this.el.append(this.placeholder)
-      this.el.trigger('sortable:change', { item: dragging.el })
-    }
-  }
-
-  Sortable.prototype.diverted = function(e) {
-    if (!this.accept || this.opts.disabled) return
-    e.stopPropagation()
-
-    var child = $(e.currentTarget), isContainer = child[0] === this.el[0]
-    if (isContainer) return
-
-    // insert the placeholder according to the dragging direction
-    dragging.placeholder = this.placeholder
-    this.direction = this.indexOf(this.placeholder.show()) < this.indexOf(child) ? 'down' : 'up'
-    child[this.direction === 'down' ? 'after' : 'before'](this.placeholder)
-    dragging.adjustPlacement(e)
-
-    this.el.trigger('sortable:change', { item: dragging.el })
-  }
-
-  Sortable.prototype.drop = function(e) {
-    if (!this.accept || this.opts.disabled) return
-
-    e.stopPropagation()
-    e.preventDefault()
-
-    if (!dragging.el) return
-    if (!this.placeholder.parent().length) return
-
-    trigger(this.el, 'sortable:beforeStop', e, { item: dragging.el })
-
-    this.observer.disconnect()
-
-    var newIndex = this.indexOf(this.placeholder)
-    if (newIndex > this.index) {
-      newIndex--
-    }
-
-    var handler
-
-    // dropped element belongs to another list
-    if (this.index === null) {
-      handler = this.opts.receiveHandler
-    }
-    // dopped element belongs to the same list
-    else {
-      // updatePosition cause backwards-compatibility
-      handler = this.opts.updateHandler || this.opts.updatePosition
-    }
-
-    var el = dragging.el
-    if (typeof handler === 'function') {
-      handler.call(this.el, { item: dragging.el, index: newIndex })
-    } else {
-      if (dragging.handle) {
-        el = dragging.el.clone()
-      }
-      el.insertBefore(this.placeholder)
-    }
-
-    // if the dropped element belongs to another list, trigger the receive event
-    if (this.index === null) {
-      trigger(this.el, 'sortable:receive', e, { item: el })
-    }
-
-    // if the index changed, trigger the update event
-    if (newIndex !== this.index) {
-      this.el.trigger('sortable:update', { item: el, index: newIndex })
-    }
-
-    trigger(this.el, 'sortable:stop', e, { item: el })
-    this.index = null
-    this.observer.observe()
-
-    dragging.stop(e)
-  }
-
-  Sortable.prototype.toArray = function(opts) {
-    if (!opts) opts = {}
-    var attr = opts.attribute || 'id', attrs = []
-    this.el.find(this.opts.items).each(function() {
-      attrs.push($(this).prop(attr))
-    })
-    return attrs
-  }
-
-  function generic(constructor, identifier, defaults) {
-    return function(opts, name, value) {
-      var result = []
-      this.each(function() {
-        var instance = $(this).data(identifier)
-        if (typeof opts === 'string') {
-          if (typeof instance === 'undefined')
-            throw new Error(identifier + ' not defined')
-          switch (opts) {
-          case 'enable':  instance.enable();  break
-          case 'disable': instance.disable(); break
-          case 'destroy':
-            instance.destroy()
-            $(this).removeData(identifier)
-            break
-          case 'option':
-            // set
-            if (value !== undefined)
-              instance.opts[name] = value
-            else if (typeof name === 'object')
-              instance.opts = $.extend(instance.opts, name)
-            // get
-            else if (name)
-              result.push(instance.opts[name])
-            else
-              result.push(instance.opts)
-            break
-          // case 'serialize':
-          //   if (identifier !== 'sortable') return
-          //   result.push(instance.serialize())
-          //   break
-          case 'toArray':
-            if (identifier !== 'sortable') return
-            result.push(instance.toArray(name))
-            break
-          }
-        } else {
-          if (instance) {
-            $.extend(instance.opts, opts) // merge options
-            return this
-          }
-          instance = new constructor($(this), $.extend({}, defaults, opts))
-          instance.create()
-          $(this).data(identifier, instance)
-        }
-      })
-
-      if (result.length)
-        return result.length === 1 ? result[0] : result
-      else
-        return this
-    }
-  }
-
-  $.fn.draggable = generic(Draggable, 'draggable', {
-    cancel: 'input, textarea, button, select, option',
-    connectWith: false,
-    cursor: 'auto',
-    disabled: false,
-    handle: false,
-    initialized: false,
-    clone: false,
-    cloneClass: '',
-    scope: 'default'
-  })
-
-  $.fn.droppable = generic(Droppable, 'droppable', {
-    accept: '*',
-    activeClass: '',
-    disabled: false,
-    hoverClass: '',
-    initialized: false,
-    scope: 'default',
-    receiveHandler: null
-  })
-
-  $.fn.sortable = generic(Sortable, 'sortable', {
-    accept: '*',
-    activeClass: '',
-    cancel: 'input, textarea, button, select, option',
-    connectWith: false,
-    disabled: false,
-    forcePlaceholderSize: false,
-    handle: false,
-    initialized: false,
-    items: 'li, div',
-    placeholder: 'placeholder',
-    placeholderTag: null,
-    updateHandler: null,
-    receiveHandler: null
-  })
-})(window.Zepto || __webpack_provided_window_dot_jQuery);
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-
-/***/ 222:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * Date picker for pickadate.js v3.5.6
- * http://amsul.github.io/pickadate.js/date.htm
- */
-
-(function ( factory ) {
-
-    // AMD.
-    if ( true )
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(215), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
-
-    // Node.js/browserify.
-    else if ( typeof exports == 'object' )
-        module.exports = factory( require('./picker.js'), require('jquery') )
-
-    // Browser globals.
-    else factory( Picker, jQuery )
-
-}(function( Picker, $ ) {
-
-
-/**
- * Globals and constants
- */
-var DAYS_IN_WEEK = 7,
-    WEEKS_IN_CALENDAR = 6,
-    _ = Picker._
-
-
-
-/**
- * The date picker constructor
- */
-function DatePicker( picker, settings ) {
-
-    var calendar = this,
-        element = picker.$node[ 0 ],
-        elementValue = element.value,
-        elementDataValue = picker.$node.data( 'value' ),
-        valueString = elementDataValue || elementValue,
-        formatString = elementDataValue ? settings.formatSubmit : settings.format,
-        isRTL = function() {
-
-            return element.currentStyle ?
-
-                // For IE.
-                element.currentStyle.direction == 'rtl' :
-
-                // For normal browsers.
-                getComputedStyle( picker.$root[0] ).direction == 'rtl'
-        }
-
-    calendar.settings = settings
-    calendar.$node = picker.$node
-
-    // The queue of methods that will be used to build item objects.
-    calendar.queue = {
-        min: 'measure create',
-        max: 'measure create',
-        now: 'now create',
-        select: 'parse create validate',
-        highlight: 'parse navigate create validate',
-        view: 'parse create validate viewset',
-        disable: 'deactivate',
-        enable: 'activate'
-    }
-
-    // The component's item object.
-    calendar.item = {}
-
-    calendar.item.clear = null
-    calendar.item.disable = ( settings.disable || [] ).slice( 0 )
-    calendar.item.enable = -(function( collectionDisabled ) {
-        return collectionDisabled[ 0 ] === true ? collectionDisabled.shift() : -1
-    })( calendar.item.disable )
-
-    calendar.
-        set( 'min', settings.min ).
-        set( 'max', settings.max ).
-        set( 'now' )
-
-    // When there’s a value, set the `select`, which in turn
-    // also sets the `highlight` and `view`.
-    if ( valueString ) {
-        calendar.set( 'select', valueString, {
-            format: formatString,
-            defaultValue: true
-        })
-    }
-
-    // If there’s no value, default to highlighting “today”.
-    else {
-        calendar.
-            set( 'select', null ).
-            set( 'highlight', calendar.item.now )
-    }
-
-
-    // The keycode to movement mapping.
-    calendar.key = {
-        40: 7, // Down
-        38: -7, // Up
-        39: function() { return isRTL() ? -1 : 1 }, // Right
-        37: function() { return isRTL() ? 1 : -1 }, // Left
-        go: function( timeChange ) {
-            var highlightedObject = calendar.item.highlight,
-                targetDate = new Date( highlightedObject.year, highlightedObject.month, highlightedObject.date + timeChange )
-            calendar.set(
-                'highlight',
-                targetDate,
-                { interval: timeChange }
-            )
-            this.render()
-        }
-    }
-
-
-    // Bind some picker events.
-    picker.
-        on( 'render', function() {
-            picker.$root.find( '.' + settings.klass.selectMonth ).on( 'change', function() {
-                var value = this.value
-                if ( value ) {
-                    picker.set( 'highlight', [ picker.get( 'view' ).year, value, picker.get( 'highlight' ).date ] )
-                    picker.$root.find( '.' + settings.klass.selectMonth ).trigger( 'focus' )
-                }
-            })
-            picker.$root.find( '.' + settings.klass.selectYear ).on( 'change', function() {
-                var value = this.value
-                if ( value ) {
-                    picker.set( 'highlight', [ value, picker.get( 'view' ).month, picker.get( 'highlight' ).date ] )
-                    picker.$root.find( '.' + settings.klass.selectYear ).trigger( 'focus' )
-                }
-            })
-        }, 1 ).
-        on( 'open', function() {
-            var includeToday = ''
-            if ( calendar.disabled( calendar.get('now') ) ) {
-                includeToday = ':not(.' + settings.klass.buttonToday + ')'
-            }
-            picker.$root.find( 'button' + includeToday + ', select' ).attr( 'disabled', false )
-        }, 1 ).
-        on( 'close', function() {
-            picker.$root.find( 'button, select' ).attr( 'disabled', true )
-        }, 1 )
-
-} //DatePicker
-
-
-/**
- * Set a datepicker item object.
- */
-DatePicker.prototype.set = function( type, value, options ) {
-
-    var calendar = this,
-        calendarItem = calendar.item
-
-    // If the value is `null` just set it immediately.
-    if ( value === null ) {
-        if ( type == 'clear' ) type = 'select'
-        calendarItem[ type ] = value
-        return calendar
-    }
-
-    // Otherwise go through the queue of methods, and invoke the functions.
-    // Update this as the time unit, and set the final value as this item.
-    // * In the case of `enable`, keep the queue but set `disable` instead.
-    //   And in the case of `flip`, keep the queue but set `enable` instead.
-    calendarItem[ ( type == 'enable' ? 'disable' : type == 'flip' ? 'enable' : type ) ] = calendar.queue[ type ].split( ' ' ).map( function( method ) {
-        value = calendar[ method ]( type, value, options )
-        return value
-    }).pop()
-
-    // Check if we need to cascade through more updates.
-    if ( type == 'select' ) {
-        calendar.set( 'highlight', calendarItem.select, options )
-    }
-    else if ( type == 'highlight' ) {
-        calendar.set( 'view', calendarItem.highlight, options )
-    }
-    else if ( type.match( /^(flip|min|max|disable|enable)$/ ) ) {
-        if ( calendarItem.select && calendar.disabled( calendarItem.select ) ) {
-            calendar.set( 'select', calendarItem.select, options )
-        }
-        if ( calendarItem.highlight && calendar.disabled( calendarItem.highlight ) ) {
-            calendar.set( 'highlight', calendarItem.highlight, options )
-        }
-    }
-
-    return calendar
-} //DatePicker.prototype.set
-
-
-/**
- * Get a datepicker item object.
- */
-DatePicker.prototype.get = function( type ) {
-    return this.item[ type ]
-} //DatePicker.prototype.get
-
-
-/**
- * Create a picker date object.
- */
-DatePicker.prototype.create = function( type, value, options ) {
-
-    var isInfiniteValue,
-        calendar = this
-
-    // If there’s no value, use the type as the value.
-    value = value === undefined ? type : value
-
-
-    // If it’s infinity, update the value.
-    if ( value == -Infinity || value == Infinity ) {
-        isInfiniteValue = value
-    }
-
-    // If it’s an object, use the native date object.
-    else if ( $.isPlainObject( value ) && _.isInteger( value.pick ) ) {
-        value = value.obj
-    }
-
-    // If it’s an array, convert it into a date and make sure
-    // that it’s a valid date – otherwise default to today.
-    else if ( $.isArray( value ) ) {
-        value = new Date( value[ 0 ], value[ 1 ], value[ 2 ] )
-        value = _.isDate( value ) ? value : calendar.create().obj
-    }
-
-    // If it’s a number or date object, make a normalized date.
-    else if ( _.isInteger( value ) || _.isDate( value ) ) {
-        value = calendar.normalize( new Date( value ), options )
-    }
-
-    // If it’s a literal true or any other case, set it to now.
-    else /*if ( value === true )*/ {
-        value = calendar.now( type, value, options )
-    }
-
-    // Return the compiled object.
-    return {
-        year: isInfiniteValue || value.getFullYear(),
-        month: isInfiniteValue || value.getMonth(),
-        date: isInfiniteValue || value.getDate(),
-        day: isInfiniteValue || value.getDay(),
-        obj: isInfiniteValue || value,
-        pick: isInfiniteValue || value.getTime()
-    }
-} //DatePicker.prototype.create
-
-
-/**
- * Create a range limit object using an array, date object,
- * literal “true”, or integer relative to another time.
- */
-DatePicker.prototype.createRange = function( from, to ) {
-
-    var calendar = this,
-        createDate = function( date ) {
-            if ( date === true || $.isArray( date ) || _.isDate( date ) ) {
-                return calendar.create( date )
-            }
-            return date
-        }
-
-    // Create objects if possible.
-    if ( !_.isInteger( from ) ) {
-        from = createDate( from )
-    }
-    if ( !_.isInteger( to ) ) {
-        to = createDate( to )
-    }
-
-    // Create relative dates.
-    if ( _.isInteger( from ) && $.isPlainObject( to ) ) {
-        from = [ to.year, to.month, to.date + from ];
-    }
-    else if ( _.isInteger( to ) && $.isPlainObject( from ) ) {
-        to = [ from.year, from.month, from.date + to ];
-    }
-
-    return {
-        from: createDate( from ),
-        to: createDate( to )
-    }
-} //DatePicker.prototype.createRange
-
-
-/**
- * Check if a date unit falls within a date range object.
- */
-DatePicker.prototype.withinRange = function( range, dateUnit ) {
-    range = this.createRange(range.from, range.to)
-    return dateUnit.pick >= range.from.pick && dateUnit.pick <= range.to.pick
-}
-
-
-/**
- * Check if two date range objects overlap.
- */
-DatePicker.prototype.overlapRanges = function( one, two ) {
-
-    var calendar = this
-
-    // Convert the ranges into comparable dates.
-    one = calendar.createRange( one.from, one.to )
-    two = calendar.createRange( two.from, two.to )
-
-    return calendar.withinRange( one, two.from ) || calendar.withinRange( one, two.to ) ||
-        calendar.withinRange( two, one.from ) || calendar.withinRange( two, one.to )
-}
-
-
-/**
- * Get the date today.
- */
-DatePicker.prototype.now = function( type, value, options ) {
-    value = new Date()
-    if ( options && options.rel ) {
-        value.setDate( value.getDate() + options.rel )
-    }
-    return this.normalize( value, options )
-}
-
-
-/**
- * Navigate to next/prev month.
- */
-DatePicker.prototype.navigate = function( type, value, options ) {
-
-    var targetDateObject,
-        targetYear,
-        targetMonth,
-        targetDate,
-        isTargetArray = $.isArray( value ),
-        isTargetObject = $.isPlainObject( value ),
-        viewsetObject = this.item.view/*,
-        safety = 100*/
-
-
-    if ( isTargetArray || isTargetObject ) {
-
-        if ( isTargetObject ) {
-            targetYear = value.year
-            targetMonth = value.month
-            targetDate = value.date
-        }
-        else {
-            targetYear = +value[0]
-            targetMonth = +value[1]
-            targetDate = +value[2]
-        }
-
-        // If we’re navigating months but the view is in a different
-        // month, navigate to the view’s year and month.
-        if ( options && options.nav && viewsetObject && viewsetObject.month !== targetMonth ) {
-            targetYear = viewsetObject.year
-            targetMonth = viewsetObject.month
-        }
-
-        // Figure out the expected target year and month.
-        targetDateObject = new Date( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 )
-        targetYear = targetDateObject.getFullYear()
-        targetMonth = targetDateObject.getMonth()
-
-        // If the month we’re going to doesn’t have enough days,
-        // keep decreasing the date until we reach the month’s last date.
-        while ( /*safety &&*/ new Date( targetYear, targetMonth, targetDate ).getMonth() !== targetMonth ) {
-            targetDate -= 1
-            /*safety -= 1
-            if ( !safety ) {
-                throw 'Fell into an infinite loop while navigating to ' + new Date( targetYear, targetMonth, targetDate ) + '.'
-            }*/
-        }
-
-        value = [ targetYear, targetMonth, targetDate ]
-    }
-
-    return value
-} //DatePicker.prototype.navigate
-
-
-/**
- * Normalize a date by setting the hours to midnight.
- */
-DatePicker.prototype.normalize = function( value/*, options*/ ) {
-    value.setHours( 0, 0, 0, 0 )
-    return value
-}
-
-
-/**
- * Measure the range of dates.
- */
-DatePicker.prototype.measure = function( type, value/*, options*/ ) {
-
-    var calendar = this
-
-    // If it’s anything false-y, remove the limits.
-    if ( !value ) {
-        value = type == 'min' ? -Infinity : Infinity
-    }
-
-    // If it’s a string, parse it.
-    else if ( typeof value == 'string' ) {
-        value = calendar.parse( type, value )
-    }
-
-    // If it's an integer, get a date relative to today.
-    else if ( _.isInteger( value ) ) {
-        value = calendar.now( type, value, { rel: value } )
-    }
-
-    return value
-} ///DatePicker.prototype.measure
-
-
-/**
- * Create a viewset object based on navigation.
- */
-DatePicker.prototype.viewset = function( type, dateObject/*, options*/ ) {
-    return this.create([ dateObject.year, dateObject.month, 1 ])
-}
-
-
-/**
- * Validate a date as enabled and shift if needed.
- */
-DatePicker.prototype.validate = function( type, dateObject, options ) {
-
-    var calendar = this,
-
-        // Keep a reference to the original date.
-        originalDateObject = dateObject,
-
-        // Make sure we have an interval.
-        interval = options && options.interval ? options.interval : 1,
-
-        // Check if the calendar enabled dates are inverted.
-        isFlippedBase = calendar.item.enable === -1,
-
-        // Check if we have any enabled dates after/before now.
-        hasEnabledBeforeTarget, hasEnabledAfterTarget,
-
-        // The min & max limits.
-        minLimitObject = calendar.item.min,
-        maxLimitObject = calendar.item.max,
-
-        // Check if we’ve reached the limit during shifting.
-        reachedMin, reachedMax,
-
-        // Check if the calendar is inverted and at least one weekday is enabled.
-        hasEnabledWeekdays = isFlippedBase && calendar.item.disable.filter( function( value ) {
-
-            // If there’s a date, check where it is relative to the target.
-            if ( $.isArray( value ) ) {
-                var dateTime = calendar.create( value ).pick
-                if ( dateTime < dateObject.pick ) hasEnabledBeforeTarget = true
-                else if ( dateTime > dateObject.pick ) hasEnabledAfterTarget = true
-            }
-
-            // Return only integers for enabled weekdays.
-            return _.isInteger( value )
-        }).length/*,
-
-        safety = 100*/
-
-
-
-    // Cases to validate for:
-    // [1] Not inverted and date disabled.
-    // [2] Inverted and some dates enabled.
-    // [3] Not inverted and out of range.
-    //
-    // Cases to **not** validate for:
-    // • Navigating months.
-    // • Not inverted and date enabled.
-    // • Inverted and all dates disabled.
-    // • ..and anything else.
-    if ( !options || (!options.nav && !options.defaultValue) ) if (
-        /* 1 */ ( !isFlippedBase && calendar.disabled( dateObject ) ) ||
-        /* 2 */ ( isFlippedBase && calendar.disabled( dateObject ) && ( hasEnabledWeekdays || hasEnabledBeforeTarget || hasEnabledAfterTarget ) ) ||
-        /* 3 */ ( !isFlippedBase && (dateObject.pick <= minLimitObject.pick || dateObject.pick >= maxLimitObject.pick) )
-    ) {
-
-
-        // When inverted, flip the direction if there aren’t any enabled weekdays
-        // and there are no enabled dates in the direction of the interval.
-        if ( isFlippedBase && !hasEnabledWeekdays && ( ( !hasEnabledAfterTarget && interval > 0 ) || ( !hasEnabledBeforeTarget && interval < 0 ) ) ) {
-            interval *= -1
-        }
-
-
-        // Keep looping until we reach an enabled date.
-        while ( /*safety &&*/ calendar.disabled( dateObject ) ) {
-
-            /*safety -= 1
-            if ( !safety ) {
-                throw 'Fell into an infinite loop while validating ' + dateObject.obj + '.'
-            }*/
-
-
-            // If we’ve looped into the next/prev month with a large interval, return to the original date and flatten the interval.
-            if ( Math.abs( interval ) > 1 && ( dateObject.month < originalDateObject.month || dateObject.month > originalDateObject.month ) ) {
-                dateObject = originalDateObject
-                interval = interval > 0 ? 1 : -1
-            }
-
-
-            // If we’ve reached the min/max limit, reverse the direction, flatten the interval and set it to the limit.
-            if ( dateObject.pick <= minLimitObject.pick ) {
-                reachedMin = true
-                interval = 1
-                dateObject = calendar.create([
-                    minLimitObject.year,
-                    minLimitObject.month,
-                    minLimitObject.date + (dateObject.pick === minLimitObject.pick ? 0 : -1)
-                ])
-            }
-            else if ( dateObject.pick >= maxLimitObject.pick ) {
-                reachedMax = true
-                interval = -1
-                dateObject = calendar.create([
-                    maxLimitObject.year,
-                    maxLimitObject.month,
-                    maxLimitObject.date + (dateObject.pick === maxLimitObject.pick ? 0 : 1)
-                ])
-            }
-
-
-            // If we’ve reached both limits, just break out of the loop.
-            if ( reachedMin && reachedMax ) {
-                break
-            }
-
-
-            // Finally, create the shifted date using the interval and keep looping.
-            dateObject = calendar.create([ dateObject.year, dateObject.month, dateObject.date + interval ])
-        }
-
-    } //endif
-
-
-    // Return the date object settled on.
-    return dateObject
-} //DatePicker.prototype.validate
-
-
-/**
- * Check if a date is disabled.
- */
-DatePicker.prototype.disabled = function( dateToVerify ) {
-
-    var
-        calendar = this,
-
-        // Filter through the disabled dates to check if this is one.
-        isDisabledMatch = calendar.item.disable.filter( function( dateToDisable ) {
-
-            // If the date is a number, match the weekday with 0index and `firstDay` check.
-            if ( _.isInteger( dateToDisable ) ) {
-                return dateToVerify.day === ( calendar.settings.firstDay ? dateToDisable : dateToDisable - 1 ) % 7
-            }
-
-            // If it’s an array or a native JS date, create and match the exact date.
-            if ( $.isArray( dateToDisable ) || _.isDate( dateToDisable ) ) {
-                return dateToVerify.pick === calendar.create( dateToDisable ).pick
-            }
-
-            // If it’s an object, match a date within the “from” and “to” range.
-            if ( $.isPlainObject( dateToDisable ) ) {
-                return calendar.withinRange( dateToDisable, dateToVerify )
-            }
-        })
-
-    // If this date matches a disabled date, confirm it’s not inverted.
-    isDisabledMatch = isDisabledMatch.length && !isDisabledMatch.filter(function( dateToDisable ) {
-        return $.isArray( dateToDisable ) && dateToDisable[3] == 'inverted' ||
-            $.isPlainObject( dateToDisable ) && dateToDisable.inverted
-    }).length
-
-    // Check the calendar “enabled” flag and respectively flip the
-    // disabled state. Then also check if it’s beyond the min/max limits.
-    return calendar.item.enable === -1 ? !isDisabledMatch : isDisabledMatch ||
-        dateToVerify.pick < calendar.item.min.pick ||
-        dateToVerify.pick > calendar.item.max.pick
-
-} //DatePicker.prototype.disabled
-
-
-/**
- * Parse a string into a usable type.
- */
-DatePicker.prototype.parse = function( type, value, options ) {
-
-    var calendar = this,
-        parsingObject = {}
-
-    // If it’s already parsed, we’re good.
-    if ( !value || typeof value != 'string' ) {
-        return value
-    }
-
-    // We need a `.format` to parse the value with.
-    if ( !( options && options.format ) ) {
-        options = options || {}
-        options.format = calendar.settings.format
-    }
-
-    // Convert the format into an array and then map through it.
-    calendar.formats.toArray( options.format ).map( function( label ) {
-
-        var
-            // Grab the formatting label.
-            formattingLabel = calendar.formats[ label ],
-
-            // The format length is from the formatting label function or the
-            // label length without the escaping exclamation (!) mark.
-            formatLength = formattingLabel ? _.trigger( formattingLabel, calendar, [ value, parsingObject ] ) : label.replace( /^!/, '' ).length
-
-        // If there's a format label, split the value up to the format length.
-        // Then add it to the parsing object with appropriate label.
-        if ( formattingLabel ) {
-            parsingObject[ label ] = value.substr( 0, formatLength )
-        }
-
-        // Update the value as the substring from format length to end.
-        value = value.substr( formatLength )
-    })
-
-    // Compensate for month 0index.
-    return [
-        parsingObject.yyyy || parsingObject.yy,
-        +( parsingObject.mm || parsingObject.m ) - 1,
-        parsingObject.dd || parsingObject.d
-    ]
-} //DatePicker.prototype.parse
-
-
-/**
- * Various formats to display the object in.
- */
-DatePicker.prototype.formats = (function() {
-
-    // Return the length of the first word in a collection.
-    function getWordLengthFromCollection( string, collection, dateObject ) {
-
-        // Grab the first word from the string.
-        // Regex pattern from http://stackoverflow.com/q/150033
-        var word = string.match( /[^\x00-\x7F]+|\w+/ )[ 0 ]
-
-        // If there's no month index, add it to the date object
-        if ( !dateObject.mm && !dateObject.m ) {
-            dateObject.m = collection.indexOf( word ) + 1
-        }
-
-        // Return the length of the word.
-        return word.length
-    }
-
-    // Get the length of the first word in a string.
-    function getFirstWordLength( string ) {
-        return string.match( /\w+/ )[ 0 ].length
-    }
-
-    return {
-
-        d: function( string, dateObject ) {
-
-            // If there's string, then get the digits length.
-            // Otherwise return the selected date.
-            return string ? _.digits( string ) : dateObject.date
-        },
-        dd: function( string, dateObject ) {
-
-            // If there's a string, then the length is always 2.
-            // Otherwise return the selected date with a leading zero.
-            return string ? 2 : _.lead( dateObject.date )
-        },
-        ddd: function( string, dateObject ) {
-
-            // If there's a string, then get the length of the first word.
-            // Otherwise return the short selected weekday.
-            return string ? getFirstWordLength( string ) : this.settings.weekdaysShort[ dateObject.day ]
-        },
-        dddd: function( string, dateObject ) {
-
-            // If there's a string, then get the length of the first word.
-            // Otherwise return the full selected weekday.
-            return string ? getFirstWordLength( string ) : this.settings.weekdaysFull[ dateObject.day ]
-        },
-        m: function( string, dateObject ) {
-
-            // If there's a string, then get the length of the digits
-            // Otherwise return the selected month with 0index compensation.
-            return string ? _.digits( string ) : dateObject.month + 1
-        },
-        mm: function( string, dateObject ) {
-
-            // If there's a string, then the length is always 2.
-            // Otherwise return the selected month with 0index and leading zero.
-            return string ? 2 : _.lead( dateObject.month + 1 )
-        },
-        mmm: function( string, dateObject ) {
-
-            var collection = this.settings.monthsShort
-
-            // If there's a string, get length of the relevant month from the short
-            // months collection. Otherwise return the selected month from that collection.
-            return string ? getWordLengthFromCollection( string, collection, dateObject ) : collection[ dateObject.month ]
-        },
-        mmmm: function( string, dateObject ) {
-
-            var collection = this.settings.monthsFull
-
-            // If there's a string, get length of the relevant month from the full
-            // months collection. Otherwise return the selected month from that collection.
-            return string ? getWordLengthFromCollection( string, collection, dateObject ) : collection[ dateObject.month ]
-        },
-        yy: function( string, dateObject ) {
-
-            // If there's a string, then the length is always 2.
-            // Otherwise return the selected year by slicing out the first 2 digits.
-            return string ? 2 : ( '' + dateObject.year ).slice( 2 )
-        },
-        yyyy: function( string, dateObject ) {
-
-            // If there's a string, then the length is always 4.
-            // Otherwise return the selected year.
-            return string ? 4 : dateObject.year
-        },
-
-        // Create an array by splitting the formatting string passed.
-        toArray: function( formatString ) { return formatString.split( /(d{1,4}|m{1,4}|y{4}|yy|!.)/g ) },
-
-        // Format an object into a string using the formatting options.
-        toString: function ( formatString, itemObject ) {
-            var calendar = this
-            return calendar.formats.toArray( formatString ).map( function( label ) {
-                return _.trigger( calendar.formats[ label ], calendar, [ 0, itemObject ] ) || label.replace( /^!/, '' )
-            }).join( '' )
-        }
-    }
-})() //DatePicker.prototype.formats
-
-
-
-
-/**
- * Check if two date units are the exact.
- */
-DatePicker.prototype.isDateExact = function( one, two ) {
-
-    var calendar = this
-
-    // When we’re working with weekdays, do a direct comparison.
-    if (
-        ( _.isInteger( one ) && _.isInteger( two ) ) ||
-        ( typeof one == 'boolean' && typeof two == 'boolean' )
-     ) {
-        return one === two
-    }
-
-    // When we’re working with date representations, compare the “pick” value.
-    if (
-        ( _.isDate( one ) || $.isArray( one ) ) &&
-        ( _.isDate( two ) || $.isArray( two ) )
-    ) {
-        return calendar.create( one ).pick === calendar.create( two ).pick
-    }
-
-    // When we’re working with range objects, compare the “from” and “to”.
-    if ( $.isPlainObject( one ) && $.isPlainObject( two ) ) {
-        return calendar.isDateExact( one.from, two.from ) && calendar.isDateExact( one.to, two.to )
-    }
-
-    return false
-}
-
-
-/**
- * Check if two date units overlap.
- */
-DatePicker.prototype.isDateOverlap = function( one, two ) {
-
-    var calendar = this,
-        firstDay = calendar.settings.firstDay ? 1 : 0
-
-    // When we’re working with a weekday index, compare the days.
-    if ( _.isInteger( one ) && ( _.isDate( two ) || $.isArray( two ) ) ) {
-        one = one % 7 + firstDay
-        return one === calendar.create( two ).day + 1
-    }
-    if ( _.isInteger( two ) && ( _.isDate( one ) || $.isArray( one ) ) ) {
-        two = two % 7 + firstDay
-        return two === calendar.create( one ).day + 1
-    }
-
-    // When we’re working with range objects, check if the ranges overlap.
-    if ( $.isPlainObject( one ) && $.isPlainObject( two ) ) {
-        return calendar.overlapRanges( one, two )
-    }
-
-    return false
-}
-
-
-/**
- * Flip the “enabled” state.
- */
-DatePicker.prototype.flipEnable = function(val) {
-    var itemObject = this.item
-    itemObject.enable = val || (itemObject.enable == -1 ? 1 : -1)
-}
-
-
-/**
- * Mark a collection of dates as “disabled”.
- */
-DatePicker.prototype.deactivate = function( type, datesToDisable ) {
-
-    var calendar = this,
-        disabledItems = calendar.item.disable.slice(0)
-
-
-    // If we’re flipping, that’s all we need to do.
-    if ( datesToDisable == 'flip' ) {
-        calendar.flipEnable()
-    }
-
-    else if ( datesToDisable === false ) {
-        calendar.flipEnable(1)
-        disabledItems = []
-    }
-
-    else if ( datesToDisable === true ) {
-        calendar.flipEnable(-1)
-        disabledItems = []
-    }
-
-    // Otherwise go through the dates to disable.
-    else {
-
-        datesToDisable.map(function( unitToDisable ) {
-
-            var matchFound
-
-            // When we have disabled items, check for matches.
-            // If something is matched, immediately break out.
-            for ( var index = 0; index < disabledItems.length; index += 1 ) {
-                if ( calendar.isDateExact( unitToDisable, disabledItems[index] ) ) {
-                    matchFound = true
-                    break
-                }
-            }
-
-            // If nothing was found, add the validated unit to the collection.
-            if ( !matchFound ) {
-                if (
-                    _.isInteger( unitToDisable ) ||
-                    _.isDate( unitToDisable ) ||
-                    $.isArray( unitToDisable ) ||
-                    ( $.isPlainObject( unitToDisable ) && unitToDisable.from && unitToDisable.to )
-                ) {
-                    disabledItems.push( unitToDisable )
-                }
-            }
-        })
-    }
-
-    // Return the updated collection.
-    return disabledItems
-} //DatePicker.prototype.deactivate
-
-
-/**
- * Mark a collection of dates as “enabled”.
- */
-DatePicker.prototype.activate = function( type, datesToEnable ) {
-
-    var calendar = this,
-        disabledItems = calendar.item.disable,
-        disabledItemsCount = disabledItems.length
-
-    // If we’re flipping, that’s all we need to do.
-    if ( datesToEnable == 'flip' ) {
-        calendar.flipEnable()
-    }
-
-    else if ( datesToEnable === true ) {
-        calendar.flipEnable(1)
-        disabledItems = []
-    }
-
-    else if ( datesToEnable === false ) {
-        calendar.flipEnable(-1)
-        disabledItems = []
-    }
-
-    // Otherwise go through the disabled dates.
-    else {
-
-        datesToEnable.map(function( unitToEnable ) {
-
-            var matchFound,
-                disabledUnit,
-                index,
-                isExactRange
-
-            // Go through the disabled items and try to find a match.
-            for ( index = 0; index < disabledItemsCount; index += 1 ) {
-
-                disabledUnit = disabledItems[index]
-
-                // When an exact match is found, remove it from the collection.
-                if ( calendar.isDateExact( disabledUnit, unitToEnable ) ) {
-                    matchFound = disabledItems[index] = null
-                    isExactRange = true
-                    break
-                }
-
-                // When an overlapped match is found, add the “inverted” state to it.
-                else if ( calendar.isDateOverlap( disabledUnit, unitToEnable ) ) {
-                    if ( $.isPlainObject( unitToEnable ) ) {
-                        unitToEnable.inverted = true
-                        matchFound = unitToEnable
-                    }
-                    else if ( $.isArray( unitToEnable ) ) {
-                        matchFound = unitToEnable
-                        if ( !matchFound[3] ) matchFound.push( 'inverted' )
-                    }
-                    else if ( _.isDate( unitToEnable ) ) {
-                        matchFound = [ unitToEnable.getFullYear(), unitToEnable.getMonth(), unitToEnable.getDate(), 'inverted' ]
-                    }
-                    break
-                }
-            }
-
-            // If a match was found, remove a previous duplicate entry.
-            if ( matchFound ) for ( index = 0; index < disabledItemsCount; index += 1 ) {
-                if ( calendar.isDateExact( disabledItems[index], unitToEnable ) ) {
-                    disabledItems[index] = null
-                    break
-                }
-            }
-
-            // In the event that we’re dealing with an exact range of dates,
-            // make sure there are no “inverted” dates because of it.
-            if ( isExactRange ) for ( index = 0; index < disabledItemsCount; index += 1 ) {
-                if ( calendar.isDateOverlap( disabledItems[index], unitToEnable ) ) {
-                    disabledItems[index] = null
-                    break
-                }
-            }
-
-            // If something is still matched, add it into the collection.
-            if ( matchFound ) {
-                disabledItems.push( matchFound )
-            }
-        })
-    }
-
-    // Return the updated collection.
-    return disabledItems.filter(function( val ) { return val != null })
-} //DatePicker.prototype.activate
-
-
-/**
- * Create a string for the nodes in the picker.
- */
-DatePicker.prototype.nodes = function( isOpen ) {
-
-    var
-        calendar = this,
-        settings = calendar.settings,
-        calendarItem = calendar.item,
-        nowObject = calendarItem.now,
-        selectedObject = calendarItem.select,
-        highlightedObject = calendarItem.highlight,
-        viewsetObject = calendarItem.view,
-        disabledCollection = calendarItem.disable,
-        minLimitObject = calendarItem.min,
-        maxLimitObject = calendarItem.max,
-
-
-        // Create the calendar table head using a copy of weekday labels collection.
-        // * We do a copy so we don't mutate the original array.
-        tableHead = (function( collection, fullCollection ) {
-
-            // If the first day should be Monday, move Sunday to the end.
-            if ( settings.firstDay ) {
-                collection.push( collection.shift() )
-                fullCollection.push( fullCollection.shift() )
-            }
-
-            // Create and return the table head group.
-            return _.node(
-                'thead',
-                _.node(
-                    'tr',
-                    _.group({
-                        min: 0,
-                        max: DAYS_IN_WEEK - 1,
-                        i: 1,
-                        node: 'th',
-                        item: function( counter ) {
-                            return [
-                                collection[ counter ],
-                                settings.klass.weekdays,
-                                'scope=col title="' + fullCollection[ counter ] + '"'
-                            ]
-                        }
-                    })
-                )
-            ) //endreturn
-        })( ( settings.showWeekdaysFull ? settings.weekdaysFull : settings.weekdaysShort ).slice( 0 ), settings.weekdaysFull.slice( 0 ) ), //tableHead
-
-
-        // Create the nav for next/prev month.
-        createMonthNav = function( next ) {
-
-            // Otherwise, return the created month tag.
-            return _.node(
-                'div',
-                ' ',
-                settings.klass[ 'nav' + ( next ? 'Next' : 'Prev' ) ] + (
-
-                    // If the focused month is outside the range, disabled the button.
-                    ( next && viewsetObject.year >= maxLimitObject.year && viewsetObject.month >= maxLimitObject.month ) ||
-                    ( !next && viewsetObject.year <= minLimitObject.year && viewsetObject.month <= minLimitObject.month ) ?
-                    ' ' + settings.klass.navDisabled : ''
-                ),
-                'data-nav=' + ( next || -1 ) + ' ' +
-                _.ariaAttr({
-                    role: 'button',
-                    controls: calendar.$node[0].id + '_table'
-                }) + ' ' +
-                'title="' + (next ? settings.labelMonthNext : settings.labelMonthPrev ) + '"'
-            ) //endreturn
-        }, //createMonthNav
-
-
-        // Create the month label.
-        createMonthLabel = function() {
-
-            var monthsCollection = settings.showMonthsShort ? settings.monthsShort : settings.monthsFull
-
-            // If there are months to select, add a dropdown menu.
-            if ( settings.selectMonths ) {
-
-                return _.node( 'select',
-                    _.group({
-                        min: 0,
-                        max: 11,
-                        i: 1,
-                        node: 'option',
-                        item: function( loopedMonth ) {
-
-                            return [
-
-                                // The looped month and no classes.
-                                monthsCollection[ loopedMonth ], 0,
-
-                                // Set the value and selected index.
-                                'value=' + loopedMonth +
-                                ( viewsetObject.month == loopedMonth ? ' selected' : '' ) +
-                                (
-                                    (
-                                        ( viewsetObject.year == minLimitObject.year && loopedMonth < minLimitObject.month ) ||
-                                        ( viewsetObject.year == maxLimitObject.year && loopedMonth > maxLimitObject.month )
-                                    ) ?
-                                    ' disabled' : ''
-                                )
-                            ]
-                        }
-                    }),
-                    settings.klass.selectMonth,
-                    ( isOpen ? '' : 'disabled' ) + ' ' +
-                    _.ariaAttr({ controls: calendar.$node[0].id + '_table' }) + ' ' +
-                    'title="' + settings.labelMonthSelect + '"'
-                )
-            }
-
-            // If there's a need for a month selector
-            return _.node( 'div', monthsCollection[ viewsetObject.month ], settings.klass.month )
-        }, //createMonthLabel
-
-
-        // Create the year label.
-        createYearLabel = function() {
-
-            var focusedYear = viewsetObject.year,
-
-            // If years selector is set to a literal "true", set it to 5. Otherwise
-            // divide in half to get half before and half after focused year.
-            numberYears = settings.selectYears === true ? 5 : ~~( settings.selectYears / 2 )
-
-            // If there are years to select, add a dropdown menu.
-            if ( numberYears ) {
-
-                var
-                    minYear = minLimitObject.year,
-                    maxYear = maxLimitObject.year,
-                    lowestYear = focusedYear - numberYears,
-                    highestYear = focusedYear + numberYears
-
-                // If the min year is greater than the lowest year, increase the highest year
-                // by the difference and set the lowest year to the min year.
-                if ( minYear > lowestYear ) {
-                    highestYear += minYear - lowestYear
-                    lowestYear = minYear
-                }
-
-                // If the max year is less than the highest year, decrease the lowest year
-                // by the lower of the two: available and needed years. Then set the
-                // highest year to the max year.
-                if ( maxYear < highestYear ) {
-
-                    var availableYears = lowestYear - minYear,
-                        neededYears = highestYear - maxYear
-
-                    lowestYear -= availableYears > neededYears ? neededYears : availableYears
-                    highestYear = maxYear
-                }
-
-                return _.node( 'select',
-                    _.group({
-                        min: lowestYear,
-                        max: highestYear,
-                        i: 1,
-                        node: 'option',
-                        item: function( loopedYear ) {
-                            return [
-
-                                // The looped year and no classes.
-                                loopedYear, 0,
-
-                                // Set the value and selected index.
-                                'value=' + loopedYear + ( focusedYear == loopedYear ? ' selected' : '' )
-                            ]
-                        }
-                    }),
-                    settings.klass.selectYear,
-                    ( isOpen ? '' : 'disabled' ) + ' ' + _.ariaAttr({ controls: calendar.$node[0].id + '_table' }) + ' ' +
-                    'title="' + settings.labelYearSelect + '"'
-                )
-            }
-
-            // Otherwise just return the year focused
-            return _.node( 'div', focusedYear, settings.klass.year )
-        } //createYearLabel
-
-
-    // Create and return the entire calendar.
-    return _.node(
-        'div',
-        ( settings.selectYears ? createYearLabel() + createMonthLabel() : createMonthLabel() + createYearLabel() ) +
-        createMonthNav() + createMonthNav( 1 ),
-        settings.klass.header
-    ) + _.node(
-        'table',
-        tableHead +
-        _.node(
-            'tbody',
-            _.group({
-                min: 0,
-                max: WEEKS_IN_CALENDAR - 1,
-                i: 1,
-                node: 'tr',
-                item: function( rowCounter ) {
-
-                    // If Monday is the first day and the month starts on Sunday, shift the date back a week.
-                    var shiftDateBy = settings.firstDay && calendar.create([ viewsetObject.year, viewsetObject.month, 1 ]).day === 0 ? -7 : 0
-
-                    return [
-                        _.group({
-                            min: DAYS_IN_WEEK * rowCounter - viewsetObject.day + shiftDateBy + 1, // Add 1 for weekday 0index
-                            max: function() {
-                                return this.min + DAYS_IN_WEEK - 1
-                            },
-                            i: 1,
-                            node: 'td',
-                            item: function( targetDate ) {
-
-                                // Convert the time date from a relative date to a target date.
-                                targetDate = calendar.create([ viewsetObject.year, viewsetObject.month, targetDate + ( settings.firstDay ? 1 : 0 ) ])
-
-                                var isSelected = selectedObject && selectedObject.pick == targetDate.pick,
-                                    isHighlighted = highlightedObject && highlightedObject.pick == targetDate.pick,
-                                    isDisabled = disabledCollection && calendar.disabled( targetDate ) || targetDate.pick < minLimitObject.pick || targetDate.pick > maxLimitObject.pick,
-                                    formattedDate = _.trigger( calendar.formats.toString, calendar, [ settings.format, targetDate ] )
-
-                                return [
-                                    _.node(
-                                        'div',
-                                        targetDate.date,
-                                        (function( klasses ) {
-
-                                            // Add the `infocus` or `outfocus` classes based on month in view.
-                                            klasses.push( viewsetObject.month == targetDate.month ? settings.klass.infocus : settings.klass.outfocus )
-
-                                            // Add the `today` class if needed.
-                                            if ( nowObject.pick == targetDate.pick ) {
-                                                klasses.push( settings.klass.now )
-                                            }
-
-                                            // Add the `selected` class if something's selected and the time matches.
-                                            if ( isSelected ) {
-                                                klasses.push( settings.klass.selected )
-                                            }
-
-                                            // Add the `highlighted` class if something's highlighted and the time matches.
-                                            if ( isHighlighted ) {
-                                                klasses.push( settings.klass.highlighted )
-                                            }
-
-                                            // Add the `disabled` class if something's disabled and the object matches.
-                                            if ( isDisabled ) {
-                                                klasses.push( settings.klass.disabled )
-                                            }
-
-                                            return klasses.join( ' ' )
-                                        })([ settings.klass.day ]),
-                                        'data-pick=' + targetDate.pick + ' ' + _.ariaAttr({
-                                            role: 'gridcell',
-                                            label: formattedDate,
-                                            selected: isSelected && calendar.$node.val() === formattedDate ? true : null,
-                                            activedescendant: isHighlighted ? true : null,
-                                            disabled: isDisabled ? true : null
-                                        })
-                                    ),
-                                    '',
-                                    _.ariaAttr({ role: 'presentation' })
-                                ] //endreturn
-                            }
-                        })
-                    ] //endreturn
-                }
-            })
-        ),
-        settings.klass.table,
-        'id="' + calendar.$node[0].id + '_table' + '" ' + _.ariaAttr({
-            role: 'grid',
-            controls: calendar.$node[0].id,
-            readonly: true
-        })
-    ) +
-
-    // * For Firefox forms to submit, make sure to set the buttons’ `type` attributes as “button”.
-    _.node(
-        'div',
-        _.node( 'button', settings.today, settings.klass.buttonToday,
-            'type=button data-pick=' + nowObject.pick +
-            ( isOpen && !calendar.disabled(nowObject) ? '' : ' disabled' ) + ' ' +
-            _.ariaAttr({ controls: calendar.$node[0].id }) ) +
-        _.node( 'button', settings.clear, settings.klass.buttonClear,
-            'type=button data-clear=1' +
-            ( isOpen ? '' : ' disabled' ) + ' ' +
-            _.ariaAttr({ controls: calendar.$node[0].id }) ) +
-        _.node('button', settings.close, settings.klass.buttonClose,
-            'type=button data-close=true ' +
-            ( isOpen ? '' : ' disabled' ) + ' ' +
-            _.ariaAttr({ controls: calendar.$node[0].id }) ),
-        settings.klass.footer
-    ) //endreturn
-} //DatePicker.prototype.nodes
-
-
-
-
-/**
- * The date picker defaults.
- */
-DatePicker.defaults = (function( prefix ) {
-
-    return {
-
-        // The title label to use for the month nav buttons
-        labelMonthNext: 'Next month',
-        labelMonthPrev: 'Previous month',
-
-        // The title label to use for the dropdown selectors
-        labelMonthSelect: 'Select a month',
-        labelYearSelect: 'Select a year',
-
-        // Months and weekdays
-        monthsFull: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
-        monthsShort: [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
-        weekdaysFull: [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ],
-        weekdaysShort: [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ],
-
-        // Today and clear
-        today: 'Today',
-        clear: 'Clear',
-        close: 'Close',
-
-        // Picker close behavior
-        closeOnSelect: true,
-        closeOnClear: true,
-
-        // The format to show on the `input` element
-        format: 'd mmmm, yyyy',
-
-        // Classes
-        klass: {
-
-            table: prefix + 'table',
-
-            header: prefix + 'header',
-
-            navPrev: prefix + 'nav--prev',
-            navNext: prefix + 'nav--next',
-            navDisabled: prefix + 'nav--disabled',
-
-            month: prefix + 'month',
-            year: prefix + 'year',
-
-            selectMonth: prefix + 'select--month',
-            selectYear: prefix + 'select--year',
-
-            weekdays: prefix + 'weekday',
-
-            day: prefix + 'day',
-            disabled: prefix + 'day--disabled',
-            selected: prefix + 'day--selected',
-            highlighted: prefix + 'day--highlighted',
-            now: prefix + 'day--today',
-            infocus: prefix + 'day--infocus',
-            outfocus: prefix + 'day--outfocus',
-
-            footer: prefix + 'footer',
-
-            buttonClear: prefix + 'button--clear',
-            buttonToday: prefix + 'button--today',
-            buttonClose: prefix + 'button--close'
-        }
-    }
-})( Picker.klasses().picker + '__' )
-
-
-
-
-
-/**
- * Extend the picker to add the date picker.
- */
-Picker.extend( 'pickadate', DatePicker )
-
-
-}));
-
-
-
-
-
-/***/ }),
-
-/***/ 223:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 224:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 225:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 226:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 227:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 228:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 229:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 230:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 231:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 3:
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-
-/***/ 35:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/**
-* jQuery asAccordion v0.2.2
-* https://github.com/amazingSurge/jquery-asAccordion
-*
-* Copyright (c) amazingSurge
-* Released under the LGPL-3.0 license
+/* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
+* Parsley.js
+* Version 2.8.1 - built Sat, Feb 3rd 2018, 2:27 pm
+* http://parsleyjs.org
+* Guillaume Potier - <guillaume@wisembly.com>
+* Marc-Andre Lafortune - <petroselinum@marc-andre.ca>
+* MIT Licensed
 */
 
+// The source code below is generated by babel as
+// Parsley is written in ECMAScript 6
+//
+var _slice = Array.prototype.slice;
 
-var DEFAULTS = {
-  namespace: 'accordion',
-  skin: null,
-  mobileBreakpoint: 768,
-  initialIndex: 0,
-  easing: 'ease-in-out',
-  speed: 500,
-  direction: 'vertical',
-  event: 'click',
-  multiple: false
-};
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
-function transition() {
-  let e;
-  let end;
-  let prefix = '';
-  let supported = false;
-  const el = document.createElement("fakeelement");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-  const transitions = {
-    "WebkitTransition": "webkitTransitionEnd",
-    "MozTransition": "transitionend",
-    "OTransition": "oTransitionend",
-    "transition": "transitionend"
-  };
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
 
-  for (e in transitions) {
-    if (el.style[e] !== undefined) {
-      end = transitions[e];
-      supported = true;
-      break;
-    }
-  }
-  if (/(WebKit)/i.test(window.navigator.userAgent)) {
-    prefix = '-webkit-';
-  }
-  return {
-    prefix,
-    end,
-    supported
-  };
-}
+(function (global, factory) {
+   true ? module.exports = factory(__webpack_require__(0)) : typeof define === 'function' && define.amd ? define(['jquery'], factory) : global.parsley = factory(global.jQuery);
+})(this, function ($) {
+  'use strict';
 
-function throttle(func, wait) {
-  const _now = Date.now || function() {
-    return new Date().getTime();
-  };
+  var globalID = 1;
+  var pastWarnings = {};
 
-  let timeout;
-  let context;
-  let args;
-  let result;
-  let previous = 0;
-  let later = function() {
-    previous = _now();
-    timeout = null;
-    result = func.apply(context, args);
-    if (!timeout) {
-      context = args = null;
-    }
-  };
+  var Utils = {
+    // Parsley DOM-API
+    // returns object from dom attributes and values
+    attr: function attr(element, namespace, obj) {
+      var i;
+      var attribute;
+      var attributes;
+      var regex = new RegExp('^' + namespace, 'i');
 
-  return (...params) => {
-    /*eslint consistent-this: "off"*/
-    let now = _now();
-    let remaining = wait - (now - previous);
-    context = this;
-    args = params;
-    if (remaining <= 0 || remaining > wait) {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      previous = now;
-      result = func.apply(context, args);
-      if (!timeout) {
-        context = args = null;
-      }
-    } else if (!timeout) {
-      timeout = setTimeout(later, remaining);
-    }
-    return result;
-  };
-}
-
-const NAMESPACE$1 = 'asAccordion';
-
-/**
- * Plugin constructor
- **/
-class asAccordion {
-  constructor(element, options) {
-    this.element = element;
-    this.$element = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(element);
-
-    this.options = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({}, DEFAULTS, options, this.$element.data());
-
-    this.namespace = this.options.namespace;
-    this.initialIndex = this.options.initialIndex;
-    this.initialized = false;
-    this.disabled = false;
-    this.current = null;
-
-    this.classes = {
-      // status
-      skin: `${this.namespace}--${this.options.skin}`,
-      direction: `${this.namespace}--${this.options.direction}`,
-      active: `${this.namespace}--active`,
-      disabled: `${this.namespace}--disabled`
-    };
-
-    this.$panel = this.$element.children('li');
-    this.$heading = this.$panel.children('span');
-    this.$expander = this.$panel.children('div');
-
-    this.size = this.$panel.length;
-
-    this.$element.addClass(this.classes.direction);
-    this.$panel.addClass(`${this.namespace}__panel`);
-    this.$heading.addClass(`${this.namespace}__heading`);
-    this.$expander.addClass(`${this.namespace}__expander`);
-
-    if (this.options.skin) {
-      this.$element.addClass(this.classes.skin);
-    }
-
-    this.transition = transition();
-
-    this._trigger('init');
-    this.init();
-  }
-
-  init() {
-    const style = {};
-
-    this.distance = this.$heading.outerHeight();
-    if (this.options.direction === 'vertical') {
-      this.animateProperty = 'height';
-    } else {
-      this.animateProperty = 'width';
-    }
-
-    style[this.animateProperty] = this.distance;
-
-    this.$panel.css(style);
-
-    this.$heading.on(this.options.event, e => {
-      if (this.disabled) {
-        return false;
-      }
-
-      const index = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(e.currentTarget).parent().index();
-      this.set(index);
-      return false;
-    });
-
-    this.set(this.initialIndex);
-    this.current = this.initialIndex;
-
-    this.initialized = true;
-
-    this.responsiveCheck();
-
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(window).on('resize', throttle(() => {
-      this.responsiveCheck();
-    }, 250));
-
-    this._trigger('ready');
-  }
-
-  responsiveCheck() {
-    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default()('html, body').outerWidth() <= this.options.mobileBreakpoint && !this.responsive) {
-      if (this.options.direction === 'vertical') {
-        return;
-      }
-      this.responsive = true;
-
-      this.resize();
-    } else {
-      if (typeof this.defaultDirection === 'undefined' || this.defaultDirection === 'vertical') {
-        return;
-      }
-      this.responsive = false;
-
-      this.resize();
-    }
-  }
-
-  resize() {
-    const style = {};
-    this.defaultDirection = this.options.direction;
-    if (this.options.direction === 'vertical') {
-      this.options.direction = 'horizontal';
-      this.animateProperty = 'width';
-      this.$panel.css('height', '100%');
-    }else {
-      this.options.direction = 'vertical';
-      this.animateProperty = 'height';
-      this.$panel.css('width', 'auto');
-    }
-
-    this.$element.removeClass(this.classes.direction);
-    this.classes.direction = `${this.namespace}--${this.options.direction}`;
-    this.$element.addClass(this.classes.direction);
-
-    style[this.animateProperty] = this.distance;
-    this.$panel.css(style).removeClass(this.classes.active);
-
-    if (this.current.length >= 0 || this.current >= 0) {
-      const index = this.current;
-      this.current = this.current.length >= 0? [] : null;
-      this.set(index);
-    }
-  }
-
-  set(index) {
-    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(index)) {
-      for(let i of index) {
-        this.set(i);
-      }
-    } else {
-      if (index >= this.size || index < 0) {
-        return;
-      }
-
-      const that = this;
-      const $panel = this.$panel.eq(index);
-      const $oldPanel = this.$element.find(`.${this.classes.active}`);
-      let distance;
-      let duration;
-      const style = {};
-      const oldStyle = {};
-
-      const moveEnd = () => {
-        that.$element.trigger('moveEnd');
-      };
-
-      if (typeof duration === 'undefined') {
-        duration = this.options.speed;
-      }
-      duration = Math.ceil(duration);
-
-      if ($panel.hasClass(this.classes.active)) {
-        distance = this.distance;
-        $panel.removeClass(this.classes.active);
-
-        if (this.options.multiple) {
-          for (var key in this.current) {
-            if (this.current[key] === index) {
-              
-            } else {
-              continue;
-            }
-            this.current.splice(key, 1);
-          }
-        } else {
-          this.current = null;
-        }
-      } else {
-        if (this.options.direction === 'vertical') {
-          distance = $panel.find('.' + this.namespace + '__expander').outerHeight() + this.distance;
-        } else {
-          distance = $panel.find('.' + this.namespace + '__expander').outerWidth() + this.distance;
-        }
-
-        if (this.options.multiple && __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(this.current)) {
-          this.current.push(index);
-        } else {
-          this.current = index;
-        }
-
-        if (this.options.multiple) {
-          $panel.addClass(this.classes.active);
-        } else {
-          oldStyle[this.animateProperty] = this.distance;  // used to remove the original distance
-          this.animate($oldPanel, oldStyle, duration, this.options.easing, moveEnd);
-
-          $panel.addClass(this.classes.active).siblings().removeClass(this.classes.active);
+      if ('undefined' === typeof obj) obj = {};else {
+        // Clear all own properties. This won't affect prototype's values
+        for (i in obj) {
+          if (obj.hasOwnProperty(i)) delete obj[i];
         }
       }
 
-      style[this.animateProperty] = distance;
+      if (!element) return obj;
 
-      this.animate($panel, style, duration, this.options.easing, moveEnd);
-    }
-  }
+      attributes = element.attributes;
+      for (i = attributes.length; i--;) {
+        attribute = attributes[i];
 
-  animate($el, properties, duration, easing, callback) {
-    const that = this;
+        if (attribute && attribute.specified && regex.test(attribute.name)) {
+          obj[this.camelize(attribute.name.slice(namespace.length))] = this.deserializeValue(attribute.value);
+        }
+      }
 
-    if(this.transition.supported){
-      window.setTimeout(() => {
-        that.insertRule(`.transition_${easing} {${that.transition.prefix}transition: all ${duration}ms ${easing} 0s;}`);
+      return obj;
+    },
 
-        $el.addClass(`transition_${easing}`).one(that.transition.end, function() {
-          $el.removeClass(`transition_${easing}`);
+    checkAttr: function checkAttr(element, namespace, _checkAttr) {
+      return element.hasAttribute(namespace + _checkAttr);
+    },
 
-          callback.call(this);
+    setAttr: function setAttr(element, namespace, attr, value) {
+      element.setAttribute(this.dasherize(namespace + attr), String(value));
+    },
+
+    getType: function getType(element) {
+      return element.getAttribute('type') || 'text';
+    },
+
+    generateID: function generateID() {
+      return '' + globalID++;
+    },
+
+    /** Third party functions **/
+    deserializeValue: function deserializeValue(value) {
+      var num;
+
+      try {
+        return value ? value == "true" || (value == "false" ? false : value == "null" ? null : !isNaN(num = Number(value)) ? num : /^[\[\{]/.test(value) ? JSON.parse(value) : value) : value;
+      } catch (e) {
+        return value;
+      }
+    },
+
+    // Zepto camelize function
+    camelize: function camelize(str) {
+      return str.replace(/-+(.)?/g, function (match, chr) {
+        return chr ? chr.toUpperCase() : '';
+      });
+    },
+
+    // Zepto dasherize function
+    dasherize: function dasherize(str) {
+      return str.replace(/::/g, '/').replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2').replace(/([a-z\d])([A-Z])/g, '$1_$2').replace(/_/g, '-').toLowerCase();
+    },
+
+    warn: function warn() {
+      var _window$console;
+
+      if (window.console && 'function' === typeof window.console.warn) (_window$console = window.console).warn.apply(_window$console, arguments);
+    },
+
+    warnOnce: function warnOnce(msg) {
+      if (!pastWarnings[msg]) {
+        pastWarnings[msg] = true;
+        this.warn.apply(this, arguments);
+      }
+    },
+
+    _resetWarnings: function _resetWarnings() {
+      pastWarnings = {};
+    },
+
+    trimString: function trimString(string) {
+      return string.replace(/^\s+|\s+$/g, '');
+    },
+
+    parse: {
+      date: function date(string) {
+        var parsed = string.match(/^(\d{4,})-(\d\d)-(\d\d)$/);
+        if (!parsed) return null;
+
+        var _parsed$map = parsed.map(function (x) {
+          return parseInt(x, 10);
         });
-        $el.css(properties);
-      }, 10);
-    } else {
-      $el.animate(properties, duration, easing, callback);
-    }
-  }
 
-  insertRule(rule) {
-    if (this.rules && this.rules[rule]) {
-      return;
-    } else if (this.rules === undefined) {
-      this.rules = {};
-    } else {
-      this.rules[rule] = true;
-    }
+        var _parsed$map2 = _slicedToArray(_parsed$map, 4);
 
-    if (document.styleSheets && document.styleSheets.length) {
-      document.styleSheets[0].insertRule(rule, 0);
-    } else {
-      const style = document.createElement('style');
-      style.innerHTML = rule;
-      document.head.appendChild(style);
-    }
-  }
+        var _ = _parsed$map2[0];
+        var year = _parsed$map2[1];
+        var month = _parsed$map2[2];
+        var day = _parsed$map2[3];
 
-  _trigger(eventType, ...params) {
-    let data = [this].concat(params);
+        var date = new Date(year, month - 1, day);
+        if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) return null;
+        return date;
+      },
+      string: function string(_string) {
+        return _string;
+      },
+      integer: function integer(string) {
+        if (isNaN(string)) return null;
+        return parseInt(string, 10);
+      },
+      number: function number(string) {
+        if (isNaN(string)) throw null;
+        return parseFloat(string);
+      },
+      'boolean': function _boolean(string) {
+        return !/^\s*false\s*$/i.test(string);
+      },
+      object: function object(string) {
+        return Utils.deserializeValue(string);
+      },
+      regexp: function regexp(_regexp) {
+        var flags = '';
 
-    // event
-    this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
-
-    // callback
-    eventType = eventType.replace(/\b\w+\b/g, (word) => {
-      return word.substring(0, 1).toUpperCase() + word.substring(1);
-    });
-    let onFunction = `on${eventType}`;
-
-    if (typeof this.options[onFunction] === 'function') {
-      this.options[onFunction].apply(this, params);
-    }
-  }
-
-  enable() {
-    this.disabled = false;
-    this.$element.removeClass(this.classes.disabled);
-    this._trigger('enable');
-  }
-
-  disable() {
-    this.disabled = true;
-    this.$element.addClass(this.classes.disabled);
-    this._trigger('disable');
-  }
-
-  destroy() {
-    this.$element.data(NAMESPACE$1, null);
-    this.$element.remove();
-    this._trigger('destroy');
-  }
-
-  static setDefaults(options) {
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend(DEFAULTS, __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isPlainObject(options) && options);
-  }
-}
-
-var info = {
-  version:'0.2.2'
-};
-
-const NAMESPACE = 'asAccordion';
-const OtherAsAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion;
-
-const jQueryAsAccordion = function(options, ...args) {
-  if (typeof options === 'string') {
-    const method = options;
-
-    if (/^_/.test(method)) {
-      return false;
-    } else if ((/^(get)/.test(method))) {
-      const instance = this.first().data(NAMESPACE);
-      if (instance && typeof instance[method] === 'function') {
-        return instance[method](...args);
-      }
-    } else {
-      return this.each(function() {
-        const instance = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.data(this, NAMESPACE);
-        if (instance && typeof instance[method] === 'function') {
-          instance[method](...args);
+        // Test if RegExp is literal, if not, nothing to be done, otherwise, we need to isolate flags and pattern
+        if (/^\/.*\/(?:[gimy]*)$/.test(_regexp)) {
+          // Replace the regexp literal string with the first match group: ([gimy]*)
+          // If no flag is present, this will be a blank string
+          flags = _regexp.replace(/.*\/([gimy]*)$/, '$1');
+          // Again, replace the regexp literal string with the first match group:
+          // everything excluding the opening and closing slashes and the flags
+          _regexp = _regexp.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
+        } else {
+          // Anchor regexp:
+          _regexp = '^' + _regexp + '$';
         }
+        return new RegExp(_regexp, flags);
+      }
+    },
+
+    parseRequirement: function parseRequirement(requirementType, string) {
+      var converter = this.parse[requirementType || 'string'];
+      if (!converter) throw 'Unknown requirement specification: "' + requirementType + '"';
+      var converted = converter(string);
+      if (converted === null) throw 'Requirement is not a ' + requirementType + ': "' + string + '"';
+      return converted;
+    },
+
+    namespaceEvents: function namespaceEvents(events, namespace) {
+      events = this.trimString(events || '').split(/\s+/);
+      if (!events[0]) return '';
+      return $.map(events, function (evt) {
+        return evt + '.' + namespace;
+      }).join(' ');
+    },
+
+    difference: function difference(array, remove) {
+      // This is O(N^2), should be optimized
+      var result = [];
+      $.each(array, function (_, elem) {
+        if (remove.indexOf(elem) == -1) result.push(elem);
+      });
+      return result;
+    },
+
+    // Alter-ego to native Promise.all, but for jQuery
+    all: function all(promises) {
+      // jQuery treats $.when() and $.when(singlePromise) differently; let's avoid that and add spurious elements
+      return $.when.apply($, _toConsumableArray(promises).concat([42, 42]));
+    },
+
+    // Object.create polyfill, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
+    objectCreate: Object.create || (function () {
+      var Object = function Object() {};
+      return function (prototype) {
+        if (arguments.length > 1) {
+          throw Error('Second argument not supported');
+        }
+        if (typeof prototype != 'object') {
+          throw TypeError('Argument must be an object');
+        }
+        Object.prototype = prototype;
+        var result = new Object();
+        Object.prototype = null;
+        return result;
+      };
+    })(),
+
+    _SubmitSelector: 'input[type="submit"], button:submit'
+  };
+
+  // All these options could be overriden and specified directly in DOM using
+  // `data-parsley-` default DOM-API
+  // eg: `inputs` can be set in DOM using `data-parsley-inputs="input, textarea"`
+  // eg: `data-parsley-stop-on-first-failing-constraint="false"`
+
+  var Defaults = {
+    // ### General
+
+    // Default data-namespace for DOM API
+    namespace: 'data-parsley-',
+
+    // Supported inputs by default
+    inputs: 'input, textarea, select',
+
+    // Excluded inputs by default
+    excluded: 'input[type=button], input[type=submit], input[type=reset], input[type=hidden]',
+
+    // Stop validating field on highest priority failing constraint
+    priorityEnabled: true,
+
+    // ### Field only
+
+    // identifier used to group together inputs (e.g. radio buttons...)
+    multiple: null,
+
+    // identifier (or array of identifiers) used to validate only a select group of inputs
+    group: null,
+
+    // ### UI
+    // Enable\Disable error messages
+    uiEnabled: true,
+
+    // Key events threshold before validation
+    validationThreshold: 3,
+
+    // Focused field on form validation error. 'first'|'last'|'none'
+    focus: 'first',
+
+    // event(s) that will trigger validation before first failure. eg: `input`...
+    trigger: false,
+
+    // event(s) that will trigger validation after first failure.
+    triggerAfterFailure: 'input',
+
+    // Class that would be added on every failing validation Parsley field
+    errorClass: 'parsley-error',
+
+    // Same for success validation
+    successClass: 'parsley-success',
+
+    // Return the `$element` that will receive these above success or error classes
+    // Could also be (and given directly from DOM) a valid selector like `'#div'`
+    classHandler: function classHandler(Field) {},
+
+    // Return the `$element` where errors will be appended
+    // Could also be (and given directly from DOM) a valid selector like `'#div'`
+    errorsContainer: function errorsContainer(Field) {},
+
+    // ul elem that would receive errors' list
+    errorsWrapper: '<ul class="parsley-errors-list"></ul>',
+
+    // li elem that would receive error message
+    errorTemplate: '<li></li>'
+  };
+
+  var Base = function Base() {
+    this.__id__ = Utils.generateID();
+  };
+
+  Base.prototype = {
+    asyncSupport: true, // Deprecated
+
+    _pipeAccordingToValidationResult: function _pipeAccordingToValidationResult() {
+      var _this = this;
+
+      var pipe = function pipe() {
+        var r = $.Deferred();
+        if (true !== _this.validationResult) r.reject();
+        return r.resolve().promise();
+      };
+      return [pipe, pipe];
+    },
+
+    actualizeOptions: function actualizeOptions() {
+      Utils.attr(this.element, this.options.namespace, this.domOptions);
+      if (this.parent && this.parent.actualizeOptions) this.parent.actualizeOptions();
+      return this;
+    },
+
+    _resetOptions: function _resetOptions(initOptions) {
+      this.domOptions = Utils.objectCreate(this.parent.options);
+      this.options = Utils.objectCreate(this.domOptions);
+      // Shallow copy of ownProperties of initOptions:
+      for (var i in initOptions) {
+        if (initOptions.hasOwnProperty(i)) this.options[i] = initOptions[i];
+      }
+      this.actualizeOptions();
+    },
+
+    _listeners: null,
+
+    // Register a callback for the given event name
+    // Callback is called with context as the first argument and the `this`
+    // The context is the current parsley instance, or window.Parsley if global
+    // A return value of `false` will interrupt the calls
+    on: function on(name, fn) {
+      this._listeners = this._listeners || {};
+      var queue = this._listeners[name] = this._listeners[name] || [];
+      queue.push(fn);
+
+      return this;
+    },
+
+    // Deprecated. Use `on` instead
+    subscribe: function subscribe(name, fn) {
+      $.listenTo(this, name.toLowerCase(), fn);
+    },
+
+    // Unregister a callback (or all if none is given) for the given event name
+    off: function off(name, fn) {
+      var queue = this._listeners && this._listeners[name];
+      if (queue) {
+        if (!fn) {
+          delete this._listeners[name];
+        } else {
+          for (var i = queue.length; i--;) if (queue[i] === fn) queue.splice(i, 1);
+        }
+      }
+      return this;
+    },
+
+    // Deprecated. Use `off`
+    unsubscribe: function unsubscribe(name, fn) {
+      $.unsubscribeTo(this, name.toLowerCase());
+    },
+
+    // Trigger an event of the given name
+    // A return value of `false` interrupts the callback chain
+    // Returns false if execution was interrupted
+    trigger: function trigger(name, target, extraArg) {
+      target = target || this;
+      var queue = this._listeners && this._listeners[name];
+      var result;
+      var parentResult;
+      if (queue) {
+        for (var i = queue.length; i--;) {
+          result = queue[i].call(target, target, extraArg);
+          if (result === false) return result;
+        }
+      }
+      if (this.parent) {
+        return this.parent.trigger(name, target, extraArg);
+      }
+      return true;
+    },
+
+    asyncIsValid: function asyncIsValid(group, force) {
+      Utils.warnOnce("asyncIsValid is deprecated; please use whenValid instead");
+      return this.whenValid({ group: group, force: force });
+    },
+
+    _findRelated: function _findRelated() {
+      return this.options.multiple ? $(this.parent.element.querySelectorAll('[' + this.options.namespace + 'multiple="' + this.options.multiple + '"]')) : this.$element;
+    }
+  };
+
+  var convertArrayRequirement = function convertArrayRequirement(string, length) {
+    var m = string.match(/^\s*\[(.*)\]\s*$/);
+    if (!m) throw 'Requirement is not an array: "' + string + '"';
+    var values = m[1].split(',').map(Utils.trimString);
+    if (values.length !== length) throw 'Requirement has ' + values.length + ' values when ' + length + ' are needed';
+    return values;
+  };
+
+  var convertExtraOptionRequirement = function convertExtraOptionRequirement(requirementSpec, string, extraOptionReader) {
+    var main = null;
+    var extra = {};
+    for (var key in requirementSpec) {
+      if (key) {
+        var value = extraOptionReader(key);
+        if ('string' === typeof value) value = Utils.parseRequirement(requirementSpec[key], value);
+        extra[key] = value;
+      } else {
+        main = Utils.parseRequirement(requirementSpec[key], string);
+      }
+    }
+    return [main, extra];
+  };
+
+  // A Validator needs to implement the methods `validate` and `parseRequirements`
+
+  var Validator = function Validator(spec) {
+    $.extend(true, this, spec);
+  };
+
+  Validator.prototype = {
+    // Returns `true` iff the given `value` is valid according the given requirements.
+    validate: function validate(value, requirementFirstArg) {
+      if (this.fn) {
+        // Legacy style validator
+
+        if (arguments.length > 3) // If more args then value, requirement, instance...
+          requirementFirstArg = [].slice.call(arguments, 1, -1); // Skip first arg (value) and last (instance), combining the rest
+        return this.fn(value, requirementFirstArg);
+      }
+
+      if (Array.isArray(value)) {
+        if (!this.validateMultiple) throw 'Validator `' + this.name + '` does not handle multiple values';
+        return this.validateMultiple.apply(this, arguments);
+      } else {
+        var instance = arguments[arguments.length - 1];
+        if (this.validateDate && instance._isDateInput()) {
+          arguments[0] = Utils.parse.date(arguments[0]);
+          if (arguments[0] === null) return false;
+          return this.validateDate.apply(this, arguments);
+        }
+        if (this.validateNumber) {
+          if (isNaN(value)) return false;
+          arguments[0] = parseFloat(arguments[0]);
+          return this.validateNumber.apply(this, arguments);
+        }
+        if (this.validateString) {
+          return this.validateString.apply(this, arguments);
+        }
+        throw 'Validator `' + this.name + '` only handles multiple values';
+      }
+    },
+
+    // Parses `requirements` into an array of arguments,
+    // according to `this.requirementType`
+    parseRequirements: function parseRequirements(requirements, extraOptionReader) {
+      if ('string' !== typeof requirements) {
+        // Assume requirement already parsed
+        // but make sure we return an array
+        return Array.isArray(requirements) ? requirements : [requirements];
+      }
+      var type = this.requirementType;
+      if (Array.isArray(type)) {
+        var values = convertArrayRequirement(requirements, type.length);
+        for (var i = 0; i < values.length; i++) values[i] = Utils.parseRequirement(type[i], values[i]);
+        return values;
+      } else if ($.isPlainObject(type)) {
+        return convertExtraOptionRequirement(type, requirements, extraOptionReader);
+      } else {
+        return [Utils.parseRequirement(type, requirements)];
+      }
+    },
+    // Defaults:
+    requirementType: 'string',
+
+    priority: 2
+
+  };
+
+  var ValidatorRegistry = function ValidatorRegistry(validators, catalog) {
+    this.__class__ = 'ValidatorRegistry';
+
+    // Default Parsley locale is en
+    this.locale = 'en';
+
+    this.init(validators || {}, catalog || {});
+  };
+
+  var typeTesters = {
+    email: /^((([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/,
+
+    // Follow https://www.w3.org/TR/html5/infrastructure.html#floating-point-numbers
+    number: /^-?(\d*\.)?\d+(e[-+]?\d+)?$/i,
+
+    integer: /^-?\d+$/,
+
+    digits: /^\d+$/,
+
+    alphanum: /^\w+$/i,
+
+    date: {
+      test: function test(value) {
+        return Utils.parse.date(value) !== null;
+      }
+    },
+
+    url: new RegExp("^" +
+    // protocol identifier
+    "(?:(?:https?|ftp)://)?" + // ** mod: make scheme optional
+    // user:pass authentication
+    "(?:\\S+(?::\\S*)?@)?" + "(?:" +
+    // IP address exclusion
+    // private & local networks
+    // "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +   // ** mod: allow local networks
+    // "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
+    // "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
+    // IP address dotted notation octets
+    // excludes loopback network 0.0.0.0
+    // excludes reserved space >= 224.0.0.0
+    // excludes network & broacast addresses
+    // (first & last IP address of each class)
+    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" + "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" + "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" + "|" +
+    // host name
+    '(?:(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)' +
+    // domain name
+    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)*' +
+    // TLD identifier
+    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff]{2,}))' + ")" +
+    // port number
+    "(?::\\d{2,5})?" +
+    // resource path
+    "(?:/\\S*)?" + "$")
+  };
+  typeTesters.range = typeTesters.number;
+
+  // See http://stackoverflow.com/a/10454560/8279
+  var decimalPlaces = function decimalPlaces(num) {
+    var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    if (!match) {
+      return 0;
+    }
+    return Math.max(0,
+    // Number of digits right of decimal point.
+    (match[1] ? match[1].length : 0) - (
+    // Adjust for scientific notation.
+    match[2] ? +match[2] : 0));
+  };
+
+  // parseArguments('number', ['1', '2']) => [1, 2]
+  var ValidatorRegistry__parseArguments = function ValidatorRegistry__parseArguments(type, args) {
+    return args.map(Utils.parse[type]);
+  };
+  // operatorToValidator returns a validating function for an operator function, applied to the given type
+  var ValidatorRegistry__operatorToValidator = function ValidatorRegistry__operatorToValidator(type, operator) {
+    return function (value) {
+      for (var _len = arguments.length, requirementsAndInput = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        requirementsAndInput[_key - 1] = arguments[_key];
+      }
+
+      requirementsAndInput.pop(); // Get rid of `input` argument
+      return operator.apply(undefined, [value].concat(_toConsumableArray(ValidatorRegistry__parseArguments(type, requirementsAndInput))));
+    };
+  };
+
+  var ValidatorRegistry__comparisonOperator = function ValidatorRegistry__comparisonOperator(operator) {
+    return {
+      validateDate: ValidatorRegistry__operatorToValidator('date', operator),
+      validateNumber: ValidatorRegistry__operatorToValidator('number', operator),
+      requirementType: operator.length <= 2 ? 'string' : ['string', 'string'], // Support operators with a 1 or 2 requirement(s)
+      priority: 30
+    };
+  };
+
+  ValidatorRegistry.prototype = {
+    init: function init(validators, catalog) {
+      this.catalog = catalog;
+      // Copy prototype's validators:
+      this.validators = _extends({}, this.validators);
+
+      for (var name in validators) this.addValidator(name, validators[name].fn, validators[name].priority);
+
+      window.Parsley.trigger('parsley:validator:init');
+    },
+
+    // Set new messages locale if we have dictionary loaded in ParsleyConfig.i18n
+    setLocale: function setLocale(locale) {
+      if ('undefined' === typeof this.catalog[locale]) throw new Error(locale + ' is not available in the catalog');
+
+      this.locale = locale;
+
+      return this;
+    },
+
+    // Add a new messages catalog for a given locale. Set locale for this catalog if set === `true`
+    addCatalog: function addCatalog(locale, messages, set) {
+      if ('object' === typeof messages) this.catalog[locale] = messages;
+
+      if (true === set) return this.setLocale(locale);
+
+      return this;
+    },
+
+    // Add a specific message for a given constraint in a given locale
+    addMessage: function addMessage(locale, name, message) {
+      if ('undefined' === typeof this.catalog[locale]) this.catalog[locale] = {};
+
+      this.catalog[locale][name] = message;
+
+      return this;
+    },
+
+    // Add messages for a given locale
+    addMessages: function addMessages(locale, nameMessageObject) {
+      for (var name in nameMessageObject) this.addMessage(locale, name, nameMessageObject[name]);
+
+      return this;
+    },
+
+    // Add a new validator
+    //
+    //    addValidator('custom', {
+    //        requirementType: ['integer', 'integer'],
+    //        validateString: function(value, from, to) {},
+    //        priority: 22,
+    //        messages: {
+    //          en: "Hey, that's no good",
+    //          fr: "Aye aye, pas bon du tout",
+    //        }
+    //    })
+    //
+    // Old API was addValidator(name, function, priority)
+    //
+    addValidator: function addValidator(name, arg1, arg2) {
+      if (this.validators[name]) Utils.warn('Validator "' + name + '" is already defined.');else if (Defaults.hasOwnProperty(name)) {
+        Utils.warn('"' + name + '" is a restricted keyword and is not a valid validator name.');
+        return;
+      }
+      return this._setValidator.apply(this, arguments);
+    },
+
+    hasValidator: function hasValidator(name) {
+      return !!this.validators[name];
+    },
+
+    updateValidator: function updateValidator(name, arg1, arg2) {
+      if (!this.validators[name]) {
+        Utils.warn('Validator "' + name + '" is not already defined.');
+        return this.addValidator.apply(this, arguments);
+      }
+      return this._setValidator.apply(this, arguments);
+    },
+
+    removeValidator: function removeValidator(name) {
+      if (!this.validators[name]) Utils.warn('Validator "' + name + '" is not defined.');
+
+      delete this.validators[name];
+
+      return this;
+    },
+
+    _setValidator: function _setValidator(name, validator, priority) {
+      if ('object' !== typeof validator) {
+        // Old style validator, with `fn` and `priority`
+        validator = {
+          fn: validator,
+          priority: priority
+        };
+      }
+      if (!validator.validate) {
+        validator = new Validator(validator);
+      }
+      this.validators[name] = validator;
+
+      for (var locale in validator.messages || {}) this.addMessage(locale, name, validator.messages[locale]);
+
+      return this;
+    },
+
+    getErrorMessage: function getErrorMessage(constraint) {
+      var message;
+
+      // Type constraints are a bit different, we have to match their requirements too to find right error message
+      if ('type' === constraint.name) {
+        var typeMessages = this.catalog[this.locale][constraint.name] || {};
+        message = typeMessages[constraint.requirements];
+      } else message = this.formatMessage(this.catalog[this.locale][constraint.name], constraint.requirements);
+
+      return message || this.catalog[this.locale].defaultMessage || this.catalog.en.defaultMessage;
+    },
+
+    // Kind of light `sprintf()` implementation
+    formatMessage: function formatMessage(string, parameters) {
+      if ('object' === typeof parameters) {
+        for (var i in parameters) string = this.formatMessage(string, parameters[i]);
+
+        return string;
+      }
+
+      return 'string' === typeof string ? string.replace(/%s/i, parameters) : '';
+    },
+
+    // Here is the Parsley default validators list.
+    // A validator is an object with the following key values:
+    //  - priority: an integer
+    //  - requirement: 'string' (default), 'integer', 'number', 'regexp' or an Array of these
+    //  - validateString, validateMultiple, validateNumber: functions returning `true`, `false` or a promise
+    // Alternatively, a validator can be a function that returns such an object
+    //
+    validators: {
+      notblank: {
+        validateString: function validateString(value) {
+          return (/\S/.test(value)
+          );
+        },
+        priority: 2
+      },
+      required: {
+        validateMultiple: function validateMultiple(values) {
+          return values.length > 0;
+        },
+        validateString: function validateString(value) {
+          return (/\S/.test(value)
+          );
+        },
+        priority: 512
+      },
+      type: {
+        validateString: function validateString(value, type) {
+          var _ref = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+          var _ref$step = _ref.step;
+          var step = _ref$step === undefined ? 'any' : _ref$step;
+          var _ref$base = _ref.base;
+          var base = _ref$base === undefined ? 0 : _ref$base;
+
+          var tester = typeTesters[type];
+          if (!tester) {
+            throw new Error('validator type `' + type + '` is not supported');
+          }
+          if (!tester.test(value)) return false;
+          if ('number' === type) {
+            if (!/^any$/i.test(step || '')) {
+              var nb = Number(value);
+              var decimals = Math.max(decimalPlaces(step), decimalPlaces(base));
+              if (decimalPlaces(nb) > decimals) // Value can't have too many decimals
+                return false;
+              // Be careful of rounding errors by using integers.
+              var toInt = function toInt(f) {
+                return Math.round(f * Math.pow(10, decimals));
+              };
+              if ((toInt(nb) - toInt(base)) % toInt(step) != 0) return false;
+            }
+          }
+          return true;
+        },
+        requirementType: {
+          '': 'string',
+          step: 'string',
+          base: 'number'
+        },
+        priority: 256
+      },
+      pattern: {
+        validateString: function validateString(value, regexp) {
+          return regexp.test(value);
+        },
+        requirementType: 'regexp',
+        priority: 64
+      },
+      minlength: {
+        validateString: function validateString(value, requirement) {
+          return value.length >= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      maxlength: {
+        validateString: function validateString(value, requirement) {
+          return value.length <= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      length: {
+        validateString: function validateString(value, min, max) {
+          return value.length >= min && value.length <= max;
+        },
+        requirementType: ['integer', 'integer'],
+        priority: 30
+      },
+      mincheck: {
+        validateMultiple: function validateMultiple(values, requirement) {
+          return values.length >= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      maxcheck: {
+        validateMultiple: function validateMultiple(values, requirement) {
+          return values.length <= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      check: {
+        validateMultiple: function validateMultiple(values, min, max) {
+          return values.length >= min && values.length <= max;
+        },
+        requirementType: ['integer', 'integer'],
+        priority: 30
+      },
+      min: ValidatorRegistry__comparisonOperator(function (value, requirement) {
+        return value >= requirement;
+      }),
+      max: ValidatorRegistry__comparisonOperator(function (value, requirement) {
+        return value <= requirement;
+      }),
+      range: ValidatorRegistry__comparisonOperator(function (value, min, max) {
+        return value >= min && value <= max;
+      }),
+      equalto: {
+        validateString: function validateString(value, refOrValue) {
+          var $reference = $(refOrValue);
+          if ($reference.length) return value === $reference.val();else return value === refOrValue;
+        },
+        priority: 256
+      }
+    }
+  };
+
+  var UI = {};
+
+  var diffResults = function diffResults(newResult, oldResult, deep) {
+    var added = [];
+    var kept = [];
+
+    for (var i = 0; i < newResult.length; i++) {
+      var found = false;
+
+      for (var j = 0; j < oldResult.length; j++) if (newResult[i].assert.name === oldResult[j].assert.name) {
+        found = true;
+        break;
+      }
+
+      if (found) kept.push(newResult[i]);else added.push(newResult[i]);
+    }
+
+    return {
+      kept: kept,
+      added: added,
+      removed: !deep ? diffResults(oldResult, newResult, true).added : []
+    };
+  };
+
+  UI.Form = {
+
+    _actualizeTriggers: function _actualizeTriggers() {
+      var _this2 = this;
+
+      this.$element.on('submit.Parsley', function (evt) {
+        _this2.onSubmitValidate(evt);
+      });
+      this.$element.on('click.Parsley', Utils._SubmitSelector, function (evt) {
+        _this2.onSubmitButton(evt);
+      });
+
+      // UI could be disabled
+      if (false === this.options.uiEnabled) return;
+
+      this.element.setAttribute('novalidate', '');
+    },
+
+    focus: function focus() {
+      this._focusedField = null;
+
+      if (true === this.validationResult || 'none' === this.options.focus) return null;
+
+      for (var i = 0; i < this.fields.length; i++) {
+        var field = this.fields[i];
+        if (true !== field.validationResult && field.validationResult.length > 0 && 'undefined' === typeof field.options.noFocus) {
+          this._focusedField = field.$element;
+          if ('first' === this.options.focus) break;
+        }
+      }
+
+      if (null === this._focusedField) return null;
+
+      return this._focusedField.focus();
+    },
+
+    _destroyUI: function _destroyUI() {
+      // Reset all event listeners
+      this.$element.off('.Parsley');
+    }
+
+  };
+
+  UI.Field = {
+
+    _reflowUI: function _reflowUI() {
+      this._buildUI();
+
+      // If this field doesn't have an active UI don't bother doing something
+      if (!this._ui) return;
+
+      // Diff between two validation results
+      var diff = diffResults(this.validationResult, this._ui.lastValidationResult);
+
+      // Then store current validation result for next reflow
+      this._ui.lastValidationResult = this.validationResult;
+
+      // Handle valid / invalid / none field class
+      this._manageStatusClass();
+
+      // Add, remove, updated errors messages
+      this._manageErrorsMessages(diff);
+
+      // Triggers impl
+      this._actualizeTriggers();
+
+      // If field is not valid for the first time, bind keyup trigger to ease UX and quickly inform user
+      if ((diff.kept.length || diff.added.length) && !this._failedOnce) {
+        this._failedOnce = true;
+        this._actualizeTriggers();
+      }
+    },
+
+    // Returns an array of field's error message(s)
+    getErrorsMessages: function getErrorsMessages() {
+      // No error message, field is valid
+      if (true === this.validationResult) return [];
+
+      var messages = [];
+
+      for (var i = 0; i < this.validationResult.length; i++) messages.push(this.validationResult[i].errorMessage || this._getErrorMessage(this.validationResult[i].assert));
+
+      return messages;
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    addError: function addError(name) {
+      var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var message = _ref2.message;
+      var assert = _ref2.assert;
+      var _ref2$updateClass = _ref2.updateClass;
+      var updateClass = _ref2$updateClass === undefined ? true : _ref2$updateClass;
+
+      this._buildUI();
+      this._addError(name, { message: message, assert: assert });
+
+      if (updateClass) this._errorClass();
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    updateError: function updateError(name) {
+      var _ref3 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var message = _ref3.message;
+      var assert = _ref3.assert;
+      var _ref3$updateClass = _ref3.updateClass;
+      var updateClass = _ref3$updateClass === undefined ? true : _ref3$updateClass;
+
+      this._buildUI();
+      this._updateError(name, { message: message, assert: assert });
+
+      if (updateClass) this._errorClass();
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    removeError: function removeError(name) {
+      var _ref4 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var _ref4$updateClass = _ref4.updateClass;
+      var updateClass = _ref4$updateClass === undefined ? true : _ref4$updateClass;
+
+      this._buildUI();
+      this._removeError(name);
+
+      // edge case possible here: remove a standard Parsley error that is still failing in this.validationResult
+      // but highly improbable cuz' manually removing a well Parsley handled error makes no sense.
+      if (updateClass) this._manageStatusClass();
+    },
+
+    _manageStatusClass: function _manageStatusClass() {
+      if (this.hasConstraints() && this.needsValidation() && true === this.validationResult) this._successClass();else if (this.validationResult.length > 0) this._errorClass();else this._resetClass();
+    },
+
+    _manageErrorsMessages: function _manageErrorsMessages(diff) {
+      if ('undefined' !== typeof this.options.errorsMessagesDisabled) return;
+
+      // Case where we have errorMessage option that configure an unique field error message, regardless failing validators
+      if ('undefined' !== typeof this.options.errorMessage) {
+        if (diff.added.length || diff.kept.length) {
+          this._insertErrorWrapper();
+
+          if (0 === this._ui.$errorsWrapper.find('.parsley-custom-error-message').length) this._ui.$errorsWrapper.append($(this.options.errorTemplate).addClass('parsley-custom-error-message'));
+
+          return this._ui.$errorsWrapper.addClass('filled').find('.parsley-custom-error-message').html(this.options.errorMessage);
+        }
+
+        return this._ui.$errorsWrapper.removeClass('filled').find('.parsley-custom-error-message').remove();
+      }
+
+      // Show, hide, update failing constraints messages
+      for (var i = 0; i < diff.removed.length; i++) this._removeError(diff.removed[i].assert.name);
+
+      for (i = 0; i < diff.added.length; i++) this._addError(diff.added[i].assert.name, { message: diff.added[i].errorMessage, assert: diff.added[i].assert });
+
+      for (i = 0; i < diff.kept.length; i++) this._updateError(diff.kept[i].assert.name, { message: diff.kept[i].errorMessage, assert: diff.kept[i].assert });
+    },
+
+    _addError: function _addError(name, _ref5) {
+      var message = _ref5.message;
+      var assert = _ref5.assert;
+
+      this._insertErrorWrapper();
+      this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
+      this._ui.$errorsWrapper.addClass('filled').append($(this.options.errorTemplate).addClass('parsley-' + name).html(message || this._getErrorMessage(assert)));
+    },
+
+    _updateError: function _updateError(name, _ref6) {
+      var message = _ref6.message;
+      var assert = _ref6.assert;
+
+      this._ui.$errorsWrapper.addClass('filled').find('.parsley-' + name).html(message || this._getErrorMessage(assert));
+    },
+
+    _removeError: function _removeError(name) {
+      this._ui.$errorClassHandler.removeAttr('aria-describedby');
+      this._ui.$errorsWrapper.removeClass('filled').find('.parsley-' + name).remove();
+    },
+
+    _getErrorMessage: function _getErrorMessage(constraint) {
+      var customConstraintErrorMessage = constraint.name + 'Message';
+
+      if ('undefined' !== typeof this.options[customConstraintErrorMessage]) return window.Parsley.formatMessage(this.options[customConstraintErrorMessage], constraint.requirements);
+
+      return window.Parsley.getErrorMessage(constraint);
+    },
+
+    _buildUI: function _buildUI() {
+      // UI could be already built or disabled
+      if (this._ui || false === this.options.uiEnabled) return;
+
+      var _ui = {};
+
+      // Give field its Parsley id in DOM
+      this.element.setAttribute(this.options.namespace + 'id', this.__id__);
+
+      /** Generate important UI elements and store them in this **/
+      // $errorClassHandler is the $element that woul have parsley-error and parsley-success classes
+      _ui.$errorClassHandler = this._manageClassHandler();
+
+      // $errorsWrapper is a div that would contain the various field errors, it will be appended into $errorsContainer
+      _ui.errorsWrapperId = 'parsley-id-' + (this.options.multiple ? 'multiple-' + this.options.multiple : this.__id__);
+      _ui.$errorsWrapper = $(this.options.errorsWrapper).attr('id', _ui.errorsWrapperId);
+
+      // ValidationResult UI storage to detect what have changed bwt two validations, and update DOM accordingly
+      _ui.lastValidationResult = [];
+      _ui.validationInformationVisible = false;
+
+      // Store it in this for later
+      this._ui = _ui;
+    },
+
+    // Determine which element will have `parsley-error` and `parsley-success` classes
+    _manageClassHandler: function _manageClassHandler() {
+      // Class handled could also be determined by function given in Parsley options
+      if ('string' === typeof this.options.classHandler && $(this.options.classHandler).length) return $(this.options.classHandler);
+
+      // Class handled could also be determined by function given in Parsley options
+      var $handlerFunction = this.options.classHandler;
+
+      // It might also be the function name of a global function
+      if ('string' === typeof this.options.classHandler && 'function' === typeof window[this.options.classHandler]) $handlerFunction = window[this.options.classHandler];
+
+      if ('function' === typeof $handlerFunction) {
+        var $handler = $handlerFunction.call(this, this);
+
+        // If this function returned a valid existing DOM element, go for it
+        if ('undefined' !== typeof $handler && $handler.length) return $handler;
+      } else if ('object' === typeof $handlerFunction && $handlerFunction instanceof jQuery && $handlerFunction.length) {
+        return $handlerFunction;
+      } else if ($handlerFunction) {
+        Utils.warn('The class handler `' + $handlerFunction + '` does not exist in DOM nor as a global JS function');
+      }
+
+      return this._inputHolder();
+    },
+
+    _inputHolder: function _inputHolder() {
+      // if simple element (input, texatrea, select...) it will perfectly host the classes and precede the error container
+      if (!this.options.multiple || this.element.nodeName === 'SELECT') return this.$element;
+
+      // But if multiple element (radio, checkbox), that would be their parent
+      return this.$element.parent();
+    },
+
+    _insertErrorWrapper: function _insertErrorWrapper() {
+      var $errorsContainer = this.options.errorsContainer;
+
+      // Nothing to do if already inserted
+      if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
+
+      if ('string' === typeof $errorsContainer) {
+        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else if ('function' === typeof window[$errorsContainer]) $errorsContainer = window[$errorsContainer];else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM nor as a global JS function');
+      }
+
+      if ('function' === typeof $errorsContainer) $errorsContainer = $errorsContainer.call(this, this);
+
+      if ('object' === typeof $errorsContainer && $errorsContainer.length) return $errorsContainer.append(this._ui.$errorsWrapper);
+
+      return this._inputHolder().after(this._ui.$errorsWrapper);
+    },
+
+    _actualizeTriggers: function _actualizeTriggers() {
+      var _this3 = this;
+
+      var $toBind = this._findRelated();
+      var trigger;
+
+      // Remove Parsley events already bound on this field
+      $toBind.off('.Parsley');
+      if (this._failedOnce) $toBind.on(Utils.namespaceEvents(this.options.triggerAfterFailure, 'Parsley'), function () {
+        _this3._validateIfNeeded();
+      });else if (trigger = Utils.namespaceEvents(this.options.trigger, 'Parsley')) {
+        $toBind.on(trigger, function (event) {
+          _this3._validateIfNeeded(event);
+        });
+      }
+    },
+
+    _validateIfNeeded: function _validateIfNeeded(event) {
+      var _this4 = this;
+
+      // For keyup, keypress, keydown, input... events that could be a little bit obstrusive
+      // do not validate if val length < min threshold on first validation. Once field have been validated once and info
+      // about success or failure have been displayed, always validate with this trigger to reflect every yalidation change.
+      if (event && /key|input/.test(event.type)) if (!(this._ui && this._ui.validationInformationVisible) && this.getValue().length <= this.options.validationThreshold) return;
+
+      if (this.options.debounce) {
+        window.clearTimeout(this._debounced);
+        this._debounced = window.setTimeout(function () {
+          return _this4.validate();
+        }, this.options.debounce);
+      } else this.validate();
+    },
+
+    _resetUI: function _resetUI() {
+      // Reset all event listeners
+      this._failedOnce = false;
+      this._actualizeTriggers();
+
+      // Nothing to do if UI never initialized for this field
+      if ('undefined' === typeof this._ui) return;
+
+      // Reset all errors' li
+      this._ui.$errorsWrapper.removeClass('filled').children().remove();
+
+      // Reset validation class
+      this._resetClass();
+
+      // Reset validation flags and last validation result
+      this._ui.lastValidationResult = [];
+      this._ui.validationInformationVisible = false;
+    },
+
+    _destroyUI: function _destroyUI() {
+      this._resetUI();
+
+      if ('undefined' !== typeof this._ui) this._ui.$errorsWrapper.remove();
+
+      delete this._ui;
+    },
+
+    _successClass: function _successClass() {
+      this._ui.validationInformationVisible = true;
+      this._ui.$errorClassHandler.removeClass(this.options.errorClass).addClass(this.options.successClass);
+    },
+    _errorClass: function _errorClass() {
+      this._ui.validationInformationVisible = true;
+      this._ui.$errorClassHandler.removeClass(this.options.successClass).addClass(this.options.errorClass);
+    },
+    _resetClass: function _resetClass() {
+      this._ui.$errorClassHandler.removeClass(this.options.successClass).removeClass(this.options.errorClass);
+    }
+  };
+
+  var Form = function Form(element, domOptions, options) {
+    this.__class__ = 'Form';
+
+    this.element = element;
+    this.$element = $(element);
+    this.domOptions = domOptions;
+    this.options = options;
+    this.parent = window.Parsley;
+
+    this.fields = [];
+    this.validationResult = null;
+  };
+
+  var Form__statusMapping = { pending: null, resolved: true, rejected: false };
+
+  Form.prototype = {
+    onSubmitValidate: function onSubmitValidate(event) {
+      var _this5 = this;
+
+      // This is a Parsley generated submit event, do not validate, do not prevent, simply exit and keep normal behavior
+      if (true === event.parsley) return;
+
+      // If we didn't come here through a submit button, use the first one in the form
+      var submitSource = this._submitSource || this.$element.find(Utils._SubmitSelector)[0];
+      this._submitSource = null;
+      this.$element.find('.parsley-synthetic-submit-button').prop('disabled', true);
+      if (submitSource && null !== submitSource.getAttribute('formnovalidate')) return;
+
+      window.Parsley._remoteCache = {};
+
+      var promise = this.whenValidate({ event: event });
+
+      if ('resolved' === promise.state() && false !== this._trigger('submit')) {
+        // All good, let event go through. We make this distinction because browsers
+        // differ in their handling of `submit` being called from inside a submit event [#1047]
+      } else {
+          // Rejected or pending: cancel this submit
+          event.stopImmediatePropagation();
+          event.preventDefault();
+          if ('pending' === promise.state()) promise.done(function () {
+            _this5._submit(submitSource);
+          });
+        }
+    },
+
+    onSubmitButton: function onSubmitButton(event) {
+      this._submitSource = event.currentTarget;
+    },
+    // internal
+    // _submit submits the form, this time without going through the validations.
+    // Care must be taken to "fake" the actual submit button being clicked.
+    _submit: function _submit(submitSource) {
+      if (false === this._trigger('submit')) return;
+      // Add submit button's data
+      if (submitSource) {
+        var $synthetic = this.$element.find('.parsley-synthetic-submit-button').prop('disabled', false);
+        if (0 === $synthetic.length) $synthetic = $('<input class="parsley-synthetic-submit-button" type="hidden">').appendTo(this.$element);
+        $synthetic.attr({
+          name: submitSource.getAttribute('name'),
+          value: submitSource.getAttribute('value')
+        });
+      }
+
+      this.$element.trigger(_extends($.Event('submit'), { parsley: true }));
+    },
+
+    // Performs validation on fields while triggering events.
+    // @returns `true` if all validations succeeds, `false`
+    // if a failure is immediately detected, or `null`
+    // if dependant on a promise.
+    // Consider using `whenValidate` instead.
+    validate: function validate(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling validate on a parsley form without passing arguments as an object is deprecated.');
+
+        var _arguments = _slice.call(arguments);
+
+        var group = _arguments[0];
+        var force = _arguments[1];
+        var event = _arguments[2];
+
+        options = { group: group, force: force, event: event };
+      }
+      return Form__statusMapping[this.whenValidate(options).state()];
+    },
+
+    whenValidate: function whenValidate() {
+      var _Utils$all$done$fail$always,
+          _this6 = this;
+
+      var _ref7 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var group = _ref7.group;
+      var force = _ref7.force;
+      var event = _ref7.event;
+
+      this.submitEvent = event;
+      if (event) {
+        this.submitEvent = _extends({}, event, { preventDefault: function preventDefault() {
+            Utils.warnOnce("Using `this.submitEvent.preventDefault()` is deprecated; instead, call `this.validationResult = false`");
+            _this6.validationResult = false;
+          } });
+      }
+      this.validationResult = true;
+
+      // fire validate event to eventually modify things before every validation
+      this._trigger('validate');
+
+      // Refresh form DOM options and form's fields that could have changed
+      this._refreshFields();
+
+      var promises = this._withoutReactualizingFormOptions(function () {
+        return $.map(_this6.fields, function (field) {
+          return field.whenValidate({ force: force, group: group });
+        });
+      });
+
+      return (_Utils$all$done$fail$always = Utils.all(promises).done(function () {
+        _this6._trigger('success');
+      }).fail(function () {
+        _this6.validationResult = false;
+        _this6.focus();
+        _this6._trigger('error');
+      }).always(function () {
+        _this6._trigger('validated');
+      })).pipe.apply(_Utils$all$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
+    },
+
+    // Iterate over refreshed fields, and stop on first failure.
+    // Returns `true` if all fields are valid, `false` if a failure is detected
+    // or `null` if the result depends on an unresolved promise.
+    // Prefer using `whenValid` instead.
+    isValid: function isValid(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling isValid on a parsley form without passing arguments as an object is deprecated.');
+
+        var _arguments2 = _slice.call(arguments);
+
+        var group = _arguments2[0];
+        var force = _arguments2[1];
+
+        options = { group: group, force: force };
+      }
+      return Form__statusMapping[this.whenValid(options).state()];
+    },
+
+    // Iterate over refreshed fields and validate them.
+    // Returns a promise.
+    // A validation that immediately fails will interrupt the validations.
+    whenValid: function whenValid() {
+      var _this7 = this;
+
+      var _ref8 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var group = _ref8.group;
+      var force = _ref8.force;
+
+      this._refreshFields();
+
+      var promises = this._withoutReactualizingFormOptions(function () {
+        return $.map(_this7.fields, function (field) {
+          return field.whenValid({ group: group, force: force });
+        });
+      });
+      return Utils.all(promises);
+    },
+
+    refresh: function refresh() {
+      this._refreshFields();
+      return this;
+    },
+
+    // Reset UI
+    reset: function reset() {
+      // Form case: emit a reset event for each field
+      for (var i = 0; i < this.fields.length; i++) this.fields[i].reset();
+
+      this._trigger('reset');
+    },
+
+    // Destroy Parsley instance (+ UI)
+    destroy: function destroy() {
+      // Field case: emit destroy event to clean UI and then destroy stored instance
+      this._destroyUI();
+
+      // Form case: destroy all its fields and then destroy stored instance
+      for (var i = 0; i < this.fields.length; i++) this.fields[i].destroy();
+
+      this.$element.removeData('Parsley');
+      this._trigger('destroy');
+    },
+
+    _refreshFields: function _refreshFields() {
+      return this.actualizeOptions()._bindFields();
+    },
+
+    _bindFields: function _bindFields() {
+      var _this8 = this;
+
+      var oldFields = this.fields;
+
+      this.fields = [];
+      this.fieldsMappedById = {};
+
+      this._withoutReactualizingFormOptions(function () {
+        _this8.$element.find(_this8.options.inputs).not(_this8.options.excluded).each(function (_, element) {
+          var fieldInstance = new window.Parsley.Factory(element, {}, _this8);
+
+          // Only add valid and not excluded `Field` and `FieldMultiple` children
+          if (('Field' === fieldInstance.__class__ || 'FieldMultiple' === fieldInstance.__class__) && true !== fieldInstance.options.excluded) {
+            var uniqueId = fieldInstance.__class__ + '-' + fieldInstance.__id__;
+            if ('undefined' === typeof _this8.fieldsMappedById[uniqueId]) {
+              _this8.fieldsMappedById[uniqueId] = fieldInstance;
+              _this8.fields.push(fieldInstance);
+            }
+          }
+        });
+
+        $.each(Utils.difference(oldFields, _this8.fields), function (_, field) {
+          field.reset();
+        });
+      });
+      return this;
+    },
+
+    // Internal only.
+    // Looping on a form's fields to do validation or similar
+    // will trigger reactualizing options on all of them, which
+    // in turn will reactualize the form's options.
+    // To avoid calling actualizeOptions so many times on the form
+    // for nothing, _withoutReactualizingFormOptions temporarily disables
+    // the method actualizeOptions on this form while `fn` is called.
+    _withoutReactualizingFormOptions: function _withoutReactualizingFormOptions(fn) {
+      var oldActualizeOptions = this.actualizeOptions;
+      this.actualizeOptions = function () {
+        return this;
+      };
+      var result = fn();
+      this.actualizeOptions = oldActualizeOptions;
+      return result;
+    },
+
+    // Internal only.
+    // Shortcut to trigger an event
+    // Returns true iff event is not interrupted and default not prevented.
+    _trigger: function _trigger(eventName) {
+      return this.trigger('form:' + eventName);
+    }
+
+  };
+
+  var Constraint = function Constraint(parsleyField, name, requirements, priority, isDomConstraint) {
+    var validatorSpec = window.Parsley._validatorRegistry.validators[name];
+    var validator = new Validator(validatorSpec);
+    priority = priority || parsleyField.options[name + 'Priority'] || validator.priority;
+    isDomConstraint = true === isDomConstraint;
+
+    _extends(this, {
+      validator: validator,
+      name: name,
+      requirements: requirements,
+      priority: priority,
+      isDomConstraint: isDomConstraint
+    });
+    this._parseRequirements(parsleyField.options);
+  };
+
+  var capitalize = function capitalize(str) {
+    var cap = str[0].toUpperCase();
+    return cap + str.slice(1);
+  };
+
+  Constraint.prototype = {
+    validate: function validate(value, instance) {
+      var _validator;
+
+      return (_validator = this.validator).validate.apply(_validator, [value].concat(_toConsumableArray(this.requirementList), [instance]));
+    },
+
+    _parseRequirements: function _parseRequirements(options) {
+      var _this9 = this;
+
+      this.requirementList = this.validator.parseRequirements(this.requirements, function (key) {
+        return options[_this9.name + capitalize(key)];
       });
     }
-  }
+  };
 
-  return this.each(function() {
-    if (!__WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE)) {
-      __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE, new asAccordion(this, options));
+  var Field = function Field(field, domOptions, options, parsleyFormInstance) {
+    this.__class__ = 'Field';
+
+    this.element = field;
+    this.$element = $(field);
+
+    // Set parent if we have one
+    if ('undefined' !== typeof parsleyFormInstance) {
+      this.parent = parsleyFormInstance;
+    }
+
+    this.options = options;
+    this.domOptions = domOptions;
+
+    // Initialize some properties
+    this.constraints = [];
+    this.constraintsByName = {};
+    this.validationResult = true;
+
+    // Bind constraints
+    this._bindConstraints();
+  };
+
+  var parsley_field__statusMapping = { pending: null, resolved: true, rejected: false };
+
+  Field.prototype = {
+    // # Public API
+    // Validate field and trigger some events for mainly `UI`
+    // @returns `true`, an array of the validators that failed, or
+    // `null` if validation is not finished. Prefer using whenValidate
+    validate: function validate(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling validate on a parsley field without passing arguments as an object is deprecated.');
+        options = { options: options };
+      }
+      var promise = this.whenValidate(options);
+      if (!promise) // If excluded with `group` option
+        return true;
+      switch (promise.state()) {
+        case 'pending':
+          return null;
+        case 'resolved':
+          return true;
+        case 'rejected':
+          return this.validationResult;
+      }
+    },
+
+    // Validate field and trigger some events for mainly `UI`
+    // @returns a promise that succeeds only when all validations do
+    // or `undefined` if field is not in the given `group`.
+    whenValidate: function whenValidate() {
+      var _whenValid$always$done$fail$always,
+          _this10 = this;
+
+      var _ref9 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var force = _ref9.force;
+      var group = _ref9.group;
+
+      // do not validate a field if not the same as given validation group
+      this.refresh();
+      if (group && !this._isInGroup(group)) return;
+
+      this.value = this.getValue();
+
+      // Field Validate event. `this.value` could be altered for custom needs
+      this._trigger('validate');
+
+      return (_whenValid$always$done$fail$always = this.whenValid({ force: force, value: this.value, _refreshed: true }).always(function () {
+        _this10._reflowUI();
+      }).done(function () {
+        _this10._trigger('success');
+      }).fail(function () {
+        _this10._trigger('error');
+      }).always(function () {
+        _this10._trigger('validated');
+      })).pipe.apply(_whenValid$always$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
+    },
+
+    hasConstraints: function hasConstraints() {
+      return 0 !== this.constraints.length;
+    },
+
+    // An empty optional field does not need validation
+    needsValidation: function needsValidation(value) {
+      if ('undefined' === typeof value) value = this.getValue();
+
+      // If a field is empty and not required, it is valid
+      // Except if `data-parsley-validate-if-empty` explicitely added, useful for some custom validators
+      if (!value.length && !this._isRequired() && 'undefined' === typeof this.options.validateIfEmpty) return false;
+
+      return true;
+    },
+
+    _isInGroup: function _isInGroup(group) {
+      if (Array.isArray(this.options.group)) return -1 !== $.inArray(group, this.options.group);
+      return this.options.group === group;
+    },
+
+    // Just validate field. Do not trigger any event.
+    // Returns `true` iff all constraints pass, `false` if there are failures,
+    // or `null` if the result can not be determined yet (depends on a promise)
+    // See also `whenValid`.
+    isValid: function isValid(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling isValid on a parsley field without passing arguments as an object is deprecated.');
+
+        var _arguments3 = _slice.call(arguments);
+
+        var force = _arguments3[0];
+        var value = _arguments3[1];
+
+        options = { force: force, value: value };
+      }
+      var promise = this.whenValid(options);
+      if (!promise) // Excluded via `group`
+        return true;
+      return parsley_field__statusMapping[promise.state()];
+    },
+
+    // Just validate field. Do not trigger any event.
+    // @returns a promise that succeeds only when all validations do
+    // or `undefined` if the field is not in the given `group`.
+    // The argument `force` will force validation of empty fields.
+    // If a `value` is given, it will be validated instead of the value of the input.
+    whenValid: function whenValid() {
+      var _this11 = this;
+
+      var _ref10 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref10$force = _ref10.force;
+      var force = _ref10$force === undefined ? false : _ref10$force;
+      var value = _ref10.value;
+      var group = _ref10.group;
+      var _refreshed = _ref10._refreshed;
+
+      // Recompute options and rebind constraints to have latest changes
+      if (!_refreshed) this.refresh();
+      // do not validate a field if not the same as given validation group
+      if (group && !this._isInGroup(group)) return;
+
+      this.validationResult = true;
+
+      // A field without constraint is valid
+      if (!this.hasConstraints()) return $.when();
+
+      // Value could be passed as argument, needed to add more power to 'field:validate'
+      if ('undefined' === typeof value || null === value) value = this.getValue();
+
+      if (!this.needsValidation(value) && true !== force) return $.when();
+
+      var groupedConstraints = this._getGroupedConstraints();
+      var promises = [];
+      $.each(groupedConstraints, function (_, constraints) {
+        // Process one group of constraints at a time, we validate the constraints
+        // and combine the promises together.
+        var promise = Utils.all($.map(constraints, function (constraint) {
+          return _this11._validateConstraint(value, constraint);
+        }));
+        promises.push(promise);
+        if (promise.state() === 'rejected') return false; // Interrupt processing if a group has already failed
+      });
+      return Utils.all(promises);
+    },
+
+    // @returns a promise
+    _validateConstraint: function _validateConstraint(value, constraint) {
+      var _this12 = this;
+
+      var result = constraint.validate(value, this);
+      // Map false to a failed promise
+      if (false === result) result = $.Deferred().reject();
+      // Make sure we return a promise and that we record failures
+      return Utils.all([result]).fail(function (errorMessage) {
+        if (!(_this12.validationResult instanceof Array)) _this12.validationResult = [];
+        _this12.validationResult.push({
+          assert: constraint,
+          errorMessage: 'string' === typeof errorMessage && errorMessage
+        });
+      });
+    },
+
+    // @returns Parsley field computed value that could be overrided or configured in DOM
+    getValue: function getValue() {
+      var value;
+
+      // Value could be overriden in DOM or with explicit options
+      if ('function' === typeof this.options.value) value = this.options.value(this);else if ('undefined' !== typeof this.options.value) value = this.options.value;else value = this.$element.val();
+
+      // Handle wrong DOM or configurations
+      if ('undefined' === typeof value || null === value) return '';
+
+      return this._handleWhitespace(value);
+    },
+
+    // Reset UI
+    reset: function reset() {
+      this._resetUI();
+      return this._trigger('reset');
+    },
+
+    // Destroy Parsley instance (+ UI)
+    destroy: function destroy() {
+      // Field case: emit destroy event to clean UI and then destroy stored instance
+      this._destroyUI();
+      this.$element.removeData('Parsley');
+      this.$element.removeData('FieldMultiple');
+      this._trigger('destroy');
+    },
+
+    // Actualize options and rebind constraints
+    refresh: function refresh() {
+      this._refreshConstraints();
+      return this;
+    },
+
+    _refreshConstraints: function _refreshConstraints() {
+      return this.actualizeOptions()._bindConstraints();
+    },
+
+    refreshConstraints: function refreshConstraints() {
+      Utils.warnOnce("Parsley's refreshConstraints is deprecated. Please use refresh");
+      return this.refresh();
+    },
+
+    /**
+    * Add a new constraint to a field
+    *
+    * @param {String}   name
+    * @param {Mixed}    requirements      optional
+    * @param {Number}   priority          optional
+    * @param {Boolean}  isDomConstraint   optional
+    */
+    addConstraint: function addConstraint(name, requirements, priority, isDomConstraint) {
+
+      if (window.Parsley._validatorRegistry.validators[name]) {
+        var constraint = new Constraint(this, name, requirements, priority, isDomConstraint);
+
+        // if constraint already exist, delete it and push new version
+        if ('undefined' !== this.constraintsByName[constraint.name]) this.removeConstraint(constraint.name);
+
+        this.constraints.push(constraint);
+        this.constraintsByName[constraint.name] = constraint;
+      }
+
+      return this;
+    },
+
+    // Remove a constraint
+    removeConstraint: function removeConstraint(name) {
+      for (var i = 0; i < this.constraints.length; i++) if (name === this.constraints[i].name) {
+        this.constraints.splice(i, 1);
+        break;
+      }
+      delete this.constraintsByName[name];
+      return this;
+    },
+
+    // Update a constraint (Remove + re-add)
+    updateConstraint: function updateConstraint(name, parameters, priority) {
+      return this.removeConstraint(name).addConstraint(name, parameters, priority);
+    },
+
+    // # Internals
+
+    // Internal only.
+    // Bind constraints from config + options + DOM
+    _bindConstraints: function _bindConstraints() {
+      var constraints = [];
+      var constraintsByName = {};
+
+      // clean all existing DOM constraints to only keep javascript user constraints
+      for (var i = 0; i < this.constraints.length; i++) if (false === this.constraints[i].isDomConstraint) {
+        constraints.push(this.constraints[i]);
+        constraintsByName[this.constraints[i].name] = this.constraints[i];
+      }
+
+      this.constraints = constraints;
+      this.constraintsByName = constraintsByName;
+
+      // then re-add Parsley DOM-API constraints
+      for (var name in this.options) this.addConstraint(name, this.options[name], undefined, true);
+
+      // finally, bind special HTML5 constraints
+      return this._bindHtml5Constraints();
+    },
+
+    // Internal only.
+    // Bind specific HTML5 constraints to be HTML5 compliant
+    _bindHtml5Constraints: function _bindHtml5Constraints() {
+      // html5 required
+      if (null !== this.element.getAttribute('required')) this.addConstraint('required', true, undefined, true);
+
+      // html5 pattern
+      if (null !== this.element.getAttribute('pattern')) this.addConstraint('pattern', this.element.getAttribute('pattern'), undefined, true);
+
+      // range
+      var min = this.element.getAttribute('min');
+      var max = this.element.getAttribute('max');
+      if (null !== min && null !== max) this.addConstraint('range', [min, max], undefined, true);
+
+      // HTML5 min
+      else if (null !== min) this.addConstraint('min', min, undefined, true);
+
+        // HTML5 max
+        else if (null !== max) this.addConstraint('max', max, undefined, true);
+
+      // length
+      if (null !== this.element.getAttribute('minlength') && null !== this.element.getAttribute('maxlength')) this.addConstraint('length', [this.element.getAttribute('minlength'), this.element.getAttribute('maxlength')], undefined, true);
+
+      // HTML5 minlength
+      else if (null !== this.element.getAttribute('minlength')) this.addConstraint('minlength', this.element.getAttribute('minlength'), undefined, true);
+
+        // HTML5 maxlength
+        else if (null !== this.element.getAttribute('maxlength')) this.addConstraint('maxlength', this.element.getAttribute('maxlength'), undefined, true);
+
+      // html5 types
+      var type = Utils.getType(this.element);
+
+      // Small special case here for HTML5 number: integer validator if step attribute is undefined or an integer value, number otherwise
+      if ('number' === type) {
+        return this.addConstraint('type', ['number', {
+          step: this.element.getAttribute('step') || '1',
+          base: min || this.element.getAttribute('value')
+        }], undefined, true);
+        // Regular other HTML5 supported types
+      } else if (/^(email|url|range|date)$/i.test(type)) {
+          return this.addConstraint('type', type, undefined, true);
+        }
+      return this;
+    },
+
+    // Internal only.
+    // Field is required if have required constraint without `false` value
+    _isRequired: function _isRequired() {
+      if ('undefined' === typeof this.constraintsByName.required) return false;
+
+      return false !== this.constraintsByName.required.requirements;
+    },
+
+    // Internal only.
+    // Shortcut to trigger an event
+    _trigger: function _trigger(eventName) {
+      return this.trigger('field:' + eventName);
+    },
+
+    // Internal only
+    // Handles whitespace in a value
+    // Use `data-parsley-whitespace="squish"` to auto squish input value
+    // Use `data-parsley-whitespace="trim"` to auto trim input value
+    _handleWhitespace: function _handleWhitespace(value) {
+      if (true === this.options.trimValue) Utils.warnOnce('data-parsley-trim-value="true" is deprecated, please use data-parsley-whitespace="trim"');
+
+      if ('squish' === this.options.whitespace) value = value.replace(/\s{2,}/g, ' ');
+
+      if ('trim' === this.options.whitespace || 'squish' === this.options.whitespace || true === this.options.trimValue) value = Utils.trimString(value);
+
+      return value;
+    },
+
+    _isDateInput: function _isDateInput() {
+      var c = this.constraintsByName.type;
+      return c && c.requirements === 'date';
+    },
+
+    // Internal only.
+    // Returns the constraints, grouped by descending priority.
+    // The result is thus an array of arrays of constraints.
+    _getGroupedConstraints: function _getGroupedConstraints() {
+      if (false === this.options.priorityEnabled) return [this.constraints];
+
+      var groupedConstraints = [];
+      var index = {};
+
+      // Create array unique of priorities
+      for (var i = 0; i < this.constraints.length; i++) {
+        var p = this.constraints[i].priority;
+        if (!index[p]) groupedConstraints.push(index[p] = []);
+        index[p].push(this.constraints[i]);
+      }
+      // Sort them by priority DESC
+      groupedConstraints.sort(function (a, b) {
+        return b[0].priority - a[0].priority;
+      });
+
+      return groupedConstraints;
+    }
+
+  };
+
+  var parsley_field = Field;
+
+  var Multiple = function Multiple() {
+    this.__class__ = 'FieldMultiple';
+  };
+
+  Multiple.prototype = {
+    // Add new `$element` sibling for multiple field
+    addElement: function addElement($element) {
+      this.$elements.push($element);
+
+      return this;
+    },
+
+    // See `Field._refreshConstraints()`
+    _refreshConstraints: function _refreshConstraints() {
+      var fieldConstraints;
+
+      this.constraints = [];
+
+      // Select multiple special treatment
+      if (this.element.nodeName === 'SELECT') {
+        this.actualizeOptions()._bindConstraints();
+
+        return this;
+      }
+
+      // Gather all constraints for each input in the multiple group
+      for (var i = 0; i < this.$elements.length; i++) {
+
+        // Check if element have not been dynamically removed since last binding
+        if (!$('html').has(this.$elements[i]).length) {
+          this.$elements.splice(i, 1);
+          continue;
+        }
+
+        fieldConstraints = this.$elements[i].data('FieldMultiple')._refreshConstraints().constraints;
+
+        for (var j = 0; j < fieldConstraints.length; j++) this.addConstraint(fieldConstraints[j].name, fieldConstraints[j].requirements, fieldConstraints[j].priority, fieldConstraints[j].isDomConstraint);
+      }
+
+      return this;
+    },
+
+    // See `Field.getValue()`
+    getValue: function getValue() {
+      // Value could be overriden in DOM
+      if ('function' === typeof this.options.value) return this.options.value(this);else if ('undefined' !== typeof this.options.value) return this.options.value;
+
+      // Radio input case
+      if (this.element.nodeName === 'INPUT') {
+        var type = Utils.getType(this.element);
+        if (type === 'radio') return this._findRelated().filter(':checked').val() || '';
+
+        // checkbox input case
+        if (type === 'checkbox') {
+          var values = [];
+
+          this._findRelated().filter(':checked').each(function () {
+            values.push($(this).val());
+          });
+
+          return values;
+        }
+      }
+
+      // Select multiple case
+      if (this.element.nodeName === 'SELECT' && null === this.$element.val()) return [];
+
+      // Default case that should never happen
+      return this.$element.val();
+    },
+
+    _init: function _init() {
+      this.$elements = [this.$element];
+
+      return this;
+    }
+  };
+
+  var Factory = function Factory(element, options, parsleyFormInstance) {
+    this.element = element;
+    this.$element = $(element);
+
+    // If the element has already been bound, returns its saved Parsley instance
+    var savedparsleyFormInstance = this.$element.data('Parsley');
+    if (savedparsleyFormInstance) {
+
+      // If the saved instance has been bound without a Form parent and there is one given in this call, add it
+      if ('undefined' !== typeof parsleyFormInstance && savedparsleyFormInstance.parent === window.Parsley) {
+        savedparsleyFormInstance.parent = parsleyFormInstance;
+        savedparsleyFormInstance._resetOptions(savedparsleyFormInstance.options);
+      }
+
+      if ('object' === typeof options) {
+        _extends(savedparsleyFormInstance.options, options);
+      }
+
+      return savedparsleyFormInstance;
+    }
+
+    // Parsley must be instantiated with a DOM element or jQuery $element
+    if (!this.$element.length) throw new Error('You must bind Parsley on an existing element.');
+
+    if ('undefined' !== typeof parsleyFormInstance && 'Form' !== parsleyFormInstance.__class__) throw new Error('Parent instance must be a Form instance');
+
+    this.parent = parsleyFormInstance || window.Parsley;
+    return this.init(options);
+  };
+
+  Factory.prototype = {
+    init: function init(options) {
+      this.__class__ = 'Parsley';
+      this.__version__ = '2.8.1';
+      this.__id__ = Utils.generateID();
+
+      // Pre-compute options
+      this._resetOptions(options);
+
+      // A Form instance is obviously a `<form>` element but also every node that is not an input and has the `data-parsley-validate` attribute
+      if (this.element.nodeName === 'FORM' || Utils.checkAttr(this.element, this.options.namespace, 'validate') && !this.$element.is(this.options.inputs)) return this.bind('parsleyForm');
+
+      // Every other element is bound as a `Field` or `FieldMultiple`
+      return this.isMultiple() ? this.handleMultiple() : this.bind('parsleyField');
+    },
+
+    isMultiple: function isMultiple() {
+      var type = Utils.getType(this.element);
+      return type === 'radio' || type === 'checkbox' || this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple');
+    },
+
+    // Multiples fields are a real nightmare :(
+    // Maybe some refactoring would be appreciated here...
+    handleMultiple: function handleMultiple() {
+      var _this13 = this;
+
+      var name;
+      var multiple;
+      var parsleyMultipleInstance;
+
+      // Handle multiple name
+      this.options.multiple = this.options.multiple || (name = this.element.getAttribute('name')) || this.element.getAttribute('id');
+
+      // Special select multiple input
+      if (this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple')) {
+        this.options.multiple = this.options.multiple || this.__id__;
+        return this.bind('parsleyFieldMultiple');
+
+        // Else for radio / checkboxes, we need a `name` or `data-parsley-multiple` to properly bind it
+      } else if (!this.options.multiple) {
+          Utils.warn('To be bound by Parsley, a radio, a checkbox and a multiple select input must have either a name or a multiple option.', this.$element);
+          return this;
+        }
+
+      // Remove special chars
+      this.options.multiple = this.options.multiple.replace(/(:|\.|\[|\]|\{|\}|\$)/g, '');
+
+      // Add proper `data-parsley-multiple` to siblings if we have a valid multiple name
+      if (name) {
+        $('input[name="' + name + '"]').each(function (i, input) {
+          var type = Utils.getType(input);
+          if (type === 'radio' || type === 'checkbox') input.setAttribute(_this13.options.namespace + 'multiple', _this13.options.multiple);
+        });
+      }
+
+      // Check here if we don't already have a related multiple instance saved
+      var $previouslyRelated = this._findRelated();
+      for (var i = 0; i < $previouslyRelated.length; i++) {
+        parsleyMultipleInstance = $($previouslyRelated.get(i)).data('Parsley');
+        if ('undefined' !== typeof parsleyMultipleInstance) {
+
+          if (!this.$element.data('FieldMultiple')) {
+            parsleyMultipleInstance.addElement(this.$element);
+          }
+
+          break;
+        }
+      }
+
+      // Create a secret Field instance for every multiple field. It will be stored in `data('FieldMultiple')`
+      // And will be useful later to access classic `Field` stuff while being in a `FieldMultiple` instance
+      this.bind('parsleyField', true);
+
+      return parsleyMultipleInstance || this.bind('parsleyFieldMultiple');
+    },
+
+    // Return proper `Form`, `Field` or `FieldMultiple`
+    bind: function bind(type, doNotStore) {
+      var parsleyInstance;
+
+      switch (type) {
+        case 'parsleyForm':
+          parsleyInstance = $.extend(new Form(this.element, this.domOptions, this.options), new Base(), window.ParsleyExtend)._bindFields();
+          break;
+        case 'parsleyField':
+          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Base(), window.ParsleyExtend);
+          break;
+        case 'parsleyFieldMultiple':
+          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Multiple(), new Base(), window.ParsleyExtend)._init();
+          break;
+        default:
+          throw new Error(type + 'is not a supported Parsley type');
+      }
+
+      if (this.options.multiple) Utils.setAttr(this.element, this.options.namespace, 'multiple', this.options.multiple);
+
+      if ('undefined' !== typeof doNotStore) {
+        this.$element.data('FieldMultiple', parsleyInstance);
+
+        return parsleyInstance;
+      }
+
+      // Store the freshly bound instance in a DOM element for later access using jQuery `data()`
+      this.$element.data('Parsley', parsleyInstance);
+
+      // Tell the world we have a new Form or Field instance!
+      parsleyInstance._actualizeTriggers();
+      parsleyInstance._trigger('init');
+
+      return parsleyInstance;
+    }
+  };
+
+  var vernums = $.fn.jquery.split('.');
+  if (parseInt(vernums[0]) <= 1 && parseInt(vernums[1]) < 8) {
+    throw "The loaded version of jQuery is too old. Please upgrade to 1.8.x or better.";
+  }
+  if (!vernums.forEach) {
+    Utils.warn('Parsley requires ES5 to run properly. Please include https://github.com/es-shims/es5-shim');
+  }
+  // Inherit `on`, `off` & `trigger` to Parsley:
+  var Parsley = _extends(new Base(), {
+    element: document,
+    $element: $(document),
+    actualizeOptions: null,
+    _resetOptions: null,
+    Factory: Factory,
+    version: '2.8.1'
+  });
+
+  // Supplement Field and Form with Base
+  // This way, the constructors will have access to those methods
+  _extends(parsley_field.prototype, UI.Field, Base.prototype);
+  _extends(Form.prototype, UI.Form, Base.prototype);
+  // Inherit actualizeOptions and _resetOptions:
+  _extends(Factory.prototype, Base.prototype);
+
+  // ### jQuery API
+  // `$('.elem').parsley(options)` or `$('.elem').psly(options)`
+  $.fn.parsley = $.fn.psly = function (options) {
+    if (this.length > 1) {
+      var instances = [];
+
+      this.each(function () {
+        instances.push($(this).parsley(options));
+      });
+
+      return instances;
+    }
+
+    // Return undefined if applied to non existing DOM element
+    if (this.length == 0) {
+      return;
+    }
+
+    return new Factory(this[0], options);
+  };
+
+  // ### Field and Form extension
+  // Ensure the extension is now defined if it wasn't previously
+  if ('undefined' === typeof window.ParsleyExtend) window.ParsleyExtend = {};
+
+  // ### Parsley config
+  // Inherit from ParsleyDefault, and copy over any existing values
+  Parsley.options = _extends(Utils.objectCreate(Defaults), window.ParsleyConfig);
+  window.ParsleyConfig = Parsley.options; // Old way of accessing global options
+
+  // ### Globals
+  window.Parsley = window.psly = Parsley;
+  Parsley.Utils = Utils;
+  window.ParsleyUtils = {};
+  $.each(Utils, function (key, value) {
+    if ('function' === typeof value) {
+      window.ParsleyUtils[key] = function () {
+        Utils.warnOnce('Accessing `window.ParsleyUtils` is deprecated. Use `window.Parsley.Utils` instead.');
+        return Utils[key].apply(Utils, arguments);
+      };
     }
   });
-};
 
-__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = jQueryAsAccordion;
+  // ### Define methods that forward to the registry, and deprecate all access except through window.Parsley
+  var registry = window.Parsley._validatorRegistry = new ValidatorRegistry(window.ParsleyConfig.validators, window.ParsleyConfig.i18n);
+  window.ParsleyValidator = {};
+  $.each('setLocale addCatalog addMessage addMessages getErrorMessage formatMessage addValidator updateValidator removeValidator hasValidator'.split(' '), function (i, method) {
+    window.Parsley[method] = function () {
+      return registry[method].apply(registry, arguments);
+    };
+    window.ParsleyValidator[method] = function () {
+      var _window$Parsley;
 
-__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({
-  setDefaults: asAccordion.setDefaults,
-  noConflict: function() {
-    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = OtherAsAccordion;
-    return jQueryAsAccordion;
+      Utils.warnOnce('Accessing the method \'' + method + '\' through Validator is deprecated. Simply call \'window.Parsley.' + method + '(...)\'');
+      return (_window$Parsley = window.Parsley)[method].apply(_window$Parsley, arguments);
+    };
+  });
+
+  // ### UI
+  // Deprecated global object
+  window.Parsley.UI = UI;
+  window.ParsleyUI = {
+    removeError: function removeError(instance, name, doNotUpdateClass) {
+      var updateClass = true !== doNotUpdateClass;
+      Utils.warnOnce('Accessing UI is deprecated. Call \'removeError\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
+      return instance.removeError(name, { updateClass: updateClass });
+    },
+    getErrorsMessages: function getErrorsMessages(instance) {
+      Utils.warnOnce('Accessing UI is deprecated. Call \'getErrorsMessages\' on the instance directly.');
+      return instance.getErrorsMessages();
+    }
+  };
+  $.each('addError updateError'.split(' '), function (i, method) {
+    window.ParsleyUI[method] = function (instance, name, message, assert, doNotUpdateClass) {
+      var updateClass = true !== doNotUpdateClass;
+      Utils.warnOnce('Accessing UI is deprecated. Call \'' + method + '\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
+      return instance[method](name, { message: message, assert: assert, updateClass: updateClass });
+    };
+  });
+
+  // ### PARSLEY auto-binding
+  // Prevent it by setting `ParsleyConfig.autoBind` to `false`
+  if (false !== window.ParsleyConfig.autoBind) {
+    $(function () {
+      // Works only on `data-parsley-validate`.
+      if ($('[data-parsley-validate]').length) $('[data-parsley-validate]').parsley();
+    });
   }
-}, info);
 
+  var o = $({});
+  var deprecated = function deprecated() {
+    Utils.warnOnce("Parsley's pubsub module is deprecated; use the 'on' and 'off' methods on parsley instances or window.Parsley");
+  };
+
+  // Returns an event handler that calls `fn` with the arguments it expects
+  function adapt(fn, context) {
+    // Store to allow unbinding
+    if (!fn.parsleyAdaptedCallback) {
+      fn.parsleyAdaptedCallback = function () {
+        var args = Array.prototype.slice.call(arguments, 0);
+        args.unshift(this);
+        fn.apply(context || o, args);
+      };
+    }
+    return fn.parsleyAdaptedCallback;
+  }
+
+  var eventPrefix = 'parsley:';
+  // Converts 'parsley:form:validate' into 'form:validate'
+  function eventName(name) {
+    if (name.lastIndexOf(eventPrefix, 0) === 0) return name.substr(eventPrefix.length);
+    return name;
+  }
+
+  // $.listen is deprecated. Use Parsley.on instead.
+  $.listen = function (name, callback) {
+    var context;
+    deprecated();
+    if ('object' === typeof arguments[1] && 'function' === typeof arguments[2]) {
+      context = arguments[1];
+      callback = arguments[2];
+    }
+
+    if ('function' !== typeof callback) throw new Error('Wrong parameters');
+
+    window.Parsley.on(eventName(name), adapt(callback, context));
+  };
+
+  $.listenTo = function (instance, name, fn) {
+    deprecated();
+    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
+
+    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong parameters');
+
+    instance.on(eventName(name), adapt(fn));
+  };
+
+  $.unsubscribe = function (name, fn) {
+    deprecated();
+    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong arguments');
+    window.Parsley.off(eventName(name), fn.parsleyAdaptedCallback);
+  };
+
+  $.unsubscribeTo = function (instance, name) {
+    deprecated();
+    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
+    instance.off(eventName(name));
+  };
+
+  $.unsubscribeAll = function (name) {
+    deprecated();
+    window.Parsley.off(eventName(name));
+    $('form,input,textarea,select').each(function () {
+      var instance = $(this).data('Parsley');
+      if (instance) {
+        instance.off(eventName(name));
+      }
+    });
+  };
+
+  // $.emit is deprecated. Use jQuery events instead.
+  $.emit = function (name, instance) {
+    var _instance;
+
+    deprecated();
+    var instanceGiven = instance instanceof parsley_field || instance instanceof Form;
+    var args = Array.prototype.slice.call(arguments, instanceGiven ? 2 : 1);
+    args.unshift(eventName(name));
+    if (!instanceGiven) {
+      instance = window.Parsley;
+    }
+    (_instance = instance).trigger.apply(_instance, _toConsumableArray(args));
+  };
+
+  var pubsub = {};
+
+  $.extend(true, Parsley, {
+    asyncValidators: {
+      'default': {
+        fn: function fn(xhr) {
+          // By default, only status 2xx are deemed successful.
+          // Note: we use status instead of state() because responses with status 200
+          // but invalid messages (e.g. an empty body for content type set to JSON) will
+          // result in state() === 'rejected'.
+          return xhr.status >= 200 && xhr.status < 300;
+        },
+        url: false
+      },
+      reverse: {
+        fn: function fn(xhr) {
+          // If reverse option is set, a failing ajax request is considered successful
+          return xhr.status < 200 || xhr.status >= 300;
+        },
+        url: false
+      }
+    },
+
+    addAsyncValidator: function addAsyncValidator(name, fn, url, options) {
+      Parsley.asyncValidators[name] = {
+        fn: fn,
+        url: url || false,
+        options: options || {}
+      };
+
+      return this;
+    }
+
+  });
+
+  Parsley.addValidator('remote', {
+    requirementType: {
+      '': 'string',
+      'validator': 'string',
+      'reverse': 'boolean',
+      'options': 'object'
+    },
+
+    validateString: function validateString(value, url, options, instance) {
+      var data = {};
+      var ajaxOptions;
+      var csr;
+      var validator = options.validator || (true === options.reverse ? 'reverse' : 'default');
+
+      if ('undefined' === typeof Parsley.asyncValidators[validator]) throw new Error('Calling an undefined async validator: `' + validator + '`');
+
+      url = Parsley.asyncValidators[validator].url || url;
+
+      // Fill current value
+      if (url.indexOf('{value}') > -1) {
+        url = url.replace('{value}', encodeURIComponent(value));
+      } else {
+        data[instance.element.getAttribute('name') || instance.element.getAttribute('id')] = value;
+      }
+
+      // Merge options passed in from the function with the ones in the attribute
+      var remoteOptions = $.extend(true, options.options || {}, Parsley.asyncValidators[validator].options);
+
+      // All `$.ajax(options)` could be overridden or extended directly from DOM in `data-parsley-remote-options`
+      ajaxOptions = $.extend(true, {}, {
+        url: url,
+        data: data,
+        type: 'GET'
+      }, remoteOptions);
+
+      // Generate store key based on ajax options
+      instance.trigger('field:ajaxoptions', instance, ajaxOptions);
+
+      csr = $.param(ajaxOptions);
+
+      // Initialise querry cache
+      if ('undefined' === typeof Parsley._remoteCache) Parsley._remoteCache = {};
+
+      // Try to retrieve stored xhr
+      var xhr = Parsley._remoteCache[csr] = Parsley._remoteCache[csr] || $.ajax(ajaxOptions);
+
+      var handleXhr = function handleXhr() {
+        var result = Parsley.asyncValidators[validator].fn.call(instance, xhr, url, options);
+        if (!result) // Map falsy results to rejected promise
+          result = $.Deferred().reject();
+        return $.when(result);
+      };
+
+      return xhr.then(handleXhr, handleXhr);
+    },
+
+    priority: -1
+  });
+
+  Parsley.on('form:submit', function () {
+    Parsley._remoteCache = {};
+  });
+
+  Base.prototype.addAsyncValidator = function () {
+    Utils.warnOnce('Accessing the method `addAsyncValidator` through an instance is deprecated. Simply call `Parsley.addAsyncValidator(...)`');
+    return Parsley.addAsyncValidator.apply(Parsley, arguments);
+  };
+
+  // This is included with the Parsley library itself,
+  // thus there is no use in adding it to your project.
+  Parsley.addMessages('en', {
+    defaultMessage: "This value seems to be invalid.",
+    type: {
+      email: "This value should be a valid email.",
+      url: "This value should be a valid url.",
+      number: "This value should be a valid number.",
+      integer: "This value should be a valid integer.",
+      digits: "This value should be digits.",
+      alphanum: "This value should be alphanumeric."
+    },
+    notblank: "This value should not be blank.",
+    required: "This value is required.",
+    pattern: "This value seems to be invalid.",
+    min: "This value should be greater than or equal to %s.",
+    max: "This value should be lower than or equal to %s.",
+    range: "This value should be between %s and %s.",
+    minlength: "This value is too short. It should have %s characters or more.",
+    maxlength: "This value is too long. It should have %s characters or fewer.",
+    length: "This value length is invalid. It should be between %s and %s characters long.",
+    mincheck: "You must select at least %s choices.",
+    maxcheck: "You must select %s choices or fewer.",
+    check: "You must select between %s and %s choices.",
+    equalto: "This value should be the same."
+  });
+
+  Parsley.setLocale('en');
+
+  /**
+   * inputevent - Alleviate browser bugs for input events
+   * https://github.com/marcandre/inputevent
+   * @version v0.0.3 - (built Thu, Apr 14th 2016, 5:58 pm)
+   * @author Marc-Andre Lafortune <github@marc-andre.ca>
+   * @license MIT
+   */
+
+  function InputEvent() {
+    var _this14 = this;
+
+    var globals = window || global;
+
+    // Slightly odd way construct our object. This way methods are force bound.
+    // Used to test for duplicate library.
+    _extends(this, {
+
+      // For browsers that do not support isTrusted, assumes event is native.
+      isNativeEvent: function isNativeEvent(evt) {
+        return evt.originalEvent && evt.originalEvent.isTrusted !== false;
+      },
+
+      fakeInputEvent: function fakeInputEvent(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          $(evt.target).trigger('input');
+        }
+      },
+
+      misbehaves: function misbehaves(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          _this14.behavesOk(evt);
+          $(document).on('change.inputevent', evt.data.selector, _this14.fakeInputEvent);
+          _this14.fakeInputEvent(evt);
+        }
+      },
+
+      behavesOk: function behavesOk(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          $(document) // Simply unbinds the testing handler
+          .off('input.inputevent', evt.data.selector, _this14.behavesOk).off('change.inputevent', evt.data.selector, _this14.misbehaves);
+        }
+      },
+
+      // Bind the testing handlers
+      install: function install() {
+        if (globals.inputEventPatched) {
+          return;
+        }
+        globals.inputEventPatched = '0.0.3';
+        var _arr = ['select', 'input[type="checkbox"]', 'input[type="radio"]', 'input[type="file"]'];
+        for (var _i = 0; _i < _arr.length; _i++) {
+          var selector = _arr[_i];
+          $(document).on('input.inputevent', selector, { selector: selector }, _this14.behavesOk).on('change.inputevent', selector, { selector: selector }, _this14.misbehaves);
+        }
+      },
+
+      uninstall: function uninstall() {
+        delete globals.inputEventPatched;
+        $(document).off('.inputevent');
+      }
+
+    });
+  };
+
+  var inputevent = new InputEvent();
+
+  inputevent.install();
+
+  var parsley = Parsley;
+
+  return parsley;
+});
+//# sourceMappingURL=parsley.js.map
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-
-/***/ 4:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(7);
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-
-/***/ 6:
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
- * Vue.js v2.5.17
+ * Vue.js v2.5.16
  * (c) 2014-2018 Evan You
  * Released under the MIT License.
  */
@@ -20881,7 +17507,7 @@ Object.defineProperty(Vue, 'FunctionalRenderContext', {
   value: FunctionalRenderContext
 });
 
-Vue.version = '2.5.17';
+Vue.version = '2.5.16';
 
 /*  */
 
@@ -26750,11 +23376,80 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(4).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(4).setImmediate))
 
 /***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/***/ 7:
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(5);
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -26944,9 +23639,5867 @@ module.exports = Vue;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(6)))
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
+/**
+* jQuery asAccordion v0.2.2
+* https://github.com/amazingSurge/jquery-asAccordion
+*
+* Copyright (c) amazingSurge
+* Released under the LGPL-3.0 license
+*/
+
+
+var DEFAULTS = {
+  namespace: 'accordion',
+  skin: null,
+  mobileBreakpoint: 768,
+  initialIndex: 0,
+  easing: 'ease-in-out',
+  speed: 500,
+  direction: 'vertical',
+  event: 'click',
+  multiple: false
+};
+
+function transition() {
+  let e;
+  let end;
+  let prefix = '';
+  let supported = false;
+  const el = document.createElement("fakeelement");
+
+  const transitions = {
+    "WebkitTransition": "webkitTransitionEnd",
+    "MozTransition": "transitionend",
+    "OTransition": "oTransitionend",
+    "transition": "transitionend"
+  };
+
+  for (e in transitions) {
+    if (el.style[e] !== undefined) {
+      end = transitions[e];
+      supported = true;
+      break;
+    }
+  }
+  if (/(WebKit)/i.test(window.navigator.userAgent)) {
+    prefix = '-webkit-';
+  }
+  return {
+    prefix,
+    end,
+    supported
+  };
+}
+
+function throttle(func, wait) {
+  const _now = Date.now || function() {
+    return new Date().getTime();
+  };
+
+  let timeout;
+  let context;
+  let args;
+  let result;
+  let previous = 0;
+  let later = function() {
+    previous = _now();
+    timeout = null;
+    result = func.apply(context, args);
+    if (!timeout) {
+      context = args = null;
+    }
+  };
+
+  return (...params) => {
+    /*eslint consistent-this: "off"*/
+    let now = _now();
+    let remaining = wait - (now - previous);
+    context = this;
+    args = params;
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = now;
+      result = func.apply(context, args);
+      if (!timeout) {
+        context = args = null;
+      }
+    } else if (!timeout) {
+      timeout = setTimeout(later, remaining);
+    }
+    return result;
+  };
+}
+
+const NAMESPACE$1 = 'asAccordion';
+
+/**
+ * Plugin constructor
+ **/
+class asAccordion {
+  constructor(element, options) {
+    this.element = element;
+    this.$element = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(element);
+
+    this.options = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({}, DEFAULTS, options, this.$element.data());
+
+    this.namespace = this.options.namespace;
+    this.initialIndex = this.options.initialIndex;
+    this.initialized = false;
+    this.disabled = false;
+    this.current = null;
+
+    this.classes = {
+      // status
+      skin: `${this.namespace}--${this.options.skin}`,
+      direction: `${this.namespace}--${this.options.direction}`,
+      active: `${this.namespace}--active`,
+      disabled: `${this.namespace}--disabled`
+    };
+
+    this.$panel = this.$element.children('li');
+    this.$heading = this.$panel.children('span');
+    this.$expander = this.$panel.children('div');
+
+    this.size = this.$panel.length;
+
+    this.$element.addClass(this.classes.direction);
+    this.$panel.addClass(`${this.namespace}__panel`);
+    this.$heading.addClass(`${this.namespace}__heading`);
+    this.$expander.addClass(`${this.namespace}__expander`);
+
+    if (this.options.skin) {
+      this.$element.addClass(this.classes.skin);
+    }
+
+    this.transition = transition();
+
+    this._trigger('init');
+    this.init();
+  }
+
+  init() {
+    const style = {};
+
+    this.distance = this.$heading.outerHeight();
+    if (this.options.direction === 'vertical') {
+      this.animateProperty = 'height';
+    } else {
+      this.animateProperty = 'width';
+    }
+
+    style[this.animateProperty] = this.distance;
+
+    this.$panel.css(style);
+
+    this.$heading.on(this.options.event, e => {
+      if (this.disabled) {
+        return false;
+      }
+
+      const index = __WEBPACK_IMPORTED_MODULE_0_jquery___default()(e.currentTarget).parent().index();
+      this.set(index);
+      return false;
+    });
+
+    this.set(this.initialIndex);
+    this.current = this.initialIndex;
+
+    this.initialized = true;
+
+    this.responsiveCheck();
+
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default()(window).on('resize', throttle(() => {
+      this.responsiveCheck();
+    }, 250));
+
+    this._trigger('ready');
+  }
+
+  responsiveCheck() {
+    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default()('html, body').outerWidth() <= this.options.mobileBreakpoint && !this.responsive) {
+      if (this.options.direction === 'vertical') {
+        return;
+      }
+      this.responsive = true;
+
+      this.resize();
+    } else {
+      if (typeof this.defaultDirection === 'undefined' || this.defaultDirection === 'vertical') {
+        return;
+      }
+      this.responsive = false;
+
+      this.resize();
+    }
+  }
+
+  resize() {
+    const style = {};
+    this.defaultDirection = this.options.direction;
+    if (this.options.direction === 'vertical') {
+      this.options.direction = 'horizontal';
+      this.animateProperty = 'width';
+      this.$panel.css('height', '100%');
+    }else {
+      this.options.direction = 'vertical';
+      this.animateProperty = 'height';
+      this.$panel.css('width', 'auto');
+    }
+
+    this.$element.removeClass(this.classes.direction);
+    this.classes.direction = `${this.namespace}--${this.options.direction}`;
+    this.$element.addClass(this.classes.direction);
+
+    style[this.animateProperty] = this.distance;
+    this.$panel.css(style).removeClass(this.classes.active);
+
+    if (this.current.length >= 0 || this.current >= 0) {
+      const index = this.current;
+      this.current = this.current.length >= 0? [] : null;
+      this.set(index);
+    }
+  }
+
+  set(index) {
+    if (__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(index)) {
+      for(let i of index) {
+        this.set(i);
+      }
+    } else {
+      if (index >= this.size || index < 0) {
+        return;
+      }
+
+      const that = this;
+      const $panel = this.$panel.eq(index);
+      const $oldPanel = this.$element.find(`.${this.classes.active}`);
+      let distance;
+      let duration;
+      const style = {};
+      const oldStyle = {};
+
+      const moveEnd = () => {
+        that.$element.trigger('moveEnd');
+      };
+
+      if (typeof duration === 'undefined') {
+        duration = this.options.speed;
+      }
+      duration = Math.ceil(duration);
+
+      if ($panel.hasClass(this.classes.active)) {
+        distance = this.distance;
+        $panel.removeClass(this.classes.active);
+
+        if (this.options.multiple) {
+          for (var key in this.current) {
+            if (this.current[key] === index) {
+              
+            } else {
+              continue;
+            }
+            this.current.splice(key, 1);
+          }
+        } else {
+          this.current = null;
+        }
+      } else {
+        if (this.options.direction === 'vertical') {
+          distance = $panel.find('.' + this.namespace + '__expander').outerHeight() + this.distance;
+        } else {
+          distance = $panel.find('.' + this.namespace + '__expander').outerWidth() + this.distance;
+        }
+
+        if (this.options.multiple && __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isArray(this.current)) {
+          this.current.push(index);
+        } else {
+          this.current = index;
+        }
+
+        if (this.options.multiple) {
+          $panel.addClass(this.classes.active);
+        } else {
+          oldStyle[this.animateProperty] = this.distance;  // used to remove the original distance
+          this.animate($oldPanel, oldStyle, duration, this.options.easing, moveEnd);
+
+          $panel.addClass(this.classes.active).siblings().removeClass(this.classes.active);
+        }
+      }
+
+      style[this.animateProperty] = distance;
+
+      this.animate($panel, style, duration, this.options.easing, moveEnd);
+    }
+  }
+
+  animate($el, properties, duration, easing, callback) {
+    const that = this;
+
+    if(this.transition.supported){
+      window.setTimeout(() => {
+        that.insertRule(`.transition_${easing} {${that.transition.prefix}transition: all ${duration}ms ${easing} 0s;}`);
+
+        $el.addClass(`transition_${easing}`).one(that.transition.end, function() {
+          $el.removeClass(`transition_${easing}`);
+
+          callback.call(this);
+        });
+        $el.css(properties);
+      }, 10);
+    } else {
+      $el.animate(properties, duration, easing, callback);
+    }
+  }
+
+  insertRule(rule) {
+    if (this.rules && this.rules[rule]) {
+      return;
+    } else if (this.rules === undefined) {
+      this.rules = {};
+    } else {
+      this.rules[rule] = true;
+    }
+
+    if (document.styleSheets && document.styleSheets.length) {
+      document.styleSheets[0].insertRule(rule, 0);
+    } else {
+      const style = document.createElement('style');
+      style.innerHTML = rule;
+      document.head.appendChild(style);
+    }
+  }
+
+  _trigger(eventType, ...params) {
+    let data = [this].concat(params);
+
+    // event
+    this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
+
+    // callback
+    eventType = eventType.replace(/\b\w+\b/g, (word) => {
+      return word.substring(0, 1).toUpperCase() + word.substring(1);
+    });
+    let onFunction = `on${eventType}`;
+
+    if (typeof this.options[onFunction] === 'function') {
+      this.options[onFunction].apply(this, params);
+    }
+  }
+
+  enable() {
+    this.disabled = false;
+    this.$element.removeClass(this.classes.disabled);
+    this._trigger('enable');
+  }
+
+  disable() {
+    this.disabled = true;
+    this.$element.addClass(this.classes.disabled);
+    this._trigger('disable');
+  }
+
+  destroy() {
+    this.$element.data(NAMESPACE$1, null);
+    this.$element.remove();
+    this._trigger('destroy');
+  }
+
+  static setDefaults(options) {
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend(DEFAULTS, __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.isPlainObject(options) && options);
+  }
+}
+
+var info = {
+  version:'0.2.2'
+};
+
+const NAMESPACE = 'asAccordion';
+const OtherAsAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion;
+
+const jQueryAsAccordion = function(options, ...args) {
+  if (typeof options === 'string') {
+    const method = options;
+
+    if (/^_/.test(method)) {
+      return false;
+    } else if ((/^(get)/.test(method))) {
+      const instance = this.first().data(NAMESPACE);
+      if (instance && typeof instance[method] === 'function') {
+        return instance[method](...args);
+      }
+    } else {
+      return this.each(function() {
+        const instance = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.data(this, NAMESPACE);
+        if (instance && typeof instance[method] === 'function') {
+          instance[method](...args);
+        }
+      });
+    }
+  }
+
+  return this.each(function() {
+    if (!__WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE)) {
+      __WEBPACK_IMPORTED_MODULE_0_jquery___default()(this).data(NAMESPACE, new asAccordion(this, options));
+    }
+  });
+};
+
+__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = jQueryAsAccordion;
+
+__WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.extend({
+  setDefaults: asAccordion.setDefaults,
+  noConflict: function() {
+    __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.fn.asAccordion = OtherAsAccordion;
+    return jQueryAsAccordion;
+  }
+}, info);
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * jquery.sumoselect - v3.0.3
+ * http://hemantnegi.github.io/jquery.sumoselect
+ * 2016-12-12
+ *
+ * Copyright 2015 Hemant Negi
+ * Email : hemant.frnz@gmail.com
+ * Compressor http://refresh-sf.com/
+ */
+
+(function (factory) {
+    'use strict';
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports !== 'undefined') {
+        module.exports = factory(require('jquery'));
+    } else {
+        factory(jQuery);
+    }
+
+})(function ($) {
+
+    'namespace sumo';
+    $.fn.SumoSelect = function (options) {
+
+        // This is the easiest way to have default options.
+        var settings = $.extend({
+            placeholder: 'Select Here',   // Dont change it here.
+            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
+            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
+            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
+            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
+            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
+            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
+            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
+            csvSepChar: ',',              // separation char in csv mode
+            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
+            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
+            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
+            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
+
+            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
+            searchText: 'Search...',      // placeholder for search input
+            searchFn: function(haystack, needle) { // search function
+                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
+            },
+            noMatch: 'No matches for "{0}"',
+            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
+            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
+            up: false,                    // set true to open upside.
+            showTitle: true               // set to false to prevent title (tooltip) from appearing
+        }, options);
+
+        var ret = this.each(function () {
+            var selObj = this; // the original select object.
+            if (this.sumo || !$(this).is('select')) return; //already initialized
+
+            this.sumo = {
+                E: $(selObj),   //the jquery object of original select element.
+                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
+                select: '',
+                caption: '',
+                placeholder: '',
+                optDiv: '',
+                CaptionCont: '',
+                ul: '',
+                is_floating: false,
+                is_opened: false,
+                //backdrop: '',
+                mob: false, // if to open device default select
+                Pstate: [],
+                lastUnselected: null,
+
+                createElems: function () {
+                    var O = this;
+                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
+                    O.select = O.E.parent();
+                    O.caption = $('<span>');
+                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
+                        .attr('style', O.E.attr('style'))
+                        .prepend(O.caption);
+                    O.select.append(O.CaptionCont);
+
+                    // default turn off if no multiselect
+                    if (!O.is_multi) settings.okCancelInMulti = false
+
+                    if (O.E.attr('disabled'))
+                        O.select.addClass('disabled').removeAttr('tabindex');
+
+                    //if output as csv and is a multiselect.
+                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
+                        //create a hidden field to store csv value.
+                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
+
+                        // so it can not post the original select.
+                        O.E.removeAttr('name');
+                    }
+
+                    //break for mobile rendring.. if forceCustomRendering is false
+                    if (O.isMobile() && !settings.forceCustomRendering) {
+                        O.setNativeMobile();
+                        return;
+                    }
+
+                    // if there is a name attr in select add a class to container div
+                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
+
+                    //hide original select
+                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
+
+                    //## Creating the list...
+                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
+
+                    //branch for floating list in low res devices.
+                    O.floatingList();
+
+                    //Creating the markup for the available options
+                    O.ul = $('<ul class="options">');
+                    O.optDiv.append(O.ul);
+
+                    // Select all functionality
+                    if (settings.selectAll && O.is_multi) O.SelAll();
+
+                    // search functionality
+                    if (settings.search) O.Search();
+
+                    O.ul.append(O.prepItems(O.E.children()));
+
+                    //if multiple then add the class multiple and add OK / CANCEL button
+                    if (O.is_multi) O.multiSelelect();
+
+                    O.select.append(O.optDiv);
+                    O.basicEvents();
+                    O.selAllState();
+                },
+
+                prepItems: function (opts, d) {
+                    var lis = [], O = this;
+                    $(opts).each(function (i, opt) {       // parsing options to li
+                        opt = $(opt);
+                        lis.push(opt.is('optgroup') ?
+                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
+                                .find('ul')
+                                .append(O.prepItems(opt.children(), opt[0].disabled))
+                                .end()
+                            :
+                            O.createLi(opt, d)
+                        );
+                    });
+                    return lis;
+                },
+
+                //## Creates a LI element from a given option and binds events to it
+                //## returns the jquery instance of li (not inserted in dom)
+                createLi: function (opt, d) {
+                    var O = this;
+
+                    if (!opt.attr('value')) opt.attr('value', opt.val());
+                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
+
+                    li.data('opt', opt);    // store a direct reference to option.
+                    opt.data('li', li);    // store a direct reference to list item.
+                    if (O.is_multi) li.prepend('<span><i></i></span>');
+
+                    if (opt[0].disabled || d)
+                        li = li.addClass('disabled');
+
+                    O.onOptClick(li);
+
+                    if (opt[0].selected)
+                        li.addClass('selected');
+
+                    if (opt.attr('class'))
+                        li.addClass(opt.attr('class'));
+
+                    if (opt.attr('title'))
+                        li.attr('title', opt.attr('title'));
+
+                    return li;
+                },
+
+                //## Returns the selected items as string in a Multiselect.
+                getSelStr: function () {
+                    // get the pre selected items.
+                    var sopt = [];
+                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
+                    return sopt.join(settings.csvSepChar);
+                },
+
+                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
+                multiSelelect: function () {
+                    var O = this;
+                    O.optDiv.addClass('multiple');
+                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
+                        //if combined change event is set.
+                        O._okbtn();
+                        O.hideOpts();
+                    });
+                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
+                        O._cnbtn();
+                        O.hideOpts();
+                    });
+                    var btns = O.okbtn.add(O.cancelBtn);
+                    O.optDiv.append($('<div class="MultiControls">').append(btns));
+
+                    // handling keyboard navigation on ok cancel buttons.
+                    btns.on('keydown.sumo', function (e) {
+                        var el = $(this);
+                        switch (e.which) {
+                            case 32: // space
+                            case 13: // enter
+                                el.trigger('click');
+                                break;
+
+                            case 9:  //tab
+                                if (el.hasClass('btnOk')) return;
+                            case 27: // esc
+                                O._cnbtn();
+                                O.hideOpts();
+                                return;
+                        }
+                        e.stopPropagation();
+                        e.preventDefault();
+                    });
+                },
+
+                _okbtn: function () {
+                    var O = this, cg = 0;
+                    //if combined change event is set.
+                    if (settings.triggerChangeCombined) {
+                        //check for a change in the selection.
+                        if (O.E.find('option:selected').length !== O.Pstate.length) {
+                            cg = 1;
+                        }
+                        else {
+                            O.E.find('option').each(function (i, e) {
+                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
+                            });
+                        }
+
+                        if (cg) {
+                            O.callChange();
+                            O.setText();
+                        }
+                    }
+                },
+                _cnbtn: function () {
+                    var O = this;
+                    //remove all selections
+                    O.E.find('option:selected').each(function () { this.selected = false; });
+                    O.optDiv.find('li.selected').removeClass('selected')
+
+                    //restore selections from saved state.
+                    for (var i = 0; i < O.Pstate.length; i++) {
+                        O.E.find('option')[O.Pstate[i]].selected = true;
+                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
+                    }
+                    O.selAllState();
+                },
+
+                SelAll: function () {
+                    var O = this;
+                    if (!O.is_multi) return;
+                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
+                    O.optDiv.addClass('selall');
+                    O.selAll.on('click', function () {
+                        O.selAll.toggleClass('selected');
+                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
+                        //O.selAllState();
+                    });
+
+                    O.optDiv.prepend(O.selAll);
+                },
+
+                // search module (can be removed if not required.)
+                Search: function () {
+                    var O = this,
+                        cc = O.CaptionCont.addClass('search'),
+                        P = $('<p class="no-match">'),
+                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
+
+                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
+                        .on('click', function (e) {
+                            e.stopPropagation();
+                        });
+                    cc.append(O.ftxt);
+                    O.optDiv.children('ul').after(P);
+
+                    O.ftxt.on('keyup.sumo', function () {
+                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
+                            var e = $(e),
+                                opt = e.data('opt')[0];
+                            opt.hidden = fn(e.text(), O.ftxt.val());
+                            e.toggleClass('hidden', opt.hidden);
+                        }).not('.hidden');
+
+                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
+                        P.find('em').text(O.ftxt.val());
+                        O.selAllState();
+                    });
+                },
+
+                selAllState: function () {
+                    var O = this;
+                    if (settings.selectAll && O.is_multi) {
+                        var sc = 0, vc = 0;
+                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
+                            if ($(e).hasClass('selected')) sc++;
+                            if (!$(e).hasClass('disabled')) vc++;
+                        });
+                        //select all checkbox state change.
+                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
+                        else if (sc === 0) O.selAll.removeClass('selected partial');
+                        else O.selAll.addClass('partial')//.removeClass('selected');
+                    }
+                },
+
+                showOpts: function () {
+                    var O = this;
+                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
+                    O.E.trigger('sumo:opening', O);
+                    O.is_opened = true;
+                    O.select.addClass('open').attr('aria-expanded', 'true');
+                    O.E.trigger('sumo:opened', O);
+
+                    if (O.ftxt) O.ftxt.focus();
+                    else O.select.focus();
+
+                    // hide options on click outside.
+                    $(document).on('click.sumo', function (e) {
+                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
+                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
+                            if (!O.is_opened) return;
+                            O.hideOpts();
+                            if (settings.okCancelInMulti) {
+                                if (settings.isClickAwayOk)
+                                    O._okbtn();
+                                else
+                                    O._cnbtn();
+                            }
+                        }
+                    });
+
+                    if (O.is_floating) {
+                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
+                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
+                        O.optDiv.css('height', H);
+                        $('body').addClass('sumoStopScroll');
+                    }
+
+                    O.setPstate();
+                },
+
+                //maintain state when ok/cancel buttons are available storing the indexes.
+                setPstate: function () {
+                    var O = this;
+                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
+                        O.Pstate = [];
+                        // assuming that find returns elements in tree order
+                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
+                    }
+                },
+
+                callChange: function () {
+                    this.E.trigger('change').trigger('click');
+                },
+
+                hideOpts: function () {
+                    var O = this;
+                    if (O.is_opened) {
+                        O.E.trigger('sumo:closing', O);
+                        O.is_opened = false;
+                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
+                        O.E.trigger('sumo:closed', O);
+                        $(document).off('click.sumo');
+                        O.select.focus();
+                        $('body').removeClass('sumoStopScroll');
+
+                        // clear the search
+                        if (settings.search) {
+                            O.ftxt.val('');
+                            O.ftxt.trigger('keyup.sumo');
+                        }
+                    }
+                },
+                setOnOpen: function () {
+                    var O = this,
+                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
+                    if (li.hasClass('disabled')) {
+                        li = li.next(':not(disabled)')
+                        if (!li.length) return;
+                    }
+                    O.optDiv.find('li.sel').removeClass('sel');
+                    li.addClass('sel');
+                    O.showOpts();
+                },
+                nav: function (up) {
+                    var O = this, c,
+                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
+                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
+                        idx = s.index(sel);
+                    if (O.is_opened && sel.length) {
+
+                        if (up && idx > 0)
+                            c = s.eq(idx - 1);
+                        else if (!up && idx < s.length - 1 && idx > -1)
+                            c = s.eq(idx + 1);
+                        else return; // if no items before or after
+
+                        sel.removeClass('sel');
+                        sel = c.addClass('sel');
+
+                        // setting sel item to visible view.
+                        var ul = O.ul,
+                            st = ul.scrollTop(),
+                            t = sel.position().top + st;
+                        if (t >= st + ul.height() - sel.outerHeight())
+                            ul.scrollTop(t - ul.height() + sel.outerHeight());
+                        if (t < st)
+                            ul.scrollTop(t);
+
+                    }
+                    else
+                        O.setOnOpen();
+                },
+
+                basicEvents: function () {
+                    var O = this;
+                    O.CaptionCont.click(function (evt) {
+                        O.E.trigger('click');
+                        if (O.is_opened) O.hideOpts(); else O.showOpts();
+                        evt.stopPropagation();
+                    });
+
+                    O.select.on('keydown.sumo', function (e) {
+                        switch (e.which) {
+                            case 38: // up
+                                O.nav(true);
+                                break;
+
+                            case 40: // down
+                                O.nav(false);
+                                break;
+
+                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
+                                if (O.is_multi && e.ctrlKey) {
+                                    O.toggSelAll(!e.shiftKey, 1);
+                                    break;
+                                }
+                                else
+                                    return;
+
+                            case 32: // space
+                                if (settings.search && O.ftxt.is(e.target)) return;
+                            case 13: // enter
+                                if (O.is_opened)
+                                    O.optDiv.find('ul li.sel').trigger('click');
+                                else
+                                    O.setOnOpen();
+                                break;
+                            case 9:	 //tab
+                                if (!settings.okCancelInMulti)
+                                    O.hideOpts();
+                                return;
+                            case 27: // esc
+                                if (settings.okCancelInMulti) O._cnbtn();
+                                O.hideOpts();
+                                return;
+
+                            default:
+                                return; // exit this handler for other keys
+                        }
+                        e.preventDefault(); // prevent the default action (scroll / move caret)
+                    });
+
+                    $(window).on('resize.sumo', function () {
+                        O.floatingList();
+                    });
+                },
+
+                onOptClick: function (li) {
+                    var O = this;
+                    li.click(function () {
+                        var li = $(this);
+                        if (li.hasClass('disabled')) return;
+                        var txt = "";
+                        if (O.is_multi) {
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = li.hasClass('selected');
+                            if (li.data('opt')[0].selected === false) {
+                                O.lastUnselected = li.data('opt')[0].textContent;
+                            }
+                            O.selAllState();
+                        }
+                        else {
+                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = true;
+                        }
+
+                        //branch for combined change event.
+                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
+                            O.setText();
+                            O.callChange();
+                        }
+
+                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
+                    });
+                },
+
+                // fixed some variables that were not explicitly typed (michc)
+                setText: function () {
+                    var O = this;
+                    O.placeholder = "";
+                    if (O.is_multi) {
+                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
+
+                        for (var i = 0; i < sels.length; i++) {
+                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
+                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
+                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
+                                } else {
+                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
+                                }
+
+                                break;
+                            }
+                            else O.placeholder += $(sels[i]).text() + ", ";
+                        }
+                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
+                    }
+                    else {
+                        O.placeholder = O.E.find(':selected').not(':disabled').text();
+                    }
+
+                    var is_placeholder = false;
+
+                    if (!O.placeholder) {
+
+                        is_placeholder = true;
+
+                        O.placeholder = O.E.attr('placeholder');
+                        if (!O.placeholder)                  //if placeholder is there then set it
+                            O.placeholder = O.E.find('option:disabled:selected').text();
+                    }
+
+                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
+
+                    //set display text
+                    O.caption.html(O.placeholder);
+                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
+
+                    //set the hidden field if post as csv is true.
+                    var csvField = O.select.find('input.HEMANT123');
+                    if (csvField.length) csvField.val(O.getSelStr());
+
+                    //add class placeholder if its a placeholder text.
+                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
+                    return O.placeholder;
+                },
+
+                isMobile: function () {
+
+                    // Adapted from http://www.detectmobilebrowsers.com
+                    var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
+                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
+                    return false;
+                },
+
+                setNativeMobile: function () {
+                    var O = this;
+                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
+                    O.mob = true;
+                    O.E.change(function () {
+                        O.setText();
+                    });
+                },
+
+                floatingList: function () {
+                    var O = this;
+                    //called on init and also on resize.
+                    //O.is_floating = true if window width is < specified float width
+                    O.is_floating = $(window).width() <= settings.floatWidth;
+
+                    //set class isFloating
+                    O.optDiv.toggleClass('isFloating', O.is_floating);
+
+                    //remove height if not floating
+                    if (!O.is_floating) O.optDiv.css('height', '');
+
+                    //toggle class according to okCancelInMulti flag only when it is not floating
+                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
+                },
+
+                //HELPERS FOR OUTSIDERS
+                // validates range of given item operations
+                vRange: function (i) {
+                    var O = this;
+                    var opts = O.E.find('option');
+                    if (opts.length <= i || i < 0) throw "index out of bounds"
+                    return O;
+                },
+
+                //toggles selection on c as boolean.
+                toggSel: function (c, i) {
+                    var O = this;
+                    var opt;
+                    if (typeof (i) === "number") {
+                        O.vRange(i);
+                        opt = O.E.find('option')[i];
+                    }
+                    else {
+                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
+                    }
+                    if (!opt || opt.disabled)
+                        return;
+
+                    if (opt.selected !== c) {
+                        opt.selected = c;
+                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
+
+                        O.callChange();
+                        O.setPstate();
+                        O.setText();
+                        O.selAllState();
+                    }
+                },
+
+                //toggles disabled on c as boolean.
+                toggDis: function (c, i) {
+                    var O = this.vRange(i);
+                    O.E.find('option')[i].disabled = c;
+                    if (c) O.E.find('option')[i].selected = false;
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
+                    O.setText();
+                },
+
+                // toggle disable/enable on complete select control
+                toggSumo: function (val) {
+                    var O = this;
+                    O.enabled = val;
+                    O.select.toggleClass('disabled', val);
+
+                    if (val) {
+                        O.E.attr('disabled', 'disabled');
+                        O.select.removeAttr('tabindex');
+                    }
+                    else {
+                        O.E.removeAttr('disabled');
+                        O.select.attr('tabindex', '0');
+                    }
+
+                    return O;
+                },
+
+                // toggles all option on c as boolean.
+                // set direct=false/0 bypasses okCancelInMulti behaviour.
+                toggSelAll: function (c, direct) {
+                    var O = this;
+                    O.E.find('option:not(:disabled,:hidden)')
+                        .each(function (ix, e) {
+                            var is_selected = e.selected,
+                                e = $(e).data('li');
+                            if (e.hasClass('hidden')) return;
+                            if (!!c) {
+                                if (!is_selected) e.trigger('click');
+                            }
+                            else {
+                                if (is_selected) e.trigger('click');
+                            }
+                        });
+
+                    if (!direct) {
+                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
+                        O.callChange();
+                        O.setText();
+                        O.setPstate();
+                    }
+                },
+
+                /* outside accessibility options
+                 which can be accessed from the element instance.
+                 */
+                reload: function () {
+                    var elm = this.unload();
+                    return $(elm).SumoSelect(settings);
+                },
+
+                unload: function () {
+                    var O = this;
+                    O.select.before(O.E);
+                    O.E.show();
+
+                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
+                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
+                    }
+                    O.select.remove();
+                    delete selObj.sumo;
+                    return selObj;
+                },
+
+                //## add a new option to select at a given index.
+                add: function (val, txt, i) {
+                    if (typeof val === "undefined") throw "No value to add"
+
+                    var O = this;
+                    var opts = O.E.find('option')
+                    if (typeof txt === "number") { i = txt; txt = val; }
+                    if (typeof txt === "undefined") { txt = val; }
+
+                    var opt = $("<option></option>").val(val).html(txt);
+
+                    if (opts.length < i) throw "index out of bounds"
+
+                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
+                        O.E.append(opt);
+                        if (!O.mob) O.ul.append(O.createLi(opt));
+                    }
+                    else {
+                        opts.eq(i).before(opt);
+                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
+                    }
+
+                    return selObj;
+                },
+
+                //## removes an item at a given index.
+                remove: function (i) {
+                    var O = this.vRange(i);
+                    O.E.find('option').eq(i).remove();
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
+                    O.setText();
+                },
+
+                // removes all but the selected one
+                removeAll: function () {
+                    var O = this;
+                    var options = O.E.find('option');
+
+                    for (var x = (options.length - 1); x >= 0; x--) {
+                        if (options[x].selected !== true) {
+                            O.remove(x);
+                        }
+                    }
+
+                },
+
+
+                find: function (val) {
+                    var O = this;
+                    var options = O.E.find('option');
+                    for (var x in options) {
+                        if (options[x].value === val) {
+                            return parseInt(x);
+                        }
+                    }
+
+                    return -1;
+
+                },
+
+                //## Select an item at a given index.
+                selectItem: function (i) { this.toggSel(true, i); },
+
+                //## UnSelect an iten at a given index.
+                unSelectItem: function (i) { this.toggSel(false, i); },
+
+                //## Select all items  of the select.
+                selectAll: function () { this.toggSelAll(true); },
+
+                //## UnSelect all items of the select.
+                unSelectAll: function () { this.toggSelAll(false); },
+
+                //## Disable an iten at a given index.
+                disableItem: function (i) { this.toggDis(true, i) },
+
+                //## Removes disabled an iten at a given index.
+                enableItem: function (i) { this.toggDis(false, i) },
+
+                //## New simple methods as getter and setter are not working fine in ie8-
+                //## variable to check state of control if enabled or disabled.
+                enabled: true,
+                //## Enables the control
+                enable: function () { return this.toggSumo(false) },
+
+                //## Disables the control
+                disable: function () { return this.toggSumo(true) },
+
+
+                init: function () {
+                    var O = this;
+                    O.createElems();
+                    O.setText();
+                    return O
+                }
+
+            };
+
+            selObj.sumo.init();
+        });
+
+        return ret.length === 1 ? ret[0] : ret;
+    };
+
+
+});
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * pickadate.js v3.5.6, 2015/04/20
+ * By Amsul, http://amsul.ca
+ * Hosted on http://amsul.github.io/pickadate.js
+ * Licensed under MIT
+ */
+
+(function ( factory ) {
+
+    // AMD.
+    if ( true )
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+
+    // Node.js/browserify.
+    else if ( typeof exports == 'object' )
+        module.exports = factory( require('jquery') )
+
+    // Browser globals.
+    else this.Picker = factory( jQuery )
+
+}(function( $ ) {
+
+var $window = $( window )
+var $document = $( document )
+var $html = $( document.documentElement )
+var supportsTransitions = document.documentElement.style.transition != null
+
+
+/**
+ * The picker constructor that creates a blank picker.
+ */
+function PickerConstructor( ELEMENT, NAME, COMPONENT, OPTIONS ) {
+
+    // If there’s no element, return the picker constructor.
+    if ( !ELEMENT ) return PickerConstructor
+
+
+    var
+        IS_DEFAULT_THEME = false,
+
+
+        // The state of the picker.
+        STATE = {
+            id: ELEMENT.id || 'P' + Math.abs( ~~(Math.random() * new Date()) )
+        },
+
+
+        // Merge the defaults and options passed.
+        SETTINGS = COMPONENT ? $.extend( true, {}, COMPONENT.defaults, OPTIONS ) : OPTIONS || {},
+
+
+        // Merge the default classes with the settings classes.
+        CLASSES = $.extend( {}, PickerConstructor.klasses(), SETTINGS.klass ),
+
+
+        // The element node wrapper into a jQuery object.
+        $ELEMENT = $( ELEMENT ),
+
+
+        // Pseudo picker constructor.
+        PickerInstance = function() {
+            return this.start()
+        },
+
+
+        // The picker prototype.
+        P = PickerInstance.prototype = {
+
+            constructor: PickerInstance,
+
+            $node: $ELEMENT,
+
+
+            /**
+             * Initialize everything
+             */
+            start: function() {
+
+                // If it’s already started, do nothing.
+                if ( STATE && STATE.start ) return P
+
+
+                // Update the picker states.
+                STATE.methods = {}
+                STATE.start = true
+                STATE.open = false
+                STATE.type = ELEMENT.type
+
+
+                // Confirm focus state, convert into text input to remove UA stylings,
+                // and set as readonly to prevent keyboard popup.
+                ELEMENT.autofocus = ELEMENT == getActiveElement()
+                ELEMENT.readOnly = !SETTINGS.editable
+                ELEMENT.id = ELEMENT.id || STATE.id
+                if ( ELEMENT.type != 'text' ) {
+                    ELEMENT.type = 'text'
+                }
+
+
+                // Create a new picker component with the settings.
+                P.component = new COMPONENT(P, SETTINGS)
+
+
+                // Create the picker root and then prepare it.
+                P.$root = $( '<div class="' + CLASSES.picker + '" id="' + ELEMENT.id + '_root" />' )
+                prepareElementRoot()
+
+
+                // Create the picker holder and then prepare it.
+                P.$holder = $( createWrappedComponent() ).appendTo( P.$root )
+                prepareElementHolder()
+
+
+                // If there’s a format for the hidden input element, create the element.
+                if ( SETTINGS.formatSubmit ) {
+                    prepareElementHidden()
+                }
+
+
+                // Prepare the input element.
+                prepareElement()
+
+
+                // Insert the hidden input as specified in the settings.
+                if ( SETTINGS.containerHidden ) $( SETTINGS.containerHidden ).append( P._hidden )
+                else $ELEMENT.after( P._hidden )
+
+
+                // Insert the root as specified in the settings.
+                if ( SETTINGS.container ) $( SETTINGS.container ).append( P.$root )
+                else $ELEMENT.after( P.$root )
+
+
+                // Bind the default component and settings events.
+                P.on({
+                    start: P.component.onStart,
+                    render: P.component.onRender,
+                    stop: P.component.onStop,
+                    open: P.component.onOpen,
+                    close: P.component.onClose,
+                    set: P.component.onSet
+                }).on({
+                    start: SETTINGS.onStart,
+                    render: SETTINGS.onRender,
+                    stop: SETTINGS.onStop,
+                    open: SETTINGS.onOpen,
+                    close: SETTINGS.onClose,
+                    set: SETTINGS.onSet
+                })
+
+
+                // Once we’re all set, check the theme in use.
+                IS_DEFAULT_THEME = isUsingDefaultTheme( P.$holder[0] )
+
+
+                // If the element has autofocus, open the picker.
+                if ( ELEMENT.autofocus ) {
+                    P.open()
+                }
+
+
+                // Trigger queued the “start” and “render” events.
+                return P.trigger( 'start' ).trigger( 'render' )
+            }, //start
+
+
+            /**
+             * Render a new picker
+             */
+            render: function( entireComponent ) {
+
+                // Insert a new component holder in the root or box.
+                if ( entireComponent ) {
+                    P.$holder = $( createWrappedComponent() )
+                    prepareElementHolder()
+                    P.$root.html( P.$holder )
+                }
+                else P.$root.find( '.' + CLASSES.box ).html( P.component.nodes( STATE.open ) )
+
+                // Trigger the queued “render” events.
+                return P.trigger( 'render' )
+            }, //render
+
+
+            /**
+             * Destroy everything
+             */
+            stop: function() {
+
+                // If it’s already stopped, do nothing.
+                if ( !STATE.start ) return P
+
+                // Then close the picker.
+                P.close()
+
+                // Remove the hidden field.
+                if ( P._hidden ) {
+                    P._hidden.parentNode.removeChild( P._hidden )
+                }
+
+                // Remove the root.
+                P.$root.remove()
+
+                // Remove the input class, remove the stored data, and unbind
+                // the events (after a tick for IE - see `P.close`).
+                $ELEMENT.removeClass( CLASSES.input ).removeData( NAME )
+                setTimeout( function() {
+                    $ELEMENT.off( '.' + STATE.id )
+                }, 0)
+
+                // Restore the element state
+                ELEMENT.type = STATE.type
+                ELEMENT.readOnly = false
+
+                // Trigger the queued “stop” events.
+                P.trigger( 'stop' )
+
+                // Reset the picker states.
+                STATE.methods = {}
+                STATE.start = false
+
+                return P
+            }, //stop
+
+
+            /**
+             * Open up the picker
+             */
+            open: function( dontGiveFocus ) {
+
+                // If it’s already open, do nothing.
+                if ( STATE.open ) return P
+
+                // Add the “active” class.
+                $ELEMENT.addClass( CLASSES.active )
+                aria( ELEMENT, 'expanded', true )
+
+                // * A Firefox bug, when `html` has `overflow:hidden`, results in
+                //   killing transitions :(. So add the “opened” state on the next tick.
+                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
+                setTimeout( function() {
+
+                    // Add the “opened” class to the picker root.
+                    P.$root.addClass( CLASSES.opened )
+                    aria( P.$root[0], 'hidden', false )
+
+                }, 0 )
+
+                // If we have to give focus, bind the element and doc events.
+                if ( dontGiveFocus !== false ) {
+
+                    // Set it as open.
+                    STATE.open = true
+
+                    // Prevent the page from scrolling.
+                    if ( IS_DEFAULT_THEME ) {
+                        $html.
+                            css( 'overflow', 'hidden' ).
+                            css( 'padding-right', '+=' + getScrollbarWidth() )
+                    }
+
+                    // Pass focus to the root element’s jQuery object.
+                    focusPickerOnceOpened()
+
+                    // Bind the document events.
+                    $document.on( 'click.' + STATE.id + ' focusin.' + STATE.id, function( event ) {
+
+                        var target = event.target
+
+                        // If the target of the event is not the element, close the picker picker.
+                        // * Don’t worry about clicks or focusins on the root because those don’t bubble up.
+                        //   Also, for Firefox, a click on an `option` element bubbles up directly
+                        //   to the doc. So make sure the target wasn't the doc.
+                        // * In Firefox stopPropagation() doesn’t prevent right-click events from bubbling,
+                        //   which causes the picker to unexpectedly close when right-clicking it. So make
+                        //   sure the event wasn’t a right-click.
+                        if ( target != ELEMENT && target != document && event.which != 3 ) {
+
+                            // If the target was the holder that covers the screen,
+                            // keep the element focused to maintain tabindex.
+                            P.close( target === P.$holder[0] )
+                        }
+
+                    }).on( 'keydown.' + STATE.id, function( event ) {
+
+                        var
+                            // Get the keycode.
+                            keycode = event.keyCode,
+
+                            // Translate that to a selection change.
+                            keycodeToMove = P.component.key[ keycode ],
+
+                            // Grab the target.
+                            target = event.target
+
+
+                        // On escape, close the picker and give focus.
+                        if ( keycode == 27 ) {
+                            P.close( true )
+                        }
+
+
+                        // Check if there is a key movement or “enter” keypress on the element.
+                        else if ( target == P.$holder[0] && ( keycodeToMove || keycode == 13 ) ) {
+
+                            // Prevent the default action to stop page movement.
+                            event.preventDefault()
+
+                            // Trigger the key movement action.
+                            if ( keycodeToMove ) {
+                                PickerConstructor._.trigger( P.component.key.go, P, [ PickerConstructor._.trigger( keycodeToMove ) ] )
+                            }
+
+                            // On “enter”, if the highlighted item isn’t disabled, set the value and close.
+                            else if ( !P.$root.find( '.' + CLASSES.highlighted ).hasClass( CLASSES.disabled ) ) {
+                                P.set( 'select', P.component.item.highlight )
+                                if ( SETTINGS.closeOnSelect ) {
+                                    P.close( true )
+                                }
+                            }
+                        }
+
+
+                        // If the target is within the root and “enter” is pressed,
+                        // prevent the default action and trigger a click on the target instead.
+                        else if ( $.contains( P.$root[0], target ) && keycode == 13 ) {
+                            event.preventDefault()
+                            target.click()
+                        }
+                    })
+                }
+
+                // Trigger the queued “open” events.
+                return P.trigger( 'open' )
+            }, //open
+
+
+            /**
+             * Close the picker
+             */
+            close: function( giveFocus ) {
+
+                // If we need to give focus, do it before changing states.
+                if ( giveFocus ) {
+                    if ( SETTINGS.editable ) {
+                        ELEMENT.focus()
+                    }
+                    else {
+                        // ....ah yes! It would’ve been incomplete without a crazy workaround for IE :|
+                        // The focus is triggered *after* the close has completed - causing it
+                        // to open again. So unbind and rebind the event at the next tick.
+                        P.$holder.off( 'focus.toOpen' ).focus()
+                        setTimeout( function() {
+                            P.$holder.on( 'focus.toOpen', handleFocusToOpenEvent )
+                        }, 0 )
+                    }
+                }
+
+                // Remove the “active” class.
+                $ELEMENT.removeClass( CLASSES.active )
+                aria( ELEMENT, 'expanded', false )
+
+                // * A Firefox bug, when `html` has `overflow:hidden`, results in
+                //   killing transitions :(. So remove the “opened” state on the next tick.
+                //   Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=625289
+                setTimeout( function() {
+
+                    // Remove the “opened” and “focused” class from the picker root.
+                    P.$root.removeClass( CLASSES.opened + ' ' + CLASSES.focused )
+                    aria( P.$root[0], 'hidden', true )
+
+                }, 0 )
+
+                // If it’s already closed, do nothing more.
+                if ( !STATE.open ) return P
+
+                // Set it as closed.
+                STATE.open = false
+
+                // Allow the page to scroll.
+                if ( IS_DEFAULT_THEME ) {
+                    $html.
+                        css( 'overflow', '' ).
+                        css( 'padding-right', '-=' + getScrollbarWidth() )
+                }
+
+                // Unbind the document events.
+                $document.off( '.' + STATE.id )
+
+                // Trigger the queued “close” events.
+                return P.trigger( 'close' )
+            }, //close
+
+
+            /**
+             * Clear the values
+             */
+            clear: function( options ) {
+                return P.set( 'clear', null, options )
+            }, //clear
+
+
+            /**
+             * Set something
+             */
+            set: function( thing, value, options ) {
+
+                var thingItem, thingValue,
+                    thingIsObject = $.isPlainObject( thing ),
+                    thingObject = thingIsObject ? thing : {}
+
+                // Make sure we have usable options.
+                options = thingIsObject && $.isPlainObject( value ) ? value : options || {}
+
+                if ( thing ) {
+
+                    // If the thing isn’t an object, make it one.
+                    if ( !thingIsObject ) {
+                        thingObject[ thing ] = value
+                    }
+
+                    // Go through the things of items to set.
+                    for ( thingItem in thingObject ) {
+
+                        // Grab the value of the thing.
+                        thingValue = thingObject[ thingItem ]
+
+                        // First, if the item exists and there’s a value, set it.
+                        if ( thingItem in P.component.item ) {
+                            if ( thingValue === undefined ) thingValue = null
+                            P.component.set( thingItem, thingValue, options )
+                        }
+
+                        // Then, check to update the element value and broadcast a change.
+                        if ( thingItem == 'select' || thingItem == 'clear' ) {
+                            $ELEMENT.
+                                val( thingItem == 'clear' ? '' : P.get( thingItem, SETTINGS.format ) ).
+                                trigger( 'change' )
+                        }
+                    }
+
+                    // Render a new picker.
+                    P.render()
+                }
+
+                // When the method isn’t muted, trigger queued “set” events and pass the `thingObject`.
+                return options.muted ? P : P.trigger( 'set', thingObject )
+            }, //set
+
+
+            /**
+             * Get something
+             */
+            get: function( thing, format ) {
+
+                // Make sure there’s something to get.
+                thing = thing || 'value'
+
+                // If a picker state exists, return that.
+                if ( STATE[ thing ] != null ) {
+                    return STATE[ thing ]
+                }
+
+                // Return the submission value, if that.
+                if ( thing == 'valueSubmit' ) {
+                    if ( P._hidden ) {
+                        return P._hidden.value
+                    }
+                    thing = 'value'
+                }
+
+                // Return the value, if that.
+                if ( thing == 'value' ) {
+                    return ELEMENT.value
+                }
+
+                // Check if a component item exists, return that.
+                if ( thing in P.component.item ) {
+                    if ( typeof format == 'string' ) {
+                        var thingValue = P.component.get( thing )
+                        return thingValue ?
+                            PickerConstructor._.trigger(
+                                P.component.formats.toString,
+                                P.component,
+                                [ format, thingValue ]
+                            ) : ''
+                    }
+                    return P.component.get( thing )
+                }
+            }, //get
+
+
+
+            /**
+             * Bind events on the things.
+             */
+            on: function( thing, method, internal ) {
+
+                var thingName, thingMethod,
+                    thingIsObject = $.isPlainObject( thing ),
+                    thingObject = thingIsObject ? thing : {}
+
+                if ( thing ) {
+
+                    // If the thing isn’t an object, make it one.
+                    if ( !thingIsObject ) {
+                        thingObject[ thing ] = method
+                    }
+
+                    // Go through the things to bind to.
+                    for ( thingName in thingObject ) {
+
+                        // Grab the method of the thing.
+                        thingMethod = thingObject[ thingName ]
+
+                        // If it was an internal binding, prefix it.
+                        if ( internal ) {
+                            thingName = '_' + thingName
+                        }
+
+                        // Make sure the thing methods collection exists.
+                        STATE.methods[ thingName ] = STATE.methods[ thingName ] || []
+
+                        // Add the method to the relative method collection.
+                        STATE.methods[ thingName ].push( thingMethod )
+                    }
+                }
+
+                return P
+            }, //on
+
+
+
+            /**
+             * Unbind events on the things.
+             */
+            off: function() {
+                var i, thingName,
+                    names = arguments;
+                for ( i = 0, namesCount = names.length; i < namesCount; i += 1 ) {
+                    thingName = names[i]
+                    if ( thingName in STATE.methods ) {
+                        delete STATE.methods[thingName]
+                    }
+                }
+                return P
+            },
+
+
+            /**
+             * Fire off method events.
+             */
+            trigger: function( name, data ) {
+                var _trigger = function( name ) {
+                    var methodList = STATE.methods[ name ]
+                    if ( methodList ) {
+                        methodList.map( function( method ) {
+                            PickerConstructor._.trigger( method, P, [ data ] )
+                        })
+                    }
+                }
+                _trigger( '_' + name )
+                _trigger( name )
+                return P
+            } //trigger
+        } //PickerInstance.prototype
+
+
+    /**
+     * Wrap the picker holder components together.
+     */
+    function createWrappedComponent() {
+
+        // Create a picker wrapper holder
+        return PickerConstructor._.node( 'div',
+
+            // Create a picker wrapper node
+            PickerConstructor._.node( 'div',
+
+                // Create a picker frame
+                PickerConstructor._.node( 'div',
+
+                    // Create a picker box node
+                    PickerConstructor._.node( 'div',
+
+                        // Create the components nodes.
+                        P.component.nodes( STATE.open ),
+
+                        // The picker box class
+                        CLASSES.box
+                    ),
+
+                    // Picker wrap class
+                    CLASSES.wrap
+                ),
+
+                // Picker frame class
+                CLASSES.frame
+            ),
+
+            // Picker holder class
+            CLASSES.holder,
+
+            'tabindex="-1"'
+        ) //endreturn
+    } //createWrappedComponent
+
+
+
+    /**
+     * Prepare the input element with all bindings.
+     */
+    function prepareElement() {
+
+        $ELEMENT.
+
+            // Store the picker data by component name.
+            data(NAME, P).
+
+            // Add the “input” class name.
+            addClass(CLASSES.input).
+
+            // If there’s a `data-value`, update the value of the element.
+            val( $ELEMENT.data('value') ?
+                P.get('select', SETTINGS.format) :
+                ELEMENT.value
+            )
+
+
+        // Only bind keydown events if the element isn’t editable.
+        if ( !SETTINGS.editable ) {
+
+            $ELEMENT.
+
+                // On focus/click, open the picker.
+                on( 'focus.' + STATE.id + ' click.' + STATE.id, function(event) {
+                    event.preventDefault()
+                    P.open()
+                }).
+
+                // Handle keyboard event based on the picker being opened or not.
+                on( 'keydown.' + STATE.id, handleKeydownEvent )
+        }
+
+
+        // Update the aria attributes.
+        aria(ELEMENT, {
+            haspopup: true,
+            expanded: false,
+            readonly: false,
+            owns: ELEMENT.id + '_root'
+        })
+    }
+
+
+    /**
+     * Prepare the root picker element with all bindings.
+     */
+    function prepareElementRoot() {
+        aria( P.$root[0], 'hidden', true )
+    }
+
+
+     /**
+      * Prepare the holder picker element with all bindings.
+      */
+    function prepareElementHolder() {
+
+        P.$holder.
+
+            on({
+
+                // For iOS8.
+                keydown: handleKeydownEvent,
+
+                'focus.toOpen': handleFocusToOpenEvent,
+
+                blur: function() {
+                    // Remove the “target” class.
+                    $ELEMENT.removeClass( CLASSES.target )
+                },
+
+                // When something within the holder is focused, stop from bubbling
+                // to the doc and remove the “focused” state from the root.
+                focusin: function( event ) {
+                    P.$root.removeClass( CLASSES.focused )
+                    event.stopPropagation()
+                },
+
+                // When something within the holder is clicked, stop it
+                // from bubbling to the doc.
+                'mousedown click': function( event ) {
+
+                    var target = event.target
+
+                    // Make sure the target isn’t the root holder so it can bubble up.
+                    if ( target != P.$holder[0] ) {
+
+                        event.stopPropagation()
+
+                        // * For mousedown events, cancel the default action in order to
+                        //   prevent cases where focus is shifted onto external elements
+                        //   when using things like jQuery mobile or MagnificPopup (ref: #249 & #120).
+                        //   Also, for Firefox, don’t prevent action on the `option` element.
+                        if ( event.type == 'mousedown' && !$( target ).is( 'input, select, textarea, button, option' )) {
+
+                            event.preventDefault()
+
+                            // Re-focus onto the holder so that users can click away
+                            // from elements focused within the picker.
+                            P.$holder[0].focus()
+                        }
+                    }
+                }
+
+            }).
+
+            // If there’s a click on an actionable element, carry out the actions.
+            on( 'click', '[data-pick], [data-nav], [data-clear], [data-close]', function() {
+
+                var $target = $( this ),
+                    targetData = $target.data(),
+                    targetDisabled = $target.hasClass( CLASSES.navDisabled ) || $target.hasClass( CLASSES.disabled ),
+
+                    // * For IE, non-focusable elements can be active elements as well
+                    //   (http://stackoverflow.com/a/2684561).
+                    activeElement = getActiveElement()
+                    activeElement = activeElement && ( activeElement.type || activeElement.href )
+
+                // If it’s disabled or nothing inside is actively focused, re-focus the element.
+                if ( targetDisabled || activeElement && !$.contains( P.$root[0], activeElement ) ) {
+                    P.$holder[0].focus()
+                }
+
+                // If something is superficially changed, update the `highlight` based on the `nav`.
+                if ( !targetDisabled && targetData.nav ) {
+                    P.set( 'highlight', P.component.item.highlight, { nav: targetData.nav } )
+                }
+
+                // If something is picked, set `select` then close with focus.
+                else if ( !targetDisabled && 'pick' in targetData ) {
+                    P.set( 'select', targetData.pick )
+                    if ( SETTINGS.closeOnSelect ) {
+                        P.close( true )
+                    }
+                }
+
+                // If a “clear” button is pressed, empty the values and close with focus.
+                else if ( targetData.clear ) {
+                    P.clear()
+                    if ( SETTINGS.closeOnClear ) {
+                        P.close( true )
+                    }
+                }
+
+                else if ( targetData.close ) {
+                    P.close( true )
+                }
+
+            }) //P.$holder
+
+    }
+
+
+     /**
+      * Prepare the hidden input element along with all bindings.
+      */
+    function prepareElementHidden() {
+
+        var name
+
+        if ( SETTINGS.hiddenName === true ) {
+            name = ELEMENT.name
+            ELEMENT.name = ''
+        }
+        else {
+            name = [
+                typeof SETTINGS.hiddenPrefix == 'string' ? SETTINGS.hiddenPrefix : '',
+                typeof SETTINGS.hiddenSuffix == 'string' ? SETTINGS.hiddenSuffix : '_submit'
+            ]
+            name = name[0] + ELEMENT.name + name[1]
+        }
+
+        P._hidden = $(
+            '<input ' +
+            'type=hidden ' +
+
+            // Create the name using the original input’s with a prefix and suffix.
+            'name="' + name + '"' +
+
+            // If the element has a value, set the hidden value as well.
+            (
+                $ELEMENT.data('value') || ELEMENT.value ?
+                    ' value="' + P.get('select', SETTINGS.formatSubmit) + '"' :
+                    ''
+            ) +
+            '>'
+        )[0]
+
+        $ELEMENT.
+
+            // If the value changes, update the hidden input with the correct format.
+            on('change.' + STATE.id, function() {
+                P._hidden.value = ELEMENT.value ?
+                    P.get('select', SETTINGS.formatSubmit) :
+                    ''
+            })
+    }
+
+
+    // Wait for transitions to end before focusing the holder. Otherwise, while
+    // using the `container` option, the view jumps to the container.
+    function focusPickerOnceOpened() {
+
+        if (IS_DEFAULT_THEME && supportsTransitions) {
+            P.$holder.find('.' + CLASSES.frame).one('transitionend', function() {
+                P.$holder[0].focus()
+            })
+        }
+        else {
+            P.$holder[0].focus()
+        }
+    }
+
+
+    function handleFocusToOpenEvent(event) {
+
+        // Stop the event from propagating to the doc.
+        event.stopPropagation()
+
+        // Add the “target” class.
+        $ELEMENT.addClass( CLASSES.target )
+
+        // Add the “focused” class to the root.
+        P.$root.addClass( CLASSES.focused )
+
+        // And then finally open the picker.
+        P.open()
+    }
+
+
+    // For iOS8.
+    function handleKeydownEvent( event ) {
+
+        var keycode = event.keyCode,
+
+            // Check if one of the delete keys was pressed.
+            isKeycodeDelete = /^(8|46)$/.test(keycode)
+
+        // For some reason IE clears the input value on “escape”.
+        if ( keycode == 27 ) {
+            P.close( true )
+            return false
+        }
+
+        // Check if `space` or `delete` was pressed or the picker is closed with a key movement.
+        if ( keycode == 32 || isKeycodeDelete || !STATE.open && P.component.key[keycode] ) {
+
+            // Prevent it from moving the page and bubbling to doc.
+            event.preventDefault()
+            event.stopPropagation()
+
+            // If `delete` was pressed, clear the values and close the picker.
+            // Otherwise open the picker.
+            if ( isKeycodeDelete ) { P.clear().close() }
+            else { P.open() }
+        }
+    }
+
+
+    // Return a new picker instance.
+    return new PickerInstance()
+} //PickerConstructor
+
+
+
+/**
+ * The default classes and prefix to use for the HTML classes.
+ */
+PickerConstructor.klasses = function( prefix ) {
+    prefix = prefix || 'picker'
+    return {
+
+        picker: prefix,
+        opened: prefix + '--opened',
+        focused: prefix + '--focused',
+
+        input: prefix + '__input',
+        active: prefix + '__input--active',
+        target: prefix + '__input--target',
+
+        holder: prefix + '__holder',
+
+        frame: prefix + '__frame',
+        wrap: prefix + '__wrap',
+
+        box: prefix + '__box'
+    }
+} //PickerConstructor.klasses
+
+
+
+/**
+ * Check if the default theme is being used.
+ */
+function isUsingDefaultTheme( element ) {
+
+    var theme,
+        prop = 'position'
+
+    // For IE.
+    if ( element.currentStyle ) {
+        theme = element.currentStyle[prop]
+    }
+
+    // For normal browsers.
+    else if ( window.getComputedStyle ) {
+        theme = getComputedStyle( element )[prop]
+    }
+
+    return theme == 'fixed'
+}
+
+
+
+/**
+ * Get the width of the browser’s scrollbar.
+ * Taken from: https://github.com/VodkaBears/Remodal/blob/master/src/jquery.remodal.js
+ */
+function getScrollbarWidth() {
+
+    if ( $html.height() <= $window.height() ) {
+        return 0
+    }
+
+    var $outer = $( '<div style="visibility:hidden;width:100px" />' ).
+        appendTo( 'body' )
+
+    // Get the width without scrollbars.
+    var widthWithoutScroll = $outer[0].offsetWidth
+
+    // Force adding scrollbars.
+    $outer.css( 'overflow', 'scroll' )
+
+    // Add the inner div.
+    var $inner = $( '<div style="width:100%" />' ).appendTo( $outer )
+
+    // Get the width with scrollbars.
+    var widthWithScroll = $inner[0].offsetWidth
+
+    // Remove the divs.
+    $outer.remove()
+
+    // Return the difference between the widths.
+    return widthWithoutScroll - widthWithScroll
+}
+
+
+
+/**
+ * PickerConstructor helper methods.
+ */
+PickerConstructor._ = {
+
+    /**
+     * Create a group of nodes. Expects:
+     * `
+        {
+            min:    {Integer},
+            max:    {Integer},
+            i:      {Integer},
+            node:   {String},
+            item:   {Function}
+        }
+     * `
+     */
+    group: function( groupObject ) {
+
+        var
+            // Scope for the looped object
+            loopObjectScope,
+
+            // Create the nodes list
+            nodesList = '',
+
+            // The counter starts from the `min`
+            counter = PickerConstructor._.trigger( groupObject.min, groupObject )
+
+
+        // Loop from the `min` to `max`, incrementing by `i`
+        for ( ; counter <= PickerConstructor._.trigger( groupObject.max, groupObject, [ counter ] ); counter += groupObject.i ) {
+
+            // Trigger the `item` function within scope of the object
+            loopObjectScope = PickerConstructor._.trigger( groupObject.item, groupObject, [ counter ] )
+
+            // Splice the subgroup and create nodes out of the sub nodes
+            nodesList += PickerConstructor._.node(
+                groupObject.node,
+                loopObjectScope[ 0 ],   // the node
+                loopObjectScope[ 1 ],   // the classes
+                loopObjectScope[ 2 ]    // the attributes
+            )
+        }
+
+        // Return the list of nodes
+        return nodesList
+    }, //group
+
+
+    /**
+     * Create a dom node string
+     */
+    node: function( wrapper, item, klass, attribute ) {
+
+        // If the item is false-y, just return an empty string
+        if ( !item ) return ''
+
+        // If the item is an array, do a join
+        item = $.isArray( item ) ? item.join( '' ) : item
+
+        // Check for the class
+        klass = klass ? ' class="' + klass + '"' : ''
+
+        // Check for any attributes
+        attribute = attribute ? ' ' + attribute : ''
+
+        // Return the wrapped item
+        return '<' + wrapper + klass + attribute + '>' + item + '</' + wrapper + '>'
+    }, //node
+
+
+    /**
+     * Lead numbers below 10 with a zero.
+     */
+    lead: function( number ) {
+        return ( number < 10 ? '0': '' ) + number
+    },
+
+
+    /**
+     * Trigger a function otherwise return the value.
+     */
+    trigger: function( callback, scope, args ) {
+        return typeof callback == 'function' ? callback.apply( scope, args || [] ) : callback
+    },
+
+
+    /**
+     * If the second character is a digit, length is 2 otherwise 1.
+     */
+    digits: function( string ) {
+        return ( /\d/ ).test( string[ 1 ] ) ? 2 : 1
+    },
+
+
+    /**
+     * Tell if something is a date object.
+     */
+    isDate: function( value ) {
+        return {}.toString.call( value ).indexOf( 'Date' ) > -1 && this.isInteger( value.getDate() )
+    },
+
+
+    /**
+     * Tell if something is an integer.
+     */
+    isInteger: function( value ) {
+        return {}.toString.call( value ).indexOf( 'Number' ) > -1 && value % 1 === 0
+    },
+
+
+    /**
+     * Create ARIA attribute strings.
+     */
+    ariaAttr: ariaAttr
+} //PickerConstructor._
+
+
+
+/**
+ * Extend the picker with a component and defaults.
+ */
+PickerConstructor.extend = function( name, Component ) {
+
+    // Extend jQuery.
+    $.fn[ name ] = function( options, action ) {
+
+        // Grab the component data.
+        var componentData = this.data( name )
+
+        // If the picker is requested, return the data object.
+        if ( options == 'picker' ) {
+            return componentData
+        }
+
+        // If the component data exists and `options` is a string, carry out the action.
+        if ( componentData && typeof options == 'string' ) {
+            return PickerConstructor._.trigger( componentData[ options ], componentData, [ action ] )
+        }
+
+        // Otherwise go through each matched element and if the component
+        // doesn’t exist, create a new picker using `this` element
+        // and merging the defaults and options with a deep copy.
+        return this.each( function() {
+            var $this = $( this )
+            if ( !$this.data( name ) ) {
+                new PickerConstructor( this, name, Component, options )
+            }
+        })
+    }
+
+    // Set the defaults.
+    $.fn[ name ].defaults = Component.defaults
+} //PickerConstructor.extend
+
+
+
+function aria(element, attribute, value) {
+    if ( $.isPlainObject(attribute) ) {
+        for ( var key in attribute ) {
+            ariaSet(element, key, attribute[key])
+        }
+    }
+    else {
+        ariaSet(element, attribute, value)
+    }
+}
+function ariaSet(element, attribute, value) {
+    element.setAttribute(
+        (attribute == 'role' ? '' : 'aria-') + attribute,
+        value
+    )
+}
+function ariaAttr(attribute, data) {
+    if ( !$.isPlainObject(attribute) ) {
+        attribute = { attribute: data }
+    }
+    data = ''
+    for ( var key in attribute ) {
+        var attr = (key == 'role' ? '' : 'aria-') + key,
+            attrVal = attribute[key]
+        data += attrVal == null ? '' : attr + '="' + attribute[key] + '"'
+    }
+    return data
+}
+
+// IE8 bug throws an error for activeElements within iframes.
+function getActiveElement() {
+    try {
+        return document.activeElement
+    } catch ( err ) { }
+}
+
+
+
+// Expose the picker constructor.
+return PickerConstructor
+
+
+}));
+
+
+
+
+
+/***/ }),
+/* 10 */,
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(12);
+__webpack_require__(17);
+__webpack_require__(18);
+__webpack_require__(19);
+__webpack_require__(20);
+__webpack_require__(21);
+__webpack_require__(22);
+module.exports = __webpack_require__(23);
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(13);
+
+
+__webpack_require__(15);
+__webpack_require__(7);
+
+__webpack_require__(9);
+__webpack_require__(16);
+__webpack_require__(2);
+__webpack_require__(8);
+
+window.Vue = __webpack_require__(3);
+
+Vue.config.devtools = false;
+Vue.config.performance = false;
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+var app = new Vue({
+    el: '#accordion-app',
+    data: {
+        qual: {
+            reference: '', description: '', institution: '', obtained_on: '',
+            student_no: ''
+        },
+        quals: []
+    },
+    mounted: function mounted() {
+        +function ($, el) {
+
+            // Extend the default picker options for all instances.
+            $.extend($.fn.pickadate.defaults, {
+                format: 'yyyy-mm-dd',
+                formatSubmit: 'yyyy-mm-dd',
+                selectYears: 20,
+                selectMonths: true,
+                closeOnSelect: true,
+                container: '#date-picker'
+            });
+
+            // Listen for browser-generated events.
+            Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.datepicker', function (event) {
+                // Use the picker object directly.
+                var picker = $(this).pickadate('picker');
+                if (picker === undefined) {
+                    //$(this).pickadate();
+                }
+            });
+
+            $("#imageUpload").change(function () {
+                readURL(this);
+            });
+            $.fn.mirror = function (selector) {
+                return this.each(function () {
+                    var $this = $(this);
+                    var $selector = $(selector);
+                    $this.bind('keyup change', function () {
+                        $selector.val($this.val());
+                    });
+                });
+            };
+
+            //$("#birth_date").pickadate({min: -65*365, max:-18*365});
+
+            $('.accordion').asAccordion();
+            $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
+
+            window.Parsley.addValidator('requiredIf', {
+                validateString: function validateString(value, requirement) {
+                    if (jQuery(requirement).val()) {
+                        return !!value;
+                    }
+                    return true;
+                }, priority: 33
+            });
+            window.Parsley.addValidator('fileextension', function (value, requirement) {
+                var fileExtension = value.split('.').pop();
+                return fileExtension === requirement;
+            }, 32).addMessage('en', 'fileextension', 'The extension doesn\'t match the required');
+
+            window.Parsley.addValidator('filemaxmegabytes', {
+                requirementType: 'string',
+                validateString: function validateString(value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+                    var maxBytes = requirement * 1048576;
+
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    return file.length === 1 && file[0].size <= maxBytes;
+                },
+                messages: {
+                    en: 'File is too big'
+                }
+            }).addValidator('filemimetypes', {
+                requirementType: 'string',
+                validateString: function validateString(value, requirement, parsleyInstance) {
+                    if (!app.utils.formDataSuppoerted) {
+                        return true;
+                    }
+                    var file = parsleyInstance.$element[0].files;
+
+                    if (file.length == 0) {
+                        return true;
+                    }
+                    var allowedMimeTypes = requirement.replace(/\s/g, "").split(',');
+                    return allowedMimeTypes.indexOf(file[0].type) !== -1;
+                },
+                messages: {
+                    en: 'File mime type not allowed'
+                }
+            });
+
+            window.Parsley.addAsyncValidator('checkId', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-id');
+            window.Parsley.addAsyncValidator('checkName', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-name');
+            window.Parsley.addAsyncValidator('checkPassport', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-passport');
+            window.Parsley.addAsyncValidator('checkEmployeeNo', function (xhr) {
+                return xhr.responseText !== 'false';
+            }, './check-employeeno');
+            window.Parsley.on('field:ajaxoptions', function (p1, ajaxOptions) {
+                var FirstName = $("[name=first_name]").val(),
+                    Surname = $("[name=surname]").val(),
+                    IdNumber = $("[name=id_number]").val(),
+                    PassportCountryId = $("[name=passport_country_id]").val(),
+                    PassportNo = $("[name=passport_no]").val(),
+                    EmployeeNo = $("[name=employee_no]").val();
+
+                var namedDataMap = {
+                    'id_number': { 'idNumber': IdNumber, 'firstName': FirstName, 'surname': Surname },
+                    'employee_no': { 'employeeNo': EmployeeNo },
+                    'passport_no': { 'passportCountryId': PassportCountryId, 'passportNo': PassportNo, 'firstName': FirstName, 'surname': Surname }
+                };
+
+                ajaxOptions.global = false;
+                ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
+            });
+
+            $(document).on('change', '.datepicker', function () {
+                //use this line if you create datepickers dynamically
+                if ($(this).data('datepicker_from_or_to') === 'from') {
+                    $('#' + $(this).data('datepicker_to_target')).pickadate('picker').set('min', $(this).val());
+                }
+                if ($(this).data('datepicker_from_or_to') === 'to') {
+                    $('#' + $(this).data('datepicker_from_target')).pickadate('picker').set('max', $(this).val());
+                }
+            });
+
+            $(':input[data-mirror]').each(function () {
+                $(this).mirror($(this).data('mirror'));
+            });
+        }(jQuery, this);
+    },
+    methods: {
+        addNewQual: function addNewQual() {
+            this.quals.push(Vue.util.extend({}, this.qual));
+            //ensure height is enough as accordion sets a height as inline style
+            $('.accordion--active').css("height", "");
+        },
+        removeQual: function removeQual(index) {
+            Vue.delete(this.quals, index);
+        },
+        submitForm: function submitForm(event) {
+            event.preventDefault();
+        },
+        fetchQualifications: function fetchQualifications() {
+            var _this = this;
+
+            var fetchData = {
+                method: 'GET',
+                headers: new Headers({
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                })
+            };
+
+            if (!route().current("employees.create")) {
+                fetch('./qualifications', fetchData).then(function (res) {
+                    return res.json();
+                }).then(function (res) {
+                    _this.quals = res;
+                });
+            }
+        }
+    },
+    created: function created() {
+        this.fetchQualifications();
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0), __webpack_require__(0)))
+
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return on; });
+/* unused harmony export off */
+/* unused harmony export fire */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(14);
+
+
+var bubbleEvents = {};
+var captureEvents = {};
+var propagationStopped = new WeakMap();
+var immediatePropagationStopped = new WeakMap();
+var currentTargets = new WeakMap();
+var currentTargetDesc = Object.getOwnPropertyDescriptor(Event.prototype, 'currentTarget');
+
+function before(subject, verb, fn) {
+  var source = subject[verb];
+  subject[verb] = function () {
+    fn.apply(subject, arguments);
+    return source.apply(subject, arguments);
+  };
+  return subject;
+}
+
+function matches(selectors, target, reverse) {
+  var queue = [];
+  var node = target;
+
+  do {
+    if (node.nodeType !== 1) break;
+    var _matches = selectors.matches(node);
+    if (_matches.length) {
+      var matched = { node: node, observers: _matches };
+      if (reverse) {
+        queue.unshift(matched);
+      } else {
+        queue.push(matched);
+      }
+    }
+  } while (node = node.parentElement);
+
+  return queue;
+}
+
+function trackPropagation() {
+  propagationStopped.set(this, true);
+}
+
+function trackImmediate() {
+  propagationStopped.set(this, true);
+  immediatePropagationStopped.set(this, true);
+}
+
+function getCurrentTarget() {
+  return currentTargets.get(this) || null;
+}
+
+function defineCurrentTarget(event, getter) {
+  if (!currentTargetDesc) return;
+
+  Object.defineProperty(event, 'currentTarget', {
+    configurable: true,
+    enumerable: true,
+    get: getter || currentTargetDesc.get
+  });
+}
+
+function dispatch(event) {
+  var events = event.eventPhase === 1 ? captureEvents : bubbleEvents;
+
+  var selectors = events[event.type];
+  if (!selectors) return;
+
+  var queue = matches(selectors, event.target, event.eventPhase === 1);
+  if (!queue.length) return;
+
+  before(event, 'stopPropagation', trackPropagation);
+  before(event, 'stopImmediatePropagation', trackImmediate);
+  defineCurrentTarget(event, getCurrentTarget);
+
+  for (var i = 0, len1 = queue.length; i < len1; i++) {
+    if (propagationStopped.get(event)) break;
+    var matched = queue[i];
+    currentTargets.set(event, matched.node);
+
+    for (var j = 0, len2 = matched.observers.length; j < len2; j++) {
+      if (immediatePropagationStopped.get(event)) break;
+      matched.observers[j].data.call(matched.node, event);
+    }
+  }
+
+  currentTargets.delete(event);
+  defineCurrentTarget(event);
+}
+
+function on(name, selector, fn) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  var capture = options.capture ? true : false;
+  var events = capture ? captureEvents : bubbleEvents;
+
+  var selectors = events[name];
+  if (!selectors) {
+    selectors = new __WEBPACK_IMPORTED_MODULE_0_selector_set__["a" /* default */]();
+    events[name] = selectors;
+    document.addEventListener(name, dispatch, capture);
+  }
+  selectors.add(selector, fn);
+}
+
+function off(name, selector, fn) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  var capture = options.capture ? true : false;
+  var events = capture ? captureEvents : bubbleEvents;
+
+  var selectors = events[name];
+  if (!selectors) return;
+  selectors.remove(selector, fn);
+
+  if (selectors.size) return;
+  delete events[name];
+  document.removeEventListener(name, dispatch, capture);
+}
+
+function fire(target, name, detail) {
+  return target.dispatchEvent(new CustomEvent(name, {
+    bubbles: true,
+    cancelable: true,
+    detail: detail
+  }));
+}
+
+
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = SelectorSet;
+// Public: Create a new SelectorSet.
+function SelectorSet() {
+  // Construct new SelectorSet if called as a function.
+  if (!(this instanceof SelectorSet)) {
+    return new SelectorSet();
+  }
+
+  // Public: Number of selectors added to the set
+  this.size = 0;
+
+  // Internal: Incrementing ID counter
+  this.uid = 0;
+
+  // Internal: Array of String selectors in the set
+  this.selectors = [];
+
+  // Internal: All Object index String names mapping to Index objects.
+  this.indexes = Object.create(this.indexes);
+
+  // Internal: Used Object index String names mapping to Index objects.
+  this.activeIndexes = [];
+}
+
+// Detect prefixed Element#matches function.
+var docElem = window.document.documentElement;
+var matches = (docElem.matches ||
+                docElem.webkitMatchesSelector ||
+                docElem.mozMatchesSelector ||
+                docElem.oMatchesSelector ||
+                docElem.msMatchesSelector);
+
+// Public: Check if element matches selector.
+//
+// Maybe overridden with custom Element.matches function.
+//
+// el       - An Element
+// selector - String CSS selector
+//
+// Returns true or false.
+SelectorSet.prototype.matchesSelector = function(el, selector) {
+  return matches.call(el, selector);
+};
+
+// Public: Find all elements in the context that match the selector.
+//
+// Maybe overridden with custom querySelectorAll function.
+//
+// selectors - String CSS selectors.
+// context   - Element context
+//
+// Returns non-live list of Elements.
+SelectorSet.prototype.querySelectorAll = function(selectors, context) {
+  return context.querySelectorAll(selectors);
+};
+
+
+// Public: Array of indexes.
+//
+// name     - Unique String name
+// selector - Function that takes a String selector and returns a String key
+//            or undefined if it can't be used by the index.
+// element  - Function that takes an Element and returns an Array of String
+//            keys that point to indexed values.
+//
+SelectorSet.prototype.indexes = [];
+
+// Index by element id
+var idRe = /^#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'ID',
+  selector: function matchIdSelector(sel) {
+    var m;
+    if (m = sel.match(idRe)) {
+      return m[0].slice(1);
+    }
+  },
+  element: function getElementId(el) {
+    if (el.id) {
+      return [el.id];
+    }
+  }
+});
+
+// Index by all of its class names
+var classRe = /^\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'CLASS',
+  selector: function matchClassSelector(sel) {
+    var m;
+    if (m = sel.match(classRe)) {
+      return m[0].slice(1);
+    }
+  },
+  element: function getElementClassNames(el) {
+    var className = el.className;
+    if (className) {
+      if (typeof className === 'string') {
+        return className.split(/\s/);
+      } else if (typeof className === 'object' && 'baseVal' in className) {
+        // className is a SVGAnimatedString
+        // global SVGAnimatedString is not an exposed global in Opera 12
+        return className.baseVal.split(/\s/);
+      }
+    }
+  }
+});
+
+// Index by tag/node name: `DIV`, `FORM`, `A`
+var tagRe = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'TAG',
+  selector: function matchTagSelector(sel) {
+    var m;
+    if (m = sel.match(tagRe)) {
+      return m[0].toUpperCase();
+    }
+  },
+  element: function getElementTagName(el) {
+    return [el.nodeName.toUpperCase()];
+  }
+});
+
+// Default index just contains a single array of elements.
+SelectorSet.prototype.indexes['default'] = {
+  name: 'UNIVERSAL',
+  selector: function() {
+    return true;
+  },
+  element: function() {
+    return [true];
+  }
+};
+
+
+// Use ES Maps when supported
+var Map;
+if (typeof window.Map === 'function') {
+  Map = window.Map;
+} else {
+  Map = (function() {
+    function Map() {
+      this.map = {};
+    }
+    Map.prototype.get = function(key) {
+      return this.map[key + ' '];
+    };
+    Map.prototype.set = function(key, value) {
+      this.map[key + ' '] = value;
+    };
+    return Map;
+  })();
+}
+
+
+// Regexps adopted from Sizzle
+//   https://github.com/jquery/sizzle/blob/1.7/sizzle.js
+//
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g;
+
+// Internal: Get indexes for selector.
+//
+// selector - String CSS selector
+//
+// Returns Array of {index, key}.
+function parseSelectorIndexes(allIndexes, selector) {
+  allIndexes = allIndexes.slice(0).concat(allIndexes['default']);
+
+  var allIndexesLen = allIndexes.length,
+      i, j, m, dup, rest = selector,
+      key, index, indexes = [];
+
+  do {
+    chunker.exec('');
+    if (m = chunker.exec(rest)) {
+      rest = m[3];
+      if (m[2] || !rest) {
+        for (i = 0; i < allIndexesLen; i++) {
+          index = allIndexes[i];
+          if (key = index.selector(m[1])) {
+            j = indexes.length;
+            dup = false;
+            while (j--) {
+              if (indexes[j].index === index && indexes[j].key === key) {
+                dup = true;
+                break;
+              }
+            }
+            if (!dup) {
+              indexes.push({index: index, key: key});
+            }
+            break;
+          }
+        }
+      }
+    }
+  } while (m);
+
+  return indexes;
+}
+
+// Internal: Find first item in Array that is a prototype of `proto`.
+//
+// ary   - Array of objects
+// proto - Prototype of expected item in `ary`
+//
+// Returns object from `ary` if found. Otherwise returns undefined.
+function findByPrototype(ary, proto) {
+  var i, len, item;
+  for (i = 0, len = ary.length; i < len; i++) {
+    item = ary[i];
+    if (proto.isPrototypeOf(item)) {
+      return item;
+    }
+  }
+}
+
+// Public: Log when added selector falls under the default index.
+//
+// This API should not be considered stable. May change between
+// minor versions.
+//
+// obj - {selector, data} Object
+//
+//   SelectorSet.prototype.logDefaultIndexUsed = function(obj) {
+//     console.warn(obj.selector, "could not be indexed");
+//   };
+//
+// Returns nothing.
+SelectorSet.prototype.logDefaultIndexUsed = function() {};
+
+// Public: Add selector to set.
+//
+// selector - String CSS selector
+// data     - Optional data Object (default: undefined)
+//
+// Returns nothing.
+SelectorSet.prototype.add = function(selector, data) {
+  var obj, i, indexProto, key, index, objs,
+      selectorIndexes, selectorIndex,
+      indexes = this.activeIndexes,
+      selectors = this.selectors;
+
+  if (typeof selector !== 'string') {
+    return;
+  }
+
+  obj = {
+    id: this.uid++,
+    selector: selector,
+    data: data
+  };
+
+  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
+  for (i = 0; i < selectorIndexes.length; i++) {
+    selectorIndex = selectorIndexes[i];
+    key = selectorIndex.key;
+    indexProto = selectorIndex.index;
+
+    index = findByPrototype(indexes, indexProto);
+    if (!index) {
+      index = Object.create(indexProto);
+      index.map = new Map();
+      indexes.push(index);
+    }
+
+    if (indexProto === this.indexes['default']) {
+      this.logDefaultIndexUsed(obj);
+    }
+    objs = index.map.get(key);
+    if (!objs) {
+      objs = [];
+      index.map.set(key, objs);
+    }
+    objs.push(obj);
+  }
+
+  this.size++;
+  selectors.push(selector);
+};
+
+// Public: Remove selector from set.
+//
+// selector - String CSS selector
+// data     - Optional data Object (default: undefined)
+//
+// Returns nothing.
+SelectorSet.prototype.remove = function(selector, data) {
+  if (typeof selector !== 'string') {
+    return;
+  }
+
+  var selectorIndexes, selectorIndex, i, j, k, selIndex, objs, obj;
+  var indexes = this.activeIndexes;
+  var removedIds = {};
+  var removeAll = arguments.length === 1;
+
+  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
+  for (i = 0; i < selectorIndexes.length; i++) {
+    selectorIndex = selectorIndexes[i];
+
+    j = indexes.length;
+    while (j--) {
+      selIndex = indexes[j];
+      if (selectorIndex.index.isPrototypeOf(selIndex)) {
+        objs = selIndex.map.get(selectorIndex.key);
+        if (objs) {
+          k = objs.length;
+          while (k--) {
+            obj = objs[k];
+            if (obj.selector === selector && (removeAll || obj.data === data)) {
+              objs.splice(k, 1);
+              removedIds[obj.id] = true;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  this.size -= Object.keys(removedIds).length;
+};
+
+// Sort by id property handler.
+//
+// a - Selector obj.
+// b - Selector obj.
+//
+// Returns Number.
+function sortById(a, b) {
+  return a.id - b.id;
+}
+
+// Public: Find all matching decendants of the context element.
+//
+// context - An Element
+//
+// Returns Array of {selector, data, elements} matches.
+SelectorSet.prototype.queryAll = function(context) {
+  if (!this.selectors.length) {
+    return [];
+  }
+
+  var matches = {}, results = [];
+  var els = this.querySelectorAll(this.selectors.join(', '), context);
+
+  var i, j, len, len2, el, m, match, obj;
+  for (i = 0, len = els.length; i < len; i++) {
+    el = els[i];
+    m = this.matches(el);
+    for (j = 0, len2 = m.length; j < len2; j++) {
+      obj = m[j];
+      if (!matches[obj.id]) {
+        match = {
+          id: obj.id,
+          selector: obj.selector,
+          data: obj.data,
+          elements: []
+        };
+        matches[obj.id] = match;
+        results.push(match);
+      } else {
+        match = matches[obj.id];
+      }
+      match.elements.push(el);
+    }
+  }
+
+  return results.sort(sortById);
+};
+
+// Public: Match element against all selectors in set.
+//
+// el - An Element
+//
+// Returns Array of {selector, data} matches.
+SelectorSet.prototype.matches = function(el) {
+  if (!el) {
+    return [];
+  }
+
+  var i, j, k, len, len2, len3, index, keys, objs, obj, id;
+  var indexes = this.activeIndexes, matchedIds = {}, matches = [];
+
+  for (i = 0, len = indexes.length; i < len; i++) {
+    index = indexes[i];
+    keys = index.element(el);
+    if (keys) {
+      for (j = 0, len2 = keys.length; j < len2; j++) {
+        if (objs = index.map.get(keys[j])) {
+          for (k = 0, len3 = objs.length; k < len3; k++) {
+            obj = objs[k];
+            id = obj.id;
+            if (!matchedIds[id] && this.matchesSelector(el, obj.selector)) {
+              matchedIds[id] = true;
+              matches.push(obj);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return matches.sort(sortById);
+};
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {(function($) {
+  var START_EVENT = 'mousedown touchstart MSPointerDown pointerdown'
+    , END_EVENT   = 'mouseup touchend MSPointerUp pointerup'
+    , MOVE_EVENT  = 'mousemove touchmove MSPointerMove pointermove scroll'
+
+  function translate(el, x, y) {
+    vendorify('transform', el, 'translate(' + x + 'px, ' + y + 'px)')
+  }
+
+  function transition(el, val) {
+    vendorify('transition', el, val)
+  }
+
+  function getTouchPageX(e) {
+    e = e.originalEvent || e
+    return window.event && window.event.changedTouches && event.changedTouches[0].pageX || e.pageX
+  }
+
+  function getTouchPageY(e) {
+    e = e.originalEvent || e
+    return window.event && window.event.changedTouches && event.changedTouches[0].pageY || e.pageY
+  }
+
+  function vendorify(property, el, val) {
+    property = property.toLowerCase()
+    var titleCased = property.charAt(0).toUpperCase() + property.substr(1)
+    var vendorPrefixes = ['webkit', 'Moz', 'ms', 'O']
+    var properties = vendorPrefixes.map(function(prefix) {
+      return prefix + titleCased
+    }).concat('transform')
+    for (var i = 0, len = properties.length; i < len; ++i) {
+      if (properties[i] in el.style) {
+        if (val !== undefined) el.style[properties[i]] = val
+        else return el.style[properties[i]]
+        break
+      }
+    }
+  }
+
+  var eventProperties = [
+    'altKey', 'bubbles', 'button', 'cancelable', 'charCode', 'clientX',
+    'clientY', 'ctrlKey', 'currentTarget', 'data', 'detail', 'eventPhase',
+    'metaKey', 'offsetX', 'offsetY', 'originalTarget', 'pageX', 'pageY',
+    'relatedTarget', 'screenX', 'screenY', 'shiftKey', 'target', 'view',
+    'which'
+  ]
+  function trigger(el, name, originalEvent, arg) {
+    if (!el[0]) return
+
+    originalEvent = originalEvent.originalEvent || originalEvent
+    var props = {}
+    eventProperties.forEach(function(prop) {
+      props[prop] = originalEvent[prop]
+    })
+    props.currentTarget = props.target = el[0]
+
+    var win = (el[0].ownerDocument.defaultView || el[0].ownerDocument.parentWindow)
+    var $ = win.Zepto || win.jQuery
+
+    var e = $.Event(name, props)
+    $(el[0]).trigger(e, arg)
+    return e
+  }
+
+  var nextId = 0
+  var Dragging = function() {
+    this.eventHandler = $('<div />')
+    this.parent = this.el = this.handle = null
+    this.origin = { x: 0, y: 0, transition: null, translate: null, offset: { x: 0, y: 0 } }
+    this.lastEntered = this.currentTarget = null
+    this.lastX = this.lastY = this.lastDirection = null
+    this.originalCss = {}
+    this.windows = [window]
+
+    var placeholder
+    Object.defineProperty(this, 'placeholder', {
+      get: function() { return placeholder },
+      set: function(val) {
+        if (placeholder === val) return
+        if (placeholder) placeholder.remove()
+        placeholder = val
+      }
+    })
+  }
+
+  Dragging.prototype.on = function() {
+    this.eventHandler.on.apply(this.eventHandler, Array.prototype.slice.call(arguments))
+    return this
+  }
+
+  Dragging.prototype.off = function() {
+    this.eventHandler.off.apply(this.eventHandler, Array.prototype.slice.call(arguments))
+    return this
+  }
+
+  Dragging.prototype.start = function(parent, el, e, handle) {
+    this.parent = parent
+    this.el = el
+    this.handle = handle
+    var el = this.handle || this.el
+    this.origin.x = getTouchPageX(e)
+    this.origin.y = getTouchPageY(e)
+    this.origin.transform  = vendorify('transform', this.el[0])
+    this.origin.transition = vendorify('transition', this.el[0])
+    var rect = this.el[0].getBoundingClientRect()
+    this.origin.offset.x = rect.left + (window.scrollX || window.pageXOffset) - this.origin.x
+    this.origin.offset.y = rect.top + (window.scrollY || window.pageYOffset) - this.origin.y
+    this.origin.scrollX = (window.scrollX || window.pageXOffset)
+    this.origin.scrollY = (window.scrollY || window.pageYOffset)
+    // the draged element is going to stick right under the cursor
+    // setting the css property `pointer-events` to `none` will let
+    // the pointer events fire on the elements underneath the helper
+    el[0].style.pointerEvents = 'none'
+    this.windows.forEach(function(win) {
+      $(win).on(MOVE_EVENT, $.proxy(this.move, this))
+      $(win).on(END_EVENT, $.proxy(this.stop, this))
+    }, this)
+    transition(el[0], '')
+    trigger(this.eventHandler, 'dragging:start', e)
+    return this.el
+  }
+
+  Dragging.prototype.stop = function(e) {
+    var dropEvent = null
+    var revert = true
+    if (this.last) {
+      var last = this.last
+      this.last = null
+      dropEvent = trigger($(last), 'dragging:drop', e)
+      revert = !dropEvent.isDefaultPrevented()
+    }
+
+    if (!this.el) {
+      return
+    }
+
+    for (var prop in this.originalCss) {
+      this.el.css(prop, this.originalCss[prop])
+      delete this.originalCss[prop]
+    }
+
+    trigger(this.eventHandler, 'dragging:stop', e, this.el)
+    this.placeholder = null
+    if (!this.handle) {
+      this.adjustPlacement(e)
+    }
+
+    var el = this.el
+    if (this.handle) {
+      this.handle.remove()
+    }
+
+    setTimeout((function(el, origin) {
+      transition(el[0], 'all 0.25s ease-in-out 0s')
+      vendorify('transform', el[0], origin.transform || '')
+      setTimeout(transition.bind(null, el[0], origin.transition || ''), 250)
+      el[0].style.pointerEvents = ''
+    }).bind(null, el, this.origin))
+
+    this.windows.forEach(function(win) {
+      $(win).off(MOVE_EVENT, this.move)
+      $(win).off(END_EVENT, this.stop)
+    }, this)
+    this.parent = this.el = this.handle = null
+  }
+
+  Dragging.prototype.move = function(e) {
+    if (!this.el) return
+
+    var doc = this.el[0].ownerDocument
+    var win = doc.defaultView || doc.parentWindow
+
+    if (e.type !== 'scroll') {
+      var pageX = getTouchPageX(e)
+      var pageY = getTouchPageY(e)
+
+      if (e.view !== win && e.view.frameElement) {
+        pageX += e.view.frameElement.offsetLeft
+        pageY += e.view.frameElement.offsetTop
+      }
+
+      var clientX = e.clientX || (e.originalEvent && e.originalEvent.clientX) || window.event && window.event.touches && window.event.touches[0].clientX || 0
+        , clientY = e.clientY || (e.originalEvent && e.originalEvent.clientY) || window.event && window.event.touches && window.event.touches[0].clientY || 0
+
+      var doc = this.el[0].ownerDocument
+      var over
+      if (!isOldIE) {
+        over = e.view.document.elementFromPoint(clientX, clientY)
+      } else {
+        over = e.view.document.msElementsFromPoint(clientX, clientY)
+        over = over[0] === this.el[0] ? over[1] : over[0]
+      }
+
+      var deltaX = this.lastX - pageX
+      var deltaY = this.lastY - pageY
+      var direction = deltaY > 0 && 'up' || deltaY < 0 && 'down'
+                   || deltaX > 0 && 'up'|| deltaX < 0 && 'down'
+                   || this.lastDirection
+      if (!dragging.currentTarget) {
+        this.setCurrent(over)
+      }
+
+      if (this.currentTarget) {
+        if (over !== this.last && this.lastEntered !== this.currentTarget) {
+          trigger($(this.lastEntered), 'dragging:leave', e)
+          trigger($(this.currentTarget), 'dragging:enter', e)
+          this.lastEntered = this.currentTarget
+        } else if (direction !== this.lastDirection) {
+          trigger($(this.currentTarget), 'dragging:diverted', e)
+        }
+      }
+
+      this.last = over
+      this.currentTarget = null
+      this.lastDirection = direction
+      this.lastX = pageX
+      this.lastY = pageY
+      this.origin.scrollX = (window.scrollX || window.pageXOffset)
+      this.origin.scrollY = (window.scrollY || window.pageYOffset)
+    } else {
+      var pageX = this.lastX + ((window.scrollX || window.pageXOffset) - this.origin.scrollX)
+        , pageY = this.lastY + ((window.scrollY || window.pageYOffset) - this.origin.scrollY)
+    }
+
+    // border scrolling only for root window
+    if (e.view !== win && e.view && e.view.frameElement) {
+      var bottom = (pageY - (window.scrollY || window.pageYOffset) - window.innerHeight) * -1
+      var bottomReached = document.documentElement.offsetHeight < (window.scrollY || window.pageYOffset) + window.innerHeight
+      if (bottom <= 10 && !bottomReached) {
+        setTimeout(function() { window.scrollBy(0, 5) }, 50)
+      }
+
+      var top = (pageY - (window.scrollY || window.pageYOffset))
+      var topReached = (window.scrollY || window.pageYOffset) <= 0
+      if (top <= 10 && !topReached) {
+        setTimeout(function() { window.scrollBy(0, -5) }, 50)
+      }
+    }
+
+    var deltaX = pageX - this.origin.x
+      , deltaY = pageY - this.origin.y
+    var el = this.handle || this.el
+
+    translate(el[0], deltaX, deltaY)
+  }
+
+  Dragging.prototype.setCurrent = function(target) {
+    this.currentTarget = target
+  }
+
+  Dragging.prototype.css = function(prop, val) {
+    if (!this.el) return
+    this.originalCss[prop] = this.el.css(prop)
+    this.el.css(prop, val)
+  }
+
+  Dragging.prototype.adjustPlacement = function(e) {
+    var el = this.handle && this.handle[0] || this.el[0]
+    translate(el, 0, 0)
+    var rect = el.getBoundingClientRect()
+    this.origin.x = rect.left + (window.scrollX || window.pageXOffset) - this.origin.offset.x
+    this.origin.y = rect.top + (window.scrollY || window.pageYOffset) - this.origin.offset.y
+    var pageX  = getTouchPageX(e) || this.lastX
+      , pageY  = getTouchPageY(e) || this.lastY
+      , deltaX = pageX - this.origin.x
+      , deltaY = pageY - this.origin.y
+    translate(el, deltaX, deltaY)
+  }
+
+  var dragging
+  try {
+    if (parent.$ && parent.$.dragging) {
+      dragging = parent.$.dragging
+      dragging.windows.push(window)
+    }
+  } catch (e) {}
+
+  dragging = $.dragging = dragging || new Dragging()
+
+  // from https://github.com/rkusa/selector-observer
+  var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
+  function matches(el, selector) {
+    var fn = el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector
+    return fn ? fn.call(el, selector) : false
+  }
+  function toArr(nodeList) {
+    return Array.prototype.slice.call(nodeList)
+  }
+
+  // polyfill for IE < 11
+  var isOldIE = false
+  if (typeof MutationObserver === 'undefined') {
+    MutationObserver = function(callback) {
+      this.targets = []
+      this.onAdded = function(e) {
+        callback([{ addedNodes: [e.target], removedNodes: [] }])
+      }
+      this.onRemoved = function(e) {
+        callback([{ addedNodes: [], removedNodes: [e.target] }])
+      }
+    }
+
+    MutationObserver.prototype.observe = function(target) {
+      target.addEventListener('DOMNodeInserted', this.onAdded)
+      target.addEventListener('DOMNodeRemoved', this.onRemoved)
+      this.targets.push(target)
+    }
+
+    MutationObserver.prototype.disconnect = function() {
+      var target
+      while (target = this.targets.shift()) {
+        target.removeEventListener('DOMNodeInserted', this.onAdded)
+        target.removeEventListener('DOMNodeRemoved', this.onRemoved)
+      }
+    }
+
+    isOldIE = !!~navigator.appName.indexOf('Internet Explorer')
+  }
+
+  var SelectorObserver = function(targets, selector, onAdded, onRemoved) {
+    var self     = this
+    this.targets = targets instanceof NodeList
+                     ? Array.prototype.slice.call(targets)
+                     : [targets]
+
+    // support selectors starting with the childs only selector `>`
+    var childsOnly = selector[0] === '>'
+    var search = childsOnly ? selector.substr(1) : selector
+    var initialized = false
+
+    function query(nodes, deep) {
+      var result = []
+
+      toArr(nodes).forEach(function(node) {
+        //ignore non-element nodes
+        if (node.nodeType !== 1) return;
+
+        // if looking for childs only, the node's parentNode
+        // should be one of our targets
+        if (childsOnly && self.targets.indexOf(node.parentNode) === -1) {
+          return
+        }
+
+        // test if the node itself matches the selector
+        if (matches(node, search)) {
+          result.push(node)
+        }
+
+        if (childsOnly || !deep) {
+          return
+        }
+
+        toArr(node.querySelectorAll(selector)).forEach(function(node) {
+          result.push(node)
+        })
+      })
+
+      return result
+    }
+
+    function apply(nodes, deep, callback) {
+      if (!callback) {
+        return
+      }
+
+      // flatten
+      query(nodes, deep)
+      // filter unique nodes
+      .filter(function(node, i, self) {
+        return self.indexOf(node) === i
+      })
+      // execute callback
+      .forEach(function(node) {
+        callback.call(node)
+      })
+    }
+
+    var timeout      = null
+    var addedNodes   = []
+    var removedNodes = []
+
+    function handle() {
+      self.disconnect()
+
+      // filter moved elements (removed and re-added)
+      for (var i = 0, len = removedNodes.length; i < len; ++i) {
+        var index = addedNodes.indexOf(removedNodes[i])
+        if (index > -1) {
+          addedNodes.splice(index, 1)
+          removedNodes.splice(i--, 1)
+        }
+      }
+
+      //                ↓ IE workarounds ...
+      apply(addedNodes, !(initialized && isOldIE), onAdded)
+      apply(removedNodes, true, onRemoved)
+
+      addedNodes.length   = 0
+      removedNodes.length = 0
+
+      self.observe()
+    }
+
+    this.observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        addedNodes.push.apply(addedNodes, mutation.addedNodes)
+        removedNodes.push.apply(removedNodes, mutation.removedNodes)
+      })
+
+      // IE < 10 fix: wait a cycle to gather all mutations
+      if (timeout) {
+        clearTimeout(timeout)
+      }
+      timeout = setTimeout(handle)
+    })
+
+    // call onAdded for existing elements
+    if (onAdded) {
+      this.targets.forEach(function(target) {
+        apply(target.children, true, onAdded)
+      })
+    }
+
+    initialized = true
+
+    this.observe()
+  }
+
+  SelectorObserver.prototype.disconnect = function() {
+    this.observer.disconnect()
+  }
+
+  SelectorObserver.prototype.observe = function() {
+    var self = this
+    this.targets.forEach(function(target) {
+      self.observer.observe(target, { childList: true, subtree: true })
+    })
+  }
+
+  var Draggable = function(element, opts) {
+    this.id     = nextId++
+    this.el     = $(element)
+    this.opts   = opts
+    this.cancel = opts.handle !== false
+  }
+
+  Draggable.prototype.create = function() {
+    this.el
+    .on(START_EVENT, $.proxy(this.start, this))
+    .css('touch-action', 'double-tap-zoom')
+    .css('-ms-touch-action', 'double-tap-zoom')
+
+    dragging.on('dragging:stop', $.proxy(this.reset, this))
+
+    var self = this
+    setTimeout(function() {
+      self.el.trigger('draggable:create', self)
+    })
+  }
+
+  Draggable.prototype.destroy = function() {
+    this.el.off(START_EVENT, this.start)
+
+    // Todo: Fix Zepto Bug
+    dragging.off('dragging:stop', this.reset)
+  }
+
+  Draggable.prototype.enable = function() {
+    this.opts.disabled = false
+  }
+
+  Draggable.prototype.disable = function() {
+    this.opts.disabled = true
+  }
+
+  Draggable.prototype.start = function(e) {
+    if (this.opts.disabled) {
+      return false
+    }
+
+    // only start on left mouse button
+    if (e.type === 'mousedown' && e.which !== 1) {
+      return false
+    }
+
+    e = e.originalEvent || e // zepto <> jquery compatibility
+
+    if (this.opts.cancel) {
+      var target = $(e.target)
+      while (target[0] !== this.el[0]) {
+        if (target.is(this.opts.cancel)) return
+        target = target.parent()
+      }
+    }
+
+    if (this.opts.handle) {
+      var target = $(e.target), isHandle = false
+      while (target[0] !== this.el[0]) {
+        if (target.is(this.opts.handle)) {
+          isHandle = true
+          break
+        }
+        target = target.parent()
+      }
+      if (!isHandle) return
+    }
+
+    // prevent text selection
+    e.preventDefault()
+
+    var el = this.el, helper
+    if (this.opts.clone) {
+      if (typeof this.opts.clone === 'function') {
+        helper = this.opts.clone.call(this.el)
+      } else {
+        helper = this.el.clone()
+        if (this.opts.cloneClass) {
+          helper.addClass(this.opts.cloneClass)
+        }
+      }
+      var position = this.el.position()
+      helper.css('position', 'absolute')
+            .css('left', position.left).css('top', position.top)
+            .width(this.el.width()).height(this.el.height())
+      helper.insertAfter(this.el)
+    }
+
+    dragging.start(this, this.el, e, helper)
+
+    trigger(this.el, 'draggable:start', e, { item: dragging.el })
+  }
+
+  Draggable.prototype.reset = function(e, last) {
+    if (last === this.el[0]) {
+      trigger(this.el, 'draggable:stop', e, { item: dragging.el })
+    }
+  }
+
+  var Droppable = function(element, opts) {
+    this.id            = nextId++
+    this.el            = $(element)
+    this.opts          = opts
+    this.accept        = false
+  }
+
+  Droppable.prototype.create = function() {
+    this.el
+    .on('dragging:enter', $.proxy(this.enter, this))
+    .on('dragging:leave', $.proxy(this.leave, this))
+    .on('dragging:drop',  $.proxy(this.drop, this))
+
+    dragging
+    .on('dragging:start', $.proxy(this.activate, this))
+    .on('dragging:stop',  $.proxy(this.reset, this))
+
+    var self = this
+    setTimeout(function() {
+      self.el.trigger('droppable:create', self)
+    })
+  }
+
+  Droppable.prototype.destroy = function() {
+    this.el
+    .off('dragging:enter', this.enter)
+    .off('dragging:leave', this.leave)
+    .off('dragging:drop',  this.drop)
+
+    // Todo: Fix Zepto Bug
+    // dragging
+    // .off('dragging:start', this.activate)
+    // .off('dragging:stop',  this.reset)
+  }
+
+  Droppable.prototype.enable = function() {
+    this.opts.disabled = false
+  }
+
+  Droppable.prototype.disable = function() {
+    this.opts.disabled = true
+  }
+
+  Droppable.prototype.activate = function(e) {
+    this.accept = dragging.parent.opts.connectWith && this.el.is(dragging.parent.opts.connectWith)
+
+    if (!this.accept) {
+      var accept = this.opts.accept === '*'
+                || (typeof this.opts.accept === 'function' ? this.opts.accept.call(this.el[0], dragging.el)
+                                                           : dragging.el.is(this.opts.accept))
+      if (this.opts.scope !== 'default') {
+        this.accept = dragging.parent.opts.scope === this.opts.scope
+        if (!this.accept && this.opts.accept !== '*') this.accept = accept
+      } else this.accept = accept
+    }
+
+    if (!this.accept) return
+    if (this.opts.activeClass)
+      this.el.addClass(this.opts.activeClass)
+
+    trigger(this.el, 'droppable:activate', e, { item: dragging.el })
+  }
+
+  Droppable.prototype.reset = function(e) {
+    if (!this.accept) return
+    if (this.opts.activeClass) this.el.removeClass(this.opts.activeClass)
+    if (this.opts.hoverClass)  this.el.removeClass(this.opts.hoverClass)
+
+    trigger(this.el, 'droppable:deactivate', e, { item: dragging.el })
+  }
+
+  Droppable.prototype.enter = function(e) {
+    if (this.opts.disabled) return false
+
+    e.stopPropagation()
+
+    // hide placeholder, if set (e.g. enter the droppable after
+    // entering a sortable)
+    if (dragging.placeholder) dragging.placeholder.hide()
+
+    if (!this.accept) return
+
+    if (this.opts.hoverClass) {
+      this.el.addClass(this.opts.hoverClass)
+    }
+
+    trigger(this.el, 'droppable:over', e, { item: dragging.el })
+  }
+
+  Droppable.prototype.leave = function(e) {
+    if (this.opts.disabled) return false
+    // e.stopPropagation()
+
+    if (this.opts.hoverClass && this.accept) {
+      this.el.removeClass(this.opts.hoverClass)
+    }
+
+    trigger(this.el, 'droppable:out', e, { item: dragging.el })
+  }
+
+  Droppable.prototype.drop = function(e) {
+    if (this.opts.disabled || !this.accept) return false
+
+    if (!dragging.el) return
+
+    var el = dragging.el
+    var handler = typeof this.opts.receiveHandler === 'function' && this.opts.receiveHandler
+    var evtObj = { item: el }
+    var clone = null
+    if (dragging.handle) {
+      evtObj.helper = dragging.handle
+      if (!handler) {
+        clone = evtObj.clone = dragging.el.clone()
+      }
+    }
+
+    var drop = trigger(this.el, 'droppable:drop', e, evtObj)
+
+    if (!drop.isDefaultPrevented()) {
+      if (handler) {
+        handler.call(this.el, evtObj)
+      } else {
+        $(this.el).append(clone || dragging.el)
+      }
+    }
+  }
+
+  var Sortable = function(element, opts) {
+    this.id   = nextId++
+    this.el   = element
+    this.opts = opts
+
+    var tag = this.opts.placeholderTag
+    if (!tag) {
+      try {
+        tag = this.el.find(this.opts.items)[0].tagName
+      } catch(e) {
+        tag = /^ul|ol$/i.test(this.el[0].tagName) ? 'li' : 'div'
+      }
+    }
+
+    this.placeholder = $('<' + tag + ' id="__ph' + this.id + '" class="' + this.opts.placeholder + '" />')
+
+    this.accept = this.index = this.direction = null
+  }
+
+  Sortable.prototype.create = function() {
+    this.el
+    .on(START_EVENT,         this.opts.items, $.proxy(this.start, this))
+    .on('dragging:enter',    this.opts.items, $.proxy(this.enter, this))
+    .on('dragging:diverted', this.opts.items, $.proxy(this.diverted, this))
+    .on('dragging:drop',     this.opts.items, $.proxy(this.drop, this))
+
+    $(this.el).find(this.opts.items)
+    .css('touch-action', 'double-tap-zoom')
+    .css('-ms-touch-action', 'double-tap-zoom')
+
+    this.el
+    .on('dragging:enter',    $.proxy(this.enter, this))
+    .on('dragging:diverted', $.proxy(this.diverted, this))
+    .on('dragging:drop',     $.proxy(this.drop, this))
+
+    dragging
+    .on('dragging:start', $.proxy(this.activate, this))
+    .on('dragging:stop',  $.proxy(this.reset, this))
+
+    var self = this
+    setTimeout(function() {
+      self.el.trigger('sortable:create', self)
+    })
+
+    this.observer = new SelectorObserver(this.el[0], this.opts.items, function() {
+    }, function() {
+      if (this === self.placeholder[0] || (dragging.el && this === dragging.el[0])) {
+        return
+      }
+      var item = $(this)
+      item.css('touch-action', 'double-tap-zoom')
+          .css('-ms-touch-action', 'double-tap-zoom')
+      self.el.trigger('sortable:change', { item: item })
+      self.el.trigger('sortable:update', { item: item, index: -1 })
+    })
+  }
+
+  Sortable.prototype.destroy = function() {
+    this.el
+    .off(START_EVENT,         this.opts.items, this.start)
+    .off('dragging:enter',    this.opts.items, this.enter)
+    .off('dragging:diverted', this.opts.items, this.diverted)
+    .off('dragging:drop',     this.opts.items, this.drop)
+
+    this.el
+    .off('dragging:enter',    this.enter)
+    .off('dragging:diverted', this.diverted)
+    .off('dragging:drop',     this.drop)
+
+    // Todo: Fix Zepto Bug
+    // dragging
+    // .off('dragging:start', this.activate)
+    // .off('dragging:stop',  this.reset)
+
+    this.observer.disconnect()
+  }
+
+  Sortable.prototype.enable = function() {
+    this.opts.disabled = false
+  }
+
+  Sortable.prototype.disable = function() {
+    this.opts.disabled = true
+  }
+
+  Sortable.prototype.activate = function(e) {
+    this.isEmpty = this.el.find(this.opts.items).length === 0
+
+    this.accept = dragging.parent.id === this.id
+
+    if (!this.accept && dragging.parent.opts.connectWith) {
+      this.accept = this.el.is(dragging.parent.opts.connectWith)
+    }
+
+    if (!this.accept) return
+
+    this.accept = dragging.parent.id === this.id
+      || this.opts.accept === '*'
+      || (typeof this.opts.accept === 'function'
+        ? this.opts.accept.call(this.el[0], dragging.el)
+        : dragging.el.is(this.opts.accept))
+
+    if (!this.accept) return
+
+    if (this.opts.activeClass)
+      this.el.addClass(this.opts.activeClass)
+
+    trigger(this.el, 'sortable:activate', e, { item: dragging.el })
+  }
+
+  Sortable.prototype.reset = function(e) {
+    if (!this.accept) return
+    if (this.opts.activeClass) {
+      this.el.removeClass(this.opts.activeClass)
+    }
+
+    trigger(this.el, 'sortable:deactivate', e, { item: dragging.el })
+
+    if (this.index !== null) {
+      trigger(this.el, 'sortable:beforeStop', e, { item: dragging.el })
+      trigger(this.el, 'sortable:stop', e, { item: dragging.el })
+      this.index = null
+    }
+  }
+
+  Sortable.prototype.indexOf = function(el) {
+    return this.el.find(this.opts.items + ', #' + this.placeholder.attr('id')).index(el)
+  }
+
+  Sortable.prototype.start = function(e) {
+    if (this.opts.disabled || dragging.el) {
+      return
+    }
+
+    // only start on left mouse button
+    if (e.type === 'mousedown' && e.which !== 1) {
+      return false
+    }
+
+    if (this.opts.cancel) {
+      var target = $(e.target)
+      while (target[0] !== this.el[0]) {
+        if (target.is(this.opts.cancel)) return
+        target = target.parent()
+      }
+    }
+
+    if (this.opts.handle) {
+      var target = $(e.target), isHandle = false
+      while (target[0] !== this.el[0]) {
+        if (target.is(this.opts.handle)) {
+          isHandle = true
+          break
+        }
+        target = target.parent()
+      }
+      if (!isHandle) return
+    }
+
+    e.stopPropagation()
+    e.preventDefault() // prevent text selection
+
+    // use e.currentTarget instead of e.target because we want the target
+    // the event is bound to, not the target (child) the event is triggered from
+    dragging.start(this, $(e.currentTarget), e)
+
+    this.index = this.indexOf(dragging.el)
+
+    dragging.el.before(dragging.placeholder = this.placeholder.show())
+
+    // if dragging an item that belongs to the current list, hide it while
+    // it is being dragged
+    if (this.index !== null) {
+      // zepto <> jquery compatibility
+      var height = dragging.el.outerHeight ? dragging.el.outerHeight() : dragging.el.height()
+      dragging.css('margin-bottom', -height)
+    }
+
+    if (this.opts.forcePlaceholderSize) {
+      this.placeholder.height(parseFloat(dragging.el.css('height')))
+      this.placeholder.width(parseFloat(dragging.el.css('width')))
+    }
+
+    dragging.adjustPlacement(e)
+
+    trigger(this.el, 'sortable:start', e, { item: dragging.el })
+  }
+
+  Sortable.prototype.enter = function(e) {
+    if (!this.accept || this.opts.disabled) return
+
+    e.stopPropagation()
+
+    // stop if event is fired on the placeholder
+    var child = e.currentTarget, isContainer = child === this.el[0]
+    if (child === this.placeholder[0]) return
+    child = $(child)
+
+    // the container fallback is only necessary for empty sortables
+    if (isContainer && !this.isEmpty && this.placeholder.parent().length) {
+      return
+    }
+
+    dragging.placeholder = this.placeholder
+
+    if (this.opts.forcePlaceholderSize) {
+      this.placeholder.height(parseFloat(dragging.el.css('height')))
+      this.placeholder.width(parseFloat(dragging.el.css('width')))
+    }
+
+    if (!isContainer) {
+      this.diverted(e)
+    } else {
+      this.el.append(this.placeholder)
+      this.el.trigger('sortable:change', { item: dragging.el })
+    }
+  }
+
+  Sortable.prototype.diverted = function(e) {
+    if (!this.accept || this.opts.disabled) return
+    e.stopPropagation()
+
+    var child = $(e.currentTarget), isContainer = child[0] === this.el[0]
+    if (isContainer) return
+
+    // insert the placeholder according to the dragging direction
+    dragging.placeholder = this.placeholder
+    this.direction = this.indexOf(this.placeholder.show()) < this.indexOf(child) ? 'down' : 'up'
+    child[this.direction === 'down' ? 'after' : 'before'](this.placeholder)
+    dragging.adjustPlacement(e)
+
+    this.el.trigger('sortable:change', { item: dragging.el })
+  }
+
+  Sortable.prototype.drop = function(e) {
+    if (!this.accept || this.opts.disabled) return
+
+    e.stopPropagation()
+    e.preventDefault()
+
+    if (!dragging.el) return
+    if (!this.placeholder.parent().length) return
+
+    trigger(this.el, 'sortable:beforeStop', e, { item: dragging.el })
+
+    this.observer.disconnect()
+
+    var newIndex = this.indexOf(this.placeholder)
+    if (newIndex > this.index) {
+      newIndex--
+    }
+
+    var handler
+
+    // dropped element belongs to another list
+    if (this.index === null) {
+      handler = this.opts.receiveHandler
+    }
+    // dopped element belongs to the same list
+    else {
+      // updatePosition cause backwards-compatibility
+      handler = this.opts.updateHandler || this.opts.updatePosition
+    }
+
+    var el = dragging.el
+    if (typeof handler === 'function') {
+      handler.call(this.el, { item: dragging.el, index: newIndex })
+    } else {
+      if (dragging.handle) {
+        el = dragging.el.clone()
+      }
+      el.insertBefore(this.placeholder)
+    }
+
+    // if the dropped element belongs to another list, trigger the receive event
+    if (this.index === null) {
+      trigger(this.el, 'sortable:receive', e, { item: el })
+    }
+
+    // if the index changed, trigger the update event
+    if (newIndex !== this.index) {
+      this.el.trigger('sortable:update', { item: el, index: newIndex })
+    }
+
+    trigger(this.el, 'sortable:stop', e, { item: el })
+    this.index = null
+    this.observer.observe()
+
+    dragging.stop(e)
+  }
+
+  Sortable.prototype.toArray = function(opts) {
+    if (!opts) opts = {}
+    var attr = opts.attribute || 'id', attrs = []
+    this.el.find(this.opts.items).each(function() {
+      attrs.push($(this).prop(attr))
+    })
+    return attrs
+  }
+
+  function generic(constructor, identifier, defaults) {
+    return function(opts, name, value) {
+      var result = []
+      this.each(function() {
+        var instance = $(this).data(identifier)
+        if (typeof opts === 'string') {
+          if (typeof instance === 'undefined')
+            throw new Error(identifier + ' not defined')
+          switch (opts) {
+          case 'enable':  instance.enable();  break
+          case 'disable': instance.disable(); break
+          case 'destroy':
+            instance.destroy()
+            $(this).removeData(identifier)
+            break
+          case 'option':
+            // set
+            if (value !== undefined)
+              instance.opts[name] = value
+            else if (typeof name === 'object')
+              instance.opts = $.extend(instance.opts, name)
+            // get
+            else if (name)
+              result.push(instance.opts[name])
+            else
+              result.push(instance.opts)
+            break
+          // case 'serialize':
+          //   if (identifier !== 'sortable') return
+          //   result.push(instance.serialize())
+          //   break
+          case 'toArray':
+            if (identifier !== 'sortable') return
+            result.push(instance.toArray(name))
+            break
+          }
+        } else {
+          if (instance) {
+            $.extend(instance.opts, opts) // merge options
+            return this
+          }
+          instance = new constructor($(this), $.extend({}, defaults, opts))
+          instance.create()
+          $(this).data(identifier, instance)
+        }
+      })
+
+      if (result.length)
+        return result.length === 1 ? result[0] : result
+      else
+        return this
+    }
+  }
+
+  $.fn.draggable = generic(Draggable, 'draggable', {
+    cancel: 'input, textarea, button, select, option',
+    connectWith: false,
+    cursor: 'auto',
+    disabled: false,
+    handle: false,
+    initialized: false,
+    clone: false,
+    cloneClass: '',
+    scope: 'default'
+  })
+
+  $.fn.droppable = generic(Droppable, 'droppable', {
+    accept: '*',
+    activeClass: '',
+    disabled: false,
+    hoverClass: '',
+    initialized: false,
+    scope: 'default',
+    receiveHandler: null
+  })
+
+  $.fn.sortable = generic(Sortable, 'sortable', {
+    accept: '*',
+    activeClass: '',
+    cancel: 'input, textarea, button, select, option',
+    connectWith: false,
+    disabled: false,
+    forcePlaceholderSize: false,
+    handle: false,
+    initialized: false,
+    items: 'li, div',
+    placeholder: 'placeholder',
+    placeholderTag: null,
+    updateHandler: null,
+    receiveHandler: null
+  })
+})(window.Zepto || __webpack_provided_window_dot_jQuery);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * Date picker for pickadate.js v3.5.6
+ * http://amsul.github.io/pickadate.js/date.htm
+ */
+
+(function ( factory ) {
+
+    // AMD.
+    if ( true )
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(9), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+
+    // Node.js/browserify.
+    else if ( typeof exports == 'object' )
+        module.exports = factory( require('./picker.js'), require('jquery') )
+
+    // Browser globals.
+    else factory( Picker, jQuery )
+
+}(function( Picker, $ ) {
+
+
+/**
+ * Globals and constants
+ */
+var DAYS_IN_WEEK = 7,
+    WEEKS_IN_CALENDAR = 6,
+    _ = Picker._
+
+
+
+/**
+ * The date picker constructor
+ */
+function DatePicker( picker, settings ) {
+
+    var calendar = this,
+        element = picker.$node[ 0 ],
+        elementValue = element.value,
+        elementDataValue = picker.$node.data( 'value' ),
+        valueString = elementDataValue || elementValue,
+        formatString = elementDataValue ? settings.formatSubmit : settings.format,
+        isRTL = function() {
+
+            return element.currentStyle ?
+
+                // For IE.
+                element.currentStyle.direction == 'rtl' :
+
+                // For normal browsers.
+                getComputedStyle( picker.$root[0] ).direction == 'rtl'
+        }
+
+    calendar.settings = settings
+    calendar.$node = picker.$node
+
+    // The queue of methods that will be used to build item objects.
+    calendar.queue = {
+        min: 'measure create',
+        max: 'measure create',
+        now: 'now create',
+        select: 'parse create validate',
+        highlight: 'parse navigate create validate',
+        view: 'parse create validate viewset',
+        disable: 'deactivate',
+        enable: 'activate'
+    }
+
+    // The component's item object.
+    calendar.item = {}
+
+    calendar.item.clear = null
+    calendar.item.disable = ( settings.disable || [] ).slice( 0 )
+    calendar.item.enable = -(function( collectionDisabled ) {
+        return collectionDisabled[ 0 ] === true ? collectionDisabled.shift() : -1
+    })( calendar.item.disable )
+
+    calendar.
+        set( 'min', settings.min ).
+        set( 'max', settings.max ).
+        set( 'now' )
+
+    // When there’s a value, set the `select`, which in turn
+    // also sets the `highlight` and `view`.
+    if ( valueString ) {
+        calendar.set( 'select', valueString, {
+            format: formatString,
+            defaultValue: true
+        })
+    }
+
+    // If there’s no value, default to highlighting “today”.
+    else {
+        calendar.
+            set( 'select', null ).
+            set( 'highlight', calendar.item.now )
+    }
+
+
+    // The keycode to movement mapping.
+    calendar.key = {
+        40: 7, // Down
+        38: -7, // Up
+        39: function() { return isRTL() ? -1 : 1 }, // Right
+        37: function() { return isRTL() ? 1 : -1 }, // Left
+        go: function( timeChange ) {
+            var highlightedObject = calendar.item.highlight,
+                targetDate = new Date( highlightedObject.year, highlightedObject.month, highlightedObject.date + timeChange )
+            calendar.set(
+                'highlight',
+                targetDate,
+                { interval: timeChange }
+            )
+            this.render()
+        }
+    }
+
+
+    // Bind some picker events.
+    picker.
+        on( 'render', function() {
+            picker.$root.find( '.' + settings.klass.selectMonth ).on( 'change', function() {
+                var value = this.value
+                if ( value ) {
+                    picker.set( 'highlight', [ picker.get( 'view' ).year, value, picker.get( 'highlight' ).date ] )
+                    picker.$root.find( '.' + settings.klass.selectMonth ).trigger( 'focus' )
+                }
+            })
+            picker.$root.find( '.' + settings.klass.selectYear ).on( 'change', function() {
+                var value = this.value
+                if ( value ) {
+                    picker.set( 'highlight', [ value, picker.get( 'view' ).month, picker.get( 'highlight' ).date ] )
+                    picker.$root.find( '.' + settings.klass.selectYear ).trigger( 'focus' )
+                }
+            })
+        }, 1 ).
+        on( 'open', function() {
+            var includeToday = ''
+            if ( calendar.disabled( calendar.get('now') ) ) {
+                includeToday = ':not(.' + settings.klass.buttonToday + ')'
+            }
+            picker.$root.find( 'button' + includeToday + ', select' ).attr( 'disabled', false )
+        }, 1 ).
+        on( 'close', function() {
+            picker.$root.find( 'button, select' ).attr( 'disabled', true )
+        }, 1 )
+
+} //DatePicker
+
+
+/**
+ * Set a datepicker item object.
+ */
+DatePicker.prototype.set = function( type, value, options ) {
+
+    var calendar = this,
+        calendarItem = calendar.item
+
+    // If the value is `null` just set it immediately.
+    if ( value === null ) {
+        if ( type == 'clear' ) type = 'select'
+        calendarItem[ type ] = value
+        return calendar
+    }
+
+    // Otherwise go through the queue of methods, and invoke the functions.
+    // Update this as the time unit, and set the final value as this item.
+    // * In the case of `enable`, keep the queue but set `disable` instead.
+    //   And in the case of `flip`, keep the queue but set `enable` instead.
+    calendarItem[ ( type == 'enable' ? 'disable' : type == 'flip' ? 'enable' : type ) ] = calendar.queue[ type ].split( ' ' ).map( function( method ) {
+        value = calendar[ method ]( type, value, options )
+        return value
+    }).pop()
+
+    // Check if we need to cascade through more updates.
+    if ( type == 'select' ) {
+        calendar.set( 'highlight', calendarItem.select, options )
+    }
+    else if ( type == 'highlight' ) {
+        calendar.set( 'view', calendarItem.highlight, options )
+    }
+    else if ( type.match( /^(flip|min|max|disable|enable)$/ ) ) {
+        if ( calendarItem.select && calendar.disabled( calendarItem.select ) ) {
+            calendar.set( 'select', calendarItem.select, options )
+        }
+        if ( calendarItem.highlight && calendar.disabled( calendarItem.highlight ) ) {
+            calendar.set( 'highlight', calendarItem.highlight, options )
+        }
+    }
+
+    return calendar
+} //DatePicker.prototype.set
+
+
+/**
+ * Get a datepicker item object.
+ */
+DatePicker.prototype.get = function( type ) {
+    return this.item[ type ]
+} //DatePicker.prototype.get
+
+
+/**
+ * Create a picker date object.
+ */
+DatePicker.prototype.create = function( type, value, options ) {
+
+    var isInfiniteValue,
+        calendar = this
+
+    // If there’s no value, use the type as the value.
+    value = value === undefined ? type : value
+
+
+    // If it’s infinity, update the value.
+    if ( value == -Infinity || value == Infinity ) {
+        isInfiniteValue = value
+    }
+
+    // If it’s an object, use the native date object.
+    else if ( $.isPlainObject( value ) && _.isInteger( value.pick ) ) {
+        value = value.obj
+    }
+
+    // If it’s an array, convert it into a date and make sure
+    // that it’s a valid date – otherwise default to today.
+    else if ( $.isArray( value ) ) {
+        value = new Date( value[ 0 ], value[ 1 ], value[ 2 ] )
+        value = _.isDate( value ) ? value : calendar.create().obj
+    }
+
+    // If it’s a number or date object, make a normalized date.
+    else if ( _.isInteger( value ) || _.isDate( value ) ) {
+        value = calendar.normalize( new Date( value ), options )
+    }
+
+    // If it’s a literal true or any other case, set it to now.
+    else /*if ( value === true )*/ {
+        value = calendar.now( type, value, options )
+    }
+
+    // Return the compiled object.
+    return {
+        year: isInfiniteValue || value.getFullYear(),
+        month: isInfiniteValue || value.getMonth(),
+        date: isInfiniteValue || value.getDate(),
+        day: isInfiniteValue || value.getDay(),
+        obj: isInfiniteValue || value,
+        pick: isInfiniteValue || value.getTime()
+    }
+} //DatePicker.prototype.create
+
+
+/**
+ * Create a range limit object using an array, date object,
+ * literal “true”, or integer relative to another time.
+ */
+DatePicker.prototype.createRange = function( from, to ) {
+
+    var calendar = this,
+        createDate = function( date ) {
+            if ( date === true || $.isArray( date ) || _.isDate( date ) ) {
+                return calendar.create( date )
+            }
+            return date
+        }
+
+    // Create objects if possible.
+    if ( !_.isInteger( from ) ) {
+        from = createDate( from )
+    }
+    if ( !_.isInteger( to ) ) {
+        to = createDate( to )
+    }
+
+    // Create relative dates.
+    if ( _.isInteger( from ) && $.isPlainObject( to ) ) {
+        from = [ to.year, to.month, to.date + from ];
+    }
+    else if ( _.isInteger( to ) && $.isPlainObject( from ) ) {
+        to = [ from.year, from.month, from.date + to ];
+    }
+
+    return {
+        from: createDate( from ),
+        to: createDate( to )
+    }
+} //DatePicker.prototype.createRange
+
+
+/**
+ * Check if a date unit falls within a date range object.
+ */
+DatePicker.prototype.withinRange = function( range, dateUnit ) {
+    range = this.createRange(range.from, range.to)
+    return dateUnit.pick >= range.from.pick && dateUnit.pick <= range.to.pick
+}
+
+
+/**
+ * Check if two date range objects overlap.
+ */
+DatePicker.prototype.overlapRanges = function( one, two ) {
+
+    var calendar = this
+
+    // Convert the ranges into comparable dates.
+    one = calendar.createRange( one.from, one.to )
+    two = calendar.createRange( two.from, two.to )
+
+    return calendar.withinRange( one, two.from ) || calendar.withinRange( one, two.to ) ||
+        calendar.withinRange( two, one.from ) || calendar.withinRange( two, one.to )
+}
+
+
+/**
+ * Get the date today.
+ */
+DatePicker.prototype.now = function( type, value, options ) {
+    value = new Date()
+    if ( options && options.rel ) {
+        value.setDate( value.getDate() + options.rel )
+    }
+    return this.normalize( value, options )
+}
+
+
+/**
+ * Navigate to next/prev month.
+ */
+DatePicker.prototype.navigate = function( type, value, options ) {
+
+    var targetDateObject,
+        targetYear,
+        targetMonth,
+        targetDate,
+        isTargetArray = $.isArray( value ),
+        isTargetObject = $.isPlainObject( value ),
+        viewsetObject = this.item.view/*,
+        safety = 100*/
+
+
+    if ( isTargetArray || isTargetObject ) {
+
+        if ( isTargetObject ) {
+            targetYear = value.year
+            targetMonth = value.month
+            targetDate = value.date
+        }
+        else {
+            targetYear = +value[0]
+            targetMonth = +value[1]
+            targetDate = +value[2]
+        }
+
+        // If we’re navigating months but the view is in a different
+        // month, navigate to the view’s year and month.
+        if ( options && options.nav && viewsetObject && viewsetObject.month !== targetMonth ) {
+            targetYear = viewsetObject.year
+            targetMonth = viewsetObject.month
+        }
+
+        // Figure out the expected target year and month.
+        targetDateObject = new Date( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 )
+        targetYear = targetDateObject.getFullYear()
+        targetMonth = targetDateObject.getMonth()
+
+        // If the month we’re going to doesn’t have enough days,
+        // keep decreasing the date until we reach the month’s last date.
+        while ( /*safety &&*/ new Date( targetYear, targetMonth, targetDate ).getMonth() !== targetMonth ) {
+            targetDate -= 1
+            /*safety -= 1
+            if ( !safety ) {
+                throw 'Fell into an infinite loop while navigating to ' + new Date( targetYear, targetMonth, targetDate ) + '.'
+            }*/
+        }
+
+        value = [ targetYear, targetMonth, targetDate ]
+    }
+
+    return value
+} //DatePicker.prototype.navigate
+
+
+/**
+ * Normalize a date by setting the hours to midnight.
+ */
+DatePicker.prototype.normalize = function( value/*, options*/ ) {
+    value.setHours( 0, 0, 0, 0 )
+    return value
+}
+
+
+/**
+ * Measure the range of dates.
+ */
+DatePicker.prototype.measure = function( type, value/*, options*/ ) {
+
+    var calendar = this
+
+    // If it’s anything false-y, remove the limits.
+    if ( !value ) {
+        value = type == 'min' ? -Infinity : Infinity
+    }
+
+    // If it’s a string, parse it.
+    else if ( typeof value == 'string' ) {
+        value = calendar.parse( type, value )
+    }
+
+    // If it's an integer, get a date relative to today.
+    else if ( _.isInteger( value ) ) {
+        value = calendar.now( type, value, { rel: value } )
+    }
+
+    return value
+} ///DatePicker.prototype.measure
+
+
+/**
+ * Create a viewset object based on navigation.
+ */
+DatePicker.prototype.viewset = function( type, dateObject/*, options*/ ) {
+    return this.create([ dateObject.year, dateObject.month, 1 ])
+}
+
+
+/**
+ * Validate a date as enabled and shift if needed.
+ */
+DatePicker.prototype.validate = function( type, dateObject, options ) {
+
+    var calendar = this,
+
+        // Keep a reference to the original date.
+        originalDateObject = dateObject,
+
+        // Make sure we have an interval.
+        interval = options && options.interval ? options.interval : 1,
+
+        // Check if the calendar enabled dates are inverted.
+        isFlippedBase = calendar.item.enable === -1,
+
+        // Check if we have any enabled dates after/before now.
+        hasEnabledBeforeTarget, hasEnabledAfterTarget,
+
+        // The min & max limits.
+        minLimitObject = calendar.item.min,
+        maxLimitObject = calendar.item.max,
+
+        // Check if we’ve reached the limit during shifting.
+        reachedMin, reachedMax,
+
+        // Check if the calendar is inverted and at least one weekday is enabled.
+        hasEnabledWeekdays = isFlippedBase && calendar.item.disable.filter( function( value ) {
+
+            // If there’s a date, check where it is relative to the target.
+            if ( $.isArray( value ) ) {
+                var dateTime = calendar.create( value ).pick
+                if ( dateTime < dateObject.pick ) hasEnabledBeforeTarget = true
+                else if ( dateTime > dateObject.pick ) hasEnabledAfterTarget = true
+            }
+
+            // Return only integers for enabled weekdays.
+            return _.isInteger( value )
+        }).length/*,
+
+        safety = 100*/
+
+
+
+    // Cases to validate for:
+    // [1] Not inverted and date disabled.
+    // [2] Inverted and some dates enabled.
+    // [3] Not inverted and out of range.
+    //
+    // Cases to **not** validate for:
+    // • Navigating months.
+    // • Not inverted and date enabled.
+    // • Inverted and all dates disabled.
+    // • ..and anything else.
+    if ( !options || (!options.nav && !options.defaultValue) ) if (
+        /* 1 */ ( !isFlippedBase && calendar.disabled( dateObject ) ) ||
+        /* 2 */ ( isFlippedBase && calendar.disabled( dateObject ) && ( hasEnabledWeekdays || hasEnabledBeforeTarget || hasEnabledAfterTarget ) ) ||
+        /* 3 */ ( !isFlippedBase && (dateObject.pick <= minLimitObject.pick || dateObject.pick >= maxLimitObject.pick) )
+    ) {
+
+
+        // When inverted, flip the direction if there aren’t any enabled weekdays
+        // and there are no enabled dates in the direction of the interval.
+        if ( isFlippedBase && !hasEnabledWeekdays && ( ( !hasEnabledAfterTarget && interval > 0 ) || ( !hasEnabledBeforeTarget && interval < 0 ) ) ) {
+            interval *= -1
+        }
+
+
+        // Keep looping until we reach an enabled date.
+        while ( /*safety &&*/ calendar.disabled( dateObject ) ) {
+
+            /*safety -= 1
+            if ( !safety ) {
+                throw 'Fell into an infinite loop while validating ' + dateObject.obj + '.'
+            }*/
+
+
+            // If we’ve looped into the next/prev month with a large interval, return to the original date and flatten the interval.
+            if ( Math.abs( interval ) > 1 && ( dateObject.month < originalDateObject.month || dateObject.month > originalDateObject.month ) ) {
+                dateObject = originalDateObject
+                interval = interval > 0 ? 1 : -1
+            }
+
+
+            // If we’ve reached the min/max limit, reverse the direction, flatten the interval and set it to the limit.
+            if ( dateObject.pick <= minLimitObject.pick ) {
+                reachedMin = true
+                interval = 1
+                dateObject = calendar.create([
+                    minLimitObject.year,
+                    minLimitObject.month,
+                    minLimitObject.date + (dateObject.pick === minLimitObject.pick ? 0 : -1)
+                ])
+            }
+            else if ( dateObject.pick >= maxLimitObject.pick ) {
+                reachedMax = true
+                interval = -1
+                dateObject = calendar.create([
+                    maxLimitObject.year,
+                    maxLimitObject.month,
+                    maxLimitObject.date + (dateObject.pick === maxLimitObject.pick ? 0 : 1)
+                ])
+            }
+
+
+            // If we’ve reached both limits, just break out of the loop.
+            if ( reachedMin && reachedMax ) {
+                break
+            }
+
+
+            // Finally, create the shifted date using the interval and keep looping.
+            dateObject = calendar.create([ dateObject.year, dateObject.month, dateObject.date + interval ])
+        }
+
+    } //endif
+
+
+    // Return the date object settled on.
+    return dateObject
+} //DatePicker.prototype.validate
+
+
+/**
+ * Check if a date is disabled.
+ */
+DatePicker.prototype.disabled = function( dateToVerify ) {
+
+    var
+        calendar = this,
+
+        // Filter through the disabled dates to check if this is one.
+        isDisabledMatch = calendar.item.disable.filter( function( dateToDisable ) {
+
+            // If the date is a number, match the weekday with 0index and `firstDay` check.
+            if ( _.isInteger( dateToDisable ) ) {
+                return dateToVerify.day === ( calendar.settings.firstDay ? dateToDisable : dateToDisable - 1 ) % 7
+            }
+
+            // If it’s an array or a native JS date, create and match the exact date.
+            if ( $.isArray( dateToDisable ) || _.isDate( dateToDisable ) ) {
+                return dateToVerify.pick === calendar.create( dateToDisable ).pick
+            }
+
+            // If it’s an object, match a date within the “from” and “to” range.
+            if ( $.isPlainObject( dateToDisable ) ) {
+                return calendar.withinRange( dateToDisable, dateToVerify )
+            }
+        })
+
+    // If this date matches a disabled date, confirm it’s not inverted.
+    isDisabledMatch = isDisabledMatch.length && !isDisabledMatch.filter(function( dateToDisable ) {
+        return $.isArray( dateToDisable ) && dateToDisable[3] == 'inverted' ||
+            $.isPlainObject( dateToDisable ) && dateToDisable.inverted
+    }).length
+
+    // Check the calendar “enabled” flag and respectively flip the
+    // disabled state. Then also check if it’s beyond the min/max limits.
+    return calendar.item.enable === -1 ? !isDisabledMatch : isDisabledMatch ||
+        dateToVerify.pick < calendar.item.min.pick ||
+        dateToVerify.pick > calendar.item.max.pick
+
+} //DatePicker.prototype.disabled
+
+
+/**
+ * Parse a string into a usable type.
+ */
+DatePicker.prototype.parse = function( type, value, options ) {
+
+    var calendar = this,
+        parsingObject = {}
+
+    // If it’s already parsed, we’re good.
+    if ( !value || typeof value != 'string' ) {
+        return value
+    }
+
+    // We need a `.format` to parse the value with.
+    if ( !( options && options.format ) ) {
+        options = options || {}
+        options.format = calendar.settings.format
+    }
+
+    // Convert the format into an array and then map through it.
+    calendar.formats.toArray( options.format ).map( function( label ) {
+
+        var
+            // Grab the formatting label.
+            formattingLabel = calendar.formats[ label ],
+
+            // The format length is from the formatting label function or the
+            // label length without the escaping exclamation (!) mark.
+            formatLength = formattingLabel ? _.trigger( formattingLabel, calendar, [ value, parsingObject ] ) : label.replace( /^!/, '' ).length
+
+        // If there's a format label, split the value up to the format length.
+        // Then add it to the parsing object with appropriate label.
+        if ( formattingLabel ) {
+            parsingObject[ label ] = value.substr( 0, formatLength )
+        }
+
+        // Update the value as the substring from format length to end.
+        value = value.substr( formatLength )
+    })
+
+    // Compensate for month 0index.
+    return [
+        parsingObject.yyyy || parsingObject.yy,
+        +( parsingObject.mm || parsingObject.m ) - 1,
+        parsingObject.dd || parsingObject.d
+    ]
+} //DatePicker.prototype.parse
+
+
+/**
+ * Various formats to display the object in.
+ */
+DatePicker.prototype.formats = (function() {
+
+    // Return the length of the first word in a collection.
+    function getWordLengthFromCollection( string, collection, dateObject ) {
+
+        // Grab the first word from the string.
+        // Regex pattern from http://stackoverflow.com/q/150033
+        var word = string.match( /[^\x00-\x7F]+|\w+/ )[ 0 ]
+
+        // If there's no month index, add it to the date object
+        if ( !dateObject.mm && !dateObject.m ) {
+            dateObject.m = collection.indexOf( word ) + 1
+        }
+
+        // Return the length of the word.
+        return word.length
+    }
+
+    // Get the length of the first word in a string.
+    function getFirstWordLength( string ) {
+        return string.match( /\w+/ )[ 0 ].length
+    }
+
+    return {
+
+        d: function( string, dateObject ) {
+
+            // If there's string, then get the digits length.
+            // Otherwise return the selected date.
+            return string ? _.digits( string ) : dateObject.date
+        },
+        dd: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 2.
+            // Otherwise return the selected date with a leading zero.
+            return string ? 2 : _.lead( dateObject.date )
+        },
+        ddd: function( string, dateObject ) {
+
+            // If there's a string, then get the length of the first word.
+            // Otherwise return the short selected weekday.
+            return string ? getFirstWordLength( string ) : this.settings.weekdaysShort[ dateObject.day ]
+        },
+        dddd: function( string, dateObject ) {
+
+            // If there's a string, then get the length of the first word.
+            // Otherwise return the full selected weekday.
+            return string ? getFirstWordLength( string ) : this.settings.weekdaysFull[ dateObject.day ]
+        },
+        m: function( string, dateObject ) {
+
+            // If there's a string, then get the length of the digits
+            // Otherwise return the selected month with 0index compensation.
+            return string ? _.digits( string ) : dateObject.month + 1
+        },
+        mm: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 2.
+            // Otherwise return the selected month with 0index and leading zero.
+            return string ? 2 : _.lead( dateObject.month + 1 )
+        },
+        mmm: function( string, dateObject ) {
+
+            var collection = this.settings.monthsShort
+
+            // If there's a string, get length of the relevant month from the short
+            // months collection. Otherwise return the selected month from that collection.
+            return string ? getWordLengthFromCollection( string, collection, dateObject ) : collection[ dateObject.month ]
+        },
+        mmmm: function( string, dateObject ) {
+
+            var collection = this.settings.monthsFull
+
+            // If there's a string, get length of the relevant month from the full
+            // months collection. Otherwise return the selected month from that collection.
+            return string ? getWordLengthFromCollection( string, collection, dateObject ) : collection[ dateObject.month ]
+        },
+        yy: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 2.
+            // Otherwise return the selected year by slicing out the first 2 digits.
+            return string ? 2 : ( '' + dateObject.year ).slice( 2 )
+        },
+        yyyy: function( string, dateObject ) {
+
+            // If there's a string, then the length is always 4.
+            // Otherwise return the selected year.
+            return string ? 4 : dateObject.year
+        },
+
+        // Create an array by splitting the formatting string passed.
+        toArray: function( formatString ) { return formatString.split( /(d{1,4}|m{1,4}|y{4}|yy|!.)/g ) },
+
+        // Format an object into a string using the formatting options.
+        toString: function ( formatString, itemObject ) {
+            var calendar = this
+            return calendar.formats.toArray( formatString ).map( function( label ) {
+                return _.trigger( calendar.formats[ label ], calendar, [ 0, itemObject ] ) || label.replace( /^!/, '' )
+            }).join( '' )
+        }
+    }
+})() //DatePicker.prototype.formats
+
+
+
+
+/**
+ * Check if two date units are the exact.
+ */
+DatePicker.prototype.isDateExact = function( one, two ) {
+
+    var calendar = this
+
+    // When we’re working with weekdays, do a direct comparison.
+    if (
+        ( _.isInteger( one ) && _.isInteger( two ) ) ||
+        ( typeof one == 'boolean' && typeof two == 'boolean' )
+     ) {
+        return one === two
+    }
+
+    // When we’re working with date representations, compare the “pick” value.
+    if (
+        ( _.isDate( one ) || $.isArray( one ) ) &&
+        ( _.isDate( two ) || $.isArray( two ) )
+    ) {
+        return calendar.create( one ).pick === calendar.create( two ).pick
+    }
+
+    // When we’re working with range objects, compare the “from” and “to”.
+    if ( $.isPlainObject( one ) && $.isPlainObject( two ) ) {
+        return calendar.isDateExact( one.from, two.from ) && calendar.isDateExact( one.to, two.to )
+    }
+
+    return false
+}
+
+
+/**
+ * Check if two date units overlap.
+ */
+DatePicker.prototype.isDateOverlap = function( one, two ) {
+
+    var calendar = this,
+        firstDay = calendar.settings.firstDay ? 1 : 0
+
+    // When we’re working with a weekday index, compare the days.
+    if ( _.isInteger( one ) && ( _.isDate( two ) || $.isArray( two ) ) ) {
+        one = one % 7 + firstDay
+        return one === calendar.create( two ).day + 1
+    }
+    if ( _.isInteger( two ) && ( _.isDate( one ) || $.isArray( one ) ) ) {
+        two = two % 7 + firstDay
+        return two === calendar.create( one ).day + 1
+    }
+
+    // When we’re working with range objects, check if the ranges overlap.
+    if ( $.isPlainObject( one ) && $.isPlainObject( two ) ) {
+        return calendar.overlapRanges( one, two )
+    }
+
+    return false
+}
+
+
+/**
+ * Flip the “enabled” state.
+ */
+DatePicker.prototype.flipEnable = function(val) {
+    var itemObject = this.item
+    itemObject.enable = val || (itemObject.enable == -1 ? 1 : -1)
+}
+
+
+/**
+ * Mark a collection of dates as “disabled”.
+ */
+DatePicker.prototype.deactivate = function( type, datesToDisable ) {
+
+    var calendar = this,
+        disabledItems = calendar.item.disable.slice(0)
+
+
+    // If we’re flipping, that’s all we need to do.
+    if ( datesToDisable == 'flip' ) {
+        calendar.flipEnable()
+    }
+
+    else if ( datesToDisable === false ) {
+        calendar.flipEnable(1)
+        disabledItems = []
+    }
+
+    else if ( datesToDisable === true ) {
+        calendar.flipEnable(-1)
+        disabledItems = []
+    }
+
+    // Otherwise go through the dates to disable.
+    else {
+
+        datesToDisable.map(function( unitToDisable ) {
+
+            var matchFound
+
+            // When we have disabled items, check for matches.
+            // If something is matched, immediately break out.
+            for ( var index = 0; index < disabledItems.length; index += 1 ) {
+                if ( calendar.isDateExact( unitToDisable, disabledItems[index] ) ) {
+                    matchFound = true
+                    break
+                }
+            }
+
+            // If nothing was found, add the validated unit to the collection.
+            if ( !matchFound ) {
+                if (
+                    _.isInteger( unitToDisable ) ||
+                    _.isDate( unitToDisable ) ||
+                    $.isArray( unitToDisable ) ||
+                    ( $.isPlainObject( unitToDisable ) && unitToDisable.from && unitToDisable.to )
+                ) {
+                    disabledItems.push( unitToDisable )
+                }
+            }
+        })
+    }
+
+    // Return the updated collection.
+    return disabledItems
+} //DatePicker.prototype.deactivate
+
+
+/**
+ * Mark a collection of dates as “enabled”.
+ */
+DatePicker.prototype.activate = function( type, datesToEnable ) {
+
+    var calendar = this,
+        disabledItems = calendar.item.disable,
+        disabledItemsCount = disabledItems.length
+
+    // If we’re flipping, that’s all we need to do.
+    if ( datesToEnable == 'flip' ) {
+        calendar.flipEnable()
+    }
+
+    else if ( datesToEnable === true ) {
+        calendar.flipEnable(1)
+        disabledItems = []
+    }
+
+    else if ( datesToEnable === false ) {
+        calendar.flipEnable(-1)
+        disabledItems = []
+    }
+
+    // Otherwise go through the disabled dates.
+    else {
+
+        datesToEnable.map(function( unitToEnable ) {
+
+            var matchFound,
+                disabledUnit,
+                index,
+                isExactRange
+
+            // Go through the disabled items and try to find a match.
+            for ( index = 0; index < disabledItemsCount; index += 1 ) {
+
+                disabledUnit = disabledItems[index]
+
+                // When an exact match is found, remove it from the collection.
+                if ( calendar.isDateExact( disabledUnit, unitToEnable ) ) {
+                    matchFound = disabledItems[index] = null
+                    isExactRange = true
+                    break
+                }
+
+                // When an overlapped match is found, add the “inverted” state to it.
+                else if ( calendar.isDateOverlap( disabledUnit, unitToEnable ) ) {
+                    if ( $.isPlainObject( unitToEnable ) ) {
+                        unitToEnable.inverted = true
+                        matchFound = unitToEnable
+                    }
+                    else if ( $.isArray( unitToEnable ) ) {
+                        matchFound = unitToEnable
+                        if ( !matchFound[3] ) matchFound.push( 'inverted' )
+                    }
+                    else if ( _.isDate( unitToEnable ) ) {
+                        matchFound = [ unitToEnable.getFullYear(), unitToEnable.getMonth(), unitToEnable.getDate(), 'inverted' ]
+                    }
+                    break
+                }
+            }
+
+            // If a match was found, remove a previous duplicate entry.
+            if ( matchFound ) for ( index = 0; index < disabledItemsCount; index += 1 ) {
+                if ( calendar.isDateExact( disabledItems[index], unitToEnable ) ) {
+                    disabledItems[index] = null
+                    break
+                }
+            }
+
+            // In the event that we’re dealing with an exact range of dates,
+            // make sure there are no “inverted” dates because of it.
+            if ( isExactRange ) for ( index = 0; index < disabledItemsCount; index += 1 ) {
+                if ( calendar.isDateOverlap( disabledItems[index], unitToEnable ) ) {
+                    disabledItems[index] = null
+                    break
+                }
+            }
+
+            // If something is still matched, add it into the collection.
+            if ( matchFound ) {
+                disabledItems.push( matchFound )
+            }
+        })
+    }
+
+    // Return the updated collection.
+    return disabledItems.filter(function( val ) { return val != null })
+} //DatePicker.prototype.activate
+
+
+/**
+ * Create a string for the nodes in the picker.
+ */
+DatePicker.prototype.nodes = function( isOpen ) {
+
+    var
+        calendar = this,
+        settings = calendar.settings,
+        calendarItem = calendar.item,
+        nowObject = calendarItem.now,
+        selectedObject = calendarItem.select,
+        highlightedObject = calendarItem.highlight,
+        viewsetObject = calendarItem.view,
+        disabledCollection = calendarItem.disable,
+        minLimitObject = calendarItem.min,
+        maxLimitObject = calendarItem.max,
+
+
+        // Create the calendar table head using a copy of weekday labels collection.
+        // * We do a copy so we don't mutate the original array.
+        tableHead = (function( collection, fullCollection ) {
+
+            // If the first day should be Monday, move Sunday to the end.
+            if ( settings.firstDay ) {
+                collection.push( collection.shift() )
+                fullCollection.push( fullCollection.shift() )
+            }
+
+            // Create and return the table head group.
+            return _.node(
+                'thead',
+                _.node(
+                    'tr',
+                    _.group({
+                        min: 0,
+                        max: DAYS_IN_WEEK - 1,
+                        i: 1,
+                        node: 'th',
+                        item: function( counter ) {
+                            return [
+                                collection[ counter ],
+                                settings.klass.weekdays,
+                                'scope=col title="' + fullCollection[ counter ] + '"'
+                            ]
+                        }
+                    })
+                )
+            ) //endreturn
+        })( ( settings.showWeekdaysFull ? settings.weekdaysFull : settings.weekdaysShort ).slice( 0 ), settings.weekdaysFull.slice( 0 ) ), //tableHead
+
+
+        // Create the nav for next/prev month.
+        createMonthNav = function( next ) {
+
+            // Otherwise, return the created month tag.
+            return _.node(
+                'div',
+                ' ',
+                settings.klass[ 'nav' + ( next ? 'Next' : 'Prev' ) ] + (
+
+                    // If the focused month is outside the range, disabled the button.
+                    ( next && viewsetObject.year >= maxLimitObject.year && viewsetObject.month >= maxLimitObject.month ) ||
+                    ( !next && viewsetObject.year <= minLimitObject.year && viewsetObject.month <= minLimitObject.month ) ?
+                    ' ' + settings.klass.navDisabled : ''
+                ),
+                'data-nav=' + ( next || -1 ) + ' ' +
+                _.ariaAttr({
+                    role: 'button',
+                    controls: calendar.$node[0].id + '_table'
+                }) + ' ' +
+                'title="' + (next ? settings.labelMonthNext : settings.labelMonthPrev ) + '"'
+            ) //endreturn
+        }, //createMonthNav
+
+
+        // Create the month label.
+        createMonthLabel = function() {
+
+            var monthsCollection = settings.showMonthsShort ? settings.monthsShort : settings.monthsFull
+
+            // If there are months to select, add a dropdown menu.
+            if ( settings.selectMonths ) {
+
+                return _.node( 'select',
+                    _.group({
+                        min: 0,
+                        max: 11,
+                        i: 1,
+                        node: 'option',
+                        item: function( loopedMonth ) {
+
+                            return [
+
+                                // The looped month and no classes.
+                                monthsCollection[ loopedMonth ], 0,
+
+                                // Set the value and selected index.
+                                'value=' + loopedMonth +
+                                ( viewsetObject.month == loopedMonth ? ' selected' : '' ) +
+                                (
+                                    (
+                                        ( viewsetObject.year == minLimitObject.year && loopedMonth < minLimitObject.month ) ||
+                                        ( viewsetObject.year == maxLimitObject.year && loopedMonth > maxLimitObject.month )
+                                    ) ?
+                                    ' disabled' : ''
+                                )
+                            ]
+                        }
+                    }),
+                    settings.klass.selectMonth,
+                    ( isOpen ? '' : 'disabled' ) + ' ' +
+                    _.ariaAttr({ controls: calendar.$node[0].id + '_table' }) + ' ' +
+                    'title="' + settings.labelMonthSelect + '"'
+                )
+            }
+
+            // If there's a need for a month selector
+            return _.node( 'div', monthsCollection[ viewsetObject.month ], settings.klass.month )
+        }, //createMonthLabel
+
+
+        // Create the year label.
+        createYearLabel = function() {
+
+            var focusedYear = viewsetObject.year,
+
+            // If years selector is set to a literal "true", set it to 5. Otherwise
+            // divide in half to get half before and half after focused year.
+            numberYears = settings.selectYears === true ? 5 : ~~( settings.selectYears / 2 )
+
+            // If there are years to select, add a dropdown menu.
+            if ( numberYears ) {
+
+                var
+                    minYear = minLimitObject.year,
+                    maxYear = maxLimitObject.year,
+                    lowestYear = focusedYear - numberYears,
+                    highestYear = focusedYear + numberYears
+
+                // If the min year is greater than the lowest year, increase the highest year
+                // by the difference and set the lowest year to the min year.
+                if ( minYear > lowestYear ) {
+                    highestYear += minYear - lowestYear
+                    lowestYear = minYear
+                }
+
+                // If the max year is less than the highest year, decrease the lowest year
+                // by the lower of the two: available and needed years. Then set the
+                // highest year to the max year.
+                if ( maxYear < highestYear ) {
+
+                    var availableYears = lowestYear - minYear,
+                        neededYears = highestYear - maxYear
+
+                    lowestYear -= availableYears > neededYears ? neededYears : availableYears
+                    highestYear = maxYear
+                }
+
+                return _.node( 'select',
+                    _.group({
+                        min: lowestYear,
+                        max: highestYear,
+                        i: 1,
+                        node: 'option',
+                        item: function( loopedYear ) {
+                            return [
+
+                                // The looped year and no classes.
+                                loopedYear, 0,
+
+                                // Set the value and selected index.
+                                'value=' + loopedYear + ( focusedYear == loopedYear ? ' selected' : '' )
+                            ]
+                        }
+                    }),
+                    settings.klass.selectYear,
+                    ( isOpen ? '' : 'disabled' ) + ' ' + _.ariaAttr({ controls: calendar.$node[0].id + '_table' }) + ' ' +
+                    'title="' + settings.labelYearSelect + '"'
+                )
+            }
+
+            // Otherwise just return the year focused
+            return _.node( 'div', focusedYear, settings.klass.year )
+        } //createYearLabel
+
+
+    // Create and return the entire calendar.
+    return _.node(
+        'div',
+        ( settings.selectYears ? createYearLabel() + createMonthLabel() : createMonthLabel() + createYearLabel() ) +
+        createMonthNav() + createMonthNav( 1 ),
+        settings.klass.header
+    ) + _.node(
+        'table',
+        tableHead +
+        _.node(
+            'tbody',
+            _.group({
+                min: 0,
+                max: WEEKS_IN_CALENDAR - 1,
+                i: 1,
+                node: 'tr',
+                item: function( rowCounter ) {
+
+                    // If Monday is the first day and the month starts on Sunday, shift the date back a week.
+                    var shiftDateBy = settings.firstDay && calendar.create([ viewsetObject.year, viewsetObject.month, 1 ]).day === 0 ? -7 : 0
+
+                    return [
+                        _.group({
+                            min: DAYS_IN_WEEK * rowCounter - viewsetObject.day + shiftDateBy + 1, // Add 1 for weekday 0index
+                            max: function() {
+                                return this.min + DAYS_IN_WEEK - 1
+                            },
+                            i: 1,
+                            node: 'td',
+                            item: function( targetDate ) {
+
+                                // Convert the time date from a relative date to a target date.
+                                targetDate = calendar.create([ viewsetObject.year, viewsetObject.month, targetDate + ( settings.firstDay ? 1 : 0 ) ])
+
+                                var isSelected = selectedObject && selectedObject.pick == targetDate.pick,
+                                    isHighlighted = highlightedObject && highlightedObject.pick == targetDate.pick,
+                                    isDisabled = disabledCollection && calendar.disabled( targetDate ) || targetDate.pick < minLimitObject.pick || targetDate.pick > maxLimitObject.pick,
+                                    formattedDate = _.trigger( calendar.formats.toString, calendar, [ settings.format, targetDate ] )
+
+                                return [
+                                    _.node(
+                                        'div',
+                                        targetDate.date,
+                                        (function( klasses ) {
+
+                                            // Add the `infocus` or `outfocus` classes based on month in view.
+                                            klasses.push( viewsetObject.month == targetDate.month ? settings.klass.infocus : settings.klass.outfocus )
+
+                                            // Add the `today` class if needed.
+                                            if ( nowObject.pick == targetDate.pick ) {
+                                                klasses.push( settings.klass.now )
+                                            }
+
+                                            // Add the `selected` class if something's selected and the time matches.
+                                            if ( isSelected ) {
+                                                klasses.push( settings.klass.selected )
+                                            }
+
+                                            // Add the `highlighted` class if something's highlighted and the time matches.
+                                            if ( isHighlighted ) {
+                                                klasses.push( settings.klass.highlighted )
+                                            }
+
+                                            // Add the `disabled` class if something's disabled and the object matches.
+                                            if ( isDisabled ) {
+                                                klasses.push( settings.klass.disabled )
+                                            }
+
+                                            return klasses.join( ' ' )
+                                        })([ settings.klass.day ]),
+                                        'data-pick=' + targetDate.pick + ' ' + _.ariaAttr({
+                                            role: 'gridcell',
+                                            label: formattedDate,
+                                            selected: isSelected && calendar.$node.val() === formattedDate ? true : null,
+                                            activedescendant: isHighlighted ? true : null,
+                                            disabled: isDisabled ? true : null
+                                        })
+                                    ),
+                                    '',
+                                    _.ariaAttr({ role: 'presentation' })
+                                ] //endreturn
+                            }
+                        })
+                    ] //endreturn
+                }
+            })
+        ),
+        settings.klass.table,
+        'id="' + calendar.$node[0].id + '_table' + '" ' + _.ariaAttr({
+            role: 'grid',
+            controls: calendar.$node[0].id,
+            readonly: true
+        })
+    ) +
+
+    // * For Firefox forms to submit, make sure to set the buttons’ `type` attributes as “button”.
+    _.node(
+        'div',
+        _.node( 'button', settings.today, settings.klass.buttonToday,
+            'type=button data-pick=' + nowObject.pick +
+            ( isOpen && !calendar.disabled(nowObject) ? '' : ' disabled' ) + ' ' +
+            _.ariaAttr({ controls: calendar.$node[0].id }) ) +
+        _.node( 'button', settings.clear, settings.klass.buttonClear,
+            'type=button data-clear=1' +
+            ( isOpen ? '' : ' disabled' ) + ' ' +
+            _.ariaAttr({ controls: calendar.$node[0].id }) ) +
+        _.node('button', settings.close, settings.klass.buttonClose,
+            'type=button data-close=true ' +
+            ( isOpen ? '' : ' disabled' ) + ' ' +
+            _.ariaAttr({ controls: calendar.$node[0].id }) ),
+        settings.klass.footer
+    ) //endreturn
+} //DatePicker.prototype.nodes
+
+
+
+
+/**
+ * The date picker defaults.
+ */
+DatePicker.defaults = (function( prefix ) {
+
+    return {
+
+        // The title label to use for the month nav buttons
+        labelMonthNext: 'Next month',
+        labelMonthPrev: 'Previous month',
+
+        // The title label to use for the dropdown selectors
+        labelMonthSelect: 'Select a month',
+        labelYearSelect: 'Select a year',
+
+        // Months and weekdays
+        monthsFull: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
+        monthsShort: [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
+        weekdaysFull: [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ],
+        weekdaysShort: [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ],
+
+        // Today and clear
+        today: 'Today',
+        clear: 'Clear',
+        close: 'Close',
+
+        // Picker close behavior
+        closeOnSelect: true,
+        closeOnClear: true,
+
+        // The format to show on the `input` element
+        format: 'd mmmm, yyyy',
+
+        // Classes
+        klass: {
+
+            table: prefix + 'table',
+
+            header: prefix + 'header',
+
+            navPrev: prefix + 'nav--prev',
+            navNext: prefix + 'nav--next',
+            navDisabled: prefix + 'nav--disabled',
+
+            month: prefix + 'month',
+            year: prefix + 'year',
+
+            selectMonth: prefix + 'select--month',
+            selectYear: prefix + 'select--year',
+
+            weekdays: prefix + 'weekday',
+
+            day: prefix + 'day',
+            disabled: prefix + 'day--disabled',
+            selected: prefix + 'day--selected',
+            highlighted: prefix + 'day--highlighted',
+            now: prefix + 'day--today',
+            infocus: prefix + 'day--infocus',
+            outfocus: prefix + 'day--outfocus',
+
+            footer: prefix + 'footer',
+
+            buttonClear: prefix + 'button--clear',
+            buttonToday: prefix + 'button--today',
+            buttonClose: prefix + 'button--close'
+        }
+    }
+})( Picker.klasses().picker + '__' )
+
+
+
+
+
+/**
+ * Extend the picker to add the date picker.
+ */
+Picker.extend( 'pickadate', DatePicker )
+
+
+}));
+
+
+
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
-
-/******/ });
+/******/ ]);
 //# sourceMappingURL=new-employee.js.map

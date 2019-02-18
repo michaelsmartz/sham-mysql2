@@ -170,7 +170,7 @@ const app = new Vue({
         fetchQualifications: function()
         {
             fetch('./qualifications')
-            .then(res => res.json())
+            .then(res = res.json())
             .then(res => {
                 this.quals = res;
             })
