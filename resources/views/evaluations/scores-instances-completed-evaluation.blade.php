@@ -7,7 +7,7 @@
 @section('modalFooter')
     <div class="modal-footer">
         <div class="form-group">
-            {!! Form::submit('Close',['class'=>'btn bg-gold b-r4 text-white has-spinner']) !!}
+            <button type="button" class="btn btn-primary " onclick="window.location='{{url()->to("instances")}}'">Close</button>
         </div>
     </div>
 @endsection

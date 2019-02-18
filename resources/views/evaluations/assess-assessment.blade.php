@@ -52,14 +52,10 @@
         </div>
         <br>
         <div class="modal-footer">
-            <div class="form-group" data-id="{{$assessor->id}}" data-evaluationid='{{$assessor->evaluation_id}}'>
-                <a href="#light-modal" data-wenk="Score" class="btn bg-gold b-r4 text-white has-spinner" onclick="showScoreModal($(this).closest('div').data('id'), $(this).closest('div').data('evaluationid'), event)">
-                    Save
-                </a>
+            <div class="form-group">
+                {!! Form::submit('Save',['class'=>'btn bg-gold b-r4 text-white has-spinner']) !!}
                 <button type="button" class="btn btn-default bg-grey b-r4" onclick="history.back()">Cancel</button>
             </div>
-            @component('partials.index', ['routeName'=> ''])
-            @endcomponent
         </div>
         {!! Form::close() !!}
     </div>

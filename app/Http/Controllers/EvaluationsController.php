@@ -22,6 +22,7 @@ use Exception;
 use App\SystemSubModule;
 use App\Support\Helper;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\View;
 use Storage;
 
 class EvaluationsController extends CustomController
@@ -671,8 +672,7 @@ class EvaluationsController extends CustomController
                     ->update(['evaluation_status_id'=>EvaluationStatusType::CLOSED]);
             }
         }
-
-        return Redirect::to('instances');
+        return $this->scoreCompletedEvaluation($Id,$EvaluationId);
     }
 
     public function scoreCompletedEvaluation($Id,$evaluationid)
@@ -756,7 +756,7 @@ class EvaluationsController extends CustomController
             $mandatoryPassQuestionsComment = $assessmentScore;
         }
 
-        $view = view($this->baseViewPath .'.scores-instances-completed-evaluation')
+        return $view = view($this->baseViewPath .'.scores-instances-completed-evaluation')
             ->with('Summary',$summary)
             ->with('Comments',$comments)
             ->with('AssessorName',$assessorName)
@@ -764,14 +764,7 @@ class EvaluationsController extends CustomController
             ->with('HeaderDetails',$hearderdetails)
             ->with('Evaluationid',$evaluationid)
             ->with('MandatoryQuestionComment',$mandatoryPassQuestionsComment)
-            ->with('AssessmentDetails',$assessmentdetails)->renderSections();
-
-        return response()->json([
-            'title' => $view['modalTitle'],
-            'content' => $view['modalContent'],
-            'footer' => $view['modalFooter'],
-            'url' => $view['postModalUrl']
-        ]);
+            ->with('AssessmentDetails',$assessmentdetails);
     }
 
     public function score($Id,$evaluationid)
