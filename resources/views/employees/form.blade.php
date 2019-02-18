@@ -109,19 +109,19 @@
                     <input type="hidden" name="workPhone[telephone_number_type_id]" value="3">
                     <div class="col-sm-3">
                         <span class="field">
-                            {!! Form::text('mobilePhone[tel_number]', old('mobilePhone[tel_number]', isset($employee->mobilePhone->tel_number) ? $employee->mobilePhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'cell', 'placeholder'=>'Mobile Phone', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$", 'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)" ]) !!}
+                            {!! Form::text('mobilePhone[tel_number]', old('mobilePhone[tel_number]', isset($employee->mobilePhone->tel_number) ? $employee->mobilePhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'cell', 'placeholder'=>'Mobile Phone', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$", 'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)", 'data-parsley-trigger'=>'focusout' ]) !!}
                             <label for="mobilePhone[tel_number]">Mobile Phone</label>
                         </span>
                     </div>
                     <div class="col-sm-3">
                         <span class="field">
-                            {!! Form::text('workPhone[tel_number]', old('workPhone[tel_number]', isset($employee->workPhone->tel_number) ? $employee->workPhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'emergency', 'placeholder'=>'Emergency Phone', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$", 'data-filter'=>'(\d\+\-\.\(\)\/\s)' ]) !!}
+                            {!! Form::text('workPhone[tel_number]', old('workPhone[tel_number]', isset($employee->workPhone->tel_number) ? $employee->workPhone->tel_number : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'id'=>'emergency', 'placeholder'=>'Emergency Phone', 'required', 'title'=>'Required', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$", 'data-filter'=>'(\d\+\-\.\(\)\/\s)', 'data-parsley-trigger'=>'focusout' ]) !!}
                             <label for="workPhone[tel_number]">Emergency Phone</label>
                         </span>
                     </div>
                     <div class="col-sm-4">
                         <span class="field">
-                            {!! Form::text('homePhone[tel_number]', old('homePhone[tel_number]', isset($employee->homePhone->tel_number) ? $employee->homePhone->tel_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'id'=>'phone', 'placeholder'=>'Home Phone']) !!}
+                            {!! Form::text('homePhone[tel_number]', old('homePhone[tel_number]', isset($employee->homePhone->tel_number) ? $employee->homePhone->tel_number : null), ['class'=>'form-control', 'autocomplete'=>'off', 'id'=>'phone', 'placeholder'=>'Home Phone', 'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$", 'data-filter'=>'(\d\+\-\.\(\)\/\s)', 'data-parsley-trigger'=>'focusout']) !!}
                             <label for="homePhone[tel_number]">Home Phone</label>
                         </span>
                     </div>

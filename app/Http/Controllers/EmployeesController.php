@@ -335,6 +335,11 @@ class EmployeesController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
 
+    public function show($id)
+    {
+
+    }
+
     /**
      * Update the specified employee in the storage.
      *
@@ -378,9 +383,13 @@ class EmployeesController extends CustomController
 
     public function qualifications(Request $request)
     {
-        $id = intval(Route::current()->parameter('employee'));
-        $result = Qualification::where('employee_id', $id)->get();
 
+        $id = intval(Route::current()->parameter('employee'));
+
+        $result = [];
+        if ($id != 0) {
+            $result = Qualification::where('employee_id', $id)->get();
+        }
         return Response()->json($result);
     }
 
@@ -413,35 +422,48 @@ class EmployeesController extends CustomController
         
         return Response()->json($result); 
     }
+
     public function checkId(Request $request) 
     {
-        $result = true;
-        $id = intval(Route::current()->parameter('employee'));
+        try {
+            $result = true;
+            $id = intval(Route::current()->parameter('employee'));
 
-        $firstName = trim(request('firstName', false));
-        $surname = trim(request('surname', false));
-        $idNumber = trim(request('idNumber', false));
+            //return Response()->json($request);
+            $firstName = trim(request('firstName', false));
+            $surname = trim(request('surname', false));
+            $idNumber = trim(request('idNumber', false));
 
-        $query = Employee::select(['id','first_name','surname']);
-        // From Laravel 5.4 you can pass the same condition value as a parameter
-        // https://laraveldaily.com/less-know-way-conditional-queries/
-        $query->when(trim(request('idNumber', false)) != false, function ($q, $idNo) use($idNumber) { 
-            return $q->where('id_number', $idNumber);
-        });
+            $query = Employee::select(['id','first_name','surname']);
+            // From Laravel 5.4 you can pass the same condition value as a parameter
+            // https://laraveldaily.com/less-know-way-conditional-queries/
+            $query->when(trim(request('idNumber', false)) != false, function ($q, $idNo) use($idNumber) { 
+                return $q->where('id_number', $idNumber);
+            });
 
-        if ($id != 0) {
-            $query = $query->where('id', '!=', $id);
+            if ($id != 0) {
+                $query = $query->where('id', '!=', $id);
+            }
+
+            $array = $query->get();
+
+            // we found a record while in create mode( id = 0 )
+            if ($id == 0 && $array->count() > 0) {
+                return Response()->json(!$result);
+            }
+
+            $filtered = $array->filter(function ($employee, $key) use($firstName,$surname) {
+                return ($employee->first_name != $firstName && $employee->surname != $surname);
+            });
+            //dump($query->toSql());
+            //dump($query->getBindings());
+
+            $result = $filtered->count() == 0;
+            return Response()->json($result);
+
+        }  catch (Exception $exception) {
+
         }
-
-        $array = $query->get();
-        $filtered = $array->filter(function ($employee, $key) use($firstName,$surname) {
-            return ($employee->first_name != $firstName && $employee->surname != $surname);
-        });
-        //dump($query->toSql());
-        //dump($query->getBindings());
-
-        $result = $filtered->count() == 0;
-        return Response()->json($result); 
     }
     public function checkEmployeeNo(Request $request)
     {

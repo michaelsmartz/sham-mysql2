@@ -90,6 +90,7 @@
         <noscript id="deferred-styles"></noscript>
 
         <script>
+            
             var loadDeferredStyles = function() {
                 var addStylesNode = document.getElementById("deferred-styles");
                 var replacement = document.createElement("div");
@@ -241,6 +242,8 @@
             });
 
         </script>
+
+        @routes
 
         <!-- Customised pickadate picker-->
         <style>

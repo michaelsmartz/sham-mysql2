@@ -71,17 +71,22 @@ Auth::routes();
         #endregion
 
         #region Central HR
-            Route::resource('employees', 'EmployeesController');
+            // "duplicate" routes to work with both create and edit mode
+            Route::get('employees/check-id', 'EmployeesController@checkId');
+            Route::get('employees/{employee}/check-id', 'EmployeesController@checkId');    
+            Route::get('employees/check-name', 'EmployeesController@checkEmployee');
+            Route::get('employees/{employee}/check-name', 'EmployeesController@checkEmployee');
+            Route::get('employees/check-passport', 'EmployeesController@checkPassport');
+            Route::get('employees/{employee}/check-passport', 'EmployeesController@checkPassport');
+            Route::get('employees/check-employeeno', 'EmployeesController@checkEmployeeNo');
+            Route::get('employees/{employee}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
 
-            Route::get('employees/{employee?}/qualifications', 'EmployeesController@qualifications')->name('get-qualifications');
-            Route::get('employees/{employee?}/check-name', 'EmployeesController@checkEmployee')->name('check-name');
-            Route::get('employees/{employee?}/check-id', 'EmployeesController@checkId')->name('check-id');
-            Route::get('employees/{employee?}/check-passport', 'EmployeesController@checkPassport')->name('check-passport');
-            Route::get('employees/{employee?}/check-employeeno', 'EmployeesController@checkEmployeeNo')->name('check-employeeno');
             Route::any('employees/{employee?}/departmentid', 'EmployeesController@getEmployeeDepartmentId')->name('get-departmentid');
+            Route::get('employees/{employee?}/qualifications', 'EmployeesController@qualifications')->name('get.qualifications');
             Route::any('employees/{employee?}/edit/employee-history', 'EmployeesController@editEmployeeHistory')->name('employee-history');
             Route::any('employees/{employee?}/update/employee-history', 'EmployeesController@updateEmployeeHistory')->name('employees-history.update');
-
+            
+            Route::resource('employees', 'EmployeesController');
 
             Route::resource('announcements', 'AnnouncementsController');
             Route::fileResource('laws');
