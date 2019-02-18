@@ -2,10 +2,10 @@
 @section('title', 'Add Candidate')
 
 @section('content')
-    <div class="box box-primary">
-        <div class="box-body">
-            <form method="POST" id="candidates" action="{{ route('candidates.store') }}" accept-charset="UTF-8" name="create_candidates_form" class="form-horizontal" enctype="multipart/form-data">
-                {{ csrf_field() }}
+    <form method="POST" id="candidates" action="{{ route('candidates.store') }}" accept-charset="UTF-8" name="create_candidates_form" class="form-horizontal" enctype="multipart/form-data">
+        {{ csrf_field() }}
+        <div class="box box-primary">
+            <div class="box-body">
                 <div class="row">
                     <div class="col-sm-12">
                         @include('candidates.form', [
@@ -20,7 +20,7 @@
                         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                     </a>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 @endsection

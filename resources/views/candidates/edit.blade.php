@@ -1,7 +1,7 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Edit Candidates')
+@section('title', 'Edit Candidate')
 
-@section('modalTitle', 'Edit Candidates')
+@section('modalTitle', 'Edit Candidate')
 @section('modalFooter')
     <input class="btn btn-primary pull-right" type="submit" value="Submit">
     <a href="{{ route('candidates.index') }}" class="btn btn-default pull-right" title="Show all recruitment requests">

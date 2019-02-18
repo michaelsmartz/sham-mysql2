@@ -2,45 +2,43 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="row">
-            <div class="form-group">
-                <div class="col-xs-2">
-                    <div class="avatar-upload">
-                        <div class="avatar-edit">
-                            <input type='file' name="profile_pic" id="imageUpload" accept=".png, .jpg, .jpeg" />
-                            <label for="imageUpload" title="change profile image"></label>
-                        </div>
-                        <div class="avatar-preview">
-                            <div id="imagePreview" style="background-image: url({{$candidate->picture}});">
-                            </div>
+            <div class="form-group col-xs-2">
+                <div class="avatar-upload">
+                    <div class="avatar-edit">
+                        <input type='file' name="profile_pic" id="imageUpload" accept=".png, .jpg, .jpeg" />
+                        <label for="imageUpload" title="change profile image"></label>
+                    </div>
+                    <div class="avatar-preview">
+                        <div id="imagePreview" style="background-image: url({{$candidate->picture}});">
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-sm-2">
-                    <span class="field">
-                        <label for="birth_date">Date of birth</label>
-                        {!! Form::text('birth_date', old('birth_date', isset($candidate->birth_date) ? $candidate->birth_date : null), ['class'=>'form-control fix-case field-required datepicker', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
-                    </span>
-                </div>
+            <div class="form-group col-sm-2">
+                <span class="field">
+                    <label for="birth_date">Date of birth</label>
+                    {!! Form::text('birth_date', old('birth_date', isset($candidate->birth_date) ? $candidate->birth_date : null), ['class'=>'form-control fix-case field-required datepicker', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
+                </span>
+            </div>
 
-                <div class="col-sm-2">
-                    <span class="field">
-                    <label for="gender_id">Gender</label>
-                    {!! Form::select('gender_id', $genders, old('gender_id', isset($candidate->gender_id) ? $candidate->gender_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Gender..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
-                    </span>
-                </div>
-                <div class="col-sm-3">
-                    <span class="field">
-                    <label for="title_id">Title</label>
-                    {!! Form::select('title_id', $titles, old('title_id', isset($candidate->title_id) ? $candidate->title_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Title..', 'data-field-name'=>'Title', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
-                    </span>
-                </div>
-                <div class="col-sm-3">
-                    <span class="field">
-                        <label for="marital_status_id">Marital Status</label>
-                        {!! Form::select('marital_status_id', $maritalstatuses, old('marital_status_id', isset($candidate->marital_status_id) ? $candidate->marital_status_id : null), ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Marital Status..']) !!}
-                    </span>
-                </div>
+            <div class="form-group col-sm-2">
+                <span class="field">
+                <label for="gender_id">Gender</label>
+                {!! Form::select('gender_id', $genders, old('gender_id', isset($candidate->gender_id) ? $candidate->gender_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Gender..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
+                </span>
+            </div>
+            <div class="form-group col-sm-3">
+                <span class="field">
+                <label for="title_id">Title</label>
+                {!! Form::select('title_id', $titles, old('title_id', isset($candidate->title_id) ? $candidate->title_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Title..', 'data-field-name'=>'Title', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
+                </span>
+            </div>
+            <div class="form-group col-sm-3">
+                <span class="field">
+                    <label for="marital_status_id">Marital Status</label>
+                    {!! Form::select('marital_status_id', $maritalstatuses, old('marital_status_id', isset($candidate->marital_status_id) ? $candidate->marital_status_id : null), ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Marital Status..']) !!}
+                </span>
             </div>
 
 

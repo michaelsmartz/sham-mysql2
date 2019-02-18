@@ -9,7 +9,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         @include('recruitment_requests.form', [
-                            'requests' => null,
+                            'request' => $request,
                         ])
                     </div>
                 </div>
