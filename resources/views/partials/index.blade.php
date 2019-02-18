@@ -130,6 +130,12 @@
                     loadUrl('{{url()->current()}}/'+id+'/matrix');
                 }
             };
+
+            window.showScoreModal = function (id,evaluationid,event)
+            {
+                loadUrl('{{url()->to('evaluations')}}/'+id+'/score/'+evaluationid+'/show-score-modal');
+            }
+
             window.generateResult = function(id, event) {
                 event.preventDefault();
                 if (id) {

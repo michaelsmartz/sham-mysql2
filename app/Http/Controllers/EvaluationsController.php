@@ -673,12 +673,109 @@ class EvaluationsController extends CustomController
         }
 
         return Redirect::to('instances');
+    }
 
+    public function scoreCompletedEvaluation($Id,$evaluationid)
+    {
+        $evaluations = $this->contextObj::where('id',$evaluationid)->first();
+
+        $summary = $evaluations->assessors->where('id',$Id)->first()->pivot->summary.PHP_EOL;
+        $comments = $evaluations->assessors->where('id',$Id)->first()->pivot->comments.PHP_EOL;
+        $assessorName = $evaluations->assessors->where('id',$Id)->first()->full_name;
+
+        $assessor_employee_id = $evaluations->assessors->where('id',$Id)->first()->employee_id;
+        $assessmentTotalScores = $this->getAssessmentTotalScore($evaluations->assessment_id);
+        $workingscore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)->where('is_active',1)
+            ->sum('pivot.points');
+
+        $overallscore =  ($workingscore/$assessmentTotalScores)*100;
+        $assessmentScore = round($overallscore,0);
+
+        $hearderdetails = array();
+        $hearderdetails['user'] = $evaluations->useremployee->full_name;
+        $hearderdetails['department'] = $evaluations->department->description;
+        $hearderdetails['feedbackdate'] = $evaluations->feedback_date;
+        $hearderdetails['referenceno'] = $evaluations->reference_no;
+        $hearderdetails['referencesource'] = $evaluations->source;
+        $hearderdetails['assessment'] = $evaluations->assessment->name;
+
+        $assessmentdetails = array();
+        $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
+            ->find($evaluations->assessment_id);
+
+        $totalThreshhold = 0;
+        foreach($assessment->assessmentAssessmentCategory as $assessmetCategory)
+        {
+            //threshold
+            $categoryinfodetails = array();
+            $categoryinfodetails["Id"]= $assessmetCategory->id;
+            $categoryinfodetails["Name"]= $assessmetCategory->name;
+            $categoryinfodetails["Threshold"]= $assessmetCategory->threshold;
+
+            $cateogoryscore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)
+                ->where('assessment_category_id',$assessmetCategory->id)
+                ->where('is_active',1)
+                ->sum('pivot.points');
+
+            $categoryinfodetails["TotalScores"]= $cateogoryscore;
+            $assessmentdetails[]  = $categoryinfodetails;
+        }
+
+        // Working
+        $mandatoryPassQuestionsids = array();
+        $mandatoryPassQuestionsScore = 0;
+        foreach($assessment->assessmentAssessmentCategory as $assessmentcategory)
+        {
+            foreach($assessmentcategory->assessmentCategoryCategoryQuestions as $categoryQuestion)
+            {
+                if($categoryQuestion->is_zeromark){
+                    $mandatoryPassQuestionsids[] = $categoryQuestion->id;
+                    $mandatoryPassQuestionsScore = $mandatoryPassQuestionsScore + $categoryQuestion->points;
+                }
+            }
+        }
+
+        $mandatoryPassQuestionsactualScore = $evaluations->evaluationResults->where('assessor_employee_id',$assessor_employee_id)
+            ->where('is_active',1)
+            ->whereIn('category_question_id',$mandatoryPassQuestionsids)
+            ->sum('pivot.points');
+
+        $mandatoryPassQuestionsComment = 0;
+        if(count($mandatoryPassQuestionsids)> 0)
+        {
+            if($mandatoryPassQuestionsactualScore == $mandatoryPassQuestionsScore){
+                $mandatoryPassQuestionsComment = $assessmentScore;
+            }
+            else
+            {
+                $mandatoryPassQuestionsComment = 0;
+            }
+        }
+        else
+        {
+            $mandatoryPassQuestionsComment = $assessmentScore;
+        }
+
+        $view = view($this->baseViewPath .'.scores-instances-completed-evaluation')
+            ->with('Summary',$summary)
+            ->with('Comments',$comments)
+            ->with('AssessorName',$assessorName)
+            ->with('AssessmentScore',$assessmentScore)
+            ->with('HeaderDetails',$hearderdetails)
+            ->with('Evaluationid',$evaluationid)
+            ->with('MandatoryQuestionComment',$mandatoryPassQuestionsComment)
+            ->with('AssessmentDetails',$assessmentdetails)->renderSections();
+
+        return response()->json([
+            'title' => $view['modalTitle'],
+            'content' => $view['modalContent'],
+            'footer' => $view['modalFooter'],
+            'url' => $view['postModalUrl']
+        ]);
     }
 
     public function score($Id,$evaluationid)
     {
-
         $evaluations = $this->contextObj::where('id',$evaluationid)->first();
 
         $summary = $evaluations->assessors->where('id',$Id)->first()->pivot->summary.PHP_EOL;
