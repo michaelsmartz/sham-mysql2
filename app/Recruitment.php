@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class RecruitmentRequest extends Model
+class Recruitment extends Model
 {
     
     use SoftDeletes;
@@ -30,15 +30,19 @@ class RecruitmentRequest extends Model
      * @var array
      */
     protected $fillable = [
-                  'job_title',
-                  'position',
-                  'description',
-                  'year_experience',
-                  'field_of_study',
-                  'start_date',
-                  'min_salary',
-                  'max_salary'
-              ];
+        'department_id',
+        'employee_status_id',
+        'qualification_id',
+        'job_title',
+        'field_of_study',
+        'description',
+        'year_experience',
+        'start_date',
+        'end_date',
+        'min_salary',
+        'max_salary',
+        'recruitment_type_id'
+    ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -48,7 +52,7 @@ class RecruitmentRequest extends Model
     protected $dates = [
                'deleted_at'
            ];
-    
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -90,9 +94,29 @@ class RecruitmentRequest extends Model
         return date('j/n/Y g:i A', strtotime($value));
     }
 
-    public function interviews()
+    public function qualification()
     {
-        return $this->hasMany('App\Interviews','recruitment_id','id');
+        return $this->belongsTo('App\QualificationRecruitment','qualification_id','id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo('App\Department','department_id','id');
+    }
+
+    public function employeeStatus()
+    {
+        return $this->belongsTo('App\EmployeeStatus','employee_status_id','id');
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class);
+    }
+
+    public function interviewTypes()
+    {
+        return $this->belongsToMany(Interview::class);
     }
 
 }

@@ -118,7 +118,6 @@ class CandidatesController extends CustomController
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-            dd($exception->getMessage());
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 

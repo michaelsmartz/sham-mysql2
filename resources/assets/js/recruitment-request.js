@@ -1,6 +1,8 @@
 window.Vue = require('vue/dist/vue.common.js');
 window.Vue = require('vue-tables-2/dist/vue-tables-2.min.js');
 
+require('sumoselect');
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {ClientTable, Event} from 'vue-tables-2';
@@ -9,212 +11,216 @@ Vue.use(ClientTable);
 Vue.use(Event);
 Vue.use(Vuex);
 
-const table = new Vue({
-    el: '#recruitment-requests-table',
-    data:{
-        columns: [
-            'jobTitle',
-            'shortDescription',
-            'department',
-            'employmentType',
-            'actions'
-        ],
-        data: getData(),
-        options: {
-            filter: false,
-            filterByColumn: false,
-            perPage:2,
-            texts: {
-                filter: "Filter:",
-                filterBy: 'Filter by {column}',
-                count:' '
+
+if(document.getElementById("recruitment-requests-table")) {
+    const table = new Vue({
+        el: '#recruitment-requests-table',
+        data: {
+            columns: [
+                'jobTitle',
+                'shortDescription',
+                'department',
+                'employmentType',
+                'actions'
+            ],
+            data: getData(),
+            options: {
+                filter: false,
+                filterByColumn: false,
+                perPage: 2,
+                texts: {
+                    filter: "Filter:",
+                    filterBy: 'Filter by {column}',
+                    count: ' '
+                },
+                pagination: {chunk: 10},
+                headings: {
+                    jobTitle: 'Job Title',
+                    shortDescription: 'Short Description',
+                    description: 'Description',
+                    department: 'Department',
+                    employmentType: 'Employment Type',
+                    qualification: 'Qualification',
+                    experience: 'Experience',
+                    recruitment: 'Recruitment',
+                },
+                // sortable: [
+                //     'jobTitle',
+                //     'shortDescription',
+                //     'description',
+                //     'department',
+                //     'employmentType',
+                //     'qualification',
+                //     'experience',
+                //     'recruitment',
+                // ],
+                // filterable: [
+                //     'jobTitle',
+                //     'shortDescription',
+                //     'description',
+                //     'department',
+                //     'employmentType',
+                //     'qualification',
+                //     'experience',
+                //     'recruitment'
+                // ],
+
+                sortable: [],
+                filterable: false,
             },
-            pagination: { chunk:10 },
-            headings: {
-                jobTitle: 'Job Title',
-                shortDescription: 'Short Description',
-                description: 'Description',
-                department: 'Department',
-                employmentType: 'Employment Type',
-                qualification: 'Qualification',
-                experience: 'Experience',
-                recruitment: 'Recruitment',
+        },
+        methods: {
+            pipelines: function (id) {
+                window.location.href = '/recruitment';
             },
-            // sortable: [
-            //     'jobTitle',
-            //     'shortDescription',
-            //     'description',
-            //     'department',
-            //     'employmentType',
-            //     'qualification',
-            //     'experience',
-            //     'recruitment',
-            // ],
-            // filterable: [
-            //     'jobTitle',
-            //     'shortDescription',
-            //     'description',
-            //     'department',
-            //     'employmentType',
-            //     'qualification',
-            //     'experience',
-            //     'recruitment'
-            // ],
-
-            sortable: [],
-            filterable: false,
-        },
-    },
-    methods:{
-        pipelines: function(id){
-            window.location.href = '/recruitment';
-        },
-        delete: function (id) {
-            alert(id);
-        },
-        edit: function (id) {
-            window.location.href = '/recruitment';
+            delete: function (id) {
+                alert(id);
+            },
+            edit: function (id) {
+                window.location.href = '/recruitment';
+            }
         }
-    }
-});
+    });
+}
 
-const rr = new Vue({
-    el: '#recruitment-requests',
-    data: {
-        interview: {
-            interview_types: ['Phone','Skype','Panel','Assessment'],
-            interviewers: '',
-            location: '',
-            schedule_date: '',
-            schedule_comment: '',
+if(document.getElementById("recruitment-requests")) {
+    const rr = new Vue({
+        el: '#recruitment-requests',
+        data: {
+            interview: {
+                interview_types: ['Phone', 'Skype', 'Panel', 'Assessment'],
+                interviewers: '',
+                location: '',
+                schedule_date: '',
+                schedule_comment: '',
+            },
+            interviews: [],
+            errors: [],
+            jobTitle: null,
+            description: null,
+            shortDescription: null,
+            yearExperience: null,
+            minSalary: null,
+            maxSalary: null,
+            showSalary: false,
+            showEndDate: false,
+            internalRecruitment: false,
+            externalRecruitment: false,
+            departments: [
+                "Finance",
+                "Development",
+                "Testing"
+            ],
+            employmentTypes: [
+                "Full-time",
+                "Part-time",
+                "Contract",
+                "Temporary",
+                "Other",
+            ],
+            qualifications: [
+                "Higher School Certificate",
+                "Certificate",
+                "Diploma",
+                "Degree",
+                "Masters",
+                "PhD",
+            ],
+            skills: [
+                "skill1",
+                "skill2",
+                "skill3",
+            ],
+            selectedDepartment: null,
+            selectedEmploymentType: null,
+            selectedInterviewType: null,
+            selectedQualification: null,
+            selectedSkill: null,
         },
-        interviews: [],
-        errors: [],
-        jobTitle: null,
-        description: null,
-        shortDescription: null,
-        yearExperience: null,
-        minSalary: null,
-        maxSalary: null,
-        showSalary: false,
-        showEndDate: false,
-        internalRecruitment: false,
-        externalRecruitment: false,
-        departments: [
-             "Finance",
-             "Development",
-             "Testing"
-        ],
-        employmentTypes:[
-             "Full-time",
-             "Part-time",
-             "Contract",
-             "Temporary",
-             "Other",
-        ],
-        qualifications:[
-            "Higher School Certificate",
-            "Certificate",
-            "Diploma",
-            "Degree",
-            "Masters",
-            "PhD",
-        ],
-        skills:[
-          "skill1",
-          "skill2",
-          "skill3",
-        ],
-        selectedDepartment: null,
-        selectedEmploymentType: null,
-        selectedInterviewType: null,
-        selectedQualification: null,
-        selectedSkill: null,
-    },
-    methods:{
-        checkForm: function (e) {
-            if (this.jobTitle && this.description && this.shortDescription) {
-                return true;
-            }
+        methods: {
+            checkForm: function (e) {
+                if (this.jobTitle && this.description && this.shortDescription) {
+                    return true;
+                }
 
-            this.errors = [];
+                this.errors = [];
 
-            if (!this.jobTitle) {
-                this.errors.push('Job title is required.');
-            }
-            if (!this.shortDescription) {
-                this.errors.push('Short description is required.');
-            }
-            if (!this.description) {
-                this.errors.push('Full job description is required.');
-            }
+                if (!this.jobTitle) {
+                    this.errors.push('Job title is required.');
+                }
+                if (!this.shortDescription) {
+                    this.errors.push('Short description is required.');
+                }
+                if (!this.description) {
+                    this.errors.push('Full job description is required.');
+                }
 
-            if(this.showSalary && !this.minSalary){
-                this.errors.push('Minimum salary is required.');
-            }
+                if (this.showSalary && !this.minSalary) {
+                    this.errors.push('Minimum salary is required.');
+                }
 
-            if(this.showSalary && !this.maxSalary){
-                this.errors.push('Maximum salary is required.');
-            }
+                if (this.showSalary && !this.maxSalary) {
+                    this.errors.push('Maximum salary is required.');
+                }
 
-            if(!this.selectedDepartment){
-                this.errors.push('Department is required.');
-            }
+                if (!this.selectedDepartment) {
+                    this.errors.push('Department is required.');
+                }
 
-            if(!this.selectedEmploymentType){
-                this.errors.push('Employment Type is required.');
-            }
+                if (!this.selectedEmploymentType) {
+                    this.errors.push('Employment Type is required.');
+                }
 
-            if(!this.selectedQualification){
-                this.errors.push('Qualification is required.');
-            }
+                if (!this.selectedQualification) {
+                    this.errors.push('Qualification is required.');
+                }
 
-            if(!this.yearExperience) {
-                this.errors.push('Years of experience is required.');
-            }
+                if (!this.yearExperience) {
+                    this.errors.push('Years of experience is required.');
+                }
 
-            if(!this.skills){
-                this.errors.push('Skill is required.');
-            }
+                if (!this.skills) {
+                    this.errors.push('Skill is required.');
+                }
 
-            e.preventDefault();
-        },
-        selectedDepartmentFunc: function() {
-            //console.log(this.selectedDepartment)
-        },
-        selectedEmploymentTypeFunc: function() {
-            //console.log(this.selectedEmploymentType);
-            if(this.selectedEmploymentType === "Temporary"){
-                this.showEndDate = true;
-            }else{
-                this.showEndDate = false;
+                e.preventDefault();
+            },
+            selectedDepartmentFunc: function () {
+                //console.log(this.selectedDepartment)
+            },
+            selectedEmploymentTypeFunc: function () {
+                //console.log(this.selectedEmploymentType);
+                if (this.selectedEmploymentType === "Temporary") {
+                    this.showEndDate = true;
+                } else {
+                    this.showEndDate = false;
+                }
+            },
+            submitForm: function (event) {
+                event.preventDefault();
             }
         },
-        addNewInterview: function () {
-            this.interviews.push(Vue.util.extend({}, this.interview));
-            //ensure height is enough as accordion sets a height as inline style
-            $('.accordion--active').css("height", "");
-        },
-        removeInterview: function (index) {
-            Vue.delete(this.interviews, index);
-        },
-        submitForm: function (event) {
-            event.preventDefault();
-        },
-        fetchQualifications: function()
-        {
-            fetch('./qualifications')
-                .then(res => res.json())
-                .then(res => {
-                    this.interviews = res;
-                })
+        mounted: function () {
+            +function ($, el) {
+                $.fn.mirror = function (selector) {
+                    return this.each(function () {
+                        var $this = $(this);
+                        var $selector = $(selector);
+                        $this.bind('keyup change', function () {
+                            $selector.val($this.val());
+                        });
+                    });
+                };
+
+                $(':input[data-mirror]').each(function () {
+                    $(this).mirror($(this).data('mirror'));
+                });
+
+                $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
+            }(jQuery, this);
         }
-    },
-    created: function()
-    {
-        this.fetchQualifications();
-    }
-});
+    });
+}
 
 function getData() {
     return [{

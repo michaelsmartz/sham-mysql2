@@ -61,6 +61,10 @@
             window.showResponses = function(id, event) {
                 window.location = '{{url()->to("module_assessments")}}/' + id + '/responses';
             };
+
+            window.pipelines =  function (id, event) {
+                window.location.href = '{{url()->to("recruitment")}}/'+ id;
+            },
             
             window.cleanUrlHash = function(){
                 window.history.pushState(null, "", window.location.href.replace("#light-modal", ""));

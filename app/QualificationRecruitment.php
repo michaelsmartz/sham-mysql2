@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class RecruitmentQualification extends Model
+class QualificationRecruitment extends Model
 {
     
     use SoftDeletes;
@@ -17,7 +17,7 @@ class RecruitmentQualification extends Model
      *
      * @var string
      */
-    protected $table = 'recruitment_qualifications';
+    protected $table = 'qualifications_recruitment';
 
     /**
     * The database primary key value.

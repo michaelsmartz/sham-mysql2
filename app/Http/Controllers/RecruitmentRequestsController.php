@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Department;
+use App\EmployeeStatus;
 use App\Enums\RecruitmentType;
 use App\Interview;
 use App\Position;
-use App\RecruitmentQualification;
-use App\RecruitmentRequest;
+use App\QualificationRecruitment;
+use App\Recruitment;
 use App\Skill;
 use App\Support\Helper;
 use App\SystemSubModule;
@@ -26,7 +27,7 @@ class RecruitmentRequestsController extends CustomController
      */
     public function __construct()
     {
-        $this->contextObj = new RecruitmentRequest();
+        $this->contextObj = new Recruitment();
         $this->baseViewPath = 'recruitment_requests';
         $this->baseFlash = 'Recruitment requests details ';
     }
@@ -52,8 +53,8 @@ class RecruitmentRequestsController extends CustomController
     public function create(){
         $skills = Skill::pluck('description','id')->all();
         $departments = Department::pluck('description','id')->all();
-        $positions = Position::pluck('description','id')->all();
-        $qualifications = RecruitmentQualification::pluck('description','id')->all();
+        $positions = EmployeeStatus::pluck('description','id')->all();
+        $qualifications = QualificationRecruitment::pluck('description','id')->all();
 
         $recruitmentTypes = RecruitmentType::ddList();
 
@@ -90,22 +91,34 @@ class RecruitmentRequestsController extends CustomController
 
     public function edit(Request $request)
     {
+
+        $data = $skills = $departments = $positions = $qualifications = $interviewTypes = $recruitmentTypes = null;
+
+        $id = Route::current()->parameter('recruitment_request');
+
         if(!empty($id)) {
             // make 2 less queries
             $this->contextObj->with = [];
 
             $data = $this->contextObj->findData($id);
 
-            $interviews = $data->interviews;
+            $data->load(['skills','interviewTypes']);
 
             $skills = Skill::pluck('description','id')->all();
             $departments = Department::pluck('description','id')->all();
-            $positions = Position::pluck('description','id')->all();
-            $qualifications = RecruitmentQualification::pluck('description','id')->all();
+            $positions = EmployeeStatus::pluck('description','id')->all();
+            $qualifications = QualificationRecruitment::pluck('description','id')->all();
+            $recruitmentTypes = RecruitmentType::ddList();
+            $interviewTypes = Interview::pluck('description','id')->all();
         }
 
+        $recruitmentSkills = $data->skills->pluck('id');
+        $recruitmentInterviewTypes = $data->interviewTypes->pluck('id');
+
         return view($this->baseViewPath .'.edit',
-            compact('data', 'departments', 'positions', 'qualifications', 'skills', 'interviews'));
+            compact('data', 'departments', 'positions', 'qualifications',
+                'skills', 'interviewTypes', 'recruitmentTypes',
+                'recruitmentInterviewTypes','recruitmentSkills'));
     }
 
     /**
@@ -121,7 +134,7 @@ class RecruitmentRequestsController extends CustomController
         try {
             $this->validator($request);
 
-            $this->saveRecruitmentRequest($request);
+            $this->saveRecruitmentRequest($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -155,22 +168,14 @@ class RecruitmentRequestsController extends CustomController
     }
 
     protected function saveRecruitmentRequest($request, $id = null) {
-
-        dd($request);
-
         $otherFields = [
             '_token',
             '_method',
-            'attachment',
             'redirectsTo',
-            'date_available_submit',
-            'birth_date_submit',
+            'start_date_submit',
+            'end_date_submit',
             'skills',
-            'disabilities',
-            'qualifications',
-            'previous_employments',
-            'picture',
-            'profile_pic'
+            'interview_types'
         ];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
@@ -182,17 +187,11 @@ class RecruitmentRequestsController extends CustomController
             $data = $this->contextObj->addData($input);
         } else { // Update
             $this->contextObj->updateData($id, $input);
-            $data = Candidate::find($id);
+            $data = Recruitment::find($id);
         }
 
-        $this->attach($request, $data->id);
-
-        if(isset($interviews)){
-            foreach($interviews as $interview){
-                $data->interviews()
-                    ->updateOrCreate(['recruitment_id'=>$data->id], $interview);
-            }
-        }
+        $data->skills()->sync($skills);
+        $data->interviewTypes()->sync($interview_types);
     }
 
     /**
@@ -205,23 +204,18 @@ class RecruitmentRequestsController extends CustomController
     protected function validator(Request $request)
     {
         $validateFields = [
-            'picture' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
-            'birth_date' => 'required|date_format:Y-m-d',
-            'gender_id' => 'nullable',
-            'preferred_notification_id' => 'nullable',
-            'title_id' => 'required',
-            'marital_status_id' => 'nullable',
-            'first_name' => 'required|string|min:0|max:50',
-            'surname' => 'required|string|min:0|max:50',
-            'home_address' => 'required|string|min:0|max:50',
-            'email' => 'nullable',
-            'phone' => 'nullable',
-            'id_number' => 'required|string|min:1|max:50',
-            'position_applying_for' => 'required|string|min:1|max:50',
-            'date_available' => 'nullable|string|min:0',
-            'salary_expectation' => 'nullable|numeric|min:0',
-            'overview' => 'nullable|string|min:0',
-            'cover' => 'nullable|string|min:0',
+            'job_title' => 'required|string|min:0|max:50',
+            'employee_status_id' => 'nullable',
+            'department_id' => 'nullable',
+            'year_experience' => 'nullable',
+            'qualification_id' => 'nullable',
+            'field_of_study' => 'required|string|min:0|max:50',
+            'recruitment_type_id' => 'nullable',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'min_salary' => 'nullable',
+            'max_salary' => 'nullable',
+            'description' => 'nullable|string|min:0',
         ];
 
         $this->validate($request, $validateFields);

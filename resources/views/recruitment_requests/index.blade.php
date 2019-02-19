@@ -20,7 +20,6 @@
                     <thead>
                         <tr>
                             <th data-sortable="true">Job Title</th>
-                            <th data-sortable="true">Position</th>
                             <th data-sortable="true">Year Experience</th>
                             <th data-sortable="true">Field Of Study</th>
                             <th data-sortable="true">Start Date</th>
@@ -34,7 +33,6 @@
                         @foreach($requests as $request)
                         <tr id="tr{{$request->id}}">
                             <td>{{ $request->job_title }}</td>
-                            <td>{{ $request->position }}</td>
                             <td>{{ $request->year_experience }}</td>
                             <td>{{ $request->field_of_study }}</td>
                             <td>{{ $request->start_date }}</td>
@@ -43,10 +41,13 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$recruitmentRequest->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$request->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$recruitmentRequest->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-view" data-wenk="View stages" onclick="pipelines('{{$request->id}}')">
+                                        <i class="glyphicon glyphicon-eye-open text-primary"></i>
+                                    </button>
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$request->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                 </div>
@@ -56,7 +57,7 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $request->render() !!}
+                    {!! $requests->render() !!}
                 </nav>
             @endif
             </div>
