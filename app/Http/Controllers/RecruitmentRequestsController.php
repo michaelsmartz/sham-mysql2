@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Department;
+use App\Enums\RecruitmentType;
 use App\Interview;
 use App\Position;
 use App\RecruitmentQualification;
@@ -54,12 +55,14 @@ class RecruitmentRequestsController extends CustomController
         $positions = Position::pluck('description','id')->all();
         $qualifications = RecruitmentQualification::pluck('description','id')->all();
 
-        $interview_types = Interview::pluck('description','id')->all();
+        $recruitmentTypes = RecruitmentType::ddList();
+
+        $interviewTypes = Interview::pluck('description','id')->all();
 
         $request = $this->contextObj;
 
         return view($this->baseViewPath .'.create', compact('request', 'departments',
-            'positions', 'qualifications', 'skills', 'interview_types'));
+            'positions', 'qualifications', 'skills', 'interviewTypes','recruitmentTypes'));
     }
 
     /**
