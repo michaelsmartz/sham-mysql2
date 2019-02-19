@@ -94,13 +94,39 @@
             @endcomponent
         </div>
     </div>
+
+    <div id="md" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="true" >
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div id="md-content" class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Scores</h4>
+                </div>
+                <div class="modal-body">
+                      <span>
+                        <div id="loading" style="width:2px;height:2px; display:none;">
+                            <img src="{{url('/images/loading_32.gif')}}" style="margin-top:-22px;padding-left: 2px;">
+                        </div>
+                      </span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gold b-r4 text-white has-spinner" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
     <script>
 
         $(document).ready(function(){
+            $('#loading').css({'display': 'block', 'width':'2px', 'height':'2px'});
             var $table = $('#table');
 
             $table.find('tr td:first-child').each(function () {
@@ -111,6 +137,35 @@
             //alert('Document Ready');
         });
 
+        var assessorId = '{{session()->has('Id')?session('Id'):-1}}';
+        var evaluationId = '{{session()->has('EvaluationId')?session('EvaluationId'):-1}}';
+        if(assessorId > 0)
+        {
+            $('#md-content').load('{{url()->to('evaluations')}}/'+assessorId+'/score/'+evaluationId+'/show-score-modal',function(response, status){
+                if (status === "success"){
+                    $('#md').modal('show');
+                    $('#loading').css({'display': 'none'});
+                }
+            });
+        }else{
+
+        }
+
     </script>
+
+    <style>
+        .modal {
+            display:block;
+        }
+
+        .modal-dialog {
+            width: 1200px;
+        }
+
+        .modal-body{
+            height: 500px;
+            overflow-y: auto;
+        }
+    </style>
 @endsection
 

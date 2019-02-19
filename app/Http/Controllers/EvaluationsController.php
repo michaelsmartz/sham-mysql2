@@ -672,7 +672,7 @@ class EvaluationsController extends CustomController
                     ->update(['evaluation_status_id'=>EvaluationStatusType::CLOSED]);
             }
         }
-        return $this->scoreCompletedEvaluation($Id,$EvaluationId);
+        return Redirect::to('instances')->with('Id', $Id)->with('EvaluationId',$EvaluationId);
     }
 
     public function scoreCompletedEvaluation($Id,$evaluationid)
