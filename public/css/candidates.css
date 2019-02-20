@@ -138,11 +138,6 @@
     text-align: center; }
   .fileUploader .innerFileThumbs { display: table-row }
   .fileUploader .innerFileThumbs .errorLabel { color: #ff0000 }
-#candidates {
-  width: 95%;
-  margin: 0 auto;
-}
-
 .VuePagination {
   text-align: center;
 }
@@ -190,7 +185,7 @@ th:nth-child(3) {
 
 .avatar-upload .avatar-edit {
   position: absolute;
-  right: -3px;
+  right: 60px;
   z-index: 1;
   top: 0px;
 }

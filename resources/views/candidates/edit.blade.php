@@ -15,11 +15,16 @@
 
 @section('modalContent')
     <div class="row">
-        <div class="col-sm-12">
-            @include ('candidates.form', [
-                'candidate' => $data,
-                 'uploader' => $uploader
-            ])
+        <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="col-sm-12">
+                <div class="panel-body">
+                    @include ('candidates.form', [
+                        'candidate' => $data,
+                         'uploader' => $uploader
+                    ])
+                </div>
+            </div>
         </div>
     </div>
 @endsection
