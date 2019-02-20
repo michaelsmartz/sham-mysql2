@@ -4,6 +4,7 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use San4io\EloquentFilter\Filters\LikeFilter;
 
 class Reward extends Model
 {
@@ -25,6 +26,12 @@ class Reward extends Model
               ];
 
     public $searchable = ['description', 'rewarded_by', 'date_received'];
+
+    protected $filterable = [
+        'description' => LikeFilter::class,
+        'rewarded_by' => LikeFilter::class,
+        'date_received' => LikeFilter::class
+    ];
 
     public function employee()
     {

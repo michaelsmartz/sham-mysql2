@@ -39,6 +39,25 @@ class DisciplinaryActionsController extends CustomController
      */
     public function index(Request $request)
     {
+
+        $description = $request->get('description', null);
+
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
+        $violation_date = $request->get('violation_date', null);
+
+        if(!empty($violation_date)){
+            $request->merge(['violation_date' => '%'.$violation_date.'%']);
+        }
+
+        $date_issued = $request->get('date_issued', null);
+
+        if(!empty($date_issued)){
+            $request->merge(['date_issued' => '%'.$date_issued.'%']);
+        }
+
         $id = Route::current()->parameter('employee');
         $disciplinaryActions = $this->contextObj::where('employee_id', $id)->filtered()->paginate(10);
 
@@ -46,6 +65,10 @@ class DisciplinaryActionsController extends CustomController
         if (Input::has('page') && $disciplinaryActions->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('id','disciplinaryActions'));
     }
 
