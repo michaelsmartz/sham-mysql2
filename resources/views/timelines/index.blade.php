@@ -129,6 +129,7 @@
 @section('post-body')
 <link rel="stylesheet" href="{{URL::to('/')}}/css/lifecycle.css">
 <link rel="stylesheet" href="{{URL::to('/')}}/css/timeline.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
     $(function(){
         $(':checkbox').change(function() {

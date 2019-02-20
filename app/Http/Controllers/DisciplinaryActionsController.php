@@ -39,6 +39,25 @@ class DisciplinaryActionsController extends CustomController
      */
     public function index(Request $request)
     {
+
+        $description = $request->get('description', null);
+
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
+        $violation_date = $request->get('violation_date', null);
+
+        if(!empty($violation_date)){
+            $request->merge(['violation_date' => '%'.$violation_date.'%']);
+        }
+
+        $date_issued = $request->get('date_issued', null);
+
+        if(!empty($date_issued)){
+            $request->merge(['date_issued' => '%'.$date_issued.'%']);
+        }
+
         $id = Route::current()->parameter('employee');
         $disciplinaryActions = $this->contextObj::where('employee_id', $id)->filtered()->paginate(10);
 
@@ -46,16 +65,21 @@ class DisciplinaryActionsController extends CustomController
         if (Input::has('page') && $disciplinaryActions->isEmpty()) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('id','disciplinaryActions'));
     }
 
     public function create() {
         Session::put('redirectsTo', \URL::previous());
         $id = Route::current()->parameter('employee');
+        $updated_by = \Auth::user()->id;
         $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
         $violations = Violation::pluck('description','id');
 
-        return view($this->baseViewPath . '.create',compact('id','disciplinaryDecisions','violations'));
+        return view($this->baseViewPath . '.create',compact('id','updated_by','disciplinaryDecisions','violations'));
     }
 
     /**
@@ -93,12 +117,13 @@ class DisciplinaryActionsController extends CustomController
     {
         $id = Route::current()->parameter('disciplinary_action');
         $data = $this->contextObj->findData($id);
+        $updated_by = \Auth::user()->id;
 
         $violations = Violation::pluck('description','id')->all();
         $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data', 'updated_by', 'violations','disciplinaryDecisions'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -106,7 +131,7 @@ class DisciplinaryActionsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'));
+        return view($this->baseViewPath . '.edit', compact('data', 'updated_by', 'violations','disciplinaryDecisions'));
     }
 
     /**

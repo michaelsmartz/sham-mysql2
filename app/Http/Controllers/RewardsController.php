@@ -31,6 +31,24 @@ class RewardsController extends CustomController
     //functions necessary to handle 'resource' type of route
     public function index(Request $request)
     {
+        $description = $request->get('description', null);
+
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
+        $rewarded_by = $request->get('rewarded_by', null);
+
+        if(!empty($rewarded_by)){
+            $request->merge(['rewarded_by' => '%'.$rewarded_by.'%']);
+        }
+
+        $date_received = $request->get('date_received', null);
+
+        if(!empty($date_received)){
+            $request->merge(['date_received' => '%'.$date_received.'%']);
+        }
+
         $id = Route::current()->parameter('employee');
         $rewards = $this->contextObj::where('employee_id', $id)->filtered()->paginate(10);
 
@@ -38,6 +56,10 @@ class RewardsController extends CustomController
         if (Input::has('page') && $rewards->isEmpty()) {
             return redirect()->to(action('RewardsController@index', ['employee'=>$id]));
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('id','rewards'));
     }
 

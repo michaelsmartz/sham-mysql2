@@ -4,6 +4,7 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use San4io\EloquentFilter\Filters\LikeFilter;
 
 class DisciplinaryAction extends Model
 {
@@ -31,6 +32,12 @@ class DisciplinaryAction extends Model
               ];
 
     public $searchable = ['violation:description', 'violation_date', 'date_issued'];
+
+    protected $filterable = [
+        'violation:description' => LikeFilter::class,
+        'violation_date' => LikeFilter::class,
+        'date_issued' => LikeFilter::class
+    ];
 
     public function employee()
     {
