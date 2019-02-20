@@ -52,10 +52,11 @@ class DisciplinaryActionsController extends CustomController
     public function create() {
         Session::put('redirectsTo', \URL::previous());
         $id = Route::current()->parameter('employee');
+        $updated_by = \Auth::user()->id;
         $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
         $violations = Violation::pluck('description','id');
 
-        return view($this->baseViewPath . '.create',compact('id','disciplinaryDecisions','violations'));
+        return view($this->baseViewPath . '.create',compact('id','updated_by','disciplinaryDecisions','violations'));
     }
 
     /**
@@ -93,12 +94,13 @@ class DisciplinaryActionsController extends CustomController
     {
         $id = Route::current()->parameter('disciplinary_action');
         $data = $this->contextObj->findData($id);
+        $updated_by = \Auth::user()->id;
 
         $violations = Violation::pluck('description','id')->all();
         $disciplinaryDecisions = DisciplinaryDecision::pluck('description', 'id');
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('data', 'updated_by', 'violations','disciplinaryDecisions'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -106,7 +108,7 @@ class DisciplinaryActionsController extends CustomController
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('data','violations','disciplinaryDecisions'));
+        return view($this->baseViewPath . '.edit', compact('data', 'updated_by', 'violations','disciplinaryDecisions'));
     }
 
     /**
