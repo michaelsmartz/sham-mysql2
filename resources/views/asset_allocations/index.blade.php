@@ -36,8 +36,8 @@
                                 </button>
                             </div>
                             <ul class="search-column-list">
-                                <li data-filter-column="name">By Asset</li>
-                                <li data-filter-column="tag">By Tag</li>
+                                <li data-filter-column="asset:name">By Asset</li>
+                                <li data-filter-column="asset:tag">By Tag</li>
                                 <li data-filter-column="full_name">By Fullname</li>
                                 <li data-filter-column="date_out">By Date Out</li>
                                 <li data-filter-column="date_in">By Date In</li>

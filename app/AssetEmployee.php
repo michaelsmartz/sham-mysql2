@@ -4,6 +4,12 @@ namespace App;
 
 use San4io\EloquentFilter\Filters\LikeFilter;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
+use Illuminate\Database\Eloquent\Builder;
+use Jedrzej\Searchable\Constraint;
+use Illuminate\Support\Facades\DB;
+
 class AssetEmployee extends Model
 {
     protected $table = "asset_employee";
@@ -28,7 +34,7 @@ class AssetEmployee extends Model
                   'comment'
               ];
 
-    public $searchable = ['asset:name', 'asset:tag', 'employee:full_name', 'date_out', 'date_in'];
+    public $searchable = ['asset:name', 'asset:tag', 'name', 'date_out', 'date_in'];
 
     protected $filterable = [
         'asset:name' => LikeFilter::class,
@@ -47,6 +53,22 @@ class AssetEmployee extends Model
     {
         return $this->belongsTo('App\Employee','employee_id','id')
                     ->select(['id']);
+    }
+
+    protected function processNameFilter(Builder $builder, Constraint $constraint)
+    {
+        // this logic should happen for LIKE/EQUAL operators only
+        if ($constraint->getOperator() === Constraint::OPERATOR_LIKE || $constraint->getOperator() === Constraint::OPERATOR_EQUAL) {
+
+            $builder->with('employee')
+                ->whereHas('employee',function ($q) use ($constraint){
+                    $q->where('employees.first_name', $constraint->getOperator(), $constraint->getValue())
+                        ->orWhere('employees.surname', $constraint->getOperator(), $constraint->getValue());
+                });
+
+            return true;
+        }
+        return false;
     }
 
 
