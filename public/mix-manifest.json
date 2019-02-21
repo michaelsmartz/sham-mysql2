@@ -1,8 +1,8 @@
 {
-    "/js/recruitment-request.js": "/js/recruitment-request.js",
-    "/js/recruitment-request.js.map": "/js/recruitment-request.js.map",
     "/js/candidates.js": "/js/candidates.js",
     "/js/candidates.js.map": "/js/candidates.js.map",
+    "/js/recruitment-request.js": "/js/recruitment-request.js",
+    "/js/recruitment-request.js.map": "/js/recruitment-request.js.map",
     "/js/new-employee.js": "/js/new-employee.js",
     "/css/app.css": "/css/app.css",
     "/css/employees.css": "/css/employees.css",

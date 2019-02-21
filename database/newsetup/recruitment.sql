@@ -325,3 +325,23 @@ ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
+
+ALTER TABLE `candidate_qualifications`
+CHANGE COLUMN `obtained_on` `obtained_on` DATE NULL DEFAULT NULL ;
+
+ALTER TABLE `candidate_previous_employments`
+ADD COLUMN `start_date` DATE NULL DEFAULT NULL AFTER `reason_leaving`,
+ADD COLUMN `end_date` DATE NULL DEFAULT NULL AFTER `start_date`;
+
+ALTER TABLE `candidates`
+ADD COLUMN `addr_line_1` VARCHAR(50) NULL DEFAULT NULL AFTER `picture`,
+ADD COLUMN `addr_line_2` VARCHAR(50) NULL DEFAULT NULL AFTER `addr_line_1`,
+ADD COLUMN `addr_line_3` VARCHAR(50) NULL DEFAULT NULL AFTER `addr_line_2`,
+ADD COLUMN `addr_line_4` VARCHAR(50) NULL DEFAULT NULL AFTER `addr_line_3`,
+ADD COLUMN `city` VARCHAR(50) NULL DEFAULT NULL AFTER `addr_line_4`,
+ADD COLUMN `province` VARCHAR(50) NULL DEFAULT NULL AFTER `city`,
+ADD COLUMN `zip` VARCHAR(50) NULL DEFAULT NULL AFTER `province`;
+
+ALTER TABLE `candidates`
+DROP COLUMN `home_address`;
+

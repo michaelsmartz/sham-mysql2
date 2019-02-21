@@ -2,6 +2,7 @@ window.Vue = require('vue/dist/vue.common.js');
 window.Vue = require('vue-tables-2/dist/vue-tables-2.min.js');
 
 require('sumoselect');
+require('parsleyjs');
 
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -181,7 +182,7 @@ if(document.getElementById("candidates-app")) {
             },
             quals: [],
             employment: {
-                previous_employer: '', position: '', salary: '', reason_leaving: ''
+                previous_employer: '', position: '', salary: '', reason_leaving: '', start_date: '', end_date: ''
             },
             employments: [],
             errors: [],
@@ -354,6 +355,18 @@ if(document.getElementById("candidates-app")) {
                 });
 
                 $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
+
+                window.Parsley.on('field:ajaxoptions', function(p1,ajaxOptions) {
+                    var id_number = $("[name=id_number]").val();
+
+                    var namedDataMap = {
+                        'id_number': { 'id_number':id_number },
+
+                    };
+
+                    ajaxOptions.global = false;
+                    ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
+                });
             }(jQuery, this);
         },
         created: function () {

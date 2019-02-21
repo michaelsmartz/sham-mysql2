@@ -4,7 +4,7 @@
 @section('content')
     <div class="box box-primary">
         <div class="box-body">
-            <form method="POST" id="candidates" action="{{ route('candidates.store') }}" accept-charset="UTF-8" name="create_candidates_form" class="form-horizontal" enctype="multipart/form-data">
+            <form method="POST" id="candidates" action="{{ route('candidates.store') }}" accept-charset="UTF-8" name="create_candidates_form" class="form-horizontal" data-parsley-validate="" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="row">
                     <div class="col-md-12">

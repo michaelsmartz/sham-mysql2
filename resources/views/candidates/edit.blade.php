@@ -30,7 +30,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" id="candidates" action="{{ route('candidates.update', $data->id) }}" name="edit_candidates_form" accept-charset="UTF-8"  enctype="multipart/form-data">
+    <form method="POST" id="candidates" action="{{ route('candidates.update', $data->id) }}" name="edit_candidates_form" accept-charset="UTF-8" data-parsley-validate="" enctype="multipart/form-data">
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">

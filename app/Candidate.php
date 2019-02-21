@@ -47,7 +47,14 @@ class Candidate extends Model
                   'birth_date',
                   'overview',
                   'cover',
-                  'picture'
+                  'picture',
+                  'addr_line_1',
+                  'addr_line_2',
+                  'addr_line_3',
+                  'addr_line_4',
+                  'city',
+                  'province',
+                  'zip',
               ];
 
     /**

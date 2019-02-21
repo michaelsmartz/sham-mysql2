@@ -138,6 +138,86 @@
     text-align: center; }
   .fileUploader .innerFileThumbs { display: table-row }
   .fileUploader .innerFileThumbs .errorLabel { color: #ff0000 }
+input:required,
+select:required,
+textarea:required {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' viewBox='0 0 483.556 483.556' style='enable-background:new 0 0 483.556 483.556;' xml:space='preserve' width='8px' height='8px'%3E%3Cg pointer-events='all' data-wenk='Required'%3E%3Ctitle%3ERequired%3C/title%3E%3Cg transform='matrix(1.25 0 0 -1.25 0 45)'%3E%3Cg%3E%3Cg%3E%3Cpath d='M386.844-157.422c0-106.826-86.596-193.422-193.422-193.422S0-264.248,0-157.422 S86.596,36,193.422,36S386.844-50.596,386.844-157.422' data-original='%23DD2E44' data-wenk='Required' class='active-path' fill='%23F26969'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E") no-repeat calc(100% - 20px) 50%;
+  -webkit-transition: all 1s;
+  transition: all 1s;
+}
+
+input.hasDatepicker:required {
+  background-position-x: calc(100% - 22px);
+}
+
+input.parsley-error:required {
+  /*animation: pulse-me 3s linear infinite;*/
+  -webkit-transition: background .5s ease-out;
+  transition: background .5s ease-out;
+}
+
+select:required {
+  background-position-x: calc(100% - 22px);
+}
+
+textarea:required {
+  background-position-y: 10%;
+}
+
+input.field-required,
+input:required,
+input.required,
+select.field-required,
+select:required,
+select.required,
+textarea:required {
+  padding-right: 35px;
+}
+
+input:invalid {
+  border-color: #B94A48;
+  background-image: url("data:image/svg+xml,%3Csvg width='8px' height='8px' viewBox='0 0 30 30' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E%3Cg transform='translate%28-128.000000, -59.000000%29' fill='%23F44336'%3E%3Cpolygon points='157.848404 61.9920213 145.980053 73.8603723 157.848404 85.7287234 154.856383 88.7207447 142.988032 76.8523936 131.119681 88.7207447 128.12766 85.7287234 139.996011 73.8603723 128.12766 61.9920213 131.119681 59 142.988032 70.8683511 154.856383 59'%3E%3C/polygon%3E%3C/g%3E%3C/g%3E%3C/svg%3E%0A") no-repeat calc(100% - 12px) 50% !important;
+}
+
+input.parsley-success,
+select.parsley-success,
+textarea.parsley-success {
+  color: #468847;
+  background-color: #DFF0D8;
+  border: 1px solid #D6E9C6;
+}
+
+input.parsley-error,
+select.parsley-error,
+textarea.parsley-error {
+  color: #B94A48;
+  background-color: #F2DEDE;
+  border: 1px solid #EED3D7;
+}
+
+.parsley-errors-list {
+  margin: 3px 0 3px;
+  padding: 0;
+  list-style-type: none;
+  font-size: 0.9em;
+  line-height: 1em;
+  opacity: 0;
+  transition: all .3s ease-in;
+  -o-transition: all .3s ease-in;
+  -moz-transition: all .3s ease-in;
+  -webkit-transition: all .3s ease-in;
+}
+
+.parsley-errors-list.filled {
+  opacity: 1;
+}
+
+.parsley-required,
+.parsley-remote,
+.parsley-pattern {
+  color: #B94A48;
+}
+
 .VuePagination {
   text-align: center;
 }

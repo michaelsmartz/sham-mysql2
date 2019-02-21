@@ -22,7 +22,9 @@ class CandidatePreviousEmployment extends Model
                   'previous_employer',
                   'position',
                   'salary',
-                  'reason_leaving'
+                  'reason_leaving',
+                  'start_date',
+                  'end_date',
               ];
 
     public function candidate()

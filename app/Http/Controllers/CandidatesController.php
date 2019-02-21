@@ -6,6 +6,7 @@ use App\Candidate;
 use App\CandidatePreviousEmployment;
 use App\CandidateQualification;
 use App\DisabilityCategory;
+use App\Enums\PreferredNotificationType;
 use App\Gender;
 use App\MaritalStatus;
 use App\Qualification;
@@ -80,9 +81,12 @@ class CandidatesController extends CustomController
 
         $skills = Skill::pluck('description','id')->all();
 
+        $preferredNotifications = PreferredNotificationType::ddList();
+
         $candidate = $this->contextObj;
 
-        return view($this->baseViewPath .'.create', compact('titles', 'candidate', 'uploader', 'genders', 'maritalstatuses', 'disabilities', 'skills'));
+        return view($this->baseViewPath .'.create', compact('titles', 'candidate', 'uploader', 'genders',
+            'maritalstatuses', 'disabilities', 'skills', 'preferredNotifications'));
     }
 
     public function qualifications(Request $request)
@@ -212,6 +216,7 @@ class CandidatesController extends CustomController
             $maritalstatuses = MaritalStatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
             $skills = Skill::pluck('description','id')->all();
             $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
+            $preferredNotifications = PreferredNotificationType::ddList();
         }
 
         $candidateSkills = $data->skills->pluck('id');
@@ -219,7 +224,7 @@ class CandidatesController extends CustomController
         $candidateDisabilities = $data->disabilities->pluck('id');
 
         return view($this->baseViewPath .'.edit',
-            compact('data', 'uploader', 'titles','genders','maritalstatuses', 'skills',
+            compact('data', 'uploader', 'titles','genders','maritalstatuses', 'skills', 'preferredNotifications',
                 'disabilities', 'candidateSkills','candidateDisabilities','qualifications'));
     }
 
@@ -288,7 +293,6 @@ class CandidatesController extends CustomController
             'marital_status_id' => 'nullable',
             'first_name' => 'required|string|min:0|max:50',
             'surname' => 'required|string|min:0|max:50',
-            'home_address' => 'required|string|min:0|max:50',
             'email' => 'nullable',
             'phone' => 'nullable',
             'id_number' => 'required|string|min:1|max:50',
@@ -297,6 +301,13 @@ class CandidatesController extends CustomController
             'salary_expectation' => 'nullable|numeric|min:0',
             'overview' => 'nullable|string|min:0',
             'cover' => 'nullable|string|min:0',
+            'addr_line_1' => 'nullable|string|min:0|max:50',
+            'addr_line_2' => 'nullable|string|min:0|max:50',
+            'addr_line_3' => 'nullable|string|min:0|max:50',
+            'addr_line_4' => 'nullable|string|min:0|max:50',
+            'city' => 'nullable|string|min:0|max:50',
+            'province' => 'nullable|string|min:0|max:50',
+            'zip' => 'nullable|string|min:0|max:50'
         ];
 
         $this->validate($request, $validateFields);
