@@ -2,12 +2,12 @@
 <div class="row">
     
 <div class="form-group col-xs-12 {{ $errors->has('asset_id') ? 'has-error' : '' }}">
-    <label for="asset_id">Asset</label>
+    <label for="asset_id">Asset Tag</label>
         @if(isset($assetEmployee->asset_id))
         <input type="hidden" name="asset_id" value="{{$assetEmployee->asset_id}}">
         @endif
         <select class="form-control" id="asset_id" name="asset_id" {!! optional($assetEmployee)->asset_id != '' ? 'disabled="disabled"' : 'required="true"' !!}>
-        	    <option value="" style="display: none;" {{ old('asset_id', optional($assetEmployee)->asset_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select asset</option>
+        	    <option value="" style="display: none;" {{ old('asset_id', optional($assetEmployee)->asset_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select asset tag</option>
         	@foreach ($assets as $key => $asset)
 			    <option value="{{ $key }}" {{ old('asset_id', optional($assetEmployee)->asset_id) == $key ? 'selected' : '' }}>
 			    	{{ $asset }}

@@ -32,22 +32,22 @@ class AssetAllocationsController extends CustomController
     public function index(Request $request)
     {
 
-        $name = $request->get('name', null);
+        $name = $request->get('asset:name', null);
 
         if(!empty($name)){
-            $request->merge(['name' => '%'.$name.'%']);
+            $request->merge(['asset:name' => '%'.$name.'%']);
         }
 
-        $tag = $request->get('tag', null);
+        $tag = $request->get('asset:tag', null);
 
         if(!empty($tag)){
-            $request->merge(['tag' => '%'.$tag.'%']);
+            $request->merge(['asset:tag' => '%'.$tag.'%']);
         }
 
         $full_name = $request->get('full_name', null);
 
         if(!empty($full_name)){
-            $request->merge(['full_name' => '%'.$full_name.'%']);
+            $request->merge(['name' => '%'.$full_name.'%']);
         }
 
         $date_out = $request->get('date_out', null);
@@ -79,7 +79,7 @@ class AssetAllocationsController extends CustomController
     }
 
     public function create() {
-        list($assets, $employees) = $this->createEditCommon();
+        list($assets, $employees) = $this->createEditCommon(false);
         return view($this->baseViewPath . '.create',compact('assets','employees'));
     }
 
@@ -96,8 +96,13 @@ class AssetAllocationsController extends CustomController
             $this->validator($request);
 
             $input = array_except($request->all(), array('_token','method'));
+
+            $asset_id = $input['asset_id'];
             
             $this->contextObj->addData($input);
+
+            $asset = Asset::find($asset_id);
+            $asset->update(['is_available' => 0]);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -163,6 +168,13 @@ class AssetAllocationsController extends CustomController
 
             $this->contextObj->updateData($id, $input);
 
+            if(!empty($input['date_in']))
+            {
+                $asset_id = $input['asset_id'];
+                $asset = Asset::find($asset_id);
+                $asset->update(['is_available' => 1]);
+            }
+
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
@@ -193,8 +205,15 @@ class AssetAllocationsController extends CustomController
         $this->validate($request, $validateFields);
     }
 
-    protected function createEditCommon(){
-        $assets = Asset::pluck('name','id')->all();
+    protected function createEditCommon($listall = true){
+        if(!$listall)
+        {
+            $assets = Asset::where('is_available',1)->pluck('tag','id')->all();
+        }
+        else{
+            $assets = Asset::pluck('tag','id')->all();
+        }
+
         $employees = Employee::pluck('full_name','id')->all();
 
         return array($assets, $employees);
