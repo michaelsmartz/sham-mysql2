@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use San4io\EloquentFilter\Filters\LikeFilter;
 
 class Recruitment extends Model
 {
@@ -42,6 +43,22 @@ class Recruitment extends Model
         'min_salary',
         'max_salary',
         'recruitment_type_id'
+    ];
+
+    protected $searchable = [
+        'job_title',
+        'qualification_recruitment:description',
+        'year_experience',
+        'field_of_study',
+        'start_date'
+    ];
+
+    protected $filterable = [
+        'job_title' => LikeFilter::class,
+        'qualification_recruitment:description' => LikeFilter::class,
+        'year_experience' => LikeFilter::class,
+        'field_of_study' => LikeFilter::class,
+        'start_date' => LikeFilter::class
     ];
 
     /**
@@ -117,6 +134,11 @@ class Recruitment extends Model
     public function interviewTypes()
     {
         return $this->belongsToMany(Interview::class);
+    }
+
+    public function qualification_recruitment()
+    {
+        return $this->belongsTo('App\QualificationRecruitment','qualification_id');
     }
 
 }

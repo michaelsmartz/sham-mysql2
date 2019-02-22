@@ -50,7 +50,9 @@ class QualificationRecruitment extends Model
      * @var array
      */
     protected $casts = [];
-    
+
+
+    public $searchable = ['description'];
 
 
     /**

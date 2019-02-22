@@ -33,12 +33,41 @@ class RecruitmentRequestsController extends CustomController
     }
 
     /**
-     * Display a listing of the branches.
-     *
-     * @return Illuminate\View\View
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $job_title = $request->get('job_title', null);
+
+        if(!empty($job_title)){
+            $request->merge(['job_title' => '%'.$job_title.'%']);
+        }
+
+        $description = $request->get('description', null);
+
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
+        $year_experience = $request->get('year_experience', null);
+
+        if(!empty($year_experience)){
+            $request->merge(['year_experience' => '%'.$year_experience.'%']);
+        }
+
+        $field_of_study = $request->get('field_of_study', null);
+
+        if(!empty($field_of_study)){
+            $request->merge(['field_of_study' => '%'.$field_of_study.'%']);
+        }
+
+        $start_date = $request->get('start_date', null);
+
+        if(!empty($start_date)){
+            $request->merge(['start_date' => '%'.$start_date.'%']);
+        }
+
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_REQUESTS);
 
         $requests = $this->contextObj::filtered()->paginate(10);
@@ -47,6 +76,10 @@ class RecruitmentRequestsController extends CustomController
         if (Input::has('page')) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('requests','allowedActions'));
     }
 
