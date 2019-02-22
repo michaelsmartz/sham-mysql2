@@ -204,7 +204,7 @@ Auth::routes();
         Route::resource('recruitment', 'RecruitmentsController');
         Route::resource('interview', 'InterviewsController');
         Route::resource('recruitment_requests', 'RecruitmentRequestsController');
-        Route::resource('candidates', 'CandidatesController');
+        Route::fileResource('candidates');
         Route::get('candidates/{candidate?}/candidate-qualifications', 'CandidatesController@qualifications')->name('get-candidate-qualifications');
         Route::get('candidates/{candidate?}/previous_employments', 'CandidatesController@previousEmployments')->name('get-candidate-employments');
 

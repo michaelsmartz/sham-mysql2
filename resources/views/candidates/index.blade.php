@@ -51,7 +51,7 @@
             @if(count($candidates) == 0)
                 <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new candidate</h4>
             @else
-                <table id="new-table" data-toggle="table">
+                <table id="table" data-toggle="table" data-detail-view="true">
                     <thead>
                         <tr>
                             <th data-sortable="true">First Name</th>
@@ -65,7 +65,7 @@
                     </thead>
                     <tbody>
                         @foreach($candidates as $candidate)
-                        <tr id="tr{{$candidate->id}}">
+                        <tr id="tr{{$candidate->id}}" data-id="{{$candidate->id}}" data-url="{{url()->current()}}">
                             <td>{{ $candidate->first_name }}</td>
                             <td>{{ $candidate->surname }}</td>
                             <td>{{ $candidate->email }}</td>
