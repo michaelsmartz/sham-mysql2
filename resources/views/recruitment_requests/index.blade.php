@@ -20,11 +20,10 @@
                     <thead>
                         <tr>
                             <th data-sortable="true">Job Title</th>
+                            <th data-sortable="true">Highest Qualification</th>
                             <th data-sortable="true">Year Experience</th>
                             <th data-sortable="true">Field Of Study</th>
                             <th data-sortable="true">Start Date</th>
-                            <th data-sortable="true">Min Salary</th>
-                            <th data-sortable="true">Max Salary</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -33,11 +32,10 @@
                         @foreach($requests as $request)
                         <tr id="tr{{$request->id}}">
                             <td>{{ $request->job_title }}</td>
+                            <td>{{  optional($request->qualification)->description }}</td>
                             <td>{{ $request->year_experience }}</td>
                             <td>{{ $request->field_of_study }}</td>
                             <td>{{ $request->start_date }}</td>
-                            <td>{{ $request->min_salary }}</td>
-                            <td>{{ $request->max_salary }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

@@ -2,6 +2,7 @@ window.Vue = require('vue/dist/vue.common.js');
 window.Vue = require('vue-tables-2/dist/vue-tables-2.min.js');
 
 require('sumoselect');
+require('parsleyjs');
 
 import Vue from 'vue'
 import Vuex from 'vuex'

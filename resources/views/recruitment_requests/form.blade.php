@@ -42,7 +42,11 @@
                 <div class="form-group col-xs-2">
                 <span class="field">
                     <label for="yearExperience">Years of experience</label>
-                    {!! Form::text('year_experience', old('year_experience', isset($request->year_experience) ? $request->year_experience : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Year Experience', 'required', 'title'=>'Required', 'id'=>'year_experience']) !!}
+                    {!! Form::text('year_experience', old('year_experience', isset($request->year_experience) ? $request->year_experience : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Year Experience', 'required', 'title'=>'Required', 'id'=>'year_experience',
+                      'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
+                      'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
+                      'data-parsley-trigger'=>'focusout'])
+                    !!}
                 </span>
                 </div>
 
@@ -84,14 +88,22 @@
                 <div class="form-group col-xs-3">
                 <span class="field">
                     <label for="min_salary">Minimum salary</label>
-                    {!! Form::text('min_salary', old('min_salary', isset($request->min_salary) ? $request->min_salary : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Minimum Salary', '', 'title'=>'Required', 'id'=>'min_salary']) !!}
+                    {!! Form::text('min_salary', old('min_salary', isset($request->min_salary) ? $request->min_salary : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Minimum Salary', '', 'title'=>'Required', 'id'=>'min_salary',
+                      'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
+                      'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
+                      'data-parsley-trigger'=>'focusout'])
+                     !!}
                 </span>
                 </div>
 
                 <div class="form-group col-xs-3">
                 <span class="field">
                     <label for="max_salary">Maximum salary</label>
-                    {!! Form::text('max_salary', old('max_salary', isset($request->max_salary) ? $request->max_salary : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Maximum Salary', '', 'title'=>'Required', 'id'=>'max_salary']) !!}
+                    {!! Form::text('max_salary', old('max_salary', isset($request->max_salary) ? $request->max_salary : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Maximum Salary', '', 'title'=>'Required', 'id'=>'max_salary',
+                      'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
+                      'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
+                      'data-parsley-trigger'=>'focusout'])
+                     !!}
                 </span>
                 </div>
 
