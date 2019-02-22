@@ -204,6 +204,8 @@ Auth::routes();
         Route::resource('recruitment', 'RecruitmentsController');
         Route::resource('interview', 'InterviewsController');
         Route::resource('recruitment_requests', 'RecruitmentRequestsController');
+        Route::get('recruitment_requests/{request?}/manage-candidate', 'RecruitmentRequestsController@manageCandidate');
+        Route::patch('recruitment_requests/{request?}/update-candidate', 'RecruitmentRequestsController@updateCandidate')->name('recruitment_requests.update-candidate');
         Route::fileResource('candidates');
         Route::get('candidates/{candidate?}/candidate-qualifications', 'CandidatesController@qualifications')->name('get-candidate-qualifications');
         Route::get('candidates/{candidate?}/previous_employments', 'CandidatesController@previousEmployments')->name('get-candidate-employments');

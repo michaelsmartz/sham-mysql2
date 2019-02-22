@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Candidate;
 use App\Department;
 use App\EmployeeStatus;
 use App\Enums\RecruitmentType;
@@ -176,6 +177,42 @@ class RecruitmentRequestsController extends CustomController
         }
 
         return redirect()->route($this->baseViewPath .'.index');       
+    }
+
+    public function manageCandidate(Request $request, $id){
+        $data = $this->contextObj->findData($id);
+
+        $recruitmentCandidates = $data->candidates()->orderBy('candidate_recruitment.id','asc')->pluck('first_name','candidate_recruitment.candidate_id');
+        $candidates = Candidate::pluck('first_name', 'id');
+
+        if($request->ajax()) {
+            $view = view($this->baseViewPath . '.manage-candidate', compact('data', 'candidates', 'recruitmentCandidates'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.manage-candidate', compact('data', 'candidates', 'recruitmentCandidates'));
+    }
+
+    public function updateCandidate(Request $request, $id){
+        try {
+            $candidates = array_get($request->all(),'candidates');
+
+            $data = Recruitment::find($id);
+            $data->candidates()
+                ->sync($candidates); //sync what has been selected
+
+            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
+        }
+
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**

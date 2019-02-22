@@ -160,4 +160,8 @@ class Candidate extends Model
         return $this->hasMany('App\CandidatePreviousEmployment','candidate_id','id');
     }
 
+    public function recruitments()
+    {
+        return $this->belongsToMany('App\Recruitment');
+    }
 }

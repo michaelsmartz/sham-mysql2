@@ -74,11 +74,14 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editFullPage('{{$request->id}}', event)">
-                                        <i class="glyphicon glyphicon-edit text-primary"></i>
+                                    <a href="#light-modal" data-wenk="Manage Candidates" class="b-n b-n-r bg-transparent item-edit" onclick="manageCandidate('{{$request->id}}', event)">
+                                        <i class="glyphicon glyphicon-pencil text-primary"></i>
                                     </a>
                                     <button class="b-n b-n-r bg-transparent item-view" data-wenk="View stages" onclick="pipelines('{{$request->id}}')">
                                         <i class="glyphicon glyphicon-eye-open text-primary"></i>
+                                    </button>
+                                    <button class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$request->id}}', event)">
+                                        <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </button>
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$request->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>

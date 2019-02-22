@@ -141,4 +141,8 @@ class Recruitment extends Model
         return $this->belongsTo('App\QualificationRecruitment','qualification_id');
     }
 
+    public function candidates()
+    {
+        return $this->belongsToMany(Candidate::class);
+    }
 }

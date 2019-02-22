@@ -64,7 +64,14 @@
 
             window.pipelines =  function (id, event) {
                 window.location.href = '{{url()->to("recruitment")}}/'+ id;
-            },
+            }
+
+            window.manageCandidate = function (id, event) {
+                var route;
+                route = '{{url()->current()}}/';
+
+                loadUrl(route + id + '/manage-candidate');
+            }
             
             window.cleanUrlHash = function(){
                 window.history.pushState(null, "", window.location.href.replace("#light-modal", ""));
