@@ -41,12 +41,42 @@ class CandidatesController extends CustomController
     }
 
     /**
-     * Display a listing of the candidates.
-     *
-     * @return Illuminate\View\View
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $first_name = $request->get('first_name', null);
+
+        if(!empty($first_name)){
+            $request->merge(['first_name' => '%'.$first_name.'%']);
+        }
+
+        $surname = $request->get('surname', null);
+
+        if(!empty($surname)){
+            $request->merge(['surname' => '%'.$surname.'%']);
+        }
+
+        $email = $request->get('email', null);
+
+        if(!empty($email)){
+            $request->merge(['email' => '%'.$email.'%']);
+        }
+
+        $phone = $request->get('phone', null);
+
+        if(!empty($phone)){
+            $request->merge(['phone' => '%'.$phone.'%']);
+        }
+
+        $position_applying_for = $request->get('position_applying_for', null);
+
+        if(!empty($position_applying_for)){
+            $request->merge(['position_applying_for' => '%'.$position_applying_for.'%']);
+        }
+
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_CANDIDATES);
 
         $candidates = $this->contextObj::filtered()->paginate(10);
@@ -55,6 +85,10 @@ class CandidatesController extends CustomController
         if (Input::has('page')) {
             return redirect()->route($this->baseViewPath .'.index');
         }
+
+        //resend the previous search data
+        session()->flashInput($request->input());
+
         return view($this->baseViewPath .'.index', compact('candidates','allowedActions'));
     }
 

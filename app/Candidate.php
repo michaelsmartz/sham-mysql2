@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
+use San4io\EloquentFilter\Filters\LikeFilter;
 
 class Candidate extends Model
 {
@@ -56,6 +57,22 @@ class Candidate extends Model
                   'province',
                   'zip',
               ];
+
+    protected $searchable = [
+        'first_name',
+        'surname',
+        'email',
+        'phone',
+        'position_applying_for'
+    ];
+
+    protected $filterable = [
+        'first_name' => LikeFilter::class,
+        'surname' => LikeFilter::class,
+        'email' => LikeFilter::class,
+        'phone' => LikeFilter::class,
+        'position_applying_for' => LikeFilter::class
+    ];
 
     /**
      * The attributes that should be mutated to dates.

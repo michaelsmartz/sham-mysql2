@@ -2,6 +2,41 @@
 @section('title','Candidates')
 @section('content')
     <div class="flex-wrapper">
+        <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
+            <form action="" class="">
+                <ul style="margin-left:0;padding-left:0" class="list-unstyled">
+                    <li>
+                        <input type="hidden" name="name" class="submitable-column-name" id="submitable-column-name" value="">
+                        <div class="table-search-form">
+                            <input type="search" name="search-term" value="{{old('search-term', null)}}" placeholder="Search" class="search-input" data-mirror="#submitable-column-name">
+                            <div class="search-option">
+                                <button type="submit" data-wenk="Do the Search">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <a href="{{route('candidates.index')}}" role="button" data-wenk="Reset all Criteria & reload the list">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="table-search-form" style="height:50px">
+                            <button type="button" class="search-column-chooser-btn">
+                                <p class="search-small">Search by</p>
+                                <p class="search-large">Name</p>
+                            </button>
+                        </div>
+                        <ul class="search-column-list">
+                            <li data-filter-column="first_name">By FirstName</li>
+                            <li data-filter-column="surname">By Surname</li>
+                            <li data-filter-column="email">By Email</li>
+                            <li data-filter-column="phone">By Phone</li>
+                            <li data-filter-column="position_applying_for">By Position Applying For</li>
+                        </ul>
+                    </li>
+                </ul>
+            </form>
+        </div>
         <div id="table-container">
             @if(count($candidates) > 0)
             <div id="toolbar" class="shadow-eff1">
