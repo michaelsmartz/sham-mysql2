@@ -345,3 +345,5 @@ ADD COLUMN `zip` VARCHAR(50) NULL DEFAULT NULL AFTER `province`;
 ALTER TABLE `candidates`
 DROP COLUMN `home_address`;
 
+ALTER TABLE `recruitments`
+	ADD COLUMN `end_date` DATE NULL DEFAULT NULL AFTER `start_date`;
