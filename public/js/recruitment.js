@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 245);
+/******/ 	return __webpack_require__(__webpack_require__.s = 243);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -93,34 +93,52 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 245:
+/***/ 243:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(246);
+module.exports = __webpack_require__(244);
 
 
 /***/ }),
 
-/***/ 246:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 244:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Modal_vue__ = __webpack_require__(245);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Modal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Modal_vue__);
 
 window.Vue = __webpack_require__(7);
 
 var vm = new Vue({
 	el: "#recruitment",
 	data: {
+		showModal: false,
+		candidates: [],
 		people: [{
 			name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut",
-			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }]
+			email: "b@g.com", phone: "12345", birth_date: "1990-01-02",
+			id: 1,
+			qualifications: [{ description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }, { description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }],
+			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }, { name: "Anything Else.pdf" }]
 
 		}, {
 			name: "Steve Jobs", status: "applied", picture: "", jobTitle: "Chief Marketing Officer",
+			email: "s@j.com", phone: "12345", birth_date: "1990-01-02",
+			id: 2,
+			qualifications: [{ description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }, { description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }],
 			documents: []
 		}, {
 			name: "George Clooney", status: "review", picture: "", jobTitle: "Web Developer",
+			email: "g@c.com", phone: "12345", birth_date: "1990-01-02",
+			id: 3,
+			qualifications: [{ description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }, { description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }],
 			documents: []
 		}, {
 			name: "Meryl Streep", status: "interviewing", picture: "", jobTitle: "Web Developer",
+			email: "m@s.com", phone: "12345", birth_date: "1990-01-02",
+			id: 4,
 			documents: [],
 			interviewTypes: ["Phone Interview", "Structured Interview", "Problem Solving Interview", "Skype Interview", "Case Interview"],
 			interviewers: ["John w henry", "Mike chung"],
@@ -129,6 +147,8 @@ var vm = new Vue({
 			to: ""
 		}, {
 			name: "Amy Poehler", status: "interviewing", picture: "", jobTitle: "Chief Marketing Officer",
+			email: "b@g.com", phone: "12345", birth_date: "1990-01-02",
+			id: 5,
 			documents: [],
 			interviewTypes: ["Phone Interview", "Structured Interview"],
 			interviewers: [],
@@ -137,6 +157,8 @@ var vm = new Vue({
 			to: ""
 		}, {
 			name: "Lady of Lórien", status: "interviewing", picture: "", jobTitle: "Astronaut",
+			email: "b@g.com", phone: "12345", birth_date: "1990-01-02",
+			id: 6,
 			documents: [],
 			interviewTypes: ["Phone Interview", "Structured Interview", "Problem Solving Interview", "Skype Interview", "Case Interview"],
 			interviewers: [],
@@ -144,13 +166,15 @@ var vm = new Vue({
 			from: "",
 			to: ""
 		}, {
-			name: "BB8", status: "offer", picture: "", jobTitle: "",
+			name: "BB8", status: "offer", picture: "", jobTitle: "", id: 7,
+			email: "b@g.com", phone: "12345", birth_date: "1990-01-02",
 			documents: []
 		}, {
-			name: "Michael Scott", status: "contract", picture: "", jobTitle: "",
+			name: "Michael Scott", status: "contract", picture: "", jobTitle: "", id: 8,
+			email: "b@g.com", phone: "12345", birth_date: "1990-01-02",
 			documents: []
 		}],
-		selectedCategory: "applied",
+		selectedCategory: "All",
 		current: {},
 		counter: 0,
 		lastInterview: true,
@@ -169,6 +193,7 @@ var vm = new Vue({
 				});
 			}
 		}
+
 	},
 	methods: {
 		setCurrent: function setCurrent(item) {
@@ -178,9 +203,184 @@ var vm = new Vue({
 		},
 		increment: function increment() {
 			this.counter++;
+		},
+
+		pipelineSwitchState: function pipelineSwitchState(id, title, current, candidate, newState) {
+			alerty.confirm("Are you sure to <strong class='text-danger'>" + title + "</strong> for the candidate <strong class='text-danger'>" + current.name + "</strong>?<br>", {
+				okLabel: '<span class="text-danger">Yes</span>',
+				cancelLabel: 'No'
+			});
+			//return window.pipelineSwitchState(id, $event, candidate, newState);
+		},
+		setVal: function setVal(item, h, b, f) {
+			this.current = item;
+			console.log(this.current);
+		},
+
+		fetchCandidates: function fetchCandidates() {
+			var _this = this;
+
+			fetch('./candidates').then(res = res.json()).then(function (res) {
+				_this.candidates = res;
+			});
 		}
+	},
+	created: function created() {
+		this.fetchCandidates();
+	},
+	components: {
+		'modal': __WEBPACK_IMPORTED_MODULE_0__components_Modal_vue___default.a
 	}
 });
+
+/***/ }),
+
+/***/ 245:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(38)
+/* script */
+var __vue_script__ = __webpack_require__(246)
+/* template */
+var __vue_template__ = __webpack_require__(247)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\Modal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2c928174", Component.options)
+  } else {
+    hotAPI.reload("data-v-2c928174", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 246:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: {
+        'header': { default: '' },
+        'body': { default: '' },
+        'footer': { default: '' }
+    }
+});
+
+/***/ }),
+
+/***/ 247:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("transition", { attrs: { name: "modal" } }, [
+    _c(
+      "div",
+      {
+        staticClass: "light-modal",
+        attrs: {
+          role: "dialog",
+          "aria-labelledby": "light-modal-label",
+          "aria-hidden": "false"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "light-modal-content large-content animated fadeIn" },
+          [
+            _c("div", { staticClass: "light-modal-header" }, [
+              _c("h3", {
+                staticClass: "light-modal-heading",
+                domProps: { textContent: _vm._s(_vm.header) }
+              }),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "light-modal-close-icon",
+                  attrs: { href: "#", "aria-label": "close" }
+                },
+                [_vm._v("×")]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "light-modal-body" }, [
+              _vm._v(
+                "\n                Change the status for " +
+                  _vm._s(_vm.body) +
+                  "\n            "
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "light-modal-footer" }, [
+              _vm._v(_vm._s(_vm.footer))
+            ])
+          ]
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2c928174", module.exports)
+  }
+}
 
 /***/ }),
 
@@ -375,6 +575,116 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ 38:
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+
 /***/ 4:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -451,7 +761,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
- * Vue.js v2.5.17
+ * Vue.js v2.5.16
  * (c) 2014-2018 Evan You
  * Released under the MIT License.
  */
@@ -5540,7 +5850,7 @@ Object.defineProperty(Vue, 'FunctionalRenderContext', {
   value: FunctionalRenderContext
 });
 
-Vue.version = '2.5.17';
+Vue.version = '2.5.16';
 
 /*  */
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Candidate;
+use App\Recruitment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -33,6 +35,11 @@ class RecruitmentsController extends CustomController
         return view($this->baseViewPath .'.index');
     }
 
+    public function show($id)
+    {
+        return view($this->baseViewPath .'.index');
+    }
+
     /**
      * Recruitment request form.
      *
@@ -42,5 +49,17 @@ class RecruitmentsController extends CustomController
     {
 
         return view($this->baseViewPath .'.request');
+    }
+
+    public function stateSwitch(Request $request){
+
+        $id = intval(Route::current()->parameter('recruitment'));
+        $candidate = intval(Route::current()->parameter('candidate'));
+        $state = intval(Route::current()->parameter('state'));
+
+        $recruitment = Recruitment::find($id);
+        $recruitment->candidates()->sync();
+
+        return Response()->json($result);
     }
 }

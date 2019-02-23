@@ -117,6 +117,7 @@ class RecruitmentRequestsController extends CustomController
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
+            dd($exception);
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
@@ -235,6 +236,23 @@ class RecruitmentRequestsController extends CustomController
         }
 
         return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    public function getCandidates(Request $request)
+    {
+        $result = false;
+        try {
+            $id = Route::current()->parameter('request');
+
+            $data = $this->contextObj->findData($id);
+
+            $result = $data->candidates()->with(['skills','qualifications'])->get();
+
+        } catch (Exception $exception) {
+            
+        } finally {
+            return Response()->json($result);
+        }
     }
 
     protected function saveRecruitmentRequest($request, $id = null) {

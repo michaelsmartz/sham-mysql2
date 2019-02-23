@@ -13,19 +13,6 @@
                     {{--@{{ lastInterview }}--}}
                     {{--@{{ counter }}--}}
                     <div class="row">
-                        <div class="col-md-8"></div>
-                        <div class="col-md-4">
-                            <div class="btn-group">
-                                <button id="{{ $step[0]['id'] }}" type="button" class="{{ $step[0]['btnclass'] }}">
-                                    <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
-                                </button>
-                                <button id="{{ $step[1]['id'] }}" type="button" class="{{ $step[1]['btnclass'] }}">
-                                    <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-2 img">
                             <div class="avatar-upload">
                                 <div class="avatar-edit">
@@ -36,20 +23,29 @@
                                     <div id="imagePreview" style="background-image: url('/img/avatar.png');">
                                     </div>
                                 </div>
+                                <br>
                             </div>
                         </div>
-                        <div class="col-md-10">
+                        <div class="col-md-6">
                             <div>
                                 <h2>@{{ current.name }}</h2>
                                 <div>@{{ current.jobTitle }}</div>
                                 <br>
                             </div>
-                            {{--<div class="btn-group">--}}
-                                {{--<a href="#light-modal" type="button" class="btn btn-primary"--}}
-                                        {{--data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event, 'interview')">--}}
-                                    {{--<i class="glyphicon glyphicon-plus"></i> Add New Interview--}}
-                                {{--</a>--}}
-                            {{--</div>--}}
+                        </div>
+                        <div class="col-md-3 pull-right">
+                            <div class="btn-group">
+                                <button id="{{ $step[0]['id'] }}" type="button"  @click="pipelineSwitchState(1,'Mark the overall results as Pass',current,1,2)" class="{{ $step[0]['btnclass'] }}">
+                                    <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
+                                </button>
+                                <button id="{{ $step[1]['id'] }}" type="button" class="{{ $step[1]['btnclass'] }}">
+                                    <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-11 col-md-offset-1">
 
                             <div class="table-responsive">
                                 <table id="interview-table" data-toggle="table" style="width:100%">
@@ -137,7 +133,8 @@
                                     </tbody>
                                 </table>
                             </div>
-
+                            <br>
+                            
                             <label for="overallComment">Overall Comments</label>
                             <textarea
                                     id="overallComment"

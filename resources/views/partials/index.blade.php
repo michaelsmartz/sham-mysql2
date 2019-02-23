@@ -64,7 +64,7 @@
 
             window.pipelines =  function (id, event) {
                 window.location.href = '{{url()->to("recruitment")}}/'+ id;
-            }
+            };
 
             window.manageCandidate = function (id, event) {
                 var route;
@@ -73,10 +73,18 @@
                 loadUrl(route + id + '/manage-candidate');
             }
             
+            window.pipelineSwitchState = function (id, event, candidate, newState) {
+                var route = '{{url()->current()}}/';
+
+                if (id) {
+                    loadUrl(route + id + '/switch/' + candidate + '/' + newState);
+                }
+            };
+
             window.cleanUrlHash = function(){
                 window.history.pushState(null, "", window.location.href.replace("#light-modal", ""));
                 //history.replaceState(null, "", window.location.pathname);
-                //return window.location.hash.replace(/^#/, '');
+                return window.location.hash.replace(/^#/, '');
             };
 
             window.editEmployeeHistoryForm = function(id, event) {

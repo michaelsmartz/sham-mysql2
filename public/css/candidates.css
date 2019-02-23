@@ -793,5 +793,17 @@ th:nth-child(3) {
   z-index: 1000;
 }
 
+dt {
+  margin-bottom: 20px;
+}
+
+.contact-column {
+  background-color: #f1f1f1;
+}
+
+.n-t-m {
+  margin-top: 0px !important;
+}
+
 
 /*# sourceMappingURL=candidates.css.map*/

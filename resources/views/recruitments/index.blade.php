@@ -5,7 +5,7 @@
     <section id="recruitment">
         <ul class="nav nav-tabs steps">
             <li class="orange nav-item">
-                <a class="nav-link active show" href="#applied" role="tab" data-toggle="tab" @click="selectedCategory='applied'">
+                <a class="nav-link active show" href="#applied" role="tab" data-toggle="tab" @click="selectedCategory='All'">
                     <h2>4</h2>
                     <small>Applied</small>
                 </a>
@@ -58,7 +58,7 @@
                 @component('recruitments.applied', ['step' => [
                     ['id'=>'item-approve','btnclass'=>'btn btn-sham','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve for interview'],
                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Reject applicant']
-                ] ])
+                ]])
                 @endcomponent
             </div>
             {{--<div class="tab-pane"  role="tabpanel" id="review">--}}
@@ -99,6 +99,9 @@
 
             </div>
         </div>
+        <modal v-if="showModal" @close="showModal=false">
+
+        </modal>
     </section>
 @endsection
 
@@ -191,6 +194,7 @@
         });
 
     </script>
+
     <style>
         .avatar-upload .avatar-edit input + label {
             display: none; !important;
