@@ -103,10 +103,10 @@
                                         <i class="glyphicon glyphicon-arrow-right text-primary"></i>
                                     </button>
                                     <button class="b-n b-n-r bg-transparent item-view" data-wenk="Approve" onclick="updateStatus('{{$request->id}}', 1)">
-                                        <i class="glyphicon glyphicon-thumbs-up text-primary"></i>
+                                        <i class="glyphicon glyphicon-thumbs-up text-success"></i>
                                     </button>
                                     <button class="b-n b-n-r bg-transparent item-view" data-wenk="Decline" onclick="updateStatus('{{$request->id}}', 0)">
-                                        <i class="glyphicon glyphicon-thumbs-down text-primary"></i>
+                                        <i class="glyphicon glyphicon-thumbs-down text-danger"></i>
                                     </button>
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$request->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
