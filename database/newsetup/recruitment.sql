@@ -358,3 +358,9 @@ ADD CONSTRAINT `FK_Candidate_JobTitles`
   REFERENCES `shamdev_recruitment`.`job_titles` (`id`)
   ON DELETE RESTRICT
   ON UPDATE RESTRICT;
+
+ALTER TABLE `recruitments`
+ADD COLUMN `quantity` INT(11) NULL DEFAULT NULL AFTER `job_title`,
+ADD COLUMN `is_completed` TINYINT NULL DEFAULT 0 AFTER `recruitment_type_id`,
+ADD COLUMN `is_approved` TINYINT NULL DEFAULT 0 AFTER `is_completed`,
+ADD COLUMN `comments` VARCHAR(255) NULL AFTER `is_approved`;

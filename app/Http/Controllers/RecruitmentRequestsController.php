@@ -95,8 +95,9 @@ class RecruitmentRequestsController extends CustomController
         $interviewTypes = Interview::pluck('description','id')->all();
 
         $request = $this->contextObj;
+        $_mode = 'create';
 
-        return view($this->baseViewPath .'.create', compact('request', 'departments',
+        return view($this->baseViewPath .'.create', compact('_mode', 'request', 'departments',
             'positions', 'qualifications', 'skills', 'interviewTypes','recruitmentTypes'));
     }
 
@@ -117,7 +118,6 @@ class RecruitmentRequestsController extends CustomController
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
-            dd($exception);
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
@@ -128,7 +128,7 @@ class RecruitmentRequestsController extends CustomController
     {
 
         $data = $skills = $departments = $positions = $qualifications = $interviewTypes = $recruitmentTypes = null;
-
+        $_mode = 'edit';
         $id = Route::current()->parameter('recruitment_request');
 
         if(!empty($id)) {
@@ -151,7 +151,7 @@ class RecruitmentRequestsController extends CustomController
         $recruitmentInterviewTypes = $data->interviewTypes->pluck('id');
 
         return view($this->baseViewPath .'.edit',
-            compact('data', 'departments', 'positions', 'qualifications',
+            compact('_mode', 'data', 'departments', 'positions', 'qualifications',
                 'skills', 'interviewTypes', 'recruitmentTypes',
                 'recruitmentInterviewTypes','recruitmentSkills'));
     }
@@ -215,6 +215,22 @@ class RecruitmentRequestsController extends CustomController
 
         return redirect()->route($this->baseViewPath .'.index');
     }
+
+
+    public function updateStatus(Request $request, $id, $status){
+        try {
+            $data = Recruitment::find($id);
+
+            if($data) {
+                $data->is_approved = $status;
+                $data->save();
+            }
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
+        }
+        return redirect()->route($this->baseViewPath .'.index');
+    }
+
 
     /**
      * Remove the specified branch from the storage.
@@ -301,6 +317,7 @@ class RecruitmentRequestsController extends CustomController
             'recruitment_type_id' => 'nullable',
             'start_date' => 'required',
             'end_date' => 'required',
+            'quantity' => 'nullable',
             'min_salary' => 'nullable',
             'max_salary' => 'nullable',
             'description' => 'nullable|string|min:0',

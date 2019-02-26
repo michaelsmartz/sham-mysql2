@@ -66,6 +66,11 @@
                 window.location.href = '{{url()->to("recruitment")}}/'+ id;
             };
 
+            window.updateStatus = function (id, status){
+                //console.log('{{url()->to("recruitment_requests")}}/'+ id + '/'+ status + '/update-status');
+                window.location.href = '{{url()->to("recruitment_requests")}}/'+ id + '/'+ status + '/update-status';
+            }
+
             window.manageCandidate = function (id, event) {
                 var route;
                 route = '{{url()->current()}}/';

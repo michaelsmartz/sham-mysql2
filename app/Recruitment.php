@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use San4io\EloquentFilter\Filters\LikeFilter;
+use San4io\EloquentFilter\Filters\WhereFilter;
 
 class Recruitment extends Model
 {
@@ -40,9 +41,12 @@ class Recruitment extends Model
         'year_experience',
         'start_date',
         'end_date',
+        'quantity',
         'min_salary',
         'max_salary',
-        'recruitment_type_id'
+        'recruitment_type_id',
+        'is_approved',
+        'is_completed'
     ];
 
     protected $searchable = [
@@ -50,7 +54,9 @@ class Recruitment extends Model
         'qualification_recruitment:description',
         'year_experience',
         'field_of_study',
-        'start_date'
+        'start_date',
+        'is_approved',
+        'is_completed'
     ];
 
     protected $filterable = [
@@ -58,7 +64,9 @@ class Recruitment extends Model
         'qualification_recruitment:description' => LikeFilter::class,
         'year_experience' => LikeFilter::class,
         'field_of_study' => LikeFilter::class,
-        'start_date' => LikeFilter::class
+        'start_date' => LikeFilter::class,
+        'is_approved' => WhereFilter::class,
+        'is_completed' => WhereFilter::class,
     ];
 
     /**

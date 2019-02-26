@@ -34,6 +34,21 @@
                             <li data-filter-column="start_date">By Start Date</li>
                         </ul>
                     </li>
+                    <li>
+                        <ul class="nav">
+                            <li><p class="menu-label">Quick Filters</p></li>
+                            <li>
+                                <p>
+                                    <a href="{{route('recruitment_requests.index')}}?is_completed=1"><span class="icon circle info"></span>Completed</a>
+                                    <a href="{{route('recruitment_requests.index')}}?is_completed=0"><span class="icon circle default"></span>Not Completed</a>
+                                </p>
+                                <p>
+                                    <a href="{{route('recruitment_requests.index')}}?is_approved=1"><span class="icon circle info"></span>Approved</a>
+                                    <a href="{{route('recruitment_requests.index')}}?is_approved=0"><span class="icon circle default"></span>Decline</a>
+                                </p>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </form>
         </div>
@@ -56,9 +71,11 @@
                         <tr>
                             <th data-sortable="true">Job Title</th>
                             <th data-sortable="true">Highest Qualification</th>
-                            <th data-sortable="true">Year Experience</th>
+                            {{--<th data-sortable="true">Year Experience</th>--}}
                             <th data-sortable="true">Field Of Study</th>
                             <th data-sortable="true">Start Date</th>
+                            <th data-sortable="true">Completed</th>
+                            <th data-sortable="true">Approved</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -68,20 +85,28 @@
                         <tr id="tr{{$request->id}}">
                             <td>{{ $request->job_title }}</td>
                             <td>{{  optional($request->qualification)->description }}</td>
-                            <td>{{ $request->year_experience }}</td>
+                            {{--<td>{{ $request->year_experience }}</td>--}}
                             <td>{{ $request->field_of_study }}</td>
                             <td>{{ $request->start_date }}</td>
+                            <td>{!! ($request->is_completed) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
+                            <td>{!! ($request->is_approved) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Manage Candidates" class="b-n b-n-r bg-transparent item-edit" onclick="manageCandidate('{{$request->id}}', event)">
-                                        <i class="glyphicon glyphicon-pencil text-primary"></i>
-                                    </a>
-                                    <button class="b-n b-n-r bg-transparent item-view" data-wenk="View stages" onclick="pipelines('{{$request->id}}')">
-                                        <i class="glyphicon glyphicon-eye-open text-primary"></i>
-                                    </button>
                                     <button class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$request->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
+                                    </button>
+                                    <a href="#light-modal" data-wenk="Manage Candidates" class="b-n b-n-r bg-transparent item-edit" onclick="manageCandidate('{{$request->id}}', event)">
+                                        <i class="glyphicon glyphicon-list-alt text-primary"></i>
+                                    </a>
+                                    <button class="b-n b-n-r bg-transparent item-view" data-wenk="View stages" onclick="pipelines('{{$request->id}}')">
+                                        <i class="glyphicon glyphicon-arrow-right text-primary"></i>
+                                    </button>
+                                    <button class="b-n b-n-r bg-transparent item-view" data-wenk="Approve" onclick="updateStatus('{{$request->id}}', 1)">
+                                        <i class="glyphicon glyphicon-thumbs-up text-primary"></i>
+                                    </button>
+                                    <button class="b-n b-n-r bg-transparent item-view" data-wenk="Decline" onclick="updateStatus('{{$request->id}}', 0)">
+                                        <i class="glyphicon glyphicon-thumbs-down text-primary"></i>
                                     </button>
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$request->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>

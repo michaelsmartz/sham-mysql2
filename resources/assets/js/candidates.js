@@ -320,18 +320,24 @@ if(document.getElementById("candidates-app")) {
                 event.preventDefault();
             },
             fetchQualifications: function () {
+
+                if (!route().current("candidates.create")) {
                 fetch('./candidate-qualifications')
                     .then(res => res.json())
                     .then(res => {
                         this.quals = res;
                     })
+                }
             },
             fetchQPreviousEmployments: function () {
-                fetch('./previous_employments')
-                    .then(res => res.json())
-                    .then(res => {
-                        this.employments = res;
-                    })
+
+                if (!route().current("candidates.create")) {
+                    fetch('./previous_employments')
+                        .then(res => res.json())
+                        .then(res => {
+                            this.employments = res;
+                        })
+                }
             }
         },
         mounted: function () {

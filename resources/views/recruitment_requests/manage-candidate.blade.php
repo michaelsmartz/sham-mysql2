@@ -16,6 +16,7 @@
                 <div class="col-xs-12">
                     <div class="flex-wrapper">
                         <div class="col-xs-12">
+                            <label for="from[]">Available Candidates</label>
                             {!! Form::select('from[]', $candidates, null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control multipleSelect', 'id'=>'multiselect')) !!}
                         </div>
                     </div>
@@ -36,6 +37,7 @@
                 <div class="col-xs-12">
                     <br>
                     <div class="col-xs-12">
+                        <label for="candidates[]">Selected Candidates</label>
                         {!! Form::select('candidates[]', isset($recruitmentCandidates)?$recruitmentCandidates:[], null, array('multiple' => 'multiple', 'size' => '7', 'class'=> 'form-control', 'id'=>'multiselect_to')) !!}
                     </div>
                     {!! $errors->first('candidates[]', '<p class="help-block">:message</p>') !!}

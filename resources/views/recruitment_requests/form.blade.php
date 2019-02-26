@@ -23,7 +23,7 @@
                 </span>
                 </div>
 
-                <div class="form-group col-xs-5">
+                <div class="form-group col-xs-4">
                     <label for="skill">Select skills</label>
                     {!! Form::select('skills[]', $skills,
                         old('skills', isset($recruitmentSkills) ? $recruitmentSkills : null),
@@ -31,12 +31,23 @@
                     ) !!}
                 </div>
 
-                <div class="form-group col-xs-5">
+                <div class="form-group col-xs-4">
                     <label for="interview_type">Select Interview Types</label>
                     {!! Form::select('interview_types[]', $interviewTypes,
                         old('interview_types', isset($recruitmentInterviewTypes) ? $recruitmentInterviewTypes : null),
                         ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
                     ) !!}
+                </div>
+
+                <div class="form-group col-xs-2">
+                <span class="field">
+                    <label for="quantity">Quantity</label>
+                    {!! Form::text('quantity', old('quantity', isset($request->quantity) ? $request->quantity : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Quantity', 'required', 'title'=>'Required', 'id'=>'quantity',
+                      'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
+                      'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
+                      'data-parsley-trigger'=>'focusout'])
+                    !!}
+                </span>
                 </div>
 
                 <div class="form-group col-xs-2">
@@ -113,6 +124,20 @@
                         {!! Form::textarea('description', old('description', isset($request->description) ? $request->description : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Description', 'required', 'title'=>'Required','id'=>'description', 'maxlength' => '50']) !!}
                     </span>
                 </div>
+                <?php if($_mode == 'edit'){ ?>
+                <div class="form-group col-xs-12 {{ $errors->has('is_completed') ? 'has-error' : '' }}">
+                    <label for="is_preferred">Completed</label>
+                    <div class="checkbox">
+                        <label for="is_completed_1">
+                            <input id="is_completed_1" class="" name="is_completed" type="hidden" value="0" />
+                            <input id="is_completed_1" class="" name="is_completed" type="checkbox" value="1" {{ old('is_completed', optional($request)->is_completed) == '1' ? 'checked' : '' }}>
+                            Yes
+                        </label>
+                    </div>
+
+                    {!! $errors->first('is_completed', '<p class="help-block">:message</p>') !!}
+                </div>
+                <?php } ?>
             </div>
         </div>
         <div id="date-picker"> </div>
