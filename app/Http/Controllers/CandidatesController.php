@@ -8,6 +8,7 @@ use App\CandidateQualification;
 use App\DisabilityCategory;
 use App\Enums\PreferredNotificationType;
 use App\Gender;
+use App\JobTitle;
 use App\MaritalStatus;
 use App\Qualification;
 use App\Skill;
@@ -71,10 +72,10 @@ class CandidatesController extends CustomController
             $request->merge(['phone' => '%'.$phone.'%']);
         }
 
-        $position_applying_for = $request->get('position_applying_for', null);
+        $job_title_id = $request->get('job_title_id', null);
 
-        if(!empty($position_applying_for)){
-            $request->merge(['position_applying_for' => '%'.$position_applying_for.'%']);
+        if(!empty($job_title_id)){
+            $request->merge(['job_title_id' => '%'.$job_title_id.'%']);
         }
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_CANDIDATES);
@@ -110,6 +111,7 @@ class CandidatesController extends CustomController
         $titles = Title::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $genders = Gender::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $maritalstatuses = MaritalStatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+        $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
 
         $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
 
@@ -120,7 +122,7 @@ class CandidatesController extends CustomController
         $candidate = $this->contextObj;
 
         return view($this->baseViewPath .'.create', compact('titles', 'candidate', 'uploader', 'genders',
-            'maritalstatuses', 'disabilities', 'skills', 'preferredNotifications'));
+            'maritalstatuses', 'jobTitles','disabilities', 'skills', 'preferredNotifications'));
     }
 
     public function qualifications(Request $request)
@@ -251,6 +253,7 @@ class CandidatesController extends CustomController
             $skills = Skill::pluck('description','id')->all();
             $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
             $preferredNotifications = PreferredNotificationType::ddList();
+            $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         }
 
         $candidateSkills = $data->skills->pluck('id');
@@ -258,7 +261,7 @@ class CandidatesController extends CustomController
         $candidateDisabilities = $data->disabilities->pluck('id');
 
         return view($this->baseViewPath .'.edit',
-            compact('data', 'uploader', 'titles','genders','maritalstatuses', 'skills', 'preferredNotifications',
+            compact('data', 'uploader', 'titles','genders','maritalstatuses','jobTitles','skills', 'preferredNotifications',
                 'disabilities', 'candidateSkills','candidateDisabilities','qualifications'));
     }
 
@@ -325,12 +328,12 @@ class CandidatesController extends CustomController
             'preferred_notification_id' => 'nullable',
             'title_id' => 'required',
             'marital_status_id' => 'nullable',
+            'job_title_id' => 'nullable',
             'first_name' => 'required|string|min:0|max:50',
             'surname' => 'required|string|min:0|max:50',
             'email' => 'nullable',
             'phone' => 'nullable',
             'id_number' => 'required|string|min:1|max:50',
-            'position_applying_for' => 'required|string|min:1|max:50',
             'date_available' => 'nullable|string|min:0',
             'salary_expectation' => 'nullable|numeric|min:0',
             'overview' => 'nullable|string|min:0',

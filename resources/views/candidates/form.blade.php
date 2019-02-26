@@ -250,10 +250,10 @@
             </div>
 
             <div class="form-group col-xs-4">
-                    <span class="field">
-                        <label for="position_applying_for">Position Applying For</label>
-                        {!! Form::text('position_applying_for', old('position_applying_for', isset($candidate->position_applying_for) ? $candidate->position_applying_for : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Position Applying For', 'required', 'title'=>'Required','id'=>'position_applied', 'maxlength' => '50']) !!}
-                    </span>
+                <span class="field">
+                    <label for="position_applying_for">Position Applying For</label>
+                    {!! Form::select('job_title_id', $jobTitles, old('job_title_id', isset($candidate->job_title_id) ? $candidate->job_title_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Position Applying For..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
+                </span>
             </div>
 
             <div class="form-group col-xs-2">

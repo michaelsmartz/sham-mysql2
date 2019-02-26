@@ -40,7 +40,7 @@ class Candidate extends Model
                   'email',
                   'home_address',
                   'id_number',
-                  'position_applying_for',
+                  'job_title_id',
                   'date_available',
                   'salary_expectation',
                   'phone',
@@ -63,7 +63,7 @@ class Candidate extends Model
         'surname',
         'email',
         'phone',
-        'position_applying_for'
+        'jobTitle:job_title_id'
     ];
 
     protected $filterable = [
@@ -71,7 +71,7 @@ class Candidate extends Model
         'surname' => LikeFilter::class,
         'email' => LikeFilter::class,
         'phone' => LikeFilter::class,
-        'position_applying_for' => LikeFilter::class
+        'jobTitle:job_title_id' => LikeFilter::class
     ];
 
     /**
@@ -138,6 +138,11 @@ class Candidate extends Model
     public function maritalstatus()
     {
         return $this->belongsTo('App\Maritalstatus','marital_status_id','id');
+    }
+
+    public function jobTitle()
+    {
+        return $this->belongsTo('App\JobTitle','job_title_id','id');
     }
 
     public function gender()

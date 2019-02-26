@@ -347,3 +347,14 @@ DROP COLUMN `home_address`;
 
 ALTER TABLE `recruitments`
 	ADD COLUMN `end_date` DATE NULL DEFAULT NULL AFTER `start_date`;
+
+ALTER TABLE `candidates`
+CHANGE COLUMN `position_applying_for` `job_title_id` INT(11) NULL DEFAULT NULL AFTER `marital_status_id`,
+ADD INDEX `FK_Candidates_JobTitles` (`job_title_id` ASC) INVISIBLE;
+;
+ALTER TABLE `candidates`
+ADD CONSTRAINT `FK_Candidate_JobTitles`
+  FOREIGN KEY (`job_title_id`)
+  REFERENCES `shamdev_recruitment`.`job_titles` (`id`)
+  ON DELETE RESTRICT
+  ON UPDATE RESTRICT;
