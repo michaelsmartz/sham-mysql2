@@ -1,6 +1,8 @@
 import Modal from './components/Modal.vue';
 window.Vue = require('vue/dist/vue.common.js');
 
+let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 var vm = new Vue({
 	el:  "#recruitment",
 	data: {
@@ -12,8 +14,8 @@ var vm = new Vue({
 				email: "b@g.com", phone: "12345", birth_date:"1990-01-02",
 				id:1,
 				qualifications:[
-					{description:"Curriculum Vitae.docx", institution:"abc", obtained_on:"2005"},
-					{description:"Curriculum Vitae.docx", institution:"abc", obtained_on:"2005"}
+					{description:"XXX", institution:"Abc", obtained_on:"2005"},
+					{description:"Zzz", institution:"Dbc", obtained_on:"2006"}
 				],
 				documents: [
 					{name:"Curriculum Vitae.docx"},
@@ -140,8 +142,22 @@ var vm = new Vue({
 				{
 					okLabel: '<span class="text-danger">Yes</span>',
 					cancelLabel: 'No'
+				},
+				function() {
+					fetch('.1/switch/' + current.id + '/' + newState,
+					{
+						headers: {
+						  "Content-Type": "application/json",
+						  "Accept": "application/json, text-plain, */*",
+						  "X-Requested-With": "XMLHttpRequest",
+						  "X-CSRF-TOKEN": token
+						 },
+						method: 'post',
+						credentials: "same-origin"
+					})
+					.then(res = res.json());
 				}
-			)
+			);
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},
 		setVal(item,h,b,f) {

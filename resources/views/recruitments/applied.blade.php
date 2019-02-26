@@ -57,6 +57,7 @@
                                 <div id="pane1" class="tab-pane">
                                     <div class="col-lg-8">
                                         <div>EDUCATION</div>
+                                        <hr>
                                         <div v-for="qualification in current.qualifications">
                                             <dd>@{{qualification.institution}}</dd>
                                             <dt>@{{qualification.description}}</dt>

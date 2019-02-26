@@ -202,10 +202,10 @@
         </a>
         <ul class="sub-menu">
             @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_CANDIDATES]))
-                <li> <a href="{{URL::to('/')}}/candidates">Candidates</a></li>
+                <li class="{{ (Request::is('candidates/*') || Request::is('candidates') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/candidates">Candidates</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_REQUESTS]))
-                <li> <a href="{{URL::to('/')}}/recruitment_requests">Requests</a></li>
+                <li class="{{ (Request::is('recruitment_requests/*') || Request::is('recruitment_requests') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/recruitment_requests">Requests</a></li>
             @endif
         </ul>
     </li>

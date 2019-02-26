@@ -111,6 +111,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 window.Vue = __webpack_require__(7);
 
+var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 var vm = new Vue({
 	el: "#recruitment",
 	data: {
@@ -120,7 +122,7 @@ var vm = new Vue({
 			name: "Bill Gates", status: "applied", picture: "", jobTitle: "Astronaut",
 			email: "b@g.com", phone: "12345", birth_date: "1990-01-02",
 			id: 1,
-			qualifications: [{ description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }, { description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }],
+			qualifications: [{ description: "XXX", institution: "Abc", obtained_on: "2005" }, { description: "Zzz", institution: "Dbc", obtained_on: "2006" }],
 			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }, { name: "Anything Else.pdf" }]
 
 		}, {
@@ -209,6 +211,17 @@ var vm = new Vue({
 			alerty.confirm("Are you sure to <strong class='text-danger'>" + title + "</strong> for the candidate <strong class='text-danger'>" + current.name + "</strong>?<br>", {
 				okLabel: '<span class="text-danger">Yes</span>',
 				cancelLabel: 'No'
+			}, function () {
+				fetch('.1/switch/' + current.id + '/' + newState, {
+					headers: {
+						"Content-Type": "application/json",
+						"Accept": "application/json, text-plain, */*",
+						"X-Requested-With": "XMLHttpRequest",
+						"X-CSRF-TOKEN": token
+					},
+					method: 'post',
+					credentials: "same-origin"
+				}).then(res = res.json());
 			});
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},
