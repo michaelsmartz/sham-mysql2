@@ -70,7 +70,7 @@ class RecruitmentRequestsController extends CustomController
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_REQUESTS);
 
-        $requests = $this->contextObj::filtered()->paginate(10);
+        $requests = $this->contextObj::orderBy('start_date','DESC')->filtered()->paginate(10);
 
         // handle empty result bug
         if (Input::has('page')) {

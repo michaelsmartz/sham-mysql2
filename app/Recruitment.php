@@ -85,40 +85,6 @@ class Recruitment extends Model
      * @var array
      */
     protected $casts = [];
-    
-
-    /**
-     * Set the start_date.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setStartDateAttribute($value)
-    {
-        $this->attributes['start_date'] = !empty($value) ? date($this->getDateFormat(), strtotime($value)) : null;
-    }
-
-    /**
-     * Get start_date in array format
-     *
-     * @param  string  $value
-     * @return array
-     */
-    public function getStartDateAttribute($value)
-    {
-        return date('j/n/Y', strtotime($value));
-    }
-
-    /**
-     * Get deleted_at in array format
-     *
-     * @param  string  $value
-     * @return array
-     */
-    public function getDeletedAtAttribute($value)
-    {
-        return date('j/n/Y g:i A', strtotime($value));
-    }
 
     public function qualification()
     {

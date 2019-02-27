@@ -125,6 +125,20 @@
                     </span>
                 </div>
                 <?php if($_mode == 'edit'){ ?>
+
+                <div class="form-group col-xs-12 {{ $errors->has('is_approved') ? 'has-error' : '' }}">
+                    <label for="is_approved">Approved</label>
+                    <div class="checkbox">
+                        <label for="is_approved_1">
+                            <input id="is_approved_1" class="" name="is_approved" type="hidden" value="0" />
+                            <input id="is_approved_1" class="" name="is_approved" type="checkbox" value="1" {{ old('is_approved', optional($request)->is_approved) == '1' ? 'checked' : '' }}>
+                            Yes
+                        </label>
+                    </div>
+
+                    {!! $errors->first('is_completed', '<p class="help-block">:message</p>') !!}
+                </div>
+
                 <div class="form-group col-xs-12 {{ $errors->has('is_completed') ? 'has-error' : '' }}">
                     <label for="is_preferred">Completed</label>
                     <div class="checkbox">

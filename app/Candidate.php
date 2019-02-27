@@ -89,40 +89,6 @@ class Candidate extends Model
      * @var array
      */
     protected $casts = [];
-    
-
-    /**
-     * Set the date_available.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setDateAvailableAttribute($value)
-    {
-        $this->attributes['date_available'] = !empty($value) ? date($this->getDateFormat(), strtotime($value)) : null;
-    }
-
-    /**
-     * Get date_available in array format
-     *
-     * @param  string  $value
-     * @return array
-     */
-    public function getDateAvailableAttribute($value)
-    {
-        return date('j/n/Y', strtotime($value));
-    }
-
-    /**
-     * Get deleted_at in array format
-     *
-     * @param  string  $value
-     * @return array
-     */
-    public function getDeletedAtAttribute($value)
-    {
-        return date('j/n/Y g:i A', strtotime($value));
-    }
 
     public function disabilities()
     {
