@@ -35,6 +35,7 @@ class Recruitment extends Model
         'department_id',
         'employee_status_id',
         'qualification_id',
+        'employee_id',
         'job_title',
         'field_of_study',
         'description',

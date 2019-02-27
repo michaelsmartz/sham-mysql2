@@ -7,7 +7,6 @@ use App\Department;
 use App\EmployeeStatus;
 use App\Enums\RecruitmentType;
 use App\Interview;
-use App\Position;
 use App\QualificationRecruitment;
 use App\Recruitment;
 use App\Skill;
@@ -272,6 +271,9 @@ class RecruitmentRequestsController extends CustomController
     }
 
     protected function saveRecruitmentRequest($request, $id = null) {
+
+        $employee_id  = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
         $otherFields = [
             '_token',
             '_method',
@@ -286,6 +288,7 @@ class RecruitmentRequestsController extends CustomController
         }
 
         $input = array_except($request->all(), $otherFields);
+        $input['employee_id'] = $employee_id;
 
         if ($id == null) { // Create
             $data = $this->contextObj->addData($input);
@@ -294,8 +297,10 @@ class RecruitmentRequestsController extends CustomController
             $data = Recruitment::find($id);
         }
 
-        $data->skills()->sync($skills);
-        $data->interviewTypes()->sync($interview_types);
+        if($data) {
+            $data->skills()->sync($skills);
+            $data->interviewTypes()->sync($interview_types);
+        }
     }
 
     /**
@@ -311,12 +316,13 @@ class RecruitmentRequestsController extends CustomController
             'job_title' => 'required|string|min:0|max:50',
             'employee_status_id' => 'nullable',
             'department_id' => 'nullable',
+            'employee_id' => 'nullable',
             'year_experience' => 'nullable',
             'qualification_id' => 'nullable',
             'field_of_study' => 'required|string|min:0|max:50',
             'recruitment_type_id' => 'nullable',
-            'start_date' => 'required',
-            'end_date' => 'required',
+            'start_date' => 'nullable',
+            'end_date' => 'nullable',
             'quantity' => 'nullable',
             'min_salary' => 'nullable',
             'max_salary' => 'nullable',

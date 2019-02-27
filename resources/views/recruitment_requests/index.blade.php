@@ -34,18 +34,16 @@
                             <li data-filter-column="start_date">By Start Date</li>
                         </ul>
                     </li>
+                    <hr>
                     <li>
                         <ul class="nav">
                             <li><p class="menu-label">Quick Filters</p></li>
-                            <li>
-                                <p>
-                                    <a href="{{route('recruitment_requests.index')}}?is_completed=1"><span class="icon circle info"></span>Completed</a>
-                                    <a href="{{route('recruitment_requests.index')}}?is_completed=0"><span class="icon circle default"></span>Not Completed</a>
-                                </p>
-                                <p>
-                                    <a href="{{route('recruitment_requests.index')}}?is_approved=1"><span class="icon circle info"></span>Approved</a>
-                                    <a href="{{route('recruitment_requests.index')}}?is_approved=0"><span class="icon circle default"></span>Decline</a>
-                                </p>
+                            <li style="line-height: 0px;">
+                                <a href="{{route('recruitment_requests.index')}}?is_completed=1"><span class="icon circle info"></span>Completed</a>
+                                <a href="{{route('recruitment_requests.index')}}?is_completed=0"><span class="icon circle default"></span>Not Completed</a>
+
+                                <a href="{{route('recruitment_requests.index')}}?is_approved=1"><span class="icon circle info"></span>Approved</a>
+                                <a href="{{route('recruitment_requests.index')}}?is_approved=0"><span class="icon circle default"></span>Decline</a>
                             </li>
                         </ul>
                     </li>
@@ -70,9 +68,7 @@
                     <thead>
                         <tr>
                             <th data-sortable="true">Job Title</th>
-                            <th data-sortable="true">Highest Qualification</th>
-                            {{--<th data-sortable="true">Year Experience</th>--}}
-                            <th data-sortable="true">Field Of Study</th>
+                            <th data-sortable="true">Start Date</th>
                             <th data-sortable="true">Start Date</th>
                             <th data-sortable="true">Completed</th>
                             <th data-sortable="true">Approved</th>
@@ -84,10 +80,8 @@
                         @foreach($requests as $request)
                         <tr id="tr{{$request->id}}">
                             <td>{{ $request->job_title }}</td>
-                            <td>{{  optional($request->qualification)->description }}</td>
-                            {{--<td>{{ $request->year_experience }}</td>--}}
-                            <td>{{ $request->field_of_study }}</td>
                             <td>{{ $request->start_date }}</td>
+                            <td>{{ $request->end_date }}</td>
                             <td>{!! ($request->is_completed) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
                             <td>{!! ($request->is_approved) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
 
