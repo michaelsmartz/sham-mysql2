@@ -1,14 +1,14 @@
-<ul class="people-list">
-    <li class="active">
-        <div class="img">
-        </div>
-        <div>
-            <strong>Robert Sons</strong>
-            <div>IT Manager</div>
-        </div>
-    </li>
-</ul>
-<div class="tab-detail">
+                <ul class="people-list">
+                    <li v-for="person in filteredPeople" v-on:click="setCurrent(person)" :class="{ active: current.name === person.name }">
+                        <div class="img">
+                        </div>
+                        <div>
+                            <strong>@{{ person.name }}</strong>
+                            <div>@{{ person.jobTitle }}</div>
+                        </div>
+                    </li>
+                </ul>
+<div class="tab-detail" v-if="current !== null">
     <div class="row">
         <div class="col-md-2 img">
             <div class="avatar-upload">
@@ -20,33 +20,35 @@
                     <div id="imagePreview" style="background-image: url('/img/avatar.png');">
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div>
-                <h2>Robert Sons</h2>
-                <div>IT Manager</div>
                 <br>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <label for="startDate">Start Date</label>
-                    <input id="startDate" class='form-control datepicker' type="text" name="startDate" >
-                </div>
-                <div class="col-md-12">
-                    <label for="comments">Comments</label>
-                    <textarea
-                            id="comments"
-                            class='form-control'
-                            name="comments">
-                    </textarea>
-                </div>
-                <div class="col-md-12" style="padding-top: 10px;">
-                    <button type="button" class="btn btn-success pull-right">Save</button>
-                    <button type="button" class="btn btn-success">Import Candidate Data</button>
-                </div>
+        </div>
+        <div class="col-md-7">
+            <div>
+                <h2>@{{ current.name }}</h2>
+                <div>@{{ current.jobTitle }}</div>
+                <br>
             </div>
-            <div id="date-picker"> </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-11 col-md-offset-1">
+            <div class="col-md-7">
+                <label for="startDate">Start Date</label>
+                <input id="startDate" class='form-control datepicker' type="text" name="startDate" >
+            </div>
+            <div class="col-md-7">
+                <label for="comments">Comments</label>
+                <textarea
+                        id="comments"
+                        class='form-control'
+                        name="comments">
+                </textarea>
+            </div>
+            <div class="col-md-7" style="padding-top: 10px;">
+                <button type="button" class="btn btn-success pull-right">Save</button>
+                <button type="button" class="btn btn-success">Import Candidate Data</button>
+            </div>
         </div>
     </div>
 </div>
