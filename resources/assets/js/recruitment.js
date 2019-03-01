@@ -17,6 +17,10 @@ var vm = new Vue({
 					{description:"XXX", institution:"Abc", obtained_on:"2005"},
 					{description:"Zzz", institution:"Dbc", obtained_on:"2006"}
 				],
+				previousEmployments:[
+					{description:"Company 1"},
+					{description:"Company 2"}
+				],
 				documents: [
 					{name:"Curriculum Vitae.docx"},
 					{name:"Application Letter.docx"},
@@ -32,7 +36,11 @@ var vm = new Vue({
 					{description:"Curriculum Vitae.docx", institution:"abc", obtained_on:"2005"},
 					{description:"Curriculum Vitae.docx", institution:"abc", obtained_on:"2005"}
 				],
-				documents: []
+				documents: [],
+				previousEmployments:[
+					{description:"Company 1"},
+					{description:"Company 2"}
+				],
 			},
 			{
 				name: "George Clooney", status: "review", picture:"", jobTitle:"Web Developer",
@@ -42,7 +50,11 @@ var vm = new Vue({
 					{description:"Curriculum Vitae.docx", institution:"abc", obtained_on:"2005"},
 					{description:"Curriculum Vitae.docx", institution:"abc", obtained_on:"2005"}
 				],
-				documents: []
+				documents: [],
+				previousEmployments:[
+					{description:"Company 1"},
+					{description:"Company 2"}
+				],
 			},
             {
 				name: "Meryl Streep", status: "interviewing", picture:"", jobTitle:"Web Developer",
@@ -50,15 +62,17 @@ var vm = new Vue({
 				id:4,
 				documents: [],
                 interviewTypes:[
-                    "Phone Interview",
-                    "Structured Interview",
-                    "Problem Solving Interview",
-                    "Skype Interview",
-                    "Case Interview",
+                    "Phone",
+                    "Skype",
+                    "Panel",
 				],
                 interviewers:[
                 	"John w henry",
 					"Mike chung"
+				],
+				previousEmployments:[
+					{description:"Company 1"},
+					{description:"Company 2"}
 				],
 				location: "Port Louis, Mauritius",
 				from: "",
@@ -144,7 +158,7 @@ var vm = new Vue({
 					cancelLabel: 'No'
 				},
 				function() {
-					fetch('.1/switch/' + current.id + '/' + newState,
+					fetch('1/switch/' + current.id + '/' + newState,
 					{
 						headers: {
 						  "Content-Type": "application/json",
@@ -155,7 +169,12 @@ var vm = new Vue({
 						method: 'post',
 						credentials: "same-origin"
 					})
-					.then(res = res.json());
+					.then(function(res){
+						if(res == true){
+							alerty.toasts('Operation successful');
+						}
+                        
+                    });
 				}
 			);
 			//return window.pipelineSwitchState(id, $event, candidate, newState);

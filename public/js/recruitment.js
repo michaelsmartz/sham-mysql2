@@ -212,7 +212,7 @@ var vm = new Vue({
 				okLabel: '<span class="text-danger">Yes</span>',
 				cancelLabel: 'No'
 			}, function () {
-				fetch('.1/switch/' + current.id + '/' + newState, {
+				fetch('1/switch/' + current.id + '/' + newState, {
 					headers: {
 						"Content-Type": "application/json",
 						"Accept": "application/json, text-plain, */*",
@@ -221,7 +221,9 @@ var vm = new Vue({
 					},
 					method: 'post',
 					credentials: "same-origin"
-				}).then(res = res.json());
+				}).then(function () {
+					alerty.toasts('Operation successful');
+				});
 			});
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},

@@ -56,12 +56,16 @@ class RecruitmentsController extends CustomController
         $id = intval(Route::current()->parameter('recruitment'));
         $candidate = intval(Route::current()->parameter('candidate'));
         $state = intval(Route::current()->parameter('state'));
+        $result = true;
 
         $recruitment = Recruitment::find($id);
-        $dataToSync =['candidate_id' => $candidate, 'recruitment_id' => $id, 'status' => $state];
-        $recruitment->candidates()->sync($dataToSync);
-
-        $result = $dataToSync;
+        $dataToSync =[ $id => ['candidate_id' => $candidate, 'status' => $state]];
+        
+        try{
+            $recruitment->candidates()->sync($dataToSync);
+        } catch(Exception $exception) {
+            $result = false;
+        }
         
         return Response()->json($result);
     }
