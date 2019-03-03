@@ -123,6 +123,7 @@ var vm = new Vue({
 			email: "b@g.com", phone: "12345", birth_date: "1990-01-02",
 			id: 1,
 			qualifications: [{ description: "XXX", institution: "Abc", obtained_on: "2005" }, { description: "Zzz", institution: "Dbc", obtained_on: "2006" }],
+			previousEmployments: [{ previous_employer: "Company 1", position: "zzz", "start_date": "2015-01-03", "end_date": "date" }, { previous_employer: "Company 2", position: "Cpb", "start_date": "2012-04-01", "end_date": "2014-12-31" }],
 			documents: [{ name: "Curriculum Vitae.docx" }, { name: "Application Letter.docx" }, { name: "Anything Else.pdf" }]
 
 		}, {
@@ -130,20 +131,23 @@ var vm = new Vue({
 			email: "s@j.com", phone: "12345", birth_date: "1990-01-02",
 			id: 2,
 			qualifications: [{ description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }, { description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }],
-			documents: []
+			documents: [],
+			previousEmployments: [{ previous_employer: "Company 1", position: "zzz" }, { previous_employer: "Company 1", position: "Cpb" }]
 		}, {
 			name: "George Clooney", status: "review", picture: "", jobTitle: "Web Developer",
 			email: "g@c.com", phone: "12345", birth_date: "1990-01-02",
 			id: 3,
 			qualifications: [{ description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }, { description: "Curriculum Vitae.docx", institution: "abc", obtained_on: "2005" }],
-			documents: []
+			documents: [],
+			previousEmployments: [{ previous_employer: "Company 1", position: "zzz" }, { previous_employer: "Company 1", position: "Cpb" }]
 		}, {
 			name: "Meryl Streep", status: "interviewing", picture: "", jobTitle: "Web Developer",
 			email: "m@s.com", phone: "12345", birth_date: "1990-01-02",
 			id: 4,
 			documents: [],
-			interviewTypes: ["Phone Interview", "Structured Interview", "Problem Solving Interview", "Skype Interview", "Case Interview"],
+			interviewTypes: ["Phone", "Skype", "Panel"],
 			interviewers: ["John w henry", "Mike chung"],
+			previousEmployments: [{ previous_employer: "Company 1", position: "zzz" }, { previous_employer: "Company 1", position: "Cpb" }],
 			location: "Port Louis, Mauritius",
 			from: "",
 			to: ""
@@ -212,7 +216,7 @@ var vm = new Vue({
 				okLabel: '<span class="text-danger">Yes</span>',
 				cancelLabel: 'No'
 			}, function () {
-				fetch('1/switch/' + current.id + '/' + newState, {
+				fetch('./switch/' + current.id + '/' + newState, {
 					headers: {
 						"Content-Type": "application/json",
 						"Accept": "application/json, text-plain, */*",
@@ -221,8 +225,10 @@ var vm = new Vue({
 					},
 					method: 'post',
 					credentials: "same-origin"
-				}).then(function () {
-					alerty.toasts('Operation successful');
+				}).then(function (res) {
+					if (res == true) {
+						alerty.toasts('Operation successful');
+					}
 				});
 			});
 			//return window.pipelineSwitchState(id, $event, candidate, newState);

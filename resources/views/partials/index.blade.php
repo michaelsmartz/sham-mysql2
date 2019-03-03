@@ -63,7 +63,7 @@
             };
 
             window.pipelines =  function (id, event) {
-                window.location.href = '{{url()->to("recruitment")}}/'+ id;
+                window.location.href = '{{url()->to("recruitment_requests")}}/' + id + '/stages';
             };
 
             window.updateStatus = function (id, status){

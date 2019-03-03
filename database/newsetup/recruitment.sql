@@ -365,5 +365,12 @@ ADD COLUMN `is_completed` TINYINT NULL DEFAULT 0 AFTER `recruitment_type_id`,
 ADD COLUMN `is_approved` TINYINT NULL DEFAULT 0 AFTER `is_completed`,
 ADD COLUMN `comments` VARCHAR(255) NULL AFTER `is_approved`,
 ADD COLUMN `employee_id` INT(11) NULL DEFAULT NULL AFTER `qualification_id`;
+
 ALTER TABLE `candidate_recruitment`
 	CHANGE COLUMN `status` `status` TINYINT NOT NULL DEFAULT '0' AFTER `recruitment_id`;
+
+---
+--- 01/03/2019
+---
+ALTER TABLE `candidate_previous_employments`
+	CHANGE COLUMN `end_date` `end_date` DATE NULL DEFAULT (CURRENT_DATE) AFTER `start_date`;

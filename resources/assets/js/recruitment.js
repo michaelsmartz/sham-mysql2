@@ -18,8 +18,8 @@ var vm = new Vue({
 					{description:"Zzz", institution:"Dbc", obtained_on:"2006"}
 				],
 				previousEmployments:[
-					{description:"Company 1"},
-					{description:"Company 2"}
+					{previous_employer:"Company 1", position:"zzz", "start_date":"2015-01-03", "end_date":"date"},
+					{previous_employer:"Company 2",position:"Cpb", "start_date":"2012-04-01", "end_date":"2014-12-31"}
 				],
 				documents: [
 					{name:"Curriculum Vitae.docx"},
@@ -38,8 +38,8 @@ var vm = new Vue({
 				],
 				documents: [],
 				previousEmployments:[
-					{description:"Company 1"},
-					{description:"Company 2"}
+					{previous_employer:"Company 1", position:"zzz"},
+					{previous_employer:"Company 1",position:"Cpb"}
 				],
 			},
 			{
@@ -52,8 +52,8 @@ var vm = new Vue({
 				],
 				documents: [],
 				previousEmployments:[
-					{description:"Company 1"},
-					{description:"Company 2"}
+					{previous_employer:"Company 1", position:"zzz"},
+					{previous_employer:"Company 1",position:"Cpb"}
 				],
 			},
             {
@@ -71,8 +71,8 @@ var vm = new Vue({
 					"Mike chung"
 				],
 				previousEmployments:[
-					{description:"Company 1"},
-					{description:"Company 2"}
+					{previous_employer:"Company 1", position:"zzz"},
+					{previous_employer:"Company 1",position:"Cpb"}
 				],
 				location: "Port Louis, Mauritius",
 				from: "",
@@ -158,7 +158,7 @@ var vm = new Vue({
 					cancelLabel: 'No'
 				},
 				function() {
-					fetch('1/switch/' + current.id + '/' + newState,
+					fetch('./switch/' + current.id + '/' + newState,
 					{
 						headers: {
 						  "Content-Type": "application/json",

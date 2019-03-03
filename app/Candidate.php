@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
 use San4io\EloquentFilter\Filters\LikeFilter;
@@ -37,6 +39,7 @@ class Candidate extends Model
                   'title_id',
                   'marital_status_id',
                   'surname',
+                  'name',
                   'email',
                   'home_address',
                   'id_number',
@@ -89,6 +92,18 @@ class Candidate extends Model
      * @var array
      */
     protected $casts = [];
+
+    public static function boot()
+    {
+        parent::boot();
+    
+        static::addGlobalScope('candidateName', function (Builder $builder) {
+			if(is_null($builder->getQuery()->columns)){
+				$builder->addSelect('*');
+			}
+            $builder->addSelect(DB::raw('CONCAT(first_name, " ", surname) AS name'));
+        });
+    }
 
     public function disabilities()
     {

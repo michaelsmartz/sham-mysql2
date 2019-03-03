@@ -56,16 +56,23 @@
                             <div class="tab-content n-t-m">
                                 <div id="pane1" class="tab-pane">
                                     <div class="col-lg-8">
-                                        <div>EDUCATION</div>
+                                        <div style="margin-top:15px;">EDUCATION</div>
                                         <hr>
                                         <div v-for="qualification in current.qualifications">
                                             <dd>@{{qualification.institution}}</dd>
                                             <dt>@{{qualification.description}}</dt>
                                         </div>
                                         <hr>
+                                        <div style="margin-top:15px;">WORK EXPERIENCE</div>
+                                        <hr>
+                                        <div v-for="employment in current.previousEmployments">
+                                            <dd>@{{employment.previous_employer}}</dd>
+                                            <dt>@{{employment.position}}</dt>
+                                            <dd>@{{employment.start_date}} - @{{employment.end_date}}</dd>
+                                        </div>
                                     </div>
                                     <div class="col-lg-4 contact-column">
-                                        <div>APPLICANT DETAILS</div>
+                                        <div style="margin-top:15px;">APPLICANT DETAILS</div>
                                         <hr>
                                         <dd>Email address</dd>
                                         <dt>@{{current.email}}</dt>

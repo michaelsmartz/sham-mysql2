@@ -257,7 +257,7 @@ class RecruitmentRequestsController extends CustomController
     {
         $result = false;
         try {
-            $id = Route::current()->parameter('request');
+            $id = Route::current()->parameter('recruitment_request');
 
             $data = $this->contextObj->findData($id);
 
@@ -268,6 +268,19 @@ class RecruitmentRequestsController extends CustomController
         } finally {
             return Response()->json($result);
         }
+    }
+
+    public function showStages(Request $request){
+        $id = Route::current()->parameter('recruitment_request');
+
+        if(!empty($id)) {
+            // make 2 less queries
+            $this->contextObj->with = [];
+
+            $data = $this->contextObj->findData($id);
+        }
+
+        return view($this->baseViewPath .'.stages', compact('data'));
     }
 
     protected function saveRecruitmentRequest($request, $id = null) {
