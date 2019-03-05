@@ -242,8 +242,11 @@ var vm = new Vue({
 			var _this = this;
 
 			if (!route().current("candidates.create")) {
-				fetch('./candidates').then(res = res.json()).then(function (res) {
-					_this.candidates = res;
+				fetch('./candidates').then(function (res) {
+					return res.json();
+				}).then(function (res) {
+					console.log(res);
+					_this.people = res;
 				});
 			}
 		}

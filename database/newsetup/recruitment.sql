@@ -369,6 +369,8 @@ ADD COLUMN `employee_id` INT(11) NULL DEFAULT NULL AFTER `qualification_id`;
 ALTER TABLE `candidate_recruitment`
 	CHANGE COLUMN `status` `status` TINYINT NOT NULL DEFAULT '0' AFTER `recruitment_id`;
 
+ALTER TABLE `recruitment_status`
+	CHANGE COLUMN `status` `status` TINYINT NOT NULL DEFAULT '0' AFTER `candidate_id`;
 ---
 --- 01/03/2019
 ---

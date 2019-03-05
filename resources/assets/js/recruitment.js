@@ -187,9 +187,10 @@ var vm = new Vue({
         {
             if (!route().current("candidates.create")) {
                 fetch('./candidates')
-                    .then(res = res.json())
+                    .then(res => res.json())
                     .then(res => {
-                        this.candidates = res;
+						console.log(res);
+                        this.people = res;
                     })
             }
         }

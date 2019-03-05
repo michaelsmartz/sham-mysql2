@@ -261,10 +261,11 @@ class RecruitmentRequestsController extends CustomController
 
             $data = $this->contextObj->findData($id);
 
-            $result = $data->candidates()->with(['skills','qualifications'])->get();
+            $result = $data->candidates()->with(['media','jobTitle','previousEmployments','qualifications','status'])
+            ->get();
 
         } catch (Exception $exception) {
-            
+            dd($exception);
         } finally {
             return Response()->json($result);
         }

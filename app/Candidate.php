@@ -123,7 +123,7 @@ class Candidate extends Model
 
     public function jobTitle()
     {
-        return $this->belongsTo('App\JobTitle','job_title_id','id');
+        return $this->belongsTo('App\JobTitle','job_title_id','id')->select(['job_titles.id','job_titles.description']);
     }
 
     public function gender()
@@ -146,8 +146,22 @@ class Candidate extends Model
         return $this->hasMany('App\CandidatePreviousEmployment','candidate_id','id');
     }
 
-    public function recruitments()
+    public function status()
     {
-        return $this->belongsToMany('App\Recruitment');
+        return $this->belongsToMany(Recruitment::class, 'candidate_recruitment')
+                    ->select(['candidate_id','status']);
     }
+
+    public function scopeCandidatesList($query)
+    {
+        $query->leftJoin('candidate_previous_employments','candidate_previous_employments.candidate_id','=','candidates.id')
+              ->leftJoin('job_titles','job_titles.id','=','candidates.job_title_id')
+              ->leftJoin('candidate_qualifications','candidate_qualifications.candidate_id','=','candidates.id')
+              ->select('candidates.id','candidates.first_name','candidates.surname',
+                       'job_titles.description as job_title','candidate_previous_employments.previous_employer',
+                       'candidate_previous_employments.position','candidate_previous_employments.start_date',
+                       'candidate_previous_employments.end_date')
+              ;
+    }
+
 }

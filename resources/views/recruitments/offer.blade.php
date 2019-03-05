@@ -4,7 +4,7 @@
                         </div>
                         <div>
                             <strong>@{{ person.name }}</strong>
-                            <div>@{{ person.jobTitle }}</div>
+                            <div v-if="person.job_title">@{{ person.job_title.description }}</div>
                         </div>
                     </li>
                 </ul>
@@ -26,7 +26,7 @@
                         <div class="col-md-7">
                             <div>
                                 <h2>@{{ current.name }}</h2>
-                                <div>@{{ current.jobTitle }}</div>
+                                <div v-if="current.job_title">@{{ current.job_title.description }}</div>
                                 <br>
                             </div>
                         </div>
