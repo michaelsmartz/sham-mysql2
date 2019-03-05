@@ -9,6 +9,6 @@ $mssql_pwd = '12345678';
 
 /* parameters MYSQL*/
 $mysql_serverName = "localhost";
-$mysql_uid = "root";
-$mysql_pwd = "";
-$mysql_databaseName = "ShamDev";
+$mysql_uid = "root1";
+$mysql_pwd = "root1";
+$mysql_databaseName = "shamdev_recruitment";
