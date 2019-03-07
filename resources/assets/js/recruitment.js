@@ -104,6 +104,14 @@ var vm = new Vue({
 						this.people = res;
 					})
 			}
+		},
+		getBackground: function(src){
+			if (src !== null) {
+				return 'background-image: ' + 'url(' + src + ')';
+			} else {
+				return "background-image: " + "url('/img/avatar.png')";
+			}
+			
 		}
 	},
 	created: function () {
