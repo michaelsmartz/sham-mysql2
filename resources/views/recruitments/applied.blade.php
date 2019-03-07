@@ -24,18 +24,18 @@
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <div v-show="current !== null">
+                            <div v-show="current">
                                 <h2>@{{ current.name }}</h2>
                                 <div v-if="current.job_title">@{{ current.job_title.description }}</div>
                                 <br>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="btn-group pull-right">
-                                <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve for interview',current,1,2)" class="{{ $step[0]['btnclass'] }}">
+                            <div class="btn-group pull-right" v-if="current != null">
+                                <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve for interview',current,current.id, 1)" class="{{ $step[0]['btnclass'] }}">
                                     <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                                 </button>
-                                <button id="{{ $step[1]['id'] }}" type="button" class="{{ $step[1]['btnclass'] }}">
+                                <button id="{{ $step[1]['id'] }}" @click="pipelineSwitchState(1,'Reject application',current,current.id, -1)" class="{{ $step[1]['btnclass'] }}">
                                     <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
                                 </button>
                             </div>
@@ -43,8 +43,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="tabbable" v-show="current !== null">
-                                <ul class="nav">
+                            <div class="tabbable">
+                                <ul class="nav" v-show="current">
                                     <li><a href="#pane1" data-toggle="tab">Overview</a></li>
                                     <li><a href="#pane2" data-toggle="tab">Documents</a></li>
                                 </ul>
@@ -54,7 +54,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="tab-content n-t-m">
-                                <div id="pane1" class="tab-pane">
+                                <div id="pane1" class="tab-pane" v-show="current">
                                     <div class="col-lg-8">
                                         <div style="margin-top:15px;">EDUCATION</div>
                                         <hr>
@@ -83,27 +83,26 @@
                                     </div>
                                 </div>
                                 <div id="pane2" class="tab-pane">
-                                    <div class="row">
-                                        <div class="col-md-4" v-for="file in current.documents">
+
+                                        <div style="margin-top:15px;" class="col-md-3" v-for="file in current.media">
                                             <div class="panel discoverer">
                                                 <div class="panel-body text-center">
                                                     <div class="clearfix discover">
                                                         <div class="pull-right">
-                                                            <a data-bind="attr: { 'href': DownloadLink}" data-wenk="Download" class="text-muted mr-sm tooltips">
+                                                            <a data-bind="attr: { 'href': route('candidates.download',{candidate:current.id, MediaId:file.id})}" data-wenk="Download" class="text-muted mr-sm tooltips">
                                                                 <em class="fa fa-download fa-fw"></em>
                                                             </a>
                                                         </div>
                                                     </div>
                                                     <p>
-                                                        <small class="text-dark">@{{ file.name }}</small>
+                                                        <small class="text-dark">@{{ file.filename }}.@{{ file.extension}}</small>
                                                     </p>
                                                     <div class="clearfix m0 text-muted">
-                                                        <small class="pull-right">@{{ file.name }}</small>
+                                                        <small class="pull-right">@{{ file.size | prettyBytes }}</small>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

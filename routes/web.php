@@ -202,12 +202,11 @@ Auth::routes();
 
         #region Recruitment
         Route::resource('recruitment', 'RecruitmentsController');
-        Route::post('recruitment/{recruitment}/switch/{candidate}/{state}', 'RecruitmentsController@stateSwitch');
         Route::resource('interview', 'InterviewsController');
         Route::resource('recruitment_requests', 'RecruitmentRequestsController');
         Route::get('recruitment_requests/{recruitment_request}/stages', 'RecruitmentRequestsController@showStages');
         Route::get('recruitment_requests/{recruitment_request}/candidates', 'RecruitmentRequestsController@getCandidates')->name('recruitment_requests.candidates-list');
-        Route::post('recruitment_requests/{request}/{status}/update-status', 'RecruitmentRequestsController@updateStatus')->name('recruitment_requests.update-status');
+        Route::post('recruitment_requests/{recruitment_request}/switch/{candidate}/{state}', 'RecruitmentRequestsController@stateSwitch')->name('recruitment_requests.update-status');
         
         Route::get('recruitment_requests/{request?}/manage-candidate', 'RecruitmentRequestsController@manageCandidate');
         Route::patch('recruitment_requests/{request?}/update-candidate', 'RecruitmentRequestsController@updateCandidate')->name('recruitment_requests.update-candidate');

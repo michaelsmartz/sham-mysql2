@@ -284,6 +284,25 @@ class RecruitmentRequestsController extends CustomController
         return view($this->baseViewPath .'.stages', compact('data'));
     }
 
+    public function stateSwitch(Request $request){
+
+        $id = intval(Route::current()->parameter('recruitment_request'));
+        $candidate = intval(Route::current()->parameter('candidate'));
+        $state = intval(Route::current()->parameter('state'));
+        $result = true;
+
+        $recruitment = Recruitment::find($id);
+        $dataToSync =[ $id => ['candidate_id' => $candidate, 'status' => $state]];
+        
+        try{
+            $recruitment->candidates()->sync($dataToSync);
+        } catch(Exception $exception) {
+            $result = false;
+        }
+        
+        return Response()->json($result);
+    }
+
     protected function saveRecruitmentRequest($request, $id = null) {
 
         $employee_id  = (\Auth::check()) ? \Auth::user()->employee_id : 0;

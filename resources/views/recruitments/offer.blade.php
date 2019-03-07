@@ -32,10 +32,10 @@
                         </div>
                         <div class="col-md-3">
                             <div class="btn-group pull-right">
-                                <button id="{{ $step[0]['id'] }}" type="button" class="{{ $step[0]['btnclass'] }}">
+                                <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, 2)" class="{{ $step[0]['btnclass'] }}">
                                     <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                                 </button>
-                                <button id="{{ $step[1]['id'] }}" type="button" class="{{ $step[1]['btnclass'] }}">
+                                <button id="{{ $step[1]['id'] }}" class="{{ $step[1]['btnclass'] }}">
                                     <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
                                 </button>
                             </div>
