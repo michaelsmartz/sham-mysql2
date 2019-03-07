@@ -42,6 +42,7 @@ var vm = new Vue({
 		counter: 0,
 		lastInterview: true,
 		submitInterview: false,
+		interviews: []
 	},
 	computed: {
 		filteredPeople: function () {
@@ -93,6 +94,57 @@ var vm = new Vue({
 			);
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},
+        loadInterviewTypes: function (current) {
+            if (current.id) {
+                fetch('./interviewing/' + current.id, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json, text-plain, */*",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-TOKEN": token
+                    },
+                    method: 'post',
+                    credentials: "same-origin"
+                })
+				.then(res => res.json())
+				.then(res => {
+                    let _this = this;
+					console.log(res);
+                    _this.interviews = res;
+				});
+            }
+        },
+        editInterviewForm: function(interview_id, candidate_id){
+            this.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
+		},
+        loadUrl: function(url) {
+            $(".light-modal-body").empty().html('Loading...please wait...');
+            $.get(url).done(function(data) {
+                $(".light-modal-heading").empty().html(data.title);
+                $(".light-modal-body").empty().html(data.content);
+                $(".light-modal-footer .buttons").empty().html(data.footer);
+                $("#modalForm").attr('action',data.url);
+
+                cleanUrlHash();
+
+                $('.multipleSelect').each(function(){
+                    $(this).multiselect({
+                        submitAllLeft:false,
+                        sort: false,
+                        keepRenderingSort: false,
+                        search: {
+                            left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                            right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                        },
+                        fireSearch: function(value) {
+                            return value.length > 3;
+                        }
+                    });
+                });
+            }).fail(function() {
+                alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
+            });
+        },
 		setVal(item, h, b, f) {
 			this.current = item;
 		},

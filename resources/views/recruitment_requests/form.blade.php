@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="form-group col-xs-12 {{ $errors->has('is_completed') ? 'has-error' : '' }}">
-                    <label for="is_preferred">Completed</label>
+                    <label for="is_completed">Completed</label>
                     <div class="checkbox">
                         <label for="is_completed_1">
                             <input id="is_completed_1" class="" name="is_completed" type="hidden" value="0" />

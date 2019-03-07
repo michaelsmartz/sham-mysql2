@@ -376,3 +376,7 @@ ALTER TABLE `recruitment_status`
 ---
 ALTER TABLE `candidate_previous_employments`
 	CHANGE COLUMN `end_date` `end_date` DATE NULL DEFAULT (CURRENT_DATE) AFTER `start_date`;
+
+ALTER TABLE `shamdev_recruitment`.`candidate_interview_recruitment`
+ADD COLUMN `status` ENUM('1', '2', '3') NULL DEFAULT NULL AFTER `recruitment_id`,
+CHANGE COLUMN `results` `results` ENUM('1', '2') NULL DEFAULT NULL ;

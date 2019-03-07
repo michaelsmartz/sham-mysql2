@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Candidate;
 use App\Department;
 use App\EmployeeStatus;
+use App\Enums\InterviewResultsType;
+use App\Enums\InterviewStatusType;
 use App\Enums\RecruitmentType;
 use App\Interview;
 use App\QualificationRecruitment;
@@ -203,10 +205,29 @@ class RecruitmentRequestsController extends CustomController
             $candidates = array_get($request->all(),'candidates');
 
             $data = Recruitment::find($id);
-            $data->candidates()
-                ->sync($candidates); //sync what has been selected
 
-            \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            if (!is_null($data)) {
+                $interview_types = $data->interviewTypes()->get()->all();
+
+                 $candidate_interview_recruitment_pivot = [];
+
+                $data->candidates()
+                    ->sync($candidates); //sync what has been selected
+                foreach ($interview_types as $interview_type) {
+                    foreach ($candidates as $key => $candidate) {
+                        $candidate_interview_recruitment_pivot[] = [
+                            'candidate_id' => $candidate,
+                            'interview_id' => $interview_type->id,
+                            'recruitment_id' => $id,
+                        ];
+                    }
+                }
+
+                $data->interviews()->sync([]);
+                $data->interviews()->sync($candidate_interview_recruitment_pivot);
+
+                \Session::put('success', $this->baseFlash . 'updated Successfully!!');
+            }
 
         } catch (Exception $exception) {
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
@@ -282,6 +303,92 @@ class RecruitmentRequestsController extends CustomController
         }
 
         return view($this->baseViewPath .'.stages', compact('data'));
+    }
+
+    public function getInterviewing(Request $request){
+        $recruitment_id = Route::current()->parameter('recruitment_request');
+        $candidate_id = Route::current()->parameter('candidate');
+
+        $result = [];
+
+        if(!empty($recruitment_id) && !empty($candidate_id)) {
+            $recruitment = $this->contextObj::with(['interviews'])
+                ->whereHas('interviews', function ($query) use ($candidate_id)
+                {
+                    return  $query->where('candidate_id', $candidate_id);
+                })
+                ->whereHas('interviews', function ($query) use ($recruitment_id)
+                {
+                    return  $query->where('recruitment_id', $recruitment_id);
+                })
+                ->first();
+
+            $result = $recruitment->interviews->all();
+        }
+
+        return Response()->json($result);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     */
+    public function editInterview(Request $request)
+    {
+        $interview_id = Route::current()->parameter('interview');
+        $recruitment_id = Route::current()->parameter('recruitment_request');
+        $candidate_id = Route::current()->parameter('candidate');
+
+        $data = $this->contextObj::with(['interviews'])
+            ->whereHas('interviews', function ($query) use ($interview_id)
+            {
+                return  $query->where('interview_id', $interview_id);
+            })->first();
+
+        $interview = $data->interviews()->first();
+
+        $status = InterviewStatusType::ddList();
+        $results = InterviewResultsType::ddList();
+
+        if($request->ajax()) {
+            $view = view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id'));
+    }
+
+    /**
+     * Update the specified branch in the storage.
+     *
+     * @param  int $id
+     * @param Request $request
+     *
+     * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
+     */
+    public function updateInterview(Request $request, $id)
+    {
+        try {
+            $input = array_except($request->all(),array('_token','_method','schedule_at_submit'));
+
+            $data = Recruitment::find($id);
+
+            dd($input);
+
+            $data->interviews()->sync($input);
+
+            \Session::put('success', 'Interview updated Successfully!!');
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not update Interview!');
+        }
+
+        return redirect()->route('recruitment_requests.stages',[$id]);
     }
 
     public function stateSwitch(Request $request){

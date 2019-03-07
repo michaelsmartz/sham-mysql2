@@ -203,11 +203,14 @@ Auth::routes();
         #region Recruitment
         Route::resource('recruitment', 'RecruitmentsController');
         Route::resource('interview', 'InterviewsController');
+        Route::get('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/edit-interview', 'RecruitmentRequestsController@editInterview')->name('recruitment_requests.edit-interview');
+        Route::patch('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/update-interview', 'RecruitmentRequestsController@updateInterview')->name('recruitment_requests.update-interview');
         Route::resource('recruitment_requests', 'RecruitmentRequestsController');
         Route::get('recruitment_requests/{recruitment_request}/stages', 'RecruitmentRequestsController@showStages')->name('recruitment_requests.stages');
         Route::get('recruitment_requests/{recruitment_request}/candidates', 'RecruitmentRequestsController@getCandidates')->name('recruitment_requests.candidates-list');
         Route::post('recruitment_requests/{recruitment_request}/switch/{candidate}/{state}', 'RecruitmentRequestsController@stateSwitch')->name('recruitment_requests.update-status');
-        
+        Route::post('recruitment_requests/{recruitment_request}/interviewing/{candidate}', 'RecruitmentRequestsController@getInterviewing')->name('recruitment_requests.get-interviewing');
+
         Route::get('recruitment_requests/{request?}/manage-candidate', 'RecruitmentRequestsController@manageCandidate');
         Route::patch('recruitment_requests/{request?}/update-candidate', 'RecruitmentRequestsController@updateCandidate')->name('recruitment_requests.update-candidate');
         Route::fileResource('candidates', 'CandidatesController');

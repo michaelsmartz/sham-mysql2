@@ -27,7 +27,7 @@
             {{--</li>--}}
 
             <li class="blue nav-item">
-                <a class="nav-link" href="#interviewing" role="tab" data-toggle="tab" @click="selectedCategory=1;current=false">
+                <a class="nav-link" href="#interviewing" role="tab" data-toggle="tab" @click="selectedCategory=1">
                     <h2 :text-content.prop="people|interviewing">&nbsp;</h2>
                     <small>Interviewing</small>
                 </a>
@@ -35,7 +35,7 @@
             </li>
 
             <li class="blue nav-item">
-                <a class="nav-link" href="#offer" role="tab" data-toggle="tab" @click="selectedCategory=2;current=false">
+                <a class="nav-link" href="#offer" role="tab" data-toggle="tab" @click="selectedCategory=2">
                     <h2 :text-content.prop="people|offer">&nbsp;</h2>
                     <small>Offer</small>
                 </a>
@@ -43,7 +43,7 @@
             </li>
 
             <li class="green nav-item">
-                <a class="nav-link" href="#contract" role="tab" data-toggle="tab" @click="selectedCategory=3;current=false">
+                <a class="nav-link" href="#contract" role="tab" data-toggle="tab" @click="selectedCategory=3">
                     <h2 :text-content.prop="people|contract">&nbsp;</h2>
                     <small>Contract</small>
                 </a>
@@ -51,7 +51,7 @@
             </li>
 
             <li class="green nav-item">
-                <a class="nav-link" href="#hired" role="tab" data-toggle="tab" @click="selectedCategory=4;current=false">
+                <a class="nav-link" href="#hired" role="tab" data-toggle="tab" @click="selectedCategory=4">
                     <h2 :text-content.prop="people|hired">&nbsp;</h2>
                     <small>Hired</small>
                 </a>
@@ -78,7 +78,7 @@
                 @component('interviews.index', ['step' => [
                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Overall Pass'],
                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Overall Fail']
-               ] ])
+               ]])
                 @endcomponent
             </div>
             <div class="tab-pane"  role="tabpanel" id="offer">
@@ -204,22 +204,6 @@
     <style>
         .avatar-upload .avatar-edit input + label {
             display: none; !important;
-        }
-
-        #interview-table tbody tr:nth-child(3) td{
-            background-color:#FFECB3;!important;
-        }
-
-        #interview-table tbody tr:nth-child(2) td{
-            background-color:#A5D6A7!important;
-        }
-
-        #interview-table tbody tr:nth-child(4) td{
-            background-color:#A5D6A7!important;
-        }
-
-        #interview-table tbody tr:nth-child(1) td{
-            background-color: #ef9a9a;!important;
         }
     </style>
 @endsection

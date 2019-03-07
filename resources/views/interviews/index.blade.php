@@ -12,6 +12,7 @@
                     {{--@{{ current }}--}}
                     {{--@{{ lastInterview }}--}}
                     {{--@{{ counter }}--}}
+                    <button @click='loadInterviewTypes(current)'>Interview</button>
                     <div class="row">
                         <div class="col-md-2 img">
                             <div class="avatar-upload">
@@ -47,7 +48,7 @@
                     <div class="row">
                         <div class="col-md-11 col-md-offset-1">
 
-                            <div class="table-responsive">
+                            <div class="table-responsive" v-if="interviews.length">
                                 <table id="interview-table" data-toggle="table" style="width:100%">
                                     <thead>
                                     <tr>
@@ -60,76 +61,26 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td>Skype</td>
-                                        <td>2018-01-12</td>
-                                        <td>Cancelled</td>
+                                        <tr v-for="interview in interviews">
+                                            <td>@{{interview.description}}</td>
+                                            <td>@{{interview.schedule_at}}</td>
+                                            <td>@{{interview.status}}</td>
+                                            <td>@{{interview.reasons}}</td>
+                                            <td>@{{interview.results}}</td>
 
-                                        <td>Candidate was sick</td>
-                                        <td>Failed</td>
-                                        <td data-html2canvas-ignore="true">
-                                            <div class="btn-group">
+                                            <td data-html2canvas-ignore="true">
                                                 <div class="btn-group">
-                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
-                                                        <i class="glyphicon glyphicon-edit"></i>
-                                                    </a>
+                                                    <div class="btn-group">
+                                                        <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" @click="editInterviewForm(interview.id, current.id)">
+                                                            <i class="glyphicon glyphicon-edit"></i>
+                                                        </a>
+                                                        <a class="b-n b-n-r bg-transparent item-view" data-wenk="Attach documents" onclick="">
+                                                            <i class="glyphicon glyphicon-paperclip"></i>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Phone</td>
-                                        <td>2018-01-01</td>
-                                        <td>Completed</td>
-
-                                        <td></td>
-                                        <td>Failed</td>
-                                        <td data-html2canvas-ignore="true">
-                                            <div class="btn-group">
-                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
-                                                    <i class="glyphicon glyphicon-edit"></i>
-                                                </a>
-                                                <a class="b-n b-n-r bg-transparent item-view" data-wenk="Attach documents" onclick="">
-                                                    <i class="glyphicon glyphicon-paperclip"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Assessment</td>
-                                        <td>2018-01-30</td>
-                                        <td>Not Completed</td>
-
-                                        <td></td>
-                                        <td></td>
-                                        <td data-html2canvas-ignore="true">
-                                            <div class="btn-group">
-                                                <div class="btn-group">
-                                                    <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
-                                                        <i class="glyphicon glyphicon-edit"></i>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Panel</td>
-                                        <td>2018-01-15</td>
-                                        <td>Completed</td>
-
-                                        <td></td>
-                                        <td>Passed</td>
-                                        <td data-html2canvas-ignore="true">
-                                            <div class="btn-group">
-                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" onclick="addForm(event, 'interview')">
-                                                    <i class="glyphicon glyphicon-edit"></i>
-                                                </a>
-                                                <a class="b-n b-n-r bg-transparent item-view" data-wenk="Attach documents" onclick="">
-                                                    <i class="glyphicon glyphicon-paperclip"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

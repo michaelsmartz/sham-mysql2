@@ -111,6 +111,11 @@ class Recruitment extends Model
         return $this->belongsToMany(Interview::class);
     }
 
+    public function interviews()
+    {
+        return $this->belongsToMany(Interview::class, 'candidate_interview_recruitment','candidate_id','interview_id')->withPivot('reasons','schedule_at','results','location');
+    }
+
     public function qualification_recruitment()
     {
         return $this->belongsTo('App\QualificationRecruitment','qualification_id');

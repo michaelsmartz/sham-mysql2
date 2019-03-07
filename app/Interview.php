@@ -63,5 +63,4 @@ class Interview extends Model
     {
         return date('j/n/Y g:i A', strtotime($value));
     }
-
 }
