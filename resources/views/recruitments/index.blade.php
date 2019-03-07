@@ -5,7 +5,7 @@
     <section id="recruitment">
         <ul class="nav nav-tabs steps">
             <li class="orange nav-item">
-                <a class="nav-link active show" href="#applied" role="tab" data-toggle="tab" @click="selectedCategory='All'">
+                <a class="nav-link active show" href="#0" role="tab" data-toggle="tab" @click="selectedCategory=0">
                     <h2>4</h2>
                     <small>Applied</small>
                 </a>
@@ -21,7 +21,7 @@
             {{--</li>--}}
 
             <li class="blue nav-item">
-                <a class="nav-link" href="#interviewing" role="tab" data-toggle="tab" @click="selectedCategory='interviewing'">
+                <a class="nav-link" href="#1" role="tab" data-toggle="tab" @click="selectedCategory=1">
                     <h2>3</h2>
                     <small>Interviewing</small>
                 </a>
@@ -29,7 +29,7 @@
             </li>
 
             <li class="blue nav-item">
-                <a class="nav-link" href="#offer" role="tab" data-toggle="tab" @click="selectedCategory='offer'">
+                <a class="nav-link" href="#offer" role="tab" data-toggle="tab" @click="selectedCategory='2'">
                     <h2>2</h2>
                     <small>Offer</small>
                 </a>
@@ -37,7 +37,7 @@
             </li>
 
             <li class="green nav-item">
-                <a class="nav-link" href="#contract" role="tab" data-toggle="tab" @click="selectedCategory='contract'">
+                <a class="nav-link" href="#contract" role="tab" data-toggle="tab" @click="selectedCategory='3'">
                     <h2>1</h2>
                     <small>Contract</small>
                 </a>
@@ -45,7 +45,7 @@
             </li>
 
             <li class="green nav-item">
-                <a class="nav-link" href="#hired" role="tab" data-toggle="tab" @click="selectedCategory='hired'">
+                <a class="nav-link" href="#hired" role="tab" data-toggle="tab" @click="selectedCategory='4'">
                     <h2>1</h2>
                     <small>Hired</small>
                 </a>

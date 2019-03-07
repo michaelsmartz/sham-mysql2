@@ -8,7 +8,7 @@
                         </div>
                     </li>
                 </ul>
-                <div class="tab-detail" v-if="current !== null">
+                <div class="tab-detail" v-if="current">
                     <div class="row">
                         <div class="col-md-2 img">
                             <div class="avatar-upload">
@@ -24,14 +24,14 @@
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <div>
+                            <div v-show="current">
                                 <h2>@{{ current.name }}</h2>
                                 <div v-if="current.job_title">@{{ current.job_title.description }}</div>
                                 <br>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="btn-group pull-right">
+                            <div class="btn-group pull-right" v-show="current">
                                 <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, 2)" class="{{ $step[0]['btnclass'] }}">
                                     <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                                 </button>
