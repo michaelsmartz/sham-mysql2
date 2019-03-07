@@ -10090,7 +10090,6 @@ var vm = new Vue({
 			}
 		},
 		getBackground: function getBackground(src) {
-			console.log(src);
 			if (src !== null) {
 				return 'background-image: ' + 'url(' + src + ')';
 			} else {
