@@ -17,7 +17,7 @@
                                     <label for="imageUpload" title="change profile image"></label>
                                 </div>
                                 <div class="avatar-preview">
-                                    <div id="imagePreview" style="background-image: url('/img/avatar.png');">
+                                    <div id="imagePreview" :style="getBackground(current.picture)">
                                     </div>
                                 </div>
                                 <br>

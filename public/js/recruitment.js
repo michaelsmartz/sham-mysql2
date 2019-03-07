@@ -10088,6 +10088,14 @@ var vm = new Vue({
 					_this3.people = res;
 				});
 			}
+		},
+		getBackground: function getBackground(src) {
+			console.log(src);
+			if (src !== null) {
+				return 'background-image: ' + 'url(' + src + ')';
+			} else {
+				return "background-image: " + "url('/img/avatar.png')";
+			}
 		}
 	},
 	created: function created() {
