@@ -10021,8 +10021,12 @@ var vm = new Vue({
 			});
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},
-		loadInterviewTypes: function loadInterviewTypes(current) {
+		loadInterviewTypes: function loadInterviewTypes(item, current) {
 			var _this2 = this;
+
+			this.current = item;
+			this.counter = 0;
+			this.lastInterview = false;
 
 			if (current.id) {
 				fetch('./interviewing/' + current.id, {

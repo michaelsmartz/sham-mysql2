@@ -1,5 +1,5 @@
                 <ul class="people-list">
-                    <li v-for="person in filteredPeople" v-on:click="setCurrent(person)" :class="{ active: current.name === person.name }">
+                    <li v-for="person in filteredPeople" v-on:click="loadInterviewTypes(person,current)" :class="{ active: current.name === person.name }">
                         <div class="img">
                         </div>
                         <div>
