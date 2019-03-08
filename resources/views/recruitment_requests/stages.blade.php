@@ -12,7 +12,7 @@
         <ul class="nav nav-tabs steps">
             <li class="orange nav-item">
                 <a class="nav-link active show" href="#applied" role="tab" data-toggle="tab" @click="selectedCategory=0">
-                    <h2 :text-content.prop="people | applied">&nbsp;</h2>
+                    <h2 :text-content.prop="people|stageCount(0)">&nbsp;</h2>
                     <small>Applied</small>
                 </a>
                 <div class="arrow"></div>
@@ -28,7 +28,7 @@
 
             <li class="blue nav-item">
                 <a class="nav-link" href="#interviewing" role="tab" data-toggle="tab" @click="selectedCategory=1">
-                    <h2 :text-content.prop="people|interviewing">&nbsp;</h2>
+                    <h2 :text-content.prop="people|stageCount(1)">&nbsp;</h2>
                     <small>Interviewing</small>
                 </a>
                 <div class="arrow"></div>
@@ -36,7 +36,7 @@
 
             <li class="blue nav-item">
                 <a class="nav-link" href="#offer" role="tab" data-toggle="tab" @click="selectedCategory=2">
-                    <h2 :text-content.prop="people|offer">&nbsp;</h2>
+                    <h2 :text-content.prop="people|stageCount(2)">&nbsp;</h2>
                     <small>Offer</small>
                 </a>
                 <div class="arrow"></div>
@@ -44,7 +44,7 @@
 
             <li class="green nav-item">
                 <a class="nav-link" href="#contract" role="tab" data-toggle="tab" @click="selectedCategory=3">
-                    <h2 :text-content.prop="people|contract">&nbsp;</h2>
+                    <h2 :text-content.prop="people|stageCount(3)">&nbsp;</h2>
                     <small>Contract</small>
                 </a>
                 <div class="arrow"></div>
@@ -52,7 +52,7 @@
 
             <li class="green nav-item">
                 <a class="nav-link" href="#hired" role="tab" data-toggle="tab" @click="selectedCategory=4">
-                    <h2 :text-content.prop="people|hired">&nbsp;</h2>
+                    <h2 :text-content.prop="people|stageCount(4)">&nbsp;</h2>
                     <small>Hired</small>
                 </a>
             </li>
