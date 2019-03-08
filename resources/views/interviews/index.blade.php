@@ -1,5 +1,5 @@
                 <ul class="people-list">
-                    <li v-for="person in filteredPeople" v-on:click="setCurrent(person)" :class="{ active: current.name === person.name }">
+                    <li v-for="person in filteredPeople" v-on:click="loadInterviewTypes(person,current)" :class="{ active: current.name === person.name }">
                         <div class="img">
                         </div>
                         <div>
@@ -8,11 +8,10 @@
                         </div>
                     </li>
                 </ul>
-                <div class="tab-detail" v-if="current !== null">
+                <div class="tab-detail" v-if="current">
                     {{--@{{ current }}--}}
                     {{--@{{ lastInterview }}--}}
                     {{--@{{ counter }}--}}
-                    <button @click='loadInterviewTypes(current)'>Interview</button>
                     <div class="row">
                         <div class="col-md-2 img">
                             <div class="avatar-upload">
