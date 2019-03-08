@@ -177,28 +177,14 @@ var vm = new Vue({
 		'modal': Modal
 	},
 	filters: {
-		applied:function(people) {
-			return people.length;
-		},
-		interviewing:function(people) {
-			return people.filter(function(person) {
-				return person.status[0].status == 1
-		  }).length;
-		},
-		offer:function(people) {
-			return people.filter(function(person) {
-				return person.status[0].status == 2
-		  }).length;
-		},
-		contract:function(people) {
-			return people.filter(function(person) {
-				return person.status[0].status == 3
-		  }).length;
-		},
-		hired:function(people) {
-			return people.filter(function(person) {
-				return person.status[0].status == 4
-		  }).length;
+		stageCount:function(people, status){
+			if (status == 0 || status === void 0) {
+				return people.length;
+			} else {
+				return people.filter(function(person) {
+					return person.status[0].status == status
+				}).length;
+			}
 		},
 	}
 });
