@@ -323,7 +323,8 @@ class RecruitmentRequestsController extends CustomController
                 })
                 ->first();
 
-            $result = $recruitment->interviews->all();
+            if($recruitment != null)
+                $result = $recruitment->interviews->all();
         }
 
         return Response()->json($result);
@@ -339,13 +340,8 @@ class RecruitmentRequestsController extends CustomController
         $recruitment_id = Route::current()->parameter('recruitment_request');
         $candidate_id = Route::current()->parameter('candidate');
 
-        $data = $this->contextObj::with(['interviews'])
-            ->whereHas('interviews', function ($query) use ($interview_id)
-            {
-                return  $query->where('interview_id', $interview_id);
-            })->first();
-
-        $interview = $data->interviews()->first();
+        $data = $this->contextObj::find($recruitment_id);
+        $interview = $data->interviews()->where('interview_id', $interview_id)->first();
 
         $status = InterviewStatusType::ddList();
         $results = InterviewResultsType::ddList();
@@ -378,9 +374,7 @@ class RecruitmentRequestsController extends CustomController
 
             $data = Recruitment::find($id);
 
-            dd($input);
-
-            $data->interviews()->sync($input);
+            $data->interviews()->updateExistingPivot($input['interview_id'], $input);
 
             \Session::put('success', 'Interview updated Successfully!!');
 

@@ -45,10 +45,10 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-11 col-md-offset-1">
+                        <div class="col-md-11 col-md-offset-1" v-if="interviews.length">
 
-                            <div class="table-responsive" v-if="interviews.length">
-                                <table id="interview-table" data-toggle="table" style="width:100%">
+                            <div class="table-responsive">
+                                <table id="table" data-toggle="table" style="width:100%">
                                     <thead>
                                     <tr>
                                         <th>Type</th>
@@ -60,12 +60,15 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="interview in interviews">
+                                        <tr v-for="interview in interviews" :interview='interview'>
                                             <td>@{{interview.description}}</td>
-                                            <td>@{{interview.schedule_at}}</td>
-                                            <td>@{{interview.status}}</td>
-                                            <td>@{{interview.reasons}}</td>
-                                            <td>@{{interview.results}}</td>
+                                            <td>@{{interview.pivot.schedule_at}}</td>
+                                            {{--<td>!{$interviewStatus = @{{interview.pivot.status}} }!</td>--}}
+                                            {{--<td>{!! App\Enums\InterviewStatusType::getDescription($interviewStatus= @{{ interview.pivot.status }}) !!}</td>--}}
+                                            {{--<td v-bind:interview="{{ Auth::user()->id }}">@{{interview.pivot.status}}</td>--}}
+                                            <td>@{{interview.pivot.status}}</td>
+                                            <td>@{{interview.pivot.reasons}}</td>
+                                            <td>@{{interview.pivot.results}}</td>
 
                                             <td data-html2canvas-ignore="true">
                                                 <div class="btn-group">
