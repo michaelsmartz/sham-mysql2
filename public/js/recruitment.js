@@ -9999,7 +9999,11 @@ var vm = new Vue({
 			this.counter++;
 		},
 
+		route: function route() {
+			return window.route();
+		},
 		pipelineSwitchState: function pipelineSwitchState(id, title, current, candidate, newState) {
+			var vm = this;
 			alerty.confirm("Are you sure to <strong class='text-danger'>" + title + "</strong> for the candidate <strong class='text-danger'>" + current.name + "</strong>?<br>", {
 				okLabel: '<span class="text-danger">Yes</span>',
 				cancelLabel: 'No'
@@ -10014,8 +10018,10 @@ var vm = new Vue({
 					method: 'post',
 					credentials: "same-origin"
 				}).then(function (res) {
-					if (res == true) {
-						alerty.toasts('Operation successful');
+					if (res.ok == true) {
+						alerty.toasts('Operation successful', { 'place': 'top', 'time': 5000 }, function () {
+							vm.fetchCandidates();
+						});
 					}
 				});
 			});

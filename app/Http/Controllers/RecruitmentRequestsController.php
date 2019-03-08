@@ -393,10 +393,10 @@ class RecruitmentRequestsController extends CustomController
         $result = true;
 
         $recruitment = Recruitment::find($id);
-        $dataToSync =[ $id => ['candidate_id' => $candidate, 'status' => $state]];
+        $dataToSync = ['candidate_id' => $candidate, 'status' => $state];
         
         try{
-            $recruitment->candidates()->sync($dataToSync);
+            $recruitment->candidates()->updateExistingPivot($candidate, $dataToSync);
         } catch(Exception $exception) {
             $result = false;
         }

@@ -202,7 +202,7 @@ Auth::routes();
 
         #region Recruitment
         Route::resource('recruitment', 'RecruitmentsController');
-        Route::resource('interview', 'InterviewsController');
+
         Route::get('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/edit-interview', 'RecruitmentRequestsController@editInterview')->name('recruitment_requests.edit-interview');
         Route::patch('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/update-interview', 'RecruitmentRequestsController@updateInterview')->name('recruitment_requests.update-interview');
         Route::resource('recruitment_requests', 'RecruitmentRequestsController');

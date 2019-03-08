@@ -89,7 +89,7 @@
                                                 <div class="panel-body text-center">
                                                     <div class="clearfix discover">
                                                         <div class="pull-right">
-                                                            <a data-bind="attr: { 'href': route('candidates.download',{candidate:current.id, MediaId:file.id})}" data-wenk="Download" class="text-muted mr-sm tooltips">
+                                                            <a v-bind:href="'../../candidates/' + current.id + '/attachment/' + file.id" data-wenk="Download" class="text-muted mr-sm tooltips">
                                                                 <em class="fa fa-download fa-fw"></em>
                                                             </a>
                                                         </div>

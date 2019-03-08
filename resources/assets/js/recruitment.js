@@ -67,7 +67,11 @@ var vm = new Vue({
 		increment() {
 			this.counter++;
 		},
+		route: function(){
+			return window.route();
+		},
 		pipelineSwitchState: function (id, title, current, candidate, newState) {
+			var vm = this;
 			alerty.confirm(
 				"Are you sure to <strong class='text-danger'>" + title + "</strong> for the candidate <strong class='text-danger'>" + current.name + "</strong>?<br>", {
 					okLabel: '<span class="text-danger">Yes</span>',
@@ -85,8 +89,8 @@ var vm = new Vue({
 							credentials: "same-origin"
 						})
 						.then(function (res) {
-							if (res == true) {
-								alerty.toasts('Operation successful');
+							if (res.ok == true) {
+								alerty.toasts('Operation successful',{'place':'top','time':5000},function(){vm.fetchCandidates();});
 							}
 
 						});
