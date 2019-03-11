@@ -23,7 +23,8 @@ class Qualification extends Model
                   'description',
                   'institution',
                   'obtained_on',
-                  'student_no'
+                  'student_no',
+                  'deleted_at' /* helps to restore deleted records and have less deleted records */
               ];
 
     public function employee()

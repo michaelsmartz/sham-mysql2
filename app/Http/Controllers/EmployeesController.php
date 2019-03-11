@@ -675,10 +675,11 @@ class EmployeesController extends CustomController
              ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>2],
                                 $postalAddress);
 
+        $data->qualifications()->delete();
         if(isset($qualifications)){
             foreach($qualifications as $qual){
-                $data->qualifications()
-                     ->updateOrCreate(['employee_id'=>$data->id], $qual);
+                $data->qualifications()->withTrashed()
+                     ->updateOrCreate(['employee_id'=>$data->id, 'reference'=>$qual['reference']], $qual);
             }
         }
 
