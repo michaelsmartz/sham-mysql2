@@ -63,15 +63,17 @@
 </script>
 <div class="row">
     <div class="col-md-3" style="padding-left: 100px"><b>Assessor</b></div>
-    <div class="col-md-2"><b>Completed</b></div>
-    <div class="col-md-2"><b>Score</b></div>
-    <div class="col-md-4"><b>Action</b></div>
+    <div class="col-md-1"><b>Completed</b></div>
+    <div class="col-md-1"><b>Score</b></div>
+    <div class="col-md-2"><b>Start Time</b></div>
+    <div class="col-md-2"><b>End Time</b></div>
+    <div class="col-md-2"><b>Action</b></div>
 </div>
 
 @foreach($evaluationDetails->assessors as $assessor)
     <div class="row" style=" margin-top: -12px;">
         <div class="col-md-3" style="padding-left: 100px;">{{$assessor->full_name}}</div>
-        <div class="col-md-2">
+        <div class="col-md-1">
             @if($assessor->is_completed == '1')
                 <span class="state state-small state-green">Yes</span>
             @else
@@ -79,8 +81,10 @@
             @endif
         </div>
 
-        <div class="col-md-2">{{$assessor->overall_score}}</div>
-        <div class="col-md-4" data-id="{{$assessor->id}}" data-evaluationid='{{$assessor->evaluation_id}}'  data-assessorid='{{$assessor->employee_id}}'>
+        <div class="col-md-1">{{$assessor->overall_score}}</div>
+        <div class="col-md-2">{{$assessor->start_time}}</div>
+        <div class="col-md-2">{{$assessor->end_time}}</div>
+        <div class="col-md-2" data-id="{{$assessor->id}}" data-evaluationid='{{$assessor->evaluation_id}}'  data-assessorid='{{$assessor->employee_id}}'>
             <button type="button" title="Review" class="b-n b-n-r bg-transparent  item-summary tooltips" onclick="summaryForm($(this).closest('div').data('id'),$(this).closest('div').data('evaluationid'),$(this).closest('div').data('assessorid'), event)"><i class="glyphicon glyphicon-blackboard text-bootstrap-primary"></i></button>
             <button type="button" title="Score" class="b-n b-n-r bg-transparent item-assessoredit tooltips" onclick="assessorEditForm($(this).closest('div').data('id'), $(this).closest('div').data('evaluationid'), event)"><i class="glyphicon glyphicon-hand-right text-bootstrap-primary"></i></button>
 

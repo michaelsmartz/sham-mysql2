@@ -454,7 +454,6 @@ class EvaluationsController extends CustomController
             else{
                 $assessor->overall_score = "";
             }
-
         }
 
         //https://laravel.io/forum/06-23-2014-eager-loading-with-multiple-relations
@@ -788,7 +787,7 @@ class EvaluationsController extends CustomController
         $hearderdetails['department'] = $evaluations->department->description;
         $hearderdetails['feedbackdate'] = $evaluations->feedback_date;
         $hearderdetails['referenceno'] = $evaluations->reference_no;
-        $hearderdetails['referencesource'] = $evaluations->source;
+        $hearderdetails['referencesource'] = $evaluations->reference_source;
         $hearderdetails['assessment'] = $evaluations->assessment->name;
 
         $assessmentdetails = array();
@@ -1050,7 +1049,7 @@ class EvaluationsController extends CustomController
             $hearderdetails['department'] = $evaluations->department->description;
             $hearderdetails['feedbackdate'] = $evaluations->feedback_date;
             $hearderdetails['referenceno'] = $evaluations->reference_no;
-            $hearderdetails['referencesource'] = $evaluations->source;
+            $hearderdetails['referencesource'] = $evaluations->reference_source;
             $hearderdetails['assessment'] = $evaluations->assessment->name;
 
             $assessmentdetails = array();
