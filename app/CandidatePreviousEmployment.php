@@ -25,6 +25,7 @@ class CandidatePreviousEmployment extends Model
                   'reason_leaving',
                   'start_date',
                   'end_date',
+                  'deleted_at'
               ];
 
     public function candidate()

@@ -33,6 +33,15 @@
             </span>
         </div>
 
+        <div class="form-group col-xs-12 {{ $errors->has('attachment') ? 'has-error' : '' }}">
+            @include('partials.uploader',[
+                'fieldLabel' => 'Attach Interview Document',
+                'desc' => 'Upload documents only',
+                'route' => 'recruitment_requests.update-interview',
+                'acceptedFiles' => "['doc', 'docx', 'ppt', 'pptx', 'pdf']"
+            ])
+        </div>
+
         <div class="form-group col-xs-12 {{ $errors->has('is_completed') ? 'has-error' : '' }}">
             <label for="is_completed">Completed</label>
             <div class="checkbox">
@@ -43,8 +52,7 @@
                 </label>
             </div>
 
-            {!! $errors->first('is_completed', '<p class="help-block">:message</p>') !!}
-        </div>
+        {!! $errors->first('is_completed', '<p class="help-block">:message</p>') !!}
 
         <input id="candidate_id" class="" name="candidate_id" type="hidden" value="{!! isset($candidate_id) ? $candidate_id : null !!}" />
         <input id="interview_id" class="" name="interview_id" type="hidden" value="{!! isset($interview_id) ? $interview_id : null !!}" />

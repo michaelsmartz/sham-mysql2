@@ -158,6 +158,7 @@
                 </div>
                 <div class="form-group">
                     <div class="row" v-for="(qual, index) in quals">
+                        <input type="hidden" :name="'qualifications[' + index + '][deleted_at]'">
                         <div class="col-xs-1">
                             <button type="button" v-on:click="removeQual(index)" class="btn btn-default" data-wenk-pos="right"
                                     data-wenk="Remove Qualification">
@@ -166,23 +167,23 @@
                         </div>
                         <div class="col-md-1">
                             <input v-model="qual.reference" type="text"
-                                   name="qualifications[][reference]" class="form-control">
+                                   :name="'qualifications['+index+'][reference]'" class="form-control">
                         </div>
                         <div class="col-md-3">
                             <input v-model="qual.description" type="text"
-                                   name="qualifications[][description]" class="form-control">
+                                   :name="'qualifications['+index+'][description]'" class="form-control">
                         </div>
                         <div class="col-md-3">
                             <input v-model="qual.institution" type="text"
-                                   name="qualifications[][institution]" class="form-control">
+                                   :name="'qualifications['+index+'][institution]'" class="form-control">
                         </div>
                         <div class="col-sm-2">
                             <input v-model="qual.student_no" type="text"
-                                   name="qualifications[][student_no]" class="form-control">
+                                   :name="'qualifications['+index+'][student_no]'" class="form-control">
                         </div>
                         <div class="col-sm-2">
                             <input v-model="qual.obtained_on" type="text" class="form-control datepicker"
-                                   name="qualifications[][obtained_on]" date-format="yy-mm-dd" change-month="true" change-year="true">
+                                   :name="'qualifications['+index+'][obtained_on]'" date-format="yy-mm-dd" change-month="true" change-year="true">
                         </div>
                     </div>
                 </div>
@@ -214,6 +215,7 @@
                     </div>
                     <div class="form-group">
                         <div class="row" v-for="(employment, index) in employments">
+                            <input type="hidden" :name="'previous_employments[' + index + '][deleted_at]'">
                             <div class="col-xs-1">
                                 <button type="button" v-on:click="removeEmploy(index)" class="btn btn-default" data-wenk-pos="right"
                                         data-wenk="Remove Employment">
@@ -222,27 +224,27 @@
                             </div>
                             <div class="col-md-2">
                                 <input v-model="employment.previous_employer" type="text"
-                                       name="previous_employments[][previous_employer]" class="form-control">
+                                       :name="'previous_employments['+index+'][previous_employer]'" class="form-control">
                             </div>
                             <div class="col-md-2">
                                 <input v-model="employment.position" type="text"
-                                       name="previous_employments[][position]" class="form-control">
+                                       :name="'previous_employments['+index+'][position]'" class="form-control">
                             </div>
                             <div class="col-md-1">
                                 <input v-model="employment.salary" type="text"
-                                       name="previous_employments[][salary]" class="form-control">
+                                       :name="'previous_employments['+index+'][salary]'" class="form-control">
                             </div>
                             <div class="col-sm-2">
                                 <input v-model="employment.reason_leaving" type="text"
-                                       name="previous_employments[][reason_leaving]" class="form-control">
+                                       :name="'previous_employments['+index+'][reason_leaving]'" class="form-control">
                             </div>
                             <div class="col-sm-2">
                                 <input v-model="employment.start_date" type="text"
-                                       name="previous_employments[][start_date]" class="form-control datepicker">
+                                       :name="'previous_employments['+index+'][start_date]'" class="form-control datepicker">
                             </div>
                             <div class="col-sm-2">
                                 <input v-model="employment.end_date" type="text"
-                                       name="previous_employments[][end_date]" class="form-control datepicker">
+                                       :name="'previous_employments['+index+'][end_date]'" class="form-control datepicker">
                             </div>
                         </div>
                     </div>

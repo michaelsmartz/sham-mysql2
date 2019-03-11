@@ -14,6 +14,7 @@ use App\Recruitment;
 use App\Skill;
 use App\Support\Helper;
 use App\SystemSubModule;
+use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
@@ -22,6 +23,8 @@ use Exception;
 
 class RecruitmentRequestsController extends CustomController
 {
+    use MediaFiles;
+
     /**
      * Create a new controller instance.
      *
@@ -346,8 +349,17 @@ class RecruitmentRequestsController extends CustomController
         $status = InterviewStatusType::ddList();
         $results = InterviewResultsType::ddList();
 
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "5", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
+
         if($request->ajax()) {
-            $view = view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id'))->renderSections();
+            $view = view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -356,7 +368,7 @@ class RecruitmentRequestsController extends CustomController
             ]);
         }
 
-        return view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id'));
+        return view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'));
     }
 
     /**
@@ -370,15 +382,18 @@ class RecruitmentRequestsController extends CustomController
     public function updateInterview(Request $request, $id)
     {
         try {
-            $input = array_except($request->all(),array('_token','_method','schedule_at_submit'));
+            $input = array_except($request->all(),array('_token','_method','attachment','schedule_at_submit'));
 
             $data = Recruitment::find($id);
 
             $data->interviews()->updateExistingPivot($input['interview_id'], $input);
 
+            $this->attach($request, $id, 'Recruitment');
+
             \Session::put('success', 'Interview updated Successfully!!');
 
         } catch (Exception $exception) {
+            dd($exception->getMessage());
             \Session::put('error', 'could not update Interview!');
         }
 

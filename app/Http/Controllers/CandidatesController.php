@@ -200,17 +200,21 @@ class CandidatesController extends CustomController
 
         $this->attach($request, $data->id);
 
+        //dd($qualifications);
+
+        $data->qualifications()->delete();
         if(isset($qualifications)){
             foreach($qualifications as $qual){
-                $data->qualifications()
-                    ->updateOrCreate(['candidate_id'=>$data->id], $qual);
+                $data->qualifications()->withTrashed()
+                    ->updateOrCreate(['candidate_id'=>$data->id, 'reference'=>$qual['reference']], $qual);
             }
         }
 
+        $data->previousEmployments()->delete();
         if(isset($previous_employments)){
             foreach($previous_employments as $employ){
-                $data->previousEmployments()
-                    ->updateOrCreate(['candidate_id'=>$data->id], $employ);
+                $data->previousEmployments()->withTrashed()
+                    ->updateOrCreate(['candidate_id'=>$data->id, 'previous_employer'=>$employ['previous_employer']], $employ);
             }
         }
 

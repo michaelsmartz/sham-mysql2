@@ -3,12 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
 use San4io\EloquentFilter\Filters\LikeFilter;
 use San4io\EloquentFilter\Filters\WhereFilter;
 
 class Recruitment extends Model
 {
-    
+    use Mediable;
     use SoftDeletes;
 
 

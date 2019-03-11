@@ -23,7 +23,8 @@ class CandidateQualification extends Model
                   'description',
                   'institution',
                   'obtained_on',
-                  'student_no'
+                  'student_no',
+                  'deleted_at'
               ];
 
     public function candidate()

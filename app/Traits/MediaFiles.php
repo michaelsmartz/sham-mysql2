@@ -34,11 +34,18 @@ trait MediaFiles
      * To upload file
      * @param Request $request
      * @param $Id
+     * @param null $model
+     * @return array
      */
-    public function attach(Request $request, $Id)
+    public function attach(Request $request, $Id, $model = null)
     {
-        $name = $this->getModelName($request);
-        $uModelName = $name['model'];
+        if($model != null){
+            $uModelName = $model;
+        }else{
+            $name = $this->getModelName($request);
+            $uModelName = $name['model'];
+        }
+
         $modelClass = 'App\\'.$uModelName;
 
         $relatedMedias = $modelClass::find($Id);

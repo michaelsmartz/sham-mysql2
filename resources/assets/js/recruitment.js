@@ -117,7 +117,6 @@ var vm = new Vue({
 				.then(res => res.json())
 				.then(res => {
                     let _this = this;
-					console.log(res);
                     _this.interviews = res;
 				});
             }

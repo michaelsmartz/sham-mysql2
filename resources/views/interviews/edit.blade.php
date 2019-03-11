@@ -30,7 +30,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('recruitment_requests.update-interview', [$recruitment_id,$interview_id,$candidate_id]) }}" id="edit_interview_form" name="edit_interview_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('recruitment_requests.update-interview', [$recruitment_id,$interview_id,$candidate_id]) }}" id="edit_interview_form" name="edit_interview_form" enctype="multipart/form-data" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">
