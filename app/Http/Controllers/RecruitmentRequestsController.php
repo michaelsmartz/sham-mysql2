@@ -14,6 +14,7 @@ use App\Recruitment;
 use App\Skill;
 use App\Support\Helper;
 use App\SystemSubModule;
+use Barryvdh\DomPDF\Facade as PDF;
 use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
@@ -417,6 +418,31 @@ class RecruitmentRequestsController extends CustomController
         }
         
         return Response()->json($result);
+    }
+
+    public function downloadOffer(Request $request){
+
+        $id = intval(Route::current()->parameter('recruitment_request'));
+        $cdt = intval(Route::current()->parameter('candidate'));
+
+        $recruitment = Recruitment::find($id);
+        $recruitment->load(['department']);
+        $candidate = Candidate::find($cdt);
+
+        try {
+
+            $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate'))
+            ->setPaper('a4', 'portrait');
+            //dd($pdf);
+        } catch(Exception $exception) {
+
+        }
+        return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
+        return Response()->json([
+            'filename' => $recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf', 
+            'stream' => $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf')
+        ]);
+
     }
 
     protected function saveRecruitmentRequest($request, $id = null) {

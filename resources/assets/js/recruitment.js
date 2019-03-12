@@ -1,6 +1,7 @@
 import Modal from './components/Modal.vue';
 window.Vue = require('vue/dist/vue.common.js');
 
+let download = require("downloadjs");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 // usage: {{ file.size | prettyBytes }}
@@ -171,6 +172,23 @@ var vm = new Vue({
 				return "background-image: " + "url('/img/avatar.png')";
 			}
 			
+		},
+		downloadOffer: function(){
+
+			fetch('./candidate/' + this.current.id + '/download-offer', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, text-plain, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				credentials: "same-origin"
+			}).then(function(resp) {
+				return resp.blob();
+			}).then(function(blob) {
+				download(blob, 'offer letter.pdf');
+			});
 		}
 	},
 	created: function () {
@@ -188,6 +206,6 @@ var vm = new Vue({
 					return person.status[0].status == status
 				}).length;
 			}
-		},
+		}
 	}
 });

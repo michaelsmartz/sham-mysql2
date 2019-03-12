@@ -46,7 +46,7 @@
                             <div class="col-md-7">
                                 <label for="originalCopy">Original Copy</label>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-primary">Download</button>
+                                    <button type="button" @click="downloadOffer" class="btn btn-primary">Download</button>
                                 </div>
 
                                 <label for="originalCopy">Signed Copy</label>

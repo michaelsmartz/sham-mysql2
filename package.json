@@ -46,6 +46,7 @@
     "css-modal": "^1.5.0",
     "delegated-events": "^1.0.9",
     "dom-loaded": "^1.0.1",
+    "downloadjs": "^1.4.7",
     "element-ready": "^3.0.0",
     "exports-loader": "^0.7.0",
     "file-upload-with-preview": "^2.1.1",
