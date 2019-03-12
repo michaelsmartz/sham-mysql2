@@ -97,6 +97,5 @@
     </div>
     <div id="date-picker"> </div>
 
-    {{--@section('post-body')--}}
-        {{--<script src="{{url('/')}}/js/tables.min.js"></script>--}}
-    {{--@endsection--}}
+    @component('partials.index', [])
+    @endcomponent
