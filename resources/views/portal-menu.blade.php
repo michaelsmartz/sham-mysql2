@@ -260,6 +260,9 @@
                     <a href="{{URL::to('/')}}/branches">Employees</a>
                 </li>
             @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_INTERVIEWS]))
+                <li> <a href="{{URL::to('/')}}/interviews">Recruitment</a></li>
+            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
                 <li> <a href="{{URL::to('/')}}/asset_conditions">Assets Allocation</a></li>
             @endif

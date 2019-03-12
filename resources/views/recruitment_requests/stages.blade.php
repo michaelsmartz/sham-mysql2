@@ -75,7 +75,7 @@
                 {{--@endcomponent--}}
             {{--</div>--}}
             <div class="tab-pane"  role="tabpanel" id="interviewing">
-                @component('interviews.index', ['step' => [
+                @component('recruitments.interviews.index', ['step' => [
                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Overall Pass'],
                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Overall Fail']
                ]])

@@ -157,6 +157,9 @@ Auth::routes();
             Route::resource('users', 'UsersController');
             Route::resource('asset_conditions', 'AssetConditionsController');
             Route::resource('violations', 'ViolationsController');
+
+            Route::resource('interviews', 'InterviewsController');
+            Route::resource('qualification-recruitments', 'QualificationRecruitmentsController');
         #endregion
 
         #region E-Learning

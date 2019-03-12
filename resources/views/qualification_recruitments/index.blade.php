@@ -1,14 +1,14 @@
 @extends('portal-index')
-@section('title','Interviews')
+@section('title','Qualifications')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#">Interviews</a></li>
-        <li><a href="{{URL::to('/')}}/qualification-recruitments">Qualifications</a></li>
+        <li><a href="{{URL::to('/')}}/interviews">Interviews</a></li>
+        <li class="active"><a href="#">Qualifications</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">
-            @if(count($interviews) > 0)
+            @if(count($qualificationRecruitments) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom" onclick="addForm(event)">
@@ -18,8 +18,8 @@
             </div>
             @endif
             <div class="table-responsive">
-            @if(count($interviews) == 0)
-                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new interview</h4>
+            @if(count($qualificationRecruitments) == 0)
+                <h4 class="text-center">Its a bit empty here. You may click <a href="javascript:;" class="text-primary item-create">here</a> to add a new qualification recruitment</h4>
             @else
                 <table id="new-table" data-toggle="table">
                     <thead>
@@ -29,15 +29,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($interviews as $interview)
-                        <tr id="tr{{$interview->id}}">
-                            <td>{{ $interview->description }}</td>
+                        @foreach($qualificationRecruitments as $qualificationRecruitment)
+                        <tr id="tr{{$qualificationRecruitment->id}}">
+                            <td>{{ $qualificationRecruitment->description }}</td>
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$interview->id}}', event)">
+                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$qualificationRecruitment->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </a>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$interview->id}}')">
+                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$qualificationRecruitment->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>
                                 </div>
@@ -47,11 +47,11 @@
                     </tbody>
                 </table>
                 <nav>
-                    {!! $interviews->render() !!}
+                    {!! $qualificationRecruitments->render() !!}
                 </nav>
             @endif
             </div>
-            @component('partials.index', ['routeName'=> 'interviews.destroy'])
+            @component('partials.index', ['routeName'=> 'qualification-recruitments.destroy'])
             @endcomponent
         </div>
     </div>

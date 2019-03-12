@@ -159,3 +159,21 @@ create table `csv_data` (`id` int unsigned not null auto_increment primary key, 
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disabilities', '12', '1');
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Disability Category ', '12', '1');
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Candidates', '4', '1');
+
+#-- 12/03/19
+INSERT INTO `system_sub_modules` (`id`, `description`, `system_module_id`, `is_active`, `created_at`, `updated_at`) VALUES ('132', 'Interviews', '4', '1', '2018-11-16 11:39:40', '2018-11-16 11:39:40');
+
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '132');
+
+
+INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`, `created_at`, `updated_at`) VALUES ('Recruitment Qualifications', '4', '1', '2018-11-16 11:39:40', '2018-11-16 11:39:40');
+
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '133');
