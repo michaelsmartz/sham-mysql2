@@ -12,7 +12,7 @@
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            @include ('recruitments.interviews.form', [
+            @include ('interview_requests.form', [
             'interview'=> $interview,
             'status'=> $status,
             'results'=> $results,

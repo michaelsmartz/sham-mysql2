@@ -360,7 +360,7 @@ class RecruitmentRequestsController extends CustomController
         ];
 
         if($request->ajax()) {
-            $view = view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'))->renderSections();
+            $view = view('interview_requests.edit', compact('data','status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -369,7 +369,7 @@ class RecruitmentRequestsController extends CustomController
             ]);
         }
 
-        return view('interviews.edit', compact('status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'));
+        return view('interview_requests.edit', compact('data','status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'));
     }
 
     /**

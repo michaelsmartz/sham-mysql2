@@ -6,7 +6,6 @@
                 <strong>@{{ person.name }}</strong>
                 <div v-if="person.job_title">@{{ person.job_title.description }}</div>
             </div>
-        </li>
     </ul>
     <div class="tab-detail" v-if="current">
         <div class="row">
