@@ -1,5 +1,6 @@
 @extends('portal-index')
 @section('title','Qualifications')
+@section('subtitle','Qualification drop-down values for Recruitment Request')
 @section('content')
     <br>
     <ul class="nav nav-tabs">

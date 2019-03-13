@@ -1,5 +1,3 @@
-USE `Shamdev_recruitment_2`;
-
 DROP TABLE IF EXISTS `candidates`;
 CREATE TABLE `candidates` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
