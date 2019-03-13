@@ -152,6 +152,11 @@ class Candidate extends Model
                     ->select(['candidate_id','status']);
     }
 
+    public function interviews()
+    {
+        return $this->belongsToMany(Interview::class, 'candidate_interview_recruitment','recruitment_id','interview_id')->withPivot('reasons','schedule_at','results','location','status');
+    }
+
     public function scopeCandidatesList($query)
     {
         $query->leftJoin('candidate_previous_employments','candidate_previous_employments.candidate_id','=','candidates.id')

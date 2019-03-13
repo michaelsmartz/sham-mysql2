@@ -99,29 +99,6 @@ var vm = new Vue({
 			);
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},
-        loadInterviewTypes: function (item, current) {
-            this.current = item;
-            this.counter = 0;
-            this.lastInterview = false;
-
-            if (current.id) {
-                fetch('./interviewing/' + current.id, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json, text-plain, */*",
-                        "X-Requested-With": "XMLHttpRequest",
-                        "X-CSRF-TOKEN": token
-                    },
-                    method: 'post',
-                    credentials: "same-origin"
-                })
-				.then(res => res.json())
-				.then(res => {
-                    let _this = this;
-                    _this.interviews = res;
-				});
-            }
-        },
         editInterviewForm: function(interview_id, candidate_id){
             this.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
 		},

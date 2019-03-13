@@ -1,5 +1,5 @@
     <ul class="people-list">
-        <li v-for="person in filteredPeople" v-on:click="loadInterviewTypes(person,current)" :class="{ active: current.name === person.name }">
+        <li v-for="person in filteredPeople" v-on:click="setCurrent(person)" :class="{ active: current.name === person.name }">
             <div class="img">
             </div>
             <div>
@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12" v-if="interviews.length">
+            <div class="col-md-12" v-if="current.interviews.length" v-show="current">
 
                 <div class="table-responsive">
                     <table id="new-table" data-toggle="table" style="width:100%" data-detail-view="true">
@@ -56,7 +56,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="interview in interviews" :interview='interview'>
+                            <tr v-for="interview in current.interviews">
                                 <td>@{{interview.description}}</td>
                                 <td>@{{interview.pivot.schedule_at}}</td>
                                 {{--<td>!{$interviewStatus = @{{interview.pivot.status}} }!</td>--}}

@@ -286,8 +286,12 @@ class RecruitmentRequestsController extends CustomController
 
             $data = $this->contextObj->findData($id);
 
-            $result = $data->candidates()->with(['media','jobTitle','previousEmployments','qualifications','status'])
-            ->get();
+            $result = $data->candidates()
+                ->with(['media','jobTitle','previousEmployments','qualifications','status'])
+                ->with(['interviews'=> function($query) use ($id){
+                    $query->where('candidate_id', $id);
+                }])
+                ->get();
 
         } catch (Exception $exception) {
             dd($exception);
@@ -307,31 +311,6 @@ class RecruitmentRequestsController extends CustomController
         }
 
         return view($this->baseViewPath .'.stages', compact('data'));
-    }
-
-    public function getInterviewing(Request $request){
-        $recruitment_id = Route::current()->parameter('recruitment_request');
-        $candidate_id = Route::current()->parameter('candidate');
-
-        $result = [];
-
-        if(!empty($recruitment_id) && !empty($candidate_id)) {
-            $recruitment = $this->contextObj::with(['interviews'])
-                ->whereHas('interviews', function ($query) use ($candidate_id)
-                {
-                    return  $query->where('candidate_id', $candidate_id);
-                })
-                ->whereHas('interviews', function ($query) use ($recruitment_id)
-                {
-                    return  $query->where('recruitment_id', $recruitment_id);
-                })
-                ->first();
-
-            if($recruitment != null)
-                $result = $recruitment->interviews->all();
-        }
-
-        return Response()->json($result);
     }
 
     /**
