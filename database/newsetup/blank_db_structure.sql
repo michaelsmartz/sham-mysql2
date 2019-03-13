@@ -13,15 +13,15 @@ SET GLOBAL FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------------------------------------------------------
 -- Schema
 -- ----------------------------------------------------------------------------
-DROP SCHEMA IF EXISTS `Shamuat` ;
-CREATE SCHEMA IF NOT EXISTS `Shamuat` ;
+DROP SCHEMA IF EXISTS `Shamdev_recruitment_2` ;
+CREATE SCHEMA IF NOT EXISTS `Shamdev_recruitment_2` ;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-USE `Shamuat`;
+USE `Shamdev_recruitment_2`;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;

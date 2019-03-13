@@ -1,16 +1,6 @@
-INSERT INTO `system_sub_modules` (`id`, `description`, `system_module_id`, `is_active`, `created_at`, `updated_at`) VALUES ('131', 'Candidates', '4', '1', '2018-11-16 11:39:40', '2018-11-16 11:39:40');
+USE `Shamdev_recruitment_2`;
 
---
--- activate recruitment request
---
-UPDATE system_modules
-SET  deleted_at = NULL
-WHERE  id = 4;
-
---
--- Recruitment module tables
---
-
+DROP TABLE IF EXISTS `candidates`;
 CREATE TABLE `candidates` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `title_id` INT(11) NULL DEFAULT NULL,
@@ -56,6 +46,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `candidate_disability`;
 CREATE TABLE `candidate_disability` (
 `id` INT(11) NOT NULL AUTO_INCREMENT ,
 `candidate_id` INT(11) NULL DEFAULT NULL,
@@ -77,6 +68,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `candidate_skill`;
 CREATE TABLE `candidate_skill` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `candidate_id` INT(11) NULL DEFAULT NULL,
@@ -98,6 +90,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `candidate_qualifications`;
 CREATE TABLE `candidate_qualifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `candidate_id` int(11) NOT NULL,
@@ -118,7 +111,7 @@ CREATE TABLE `candidate_qualifications` (
   ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+DROP TABLE IF EXISTS `candidate_previous_employments`;
 CREATE TABLE `candidate_previous_employments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `candidate_id` int(11) NOT NULL,
@@ -141,7 +134,7 @@ CREATE TABLE `candidate_previous_employments` (
 --
 -- Recruitment
 --
-
+DROP TABLE IF EXISTS `interviews`;
 CREATE TABLE `interviews` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(50) NOT NULL,
@@ -151,6 +144,7 @@ CREATE TABLE `interviews` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4;
 
+DROP TABLE IF EXISTS `qualifications_recruitment`;
 CREATE TABLE `qualifications_recruitment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(50) NOT NULL,
@@ -160,6 +154,7 @@ CREATE TABLE `qualifications_recruitment` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4;
 
+DROP TABLE IF EXISTS `recruitments`;
 CREATE TABLE `recruitments` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `department_id` INT(11) NULL DEFAULT NULL,
@@ -180,7 +175,6 @@ CREATE TABLE `recruitments` (
 PRIMARY KEY (`id`),
 INDEX `FK_Recruitments_Departments` (`department_id` ASC) INVISIBLE,
 INDEX `FK_Recruitments_EmployeeStatuses` (`employee_status_id` ASC) INVISIBLE,
-INDEX `FK_Recruitments_Skills` (`skill_id` ASC) INVISIBLE,
 INDEX `FK_Recruitments_Qualifications` (`qualification_id` ASC) INVISIBLE,
 CONSTRAINT `FK_Recruitments_Departments`
 FOREIGN KEY (`department_id`)
@@ -192,11 +186,6 @@ FOREIGN KEY (`employee_status_id`)
 REFERENCES `employee_statuses` (`id`)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION,
-CONSTRAINT `FK_Recruitments_Skills`
-FOREIGN KEY (`skill_id`)
-REFERENCES `skills` (`id`)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION,
 CONSTRAINT `FK_Recruitments_Qualifications`
 FOREIGN KEY (`qualification_id`)
 REFERENCES `qualifications_recruitment` (`id`)
@@ -206,6 +195,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `candidate_recruitment`;
 CREATE TABLE `candidate_recruitment` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `candidate_id` INT(11) NULL DEFAULT NULL,
@@ -228,6 +218,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `interview_recruitment`;
 CREATE TABLE `interview_recruitment` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `recruitment_id` INT(11) NULL DEFAULT NULL,
@@ -249,6 +240,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `recruitment_skill`;
 CREATE TABLE `recruitment_skill` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `recruitment_id` INT(11) NULL DEFAULT NULL,
@@ -270,6 +262,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `recruitment_status`;
 CREATE TABLE `recruitment_status` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `recruitment_id` INT(11) NULL DEFAULT NULL,
@@ -293,6 +286,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `candidate_interview_recruitment`;
 CREATE TABLE `candidate_interview_recruitment` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `candidate_id` INT(11) NULL DEFAULT NULL,
@@ -345,9 +339,6 @@ ADD COLUMN `zip` VARCHAR(50) NULL DEFAULT NULL AFTER `province`;
 ALTER TABLE `candidates`
 DROP COLUMN `home_address`;
 
-ALTER TABLE `recruitments`
-	ADD COLUMN `end_date` DATE NULL DEFAULT NULL AFTER `start_date`;
-
 ALTER TABLE `candidates`
 CHANGE COLUMN `position_applying_for` `job_title_id` INT(11) NULL DEFAULT NULL AFTER `marital_status_id`,
 ADD INDEX `FK_Candidates_JobTitles` (`job_title_id` ASC) INVISIBLE;
@@ -371,12 +362,33 @@ ALTER TABLE `candidate_recruitment`
 
 ALTER TABLE `recruitment_status`
 	CHANGE COLUMN `status` `status` TINYINT NOT NULL DEFAULT '0' AFTER `candidate_id`;
----
---- 01/03/2019
----
+
 ALTER TABLE `candidate_previous_employments`
 	CHANGE COLUMN `end_date` `end_date` DATE NULL DEFAULT (CURRENT_DATE) AFTER `start_date`;
 
 ALTER TABLE `candidate_interview_recruitment`
 ADD COLUMN `status` ENUM('1', '2', '3') NULL DEFAULT NULL AFTER `recruitment_id`,
 CHANGE COLUMN `results` `results` ENUM('1', '2') NULL DEFAULT NULL ;
+
+UPDATE system_modules
+SET  deleted_at = NULL
+WHERE  id = 4;
+
+INSERT INTO `system_sub_modules` (`id`, `description`, `system_module_id`, `is_active`, `created_at`, `updated_at`) VALUES ('131', 'Candidates', '4', '1', '2018-11-16 11:39:40', '2018-11-16 11:39:40');
+
+INSERT INTO `system_sub_modules` (`id`, `description`, `system_module_id`, `is_active`, `created_at`, `updated_at`) VALUES ('132', 'Interviews', '4', '1', '2018-11-16 11:39:40', '2018-11-16 11:39:40');
+
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '132');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '132');
+
+
+INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`, `created_at`, `updated_at`) VALUES ('Recruitment Qualifications', '4', '1', '2018-11-16 11:39:40', '2018-11-16 11:39:40');
+
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '133');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '133');
