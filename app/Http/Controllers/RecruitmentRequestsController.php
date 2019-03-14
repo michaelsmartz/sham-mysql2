@@ -131,7 +131,6 @@ class RecruitmentRequestsController extends CustomController
 
     public function edit(Request $request)
     {
-
         $data = $skills = $departments = $positions = $qualifications = $interviewTypes = $recruitmentTypes = null;
         $_mode = 'edit';
         $id = Route::current()->parameter('recruitment_request');
@@ -155,10 +154,23 @@ class RecruitmentRequestsController extends CustomController
         $recruitmentSkills = $data->skills->pluck('id');
         $recruitmentInterviewTypes = $data->interviewTypes->pluck('id');
 
-        return view($this->baseViewPath .'.edit',
-            compact('_mode', 'data', 'departments', 'positions', 'qualifications',
-                'skills', 'interviewTypes', 'recruitmentTypes',
-                'recruitmentInterviewTypes','recruitmentSkills'));
+        $processed = $this->checkIfAlreadyProcessed($id);
+
+        if ($data->is_approved == true)
+        {
+            // show the view and pass the data to it
+            return view($this->baseViewPath . '.show',
+                compact('_mode', 'processed', 'data', 'departments', 'positions', 'qualifications',
+                    'skills', 'interviewTypes', 'recruitmentTypes',
+                    'recruitmentInterviewTypes', 'recruitmentSkills'));
+        }
+        else {
+            // show the view and pass the data to it
+            return view($this->baseViewPath . '.edit',
+                compact('_mode', 'processed', 'data', 'departments', 'positions', 'qualifications',
+                    'skills', 'interviewTypes', 'recruitmentTypes',
+                    'recruitmentInterviewTypes', 'recruitmentSkills'));
+        }
     }
 
     /**
@@ -172,9 +184,20 @@ class RecruitmentRequestsController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            $processed = $this->checkIfAlreadyProcessed($id);
 
-            $this->saveRecruitmentRequest($request, $id);
+            $data = Recruitment::find($id);
+
+            if($data) {
+                if ($data->is_approved == false && $processed == 0) {
+                    $this->validator($request);
+                    $this->saveRecruitmentRequest($request, $id);
+                } else if($processed == 0) {
+                    $data->is_approved = $request->is_approved;
+                    $data->is_completed = $request->is_completed;
+                    $data->save();
+                }
+            }
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -183,6 +206,26 @@ class RecruitmentRequestsController extends CustomController
         }
 
         return redirect()->route($this->baseViewPath .'.index');       
+    }
+
+    private function checkIfAlreadyProcessed($id){
+        $data = Recruitment::find($id);
+
+        if($data) {
+            //check if status is not 0 (initial state) in pivot candidate_recruitment
+            foreach ($data->candidates as $candidate) {
+                //check if status is not 0 therefore meaning processed already start
+                if ($candidate->pivot->status > 0)
+                    return 1;
+            }
+
+            //check if recruitment has interview type in pivot candidate_interview_recruitment
+            if ($data->interviews->count() == 0)
+                return 0;
+
+        }
+
+        return 1;
     }
 
     public function manageCandidate(Request $request, $id){
@@ -287,10 +330,12 @@ class RecruitmentRequestsController extends CustomController
             $data = $this->contextObj->findData($id);
 
             $result = $data->candidates()
-                ->with(['media','jobTitle','previousEmployments','qualifications','status'])
-                ->with(['interviews'=> function($query) use ($id){
-                    $query->where('candidate_id', $id);
-                }])
+                ->with(['media','jobTitle','previousEmployments','qualifications','status',
+                    'interviews'=> function ($query) use ($id)
+                    {
+                        return  $query->where('candidate_id', $id);
+                    }
+                ])
                 ->get();
 
         } catch (Exception $exception) {

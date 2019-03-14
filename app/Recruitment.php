@@ -114,7 +114,7 @@ class Recruitment extends Model
 
     public function interviews()
     {
-        return $this->belongsToMany(Interview::class, 'candidate_interview_recruitment','candidate_id','interview_id')->withPivot('reasons','schedule_at','results','location','status');
+        return $this->belongsToMany(Interview::class, 'candidate_interview_recruitment','recruitment_id','interview_id')->withPivot('reasons','schedule_at','results','location','status');
     }
 
     public function qualification_recruitment()
@@ -124,6 +124,6 @@ class Recruitment extends Model
 
     public function candidates()
     {
-        return $this->belongsToMany(Candidate::class);
+        return $this->belongsToMany(Candidate::class)->withPivot('status');
     }
 }

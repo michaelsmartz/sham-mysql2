@@ -1,12 +1,18 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Edit Recruitment Request')
+@section('title', 'View Recruitment Request')
 
-@section('modalTitle', 'Edit Recruitment Requests')
+@section('modalTitle', 'View Recruitment Requests')
 @section('modalFooter')
-    <input class="btn btn-primary pull-right" type="submit" value="Submit">
-    <a href="{{ route('recruitment_requests.index') }}" class="btn btn-default pull-right" title="Show all Recruitment Request">
-        <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-    </a>
+    @if($processed)
+        <a href="{{ route('recruitment_requests.index') }}" class="btn btn-primary pull-right" title="Show all Recruitment Request">
+            Close
+        </a>
+    @else
+        <input class="btn btn-primary pull-right" type="submit" value="Submit">
+        <a href="{{ route('recruitment_requests.index') }}" class="btn btn-default pull-right" title="Show all Recruitment Request">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+        </a>
+    @endif
 @endsection
 
 @section('postModalUrl', route('recruitment_requests.update', $data->id))
@@ -20,7 +26,7 @@
                     @include ('recruitment_requests.form', [
                         'request' => $data,
                         'processed' => $processed,
-                        '_mode'=>'edit'
+                        '_mode'=>'show'
                     ])
                 </div>
             </div>
@@ -34,7 +40,7 @@
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">
             <div class="box-body">
-                    @yield('modalContent') 
+                @yield('modalContent')
             </div>
             <div class="box-footer">
                 @yield('modalFooter')
