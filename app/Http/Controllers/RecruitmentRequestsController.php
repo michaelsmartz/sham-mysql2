@@ -330,10 +330,14 @@ class RecruitmentRequestsController extends CustomController
             $data = $this->contextObj->findData($id);
 
             $result = $data->candidates()
-                ->with(['media','jobTitle','previousEmployments','qualifications','status',
+                ->with(['media','jobTitle','previousEmployments','qualifications',
+                    'status'=> function ($query) use ($id)
+                    {
+                        return  $query->where('recruitment_id', $id);
+                    },
                     'interviews'=> function ($query) use ($id)
                     {
-                        return  $query->where('candidate_id', $id);
+                        return  $query->where('recruitment_id', $id);
                     }
                 ])
                 ->get();
@@ -408,10 +412,10 @@ class RecruitmentRequestsController extends CustomController
     {
         try {
             $input = array_except($request->all(),array('_token','_method','attachment','schedule_at_submit'));
-
             $data = Recruitment::find($id);
 
-            $data->interviews()->updateExistingPivot($input['interview_id'], $input);
+            //TODO INCOMPLETE BUG update on three way pivot table
+            $data->interviews()->wherePivot('recruitment_id', $input['recruitment_id'])->updateExistingPivot($input['recruitment_id'], $input);
 
             $this->attach($request, $id, 'Recruitment');
 
