@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="btn-group pull-right" v-show="current">
-                                <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, 2)" class="{{ $step[0]['btnclass'] }}">
+                                <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, 3)" class="{{ $step[0]['btnclass'] }}">
                                     <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                                 </button>
                                 <button id="{{ $step[1]['id'] }}" class="{{ $step[1]['btnclass'] }}">

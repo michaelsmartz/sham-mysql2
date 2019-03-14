@@ -61,6 +61,7 @@ mix.js('resources/assets/js/parsley.js', 'public/js');
 mix.js('resources/assets/js/recruitment.js', 'public/js');
 mix.js('resources/assets/js/recruitment-request.js', 'public/js');
 mix.js('resources/assets/js/candidates.js', 'public/js');
+mix.js('resources/assets/js/tinymce.js', 'public/js');
 
 mix.sass('resources/assets/sass/app.scss', 'public/css', {
     outputStyle: 'nested'
@@ -109,6 +110,7 @@ mix.minify('public/js/uploader.js');
 mix.minify('public/js/recruitment.js');
 mix.minify('public/js/recruitment-request.js');
 mix.minify('public/js/candidates.js');
+mix.minify('public/js/tinymce.js');
 
 mix.minify('public/css/app.css');
 mix.minify('public/css/employees.css');

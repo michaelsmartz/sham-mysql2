@@ -91,7 +91,7 @@ var vm = new Vue({
 						})
 						.then(function (res) {
 							if (res.ok == true) {
-								alerty.toasts('Operation successful',{'place':'top','time':5000},function(){vm.fetchCandidates();});
+								alerty.toasts('Operation successful',{'place':'top','time':3500},function(){vm.fetchCandidates();});
 							}
 
 						});
