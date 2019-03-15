@@ -18,6 +18,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
@@ -373,7 +374,11 @@ class RecruitmentRequestsController extends CustomController
         $candidate_id = Route::current()->parameter('candidate');
 
         $data = $this->contextObj::find($recruitment_id);
-        $interview = $data->interviews()->where('interview_id', $interview_id)->first();
+        $interview = $data->interviews()
+            ->where('recruitment_id', $recruitment_id)
+            ->where('interview_id', $interview_id)
+            ->where('candidate_id', $candidate_id)
+            ->first();
 
         $status = InterviewStatusType::ddList();
         $results = InterviewResultsType::ddList();
@@ -414,8 +419,17 @@ class RecruitmentRequestsController extends CustomController
             $input = array_except($request->all(),array('_token','_method','attachment','schedule_at_submit'));
             $data = Recruitment::find($id);
 
-            //TODO INCOMPLETE BUG update on three way pivot table
-            $data->interviews()->wherePivot('recruitment_id', $input['recruitment_id'])->updateExistingPivot($input['recruitment_id'], $input);
+            $interview = $data->interviews()
+                ->where('recruitment_id', $input['recruitment_id'])
+                ->where('interview_id', $input['interview_id'])
+                ->where('candidate_id', $input['candidate_id'])
+                ->get()->first();
+
+            $pivot_table_id = $interview->pivot->id;
+
+            DB::table('candidate_interview_recruitment')
+                ->where('id', $pivot_table_id)
+                ->update($input);
 
             $this->attach($request, $id, 'Recruitment');
 
