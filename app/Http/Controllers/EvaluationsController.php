@@ -91,7 +91,7 @@ class EvaluationsController extends CustomController
     public function create()
     {
         $assessments = Assessment::pluck('name','id')->all();
-        $employees = Employee::pluck('full_name', 'id')->all();
+        $employees = Employee::where('date_terminated',null)->pluck('full_name', 'id')->all();
         $departments = Department::pluck('description','id')->all();
         $productCategories = ProductCategory::pluck('description','id')->all();
         $languages = Language::pluck('description','id')->all();
@@ -213,7 +213,7 @@ class EvaluationsController extends CustomController
         }
 
         $assessments = Assessment::pluck('name','id')->all();
-        $employees = Employee::pluck('full_name', 'id')->all();
+        $employees = Employee::where('date_terminated',null)->pluck('full_name', 'id')->all();
         $departments = Department::pluck('description','id')->all();
         $productCategories = ProductCategory::pluck('description','id')->all();
         $languages = Language::pluck('description','id')->all();
