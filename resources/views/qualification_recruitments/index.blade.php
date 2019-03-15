@@ -4,7 +4,9 @@
 @section('content')
     <br>
     <ul class="nav nav-tabs">
+        <li><a href="{{URL::to('/')}}/contracts">Contracts</a></li>
         <li><a href="{{URL::to('/')}}/interviews">Interviews</a></li>
+        <li><a href="{{URL::to('/')}}/offers">Offers</a></li>
         <li class="active"><a href="#">Qualifications</a></li>
     </ul>
     <div class="flex-wrapper">

@@ -158,7 +158,9 @@ Auth::routes();
             Route::resource('asset_conditions', 'AssetConditionsController');
             Route::resource('violations', 'ViolationsController');
 
+            Route::resource('contracts', 'ContractsController');
             Route::resource('interviews', 'InterviewsController');
+            Route::resource('offers', 'OffersController');
             Route::resource('qualification-recruitments', 'QualificationRecruitmentsController');
         #endregion
 

@@ -261,7 +261,7 @@
                 </li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_INTERVIEWS]))
-                <li> <a href="{{URL::to('/')}}/interviews">Recruitment</a></li>
+                <li class="{{ (Request::is('contracts') || Request::is('contracts/*') || Request::is('interviews') || Request::is('interviews/*') || Request::is('offers') || Request::is('offers/*')  || Request::is('qualification-recruitments') || Request::is('qualification-recruitments/*') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/contracts">Recruitment</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
                 <li> <a href="{{URL::to('/')}}/asset_conditions">Assets Allocation</a></li>

@@ -390,3 +390,32 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '133');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '133');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '133');
+
+
+DROP TABLE IF EXISTS `contracts`;
+CREATE TABLE `contracts` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`description` VARCHAR(100) NOT NULL,
+	`content` MEDIUMBLOB NOT NULL,
+	`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+	`deleted_at` DATETIME DEFAULT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
+
+DROP TABLE IF EXISTS `offers`;
+CREATE TABLE `offers` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`description` VARCHAR(100) NOT NULL,
+	`content` MEDIUMBLOB NOT NULL,
+	`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+	`deleted_at` DATETIME DEFAULT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;

@@ -400,5 +400,15 @@
     {
         "model-name": "RecruitmentQualification",
         "resource-file": "recruitment_qualifications.json"
+    },
+    {
+        "model-name": "Contract",
+        "resource-file": "contracts.json",
+        "table-name": "contracts"
+    },
+    {
+        "model-name": "Offer",
+        "resource-file": "offers.json",
+        "table-name": "offers"
     }
 ]
