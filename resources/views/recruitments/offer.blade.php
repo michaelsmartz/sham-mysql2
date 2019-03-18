@@ -9,6 +9,7 @@
                     </li>
                 </ul>
                 <div class="tab-detail" v-if="current">
+                    <div id="date-picker"></div>
                     <div class="row">
                         <div class="col-md-2 img">
                             <div class="avatar-upload">
@@ -35,7 +36,7 @@
                                 <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, 3)" class="{{ $step[0]['btnclass'] }}">
                                     <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                                 </button>
-                                <button id="{{ $step[1]['id'] }}" class="{{ $step[1]['btnclass'] }}">
+                                <button id="{{ $step[1]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, -3)" class="{{ $step[1]['btnclass'] }}">
                                     <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
                                 </button>
                             </div>
@@ -44,15 +45,27 @@
                     <div class="row">
                         <div class="col-md-11 col-md-offset-1">
                             <div class="col-md-7">
-                                <label for="originalCopy">Original Copy</label>
-                                <div class="btn-group">
-                                    <button type="button" @click="downloadOffer" class="btn btn-primary">Download</button>
-                                </div>
-
-                                <label for="originalCopy">Signed Copy</label>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary">Upload</button>
-                                </div>
+                                <h4>Original Copy</h4>
+                            </div>
+                            <div class="col-md-7">
+                                <label for="offer_id">Offer Letter</label>
+                                <select class="form-control" name="offer_id" id="offer_id" v-model="currentOffer">
+                                        <option value="">Choose Offer Letter</option>
+                                        <option v-for="letter in offerLetters" v-bind:value="letter.id"> @{{ letter.description }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-7">
+                                <label for="starting_on">Starting On</label>
+                                <input id="starting_on" class='form-control' type="text" name="starting_on" >
+                            </div>
+                            <div class="col-md-7" style="padding-top: 10px;">
+                                <button type="button" @click="downloadOffer" class="btn btn-primary pull-right">Download</button>                            
+                            </div>
+                            <div class="col-md-12">
+                                <hr/>
+                            </div>
+                            <div class="col-md-7">
+                                <h4>Signed Copy</h4>
                             </div>
                             <div class="col-md-7">
                                 <label for="signedOnOffer">Signed On</label>
@@ -68,9 +81,10 @@
                                 </textarea>
                             </div>
                             <div class="col-md-7" style="padding-top: 10px;">
-                                <button type="button" class="btn btn-primary pull-right">Save</button>
+                                <button type="button" class="btn btn-primary pull-right">Upload</button>
                             </div>
-                            <div id="date-picker"> </div>
+                            
                         </div>
                     </div>
                 </div>
+                

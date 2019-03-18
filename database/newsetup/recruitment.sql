@@ -419,3 +419,30 @@ CREATE TABLE `offers` (
 COLLATE='utf8mb4_0900_ai_ci'
 ENGINE=InnoDB
 ;
+
+DROP TABLE IF EXISTS `contract_recruitment`;
+CREATE TABLE `contract_recruitment` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`recruitment_id` INT(11) NOT NULL,
+	`candidate_id` INT(11) NOT NULL,
+	`contract_id` INT(11) NULL DEFAULT NULL,
+	`start_date` DATE NULL DEFAULT NULL,
+	`signed_on` DATETIME NULL DEFAULT NULL,
+	`comments` VARCHAR(250) NULL DEFAULT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='utf8mb4_0900_ai_ci'
+;
+
+DROP TABLE IF EXISTS `offer_recruitment`;
+CREATE TABLE `offer_recruitment` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`recruitment_id` INT(11) NOT NULL,
+	`candidate_id` INT(11) NOT NULL,
+	`offer_id` INT(11) NULL DEFAULT NULL,
+	`signed_on` DATETIME NULL DEFAULT NULL,
+	`comments` VARCHAR(250) NULL DEFAULT NULL,
+	PRIMARY KEY (`id`)
+)
+COLLATE='utf8mb4_0900_ai_ci'
+;

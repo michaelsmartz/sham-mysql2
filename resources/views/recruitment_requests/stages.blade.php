@@ -105,6 +105,7 @@
 
             </div>
         </div>
+        <div id="date-picker"></div>
         <modal v-if="showModal" @close="showModal=false">
 
         </modal>

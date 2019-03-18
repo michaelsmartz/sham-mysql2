@@ -1,3 +1,4 @@
+import {on} from 'delegated-events';
 import Modal from './components/Modal.vue';
 window.Vue = require('vue/dist/vue.common.js');
 
@@ -43,7 +44,9 @@ var vm = new Vue({
 		counter: 0,
 		lastInterview: true,
 		submitInterview: false,
-		interviews: []
+		interviews: [],
+		offerLetters: [],
+		currentOffer: 0
 	},
 	computed: {
 		filteredPeople: function () {
@@ -61,6 +64,12 @@ var vm = new Vue({
 	},
 	methods: {
 		setCurrent: function (item) {
+			// handle empty offer letters error
+			if(item.offers.length == 0) {
+				item.offers.push({offer_id: 0});
+			} else {
+				this.currentOffer = item.offers[0].offer_id;
+			}
 			this.current = item;
 			this.counter = 0;
 			this.lastInterview = false;
@@ -132,8 +141,9 @@ var vm = new Vue({
         },
 		setVal(item, h, b, f) {
 			this.current = item;
+
 		},
-		fetchCandidates: function () {
+		fetchCandidates: function() {
 			if (!route().current("candidates.create")) {
 				fetch('./candidates')
 					.then(res => res.json())
@@ -141,6 +151,13 @@ var vm = new Vue({
 						this.people = res;
 					})
 			}
+		},
+		fetchOfferLetters: function() {
+			fetch('./offer-letters')
+			.then(res => res.json())
+			.then(res => {
+				this.offerLetters = res;
+			})
 		},
 		getBackground: function(src){
 			if (src !== null) {
@@ -151,15 +168,18 @@ var vm = new Vue({
 			
 		},
 		downloadOffer: function(){
+			var startingOn = $('#starting_on').val(),
+				contractId = $('#contract_id').val();
 
 			fetch('./candidate/' + this.current.id + '/download-offer', {
 				headers: {
 					"Content-Type": "application/json",
-					"Accept": "application/json, text-plain, */*",
+					"Accept": "application/json, */*",
 					"X-Requested-With": "XMLHttpRequest",
 					"X-CSRF-TOKEN": token
 				},
 				method: 'post',
+				body: JSON.stringify({ starting_on: startingOn, contract_id: contractId }),
 				credentials: "same-origin"
 			}).then(function(resp) {
 				return resp.blob();
@@ -170,6 +190,18 @@ var vm = new Vue({
 	},
 	created: function () {
 		this.fetchCandidates();
+	},
+	mounted: function() {
+		on('focusin', 'input.datepicker', function(event) {
+
+			// Use the picker object directly.
+			var picker = $(this).pickadate('picker');
+			
+			if(picker === undefined) {
+				picker = $(this).pickadate().pickadate('picker');
+			}
+		});
+		this.fetchOfferLetters();
 	},
 	components: {
 		'modal': Modal

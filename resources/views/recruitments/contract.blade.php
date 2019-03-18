@@ -44,11 +44,16 @@
                     <div class="row">
                         <div class="col-md-11 col-md-offset-1">
                             <div class="col-md-7">
-                                <label for="originalCopy">Original Copy</label>
-                                <button type="button" class="btn btn-success">Download</button>
-
-                                <label for="originalCopy">Signed Copy</label>
-                                <button type="button" class="btn btn-success">Download</button>
+                                <h4>Original Copy</h4>
+                            </div>
+                            <div class="col-md-7" style="padding-top: 10px;">
+                                <button type="button" class="btn btn-success pull-right">Download</button>
+                            </div>
+                            <div class="col-md-12">
+                                <hr/>
+                            </div>
+                            <div class="col-md-7" style="padding-top: 0px;">
+                                <h4>Signed Copy</h4>
                             </div>
                             <div class="col-md-7">
                                 <label for="signedOnContract">Signed On</label>
@@ -64,9 +69,9 @@
                                 </textarea>
                             </div>
                             <div class="col-md-7" style="padding-top: 10px;">
-                                <button type="button" class="btn btn-success pull-right">Save</button>
+                                <button type="button" class="btn btn-success pull-right">Upload</button>
                             </div>
-                            <div id="date-picker"> </div>
+                            
                         </div>
                     </div>
                 </div>

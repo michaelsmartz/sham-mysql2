@@ -10,8 +10,6 @@ class Contract extends Model
     
     use SoftDeletes;
 
-
-
     /**
      * Attributes that should be mass-assignable.
      *
@@ -21,7 +19,6 @@ class Contract extends Model
                   'description',
                   'content'
               ];
-
 
 
 }

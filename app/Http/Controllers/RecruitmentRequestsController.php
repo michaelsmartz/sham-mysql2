@@ -9,6 +9,7 @@ use App\Enums\InterviewResultsType;
 use App\Enums\InterviewStatusType;
 use App\Enums\RecruitmentType;
 use App\Interview;
+use App\Offer;
 use App\QualificationRecruitment;
 use App\Recruitment;
 use App\Skill;
@@ -339,6 +340,10 @@ class RecruitmentRequestsController extends CustomController
                     'interviews'=> function ($query) use ($id)
                     {
                         return  $query->where('recruitment_id', $id);
+                    },
+                    'offers'=> function ($query) use ($id)
+                    {
+                        return  $query->where('recruitment_id', $id);
                     }
                 ])
                 ->get();
@@ -348,6 +353,20 @@ class RecruitmentRequestsController extends CustomController
         } finally {
             return Response()->json($result);
         }
+    }
+
+    public function getOfferLetters(Request $request) {
+        try {
+
+            $result = Offer::select(['description','id'])->get();
+
+        } catch(Exception $exception) {
+
+            $result = false;
+        }
+
+        return Response()->json($result);
+
     }
 
     public function showStages(Request $request){
@@ -467,6 +486,9 @@ class RecruitmentRequestsController extends CustomController
         $id = intval(Route::current()->parameter('recruitment_request'));
         $cdt = intval(Route::current()->parameter('candidate'));
 
+        $startingOn = $request->get('starting_on');
+        $contractId = $request->get('contract_id');
+
         $recruitment = Recruitment::find($id);
         $recruitment->load(['department']);
         $candidate = Candidate::find($cdt);
@@ -474,16 +496,13 @@ class RecruitmentRequestsController extends CustomController
         try {
 
             $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate'))
-            ->setPaper('a4', 'portrait');
-            //dd($pdf);
+                   ->setPaper('a4', 'portrait');
+
         } catch(Exception $exception) {
 
         }
+
         return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
-        return Response()->json([
-            'filename' => $recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf', 
-            'stream' => $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf')
-        ]);
 
     }
 

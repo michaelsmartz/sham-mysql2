@@ -213,6 +213,7 @@ Auth::routes();
         Route::fileResource('recruitment_requests', 'RecruitmentRequestsController');
         Route::get('recruitment_requests/{recruitment_request}/stages', 'RecruitmentRequestsController@showStages')->name('recruitment_requests.stages');
         Route::get('recruitment_requests/{recruitment_request}/candidates', 'RecruitmentRequestsController@getCandidates')->name('recruitment_requests.candidates-list');
+        Route::get('recruitment_requests/{recruitment_request}/offer-letters', 'RecruitmentRequestsController@getOfferLetters')->name('recruitment_requests.offer-letters-list');
         Route::post('recruitment_requests/{recruitment_request}/switch/{candidate}/{state}', 'RecruitmentRequestsController@stateSwitch')->name('recruitment_requests.update-status');
         Route::post('recruitment_requests/{recruitment_request}/interviewing/{candidate}', 'RecruitmentRequestsController@getInterviewing')->name('recruitment_requests.get-interviewing');
 

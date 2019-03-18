@@ -6,6 +6,7 @@ window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
 require('touch-dnd/touch-dnd.js');
 require('picker');
 require('pickadate/lib/picker.date.js');
+window.on = global.on = on;
 
 $.ajaxSetup({
     headers: {
@@ -86,6 +87,7 @@ on('focusin', 'input.datepicker', function(event) {
         toPicker = $(`#${toPickerId}`).pickadate('picker');
 
     if(picker === undefined) {
+
         if($(this).attr('id') == 'birth_date'){
             picker = $("#birth_date").pickadate({min: -65*365, max:-18*365}).pickadate('picker');
         } else {

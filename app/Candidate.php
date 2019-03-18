@@ -157,6 +157,18 @@ class Candidate extends Model
         return $this->belongsToMany(Interview::class, 'candidate_interview_recruitment','candidate_id','interview_id')->withPivot('reasons','schedule_at','results','location','status');
     }
 
+    public function contracts()
+    {
+        return $this->belongsToMany(Contract::class, 'contract_recruitment')
+                    ->select(['candidate_id','contract_id','start_date','signed_on','comments']);
+    }
+
+    public function offers()
+    {
+        return $this->belongsToMany(Offer::class, 'offer_recruitment')
+                    ->select(['candidate_id','offer_id','signed_on','comments']);
+    }
+
     public function scopeCandidatesList($query)
     {
         $query->leftJoin('candidate_previous_employments','candidate_previous_employments.candidate_id','=','candidates.id')

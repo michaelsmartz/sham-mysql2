@@ -9928,8 +9928,10 @@ module.exports = __webpack_require__(244);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Modal_vue__ = __webpack_require__(245);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Modal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Modal_vue__);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Modal_vue__ = __webpack_require__(245);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Modal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_Modal_vue__);
+
 
 window.Vue = __webpack_require__(8);
 
@@ -9974,7 +9976,9 @@ var vm = new Vue({
 		counter: 0,
 		lastInterview: true,
 		submitInterview: false,
-		interviews: []
+		interviews: [],
+		offerLetters: [],
+		currentOffer: 0
 	},
 	computed: {
 		filteredPeople: function filteredPeople() {
@@ -9992,6 +9996,12 @@ var vm = new Vue({
 	},
 	methods: {
 		setCurrent: function setCurrent(item) {
+			// handle empty offer letters error
+			if (item.offers.length == 0) {
+				item.offers.push({ offer_id: 0 });
+			} else {
+				this.currentOffer = item.offers[0].offer_id;
+			}
 			this.current = item;
 			this.counter = 0;
 			this.lastInterview = false;
@@ -10074,6 +10084,15 @@ var vm = new Vue({
 				});
 			}
 		},
+		fetchOfferLetters: function fetchOfferLetters() {
+			var _this2 = this;
+
+			fetch('./offer-letters').then(function (res) {
+				return res.json();
+			}).then(function (res) {
+				_this2.offerLetters = res;
+			});
+		},
 		getBackground: function getBackground(src) {
 			if (src !== null) {
 				return 'background-image: ' + 'url(' + src + ')';
@@ -10082,15 +10101,18 @@ var vm = new Vue({
 			}
 		},
 		downloadOffer: function downloadOffer() {
+			var startingOn = $('#starting_on').val(),
+			    contractId = $('#contract_id').val();
 
 			fetch('./candidate/' + this.current.id + '/download-offer', {
 				headers: {
 					"Content-Type": "application/json",
-					"Accept": "application/json, text-plain, */*",
+					"Accept": "application/json, */*",
 					"X-Requested-With": "XMLHttpRequest",
 					"X-CSRF-TOKEN": token
 				},
 				method: 'post',
+				body: JSON.stringify({ starting_on: startingOn, contract_id: contractId }),
 				credentials: "same-origin"
 			}).then(function (resp) {
 				return resp.blob();
@@ -10102,8 +10124,20 @@ var vm = new Vue({
 	created: function created() {
 		this.fetchCandidates();
 	},
+	mounted: function mounted() {
+		Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.datepicker', function (event) {
+
+			// Use the picker object directly.
+			var picker = $(this).pickadate('picker');
+
+			if (picker === undefined) {
+				picker = $(this).pickadate().pickadate('picker');
+			}
+		});
+		this.fetchOfferLetters();
+	},
 	components: {
-		'modal': __WEBPACK_IMPORTED_MODULE_0__components_Modal_vue___default.a
+		'modal': __WEBPACK_IMPORTED_MODULE_1__components_Modal_vue___default.a
 	},
 	filters: {
 		stageCount: function stageCount(people, status) {
@@ -10125,7 +10159,7 @@ var vm = new Vue({
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(38)
+var normalizeComponent = __webpack_require__(40)
 /* script */
 var __vue_script__ = __webpack_require__(246)
 /* template */
@@ -10638,7 +10672,632 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ 37:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return on; });
+/* unused harmony export off */
+/* unused harmony export fire */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(38);
+
+
+var bubbleEvents = {};
+var captureEvents = {};
+var propagationStopped = new WeakMap();
+var immediatePropagationStopped = new WeakMap();
+var currentTargets = new WeakMap();
+var currentTargetDesc = Object.getOwnPropertyDescriptor(Event.prototype, 'currentTarget');
+
+function before(subject, verb, fn) {
+  var source = subject[verb];
+  subject[verb] = function () {
+    fn.apply(subject, arguments);
+    return source.apply(subject, arguments);
+  };
+  return subject;
+}
+
+function matches(selectors, target, reverse) {
+  var queue = [];
+  var node = target;
+
+  do {
+    if (node.nodeType !== 1) break;
+    var _matches = selectors.matches(node);
+    if (_matches.length) {
+      var matched = { node: node, observers: _matches };
+      if (reverse) {
+        queue.unshift(matched);
+      } else {
+        queue.push(matched);
+      }
+    }
+  } while (node = node.parentElement);
+
+  return queue;
+}
+
+function trackPropagation() {
+  propagationStopped.set(this, true);
+}
+
+function trackImmediate() {
+  propagationStopped.set(this, true);
+  immediatePropagationStopped.set(this, true);
+}
+
+function getCurrentTarget() {
+  return currentTargets.get(this) || null;
+}
+
+function defineCurrentTarget(event, getter) {
+  if (!currentTargetDesc) return;
+
+  Object.defineProperty(event, 'currentTarget', {
+    configurable: true,
+    enumerable: true,
+    get: getter || currentTargetDesc.get
+  });
+}
+
+function dispatch(event) {
+  var events = event.eventPhase === 1 ? captureEvents : bubbleEvents;
+
+  var selectors = events[event.type];
+  if (!selectors) return;
+
+  var queue = matches(selectors, event.target, event.eventPhase === 1);
+  if (!queue.length) return;
+
+  before(event, 'stopPropagation', trackPropagation);
+  before(event, 'stopImmediatePropagation', trackImmediate);
+  defineCurrentTarget(event, getCurrentTarget);
+
+  for (var i = 0, len1 = queue.length; i < len1; i++) {
+    if (propagationStopped.get(event)) break;
+    var matched = queue[i];
+    currentTargets.set(event, matched.node);
+
+    for (var j = 0, len2 = matched.observers.length; j < len2; j++) {
+      if (immediatePropagationStopped.get(event)) break;
+      matched.observers[j].data.call(matched.node, event);
+    }
+  }
+
+  currentTargets.delete(event);
+  defineCurrentTarget(event);
+}
+
+function on(name, selector, fn) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  var capture = options.capture ? true : false;
+  var events = capture ? captureEvents : bubbleEvents;
+
+  var selectors = events[name];
+  if (!selectors) {
+    selectors = new __WEBPACK_IMPORTED_MODULE_0_selector_set__["a" /* default */]();
+    events[name] = selectors;
+    document.addEventListener(name, dispatch, capture);
+  }
+  selectors.add(selector, fn);
+}
+
+function off(name, selector, fn) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  var capture = options.capture ? true : false;
+  var events = capture ? captureEvents : bubbleEvents;
+
+  var selectors = events[name];
+  if (!selectors) return;
+  selectors.remove(selector, fn);
+
+  if (selectors.size) return;
+  delete events[name];
+  document.removeEventListener(name, dispatch, capture);
+}
+
+function fire(target, name, detail) {
+  return target.dispatchEvent(new CustomEvent(name, {
+    bubbles: true,
+    cancelable: true,
+    detail: detail
+  }));
+}
+
+
+
+
+/***/ }),
+
 /***/ 38:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = SelectorSet;
+// Public: Create a new SelectorSet.
+function SelectorSet() {
+  // Construct new SelectorSet if called as a function.
+  if (!(this instanceof SelectorSet)) {
+    return new SelectorSet();
+  }
+
+  // Public: Number of selectors added to the set
+  this.size = 0;
+
+  // Internal: Incrementing ID counter
+  this.uid = 0;
+
+  // Internal: Array of String selectors in the set
+  this.selectors = [];
+
+  // Internal: All Object index String names mapping to Index objects.
+  this.indexes = Object.create(this.indexes);
+
+  // Internal: Used Object index String names mapping to Index objects.
+  this.activeIndexes = [];
+}
+
+// Detect prefixed Element#matches function.
+var docElem = window.document.documentElement;
+var matches = (docElem.matches ||
+                docElem.webkitMatchesSelector ||
+                docElem.mozMatchesSelector ||
+                docElem.oMatchesSelector ||
+                docElem.msMatchesSelector);
+
+// Public: Check if element matches selector.
+//
+// Maybe overridden with custom Element.matches function.
+//
+// el       - An Element
+// selector - String CSS selector
+//
+// Returns true or false.
+SelectorSet.prototype.matchesSelector = function(el, selector) {
+  return matches.call(el, selector);
+};
+
+// Public: Find all elements in the context that match the selector.
+//
+// Maybe overridden with custom querySelectorAll function.
+//
+// selectors - String CSS selectors.
+// context   - Element context
+//
+// Returns non-live list of Elements.
+SelectorSet.prototype.querySelectorAll = function(selectors, context) {
+  return context.querySelectorAll(selectors);
+};
+
+
+// Public: Array of indexes.
+//
+// name     - Unique String name
+// selector - Function that takes a String selector and returns a String key
+//            or undefined if it can't be used by the index.
+// element  - Function that takes an Element and returns an Array of String
+//            keys that point to indexed values.
+//
+SelectorSet.prototype.indexes = [];
+
+// Index by element id
+var idRe = /^#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'ID',
+  selector: function matchIdSelector(sel) {
+    var m;
+    if (m = sel.match(idRe)) {
+      return m[0].slice(1);
+    }
+  },
+  element: function getElementId(el) {
+    if (el.id) {
+      return [el.id];
+    }
+  }
+});
+
+// Index by all of its class names
+var classRe = /^\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'CLASS',
+  selector: function matchClassSelector(sel) {
+    var m;
+    if (m = sel.match(classRe)) {
+      return m[0].slice(1);
+    }
+  },
+  element: function getElementClassNames(el) {
+    var className = el.className;
+    if (className) {
+      if (typeof className === 'string') {
+        return className.split(/\s/);
+      } else if (typeof className === 'object' && 'baseVal' in className) {
+        // className is a SVGAnimatedString
+        // global SVGAnimatedString is not an exposed global in Opera 12
+        return className.baseVal.split(/\s/);
+      }
+    }
+  }
+});
+
+// Index by tag/node name: `DIV`, `FORM`, `A`
+var tagRe = /^((?:[\w\u00c0-\uFFFF\-]|\\.)+)/g;
+SelectorSet.prototype.indexes.push({
+  name: 'TAG',
+  selector: function matchTagSelector(sel) {
+    var m;
+    if (m = sel.match(tagRe)) {
+      return m[0].toUpperCase();
+    }
+  },
+  element: function getElementTagName(el) {
+    return [el.nodeName.toUpperCase()];
+  }
+});
+
+// Default index just contains a single array of elements.
+SelectorSet.prototype.indexes['default'] = {
+  name: 'UNIVERSAL',
+  selector: function() {
+    return true;
+  },
+  element: function() {
+    return [true];
+  }
+};
+
+
+// Use ES Maps when supported
+var Map;
+if (typeof window.Map === 'function') {
+  Map = window.Map;
+} else {
+  Map = (function() {
+    function Map() {
+      this.map = {};
+    }
+    Map.prototype.get = function(key) {
+      return this.map[key + ' '];
+    };
+    Map.prototype.set = function(key, value) {
+      this.map[key + ' '] = value;
+    };
+    return Map;
+  })();
+}
+
+
+// Regexps adopted from Sizzle
+//   https://github.com/jquery/sizzle/blob/1.7/sizzle.js
+//
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g;
+
+// Internal: Get indexes for selector.
+//
+// selector - String CSS selector
+//
+// Returns Array of {index, key}.
+function parseSelectorIndexes(allIndexes, selector) {
+  allIndexes = allIndexes.slice(0).concat(allIndexes['default']);
+
+  var allIndexesLen = allIndexes.length,
+      i, j, m, dup, rest = selector,
+      key, index, indexes = [];
+
+  do {
+    chunker.exec('');
+    if (m = chunker.exec(rest)) {
+      rest = m[3];
+      if (m[2] || !rest) {
+        for (i = 0; i < allIndexesLen; i++) {
+          index = allIndexes[i];
+          if (key = index.selector(m[1])) {
+            j = indexes.length;
+            dup = false;
+            while (j--) {
+              if (indexes[j].index === index && indexes[j].key === key) {
+                dup = true;
+                break;
+              }
+            }
+            if (!dup) {
+              indexes.push({index: index, key: key});
+            }
+            break;
+          }
+        }
+      }
+    }
+  } while (m);
+
+  return indexes;
+}
+
+// Internal: Find first item in Array that is a prototype of `proto`.
+//
+// ary   - Array of objects
+// proto - Prototype of expected item in `ary`
+//
+// Returns object from `ary` if found. Otherwise returns undefined.
+function findByPrototype(ary, proto) {
+  var i, len, item;
+  for (i = 0, len = ary.length; i < len; i++) {
+    item = ary[i];
+    if (proto.isPrototypeOf(item)) {
+      return item;
+    }
+  }
+}
+
+// Public: Log when added selector falls under the default index.
+//
+// This API should not be considered stable. May change between
+// minor versions.
+//
+// obj - {selector, data} Object
+//
+//   SelectorSet.prototype.logDefaultIndexUsed = function(obj) {
+//     console.warn(obj.selector, "could not be indexed");
+//   };
+//
+// Returns nothing.
+SelectorSet.prototype.logDefaultIndexUsed = function() {};
+
+// Public: Add selector to set.
+//
+// selector - String CSS selector
+// data     - Optional data Object (default: undefined)
+//
+// Returns nothing.
+SelectorSet.prototype.add = function(selector, data) {
+  var obj, i, indexProto, key, index, objs,
+      selectorIndexes, selectorIndex,
+      indexes = this.activeIndexes,
+      selectors = this.selectors;
+
+  if (typeof selector !== 'string') {
+    return;
+  }
+
+  obj = {
+    id: this.uid++,
+    selector: selector,
+    data: data
+  };
+
+  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
+  for (i = 0; i < selectorIndexes.length; i++) {
+    selectorIndex = selectorIndexes[i];
+    key = selectorIndex.key;
+    indexProto = selectorIndex.index;
+
+    index = findByPrototype(indexes, indexProto);
+    if (!index) {
+      index = Object.create(indexProto);
+      index.map = new Map();
+      indexes.push(index);
+    }
+
+    if (indexProto === this.indexes['default']) {
+      this.logDefaultIndexUsed(obj);
+    }
+    objs = index.map.get(key);
+    if (!objs) {
+      objs = [];
+      index.map.set(key, objs);
+    }
+    objs.push(obj);
+  }
+
+  this.size++;
+  selectors.push(selector);
+};
+
+// Public: Remove selector from set.
+//
+// selector - String CSS selector
+// data     - Optional data Object (default: undefined)
+//
+// Returns nothing.
+SelectorSet.prototype.remove = function(selector, data) {
+  if (typeof selector !== 'string') {
+    return;
+  }
+
+  var selectorIndexes, selectorIndex, i, j, k, selIndex, objs, obj;
+  var indexes = this.activeIndexes;
+  var removedIds = {};
+  var removeAll = arguments.length === 1;
+
+  selectorIndexes = parseSelectorIndexes(this.indexes, selector);
+  for (i = 0; i < selectorIndexes.length; i++) {
+    selectorIndex = selectorIndexes[i];
+
+    j = indexes.length;
+    while (j--) {
+      selIndex = indexes[j];
+      if (selectorIndex.index.isPrototypeOf(selIndex)) {
+        objs = selIndex.map.get(selectorIndex.key);
+        if (objs) {
+          k = objs.length;
+          while (k--) {
+            obj = objs[k];
+            if (obj.selector === selector && (removeAll || obj.data === data)) {
+              objs.splice(k, 1);
+              removedIds[obj.id] = true;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  this.size -= Object.keys(removedIds).length;
+};
+
+// Sort by id property handler.
+//
+// a - Selector obj.
+// b - Selector obj.
+//
+// Returns Number.
+function sortById(a, b) {
+  return a.id - b.id;
+}
+
+// Public: Find all matching decendants of the context element.
+//
+// context - An Element
+//
+// Returns Array of {selector, data, elements} matches.
+SelectorSet.prototype.queryAll = function(context) {
+  if (!this.selectors.length) {
+    return [];
+  }
+
+  var matches = {}, results = [];
+  var els = this.querySelectorAll(this.selectors.join(', '), context);
+
+  var i, j, len, len2, el, m, match, obj;
+  for (i = 0, len = els.length; i < len; i++) {
+    el = els[i];
+    m = this.matches(el);
+    for (j = 0, len2 = m.length; j < len2; j++) {
+      obj = m[j];
+      if (!matches[obj.id]) {
+        match = {
+          id: obj.id,
+          selector: obj.selector,
+          data: obj.data,
+          elements: []
+        };
+        matches[obj.id] = match;
+        results.push(match);
+      } else {
+        match = matches[obj.id];
+      }
+      match.elements.push(el);
+    }
+  }
+
+  return results.sort(sortById);
+};
+
+// Public: Match element against all selectors in set.
+//
+// el - An Element
+//
+// Returns Array of {selector, data} matches.
+SelectorSet.prototype.matches = function(el) {
+  if (!el) {
+    return [];
+  }
+
+  var i, j, k, len, len2, len3, index, keys, objs, obj, id;
+  var indexes = this.activeIndexes, matchedIds = {}, matches = [];
+
+  for (i = 0, len = indexes.length; i < len; i++) {
+    index = indexes[i];
+    keys = index.element(el);
+    if (keys) {
+      for (j = 0, len2 = keys.length; j < len2; j++) {
+        if (objs = index.map.get(keys[j])) {
+          for (k = 0, len3 = objs.length; k < len3; k++) {
+            obj = objs[k];
+            id = obj.id;
+            if (!matchedIds[id] && this.matchesSelector(el, obj.selector)) {
+              matchedIds[id] = true;
+              matches.push(obj);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return matches.sort(sortById);
+};
+
+
+/***/ }),
+
+/***/ 4:
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(5);
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+
+/***/ 40:
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -10745,77 +11404,6 @@ module.exports = function normalizeComponent (
   }
 }
 
-
-/***/ }),
-
-/***/ 4:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(5);
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 
