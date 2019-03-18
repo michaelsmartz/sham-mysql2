@@ -249,31 +249,46 @@ class RecruitmentRequestsController extends CustomController
         return view($this->baseViewPath . '.manage-candidate', compact('data', 'candidates', 'recruitmentCandidates'));
     }
 
-    public function updateCandidate(Request $request, $id){
+    public function updateCandidate(Request $request, $recruitment_id){
         try {
             $candidates = array_get($request->all(),'candidates');
 
-            $data = Recruitment::find($id);
+            $recruitment = Recruitment::find($recruitment_id);
 
-            if (!is_null($data)) {
-                $interview_types = $data->interviewTypes()->get()->all();
+            if (!is_null($recruitment)) {
 
-                 $candidate_interview_recruitment_pivot = [];
+                $recruitment->candidates()->sync($candidates);
 
-                $data->candidates()
-                    ->sync($candidates); //sync what has been selected
-                foreach ($interview_types as $interview_type) {
-                    foreach ($candidates as $key => $candidate) {
-                        $candidate_interview_recruitment_pivot[] = [
-                            'candidate_id' => $candidate,
-                            'interview_id' => $interview_type->id,
-                            'recruitment_id' => $id,
-                        ];
+                //remove from three-way pivot table if not present candidate_recruitment
+                $recruitment->interviews()
+                    ->where('recruitment_id', $recruitment_id)
+                    ->get()
+                    ->each(function ($interview) use ($candidates, $recruitment_id) {
+                        if (!in_array($interview->pivot->candidate_id, $candidates)) {
+                            $interview->pivot->delete();
+                        }
+                    });
+
+
+                //add if does not exist in three-way pivot table
+                $interview_types = $recruitment->interviewTypes()->get()->all();
+                $add_candidate_interview_recruitment_pivot = [];
+
+                foreach ($candidates as $key => $candidate_id) {
+                    $hasCandidate = $recruitment->interviews()->where('candidate_id', $candidate_id)->exists();
+
+                    if(!$hasCandidate) {
+                        foreach ($interview_types as $interview_type) {
+                            $add_candidate_interview_recruitment_pivot[] = [
+                                'candidate_id' => $candidate_id,
+                                'interview_id' => $interview_type->id,
+                                'recruitment_id' => $recruitment_id,
+                            ];
+                        }
                     }
                 }
 
-                $data->interviews()->sync([]);
-                $data->interviews()->sync($candidate_interview_recruitment_pivot);
+                $recruitment->interviews()->attach($add_candidate_interview_recruitment_pivot);
 
                 \Session::put('success', $this->baseFlash . 'updated Successfully!!');
             }
@@ -284,7 +299,6 @@ class RecruitmentRequestsController extends CustomController
 
         return redirect()->route($this->baseViewPath .'.index');
     }
-
 
     public function updateStatus(Request $request, $id, $status){
         try {
