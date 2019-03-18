@@ -118,8 +118,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__ = __webpack_require__(262);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_link__ = __webpack_require__(264);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_link___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_link__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__ = __webpack_require__(264);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__ = __webpack_require__(266);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_textcolor__ = __webpack_require__(268);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_textcolor___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_textcolor__);
 // Import TinyMCE
 
 
@@ -133,17 +137,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+
+
 // Initialize the app
 __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce___default.a.init({
-  selector: '#tiny',
-  branding: false,
-  menubar: 'edit insert view format',
-  plugins: ['autosave', 'lists', 'paste', 'link'],
-  mobile: {
-    theme: 'mobile',
-    plugins: ['autosave', 'lists', 'paste', 'autolink'],
-    toolbar: ['undo', 'bold', 'italic', 'styleselect']
-  }
+	selector: '#tiny',
+	branding: false,
+	menubar: 'file edit view format textcolor',
+	plugins: ['autosave', 'lists', 'paste', 'fullscreen', 'textpattern', 'textcolor'],
+	toolbar: ['undo', 'bold', 'italic', 'styleselect', '|', 'align', 'forecolor'],
+	mobile: {
+		theme: 'mobile',
+		plugins: ['autosave', 'lists', 'paste'],
+		toolbar: ['undo', 'bold', 'italic', 'styleselect', 'textpattern']
+	},
+	style_formats: [{
+		title: 'Headings', items: [{ title: 'Heading 1', format: 'h1' }, { title: 'Heading 2', format: 'h2' }, { title: 'Heading 3', format: 'h3' }, { title: 'Heading 4', format: 'h4' }, { title: 'Heading 5', format: 'h5' }, { title: 'Heading 6', format: 'h6' }]
+	}, {
+		title: 'Inline', items: [{ title: 'Bold', icon: 'bold', format: 'bold' }, { title: 'Italic', icon: 'italic', format: 'italic' }, { title: 'Underline', icon: 'underline', format: 'underline' }, { title: 'Strikethrough', icon: 'strikethrough', format: 'strikethrough' }, { title: 'Superscript', icon: 'superscript', format: 'superscript' }, { title: 'Subscript', icon: 'subscript', format: 'subscript' }]
+	}, {
+		title: 'Blocks', items: [{ title: 'Paragraph', format: 'p' }, { title: 'Pre', format: 'pre' }]
+	}, {
+		title: 'Alignment', items: [{ title: 'Left', icon: 'alignleft', format: 'alignleft' }, { title: 'Center', icon: 'aligncenter', format: 'aligncenter' }, { title: 'Right', icon: 'alignright', format: 'alignright' }, { title: 'Justify', icon: 'alignjustify', format: 'alignjustify' }]
+	}],
+	init_instance_callback: function init_instance_callback(editor) {
+		console.log("Editor: " + editor.id + " is now initialized.");
+	},
+	textpattern_patterns: [{ start: '{{$', end: '}}', styles: { color: 'blue' }, format: ['bold'] }, { start: '[[', end: ']]', styles: { color: 'blue' }, format: ['bold'] }]
 });
 
 /***/ }),
@@ -73146,12 +73166,12 @@ var paste = (function (domGlobals) {
 /***/ 264:
 /***/ (function(module, exports, __webpack_require__) {
 
-// Exports the "link" plugin for usage with module loaders
+// Exports the "fullscreen" plugin for usage with module loaders
 // Usage:
 //   CommonJS:
-//     require('tinymce/plugins/link')
+//     require('tinymce/plugins/fullscreen')
 //   ES2015:
-//     import 'tinymce/plugins/link'
+//     import 'tinymce/plugins/fullscreen'
 __webpack_require__(265);
 
 /***/ }),
@@ -73168,106 +73188,239 @@ __webpack_require__(265);
  * Version: 5.0.2 (2019-03-05)
  */
 (function () {
-var link = (function (domGlobals) {
+var fullscreen = (function (domGlobals) {
     'use strict';
+
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      var clone = function () {
+        return Cell(get());
+      };
+      return {
+        get: get,
+        set: set,
+        clone: clone
+      };
+    };
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.util.VK');
-
-    var assumeExternalTargets = function (editorSettings) {
-      return typeof editorSettings.link_assume_external_targets === 'boolean' ? editorSettings.link_assume_external_targets : false;
-    };
-    var hasContextToolbar = function (editorSettings) {
-      return typeof editorSettings.link_context_toolbar === 'boolean' ? editorSettings.link_context_toolbar : false;
-    };
-    var getLinkList = function (editorSettings) {
-      return editorSettings.link_list;
-    };
-    var hasDefaultLinkTarget = function (editorSettings) {
-      return typeof editorSettings.default_link_target === 'string';
-    };
-    var useQuickLink = function (editorSettings) {
-      return editorSettings.link_quicklink === true;
-    };
-    var getDefaultLinkTarget = function (editorSettings) {
-      return editorSettings.default_link_target;
-    };
-    var getTargetList = function (editorSettings) {
-      return editorSettings.target_list;
-    };
-    var setTargetList = function (editor, list) {
-      editor.settings.target_list = list;
-    };
-    var shouldShowTargetList = function (editorSettings) {
-      return getTargetList(editorSettings) !== false;
-    };
-    var getRelList = function (editorSettings) {
-      return editorSettings.rel_list;
-    };
-    var hasRelList = function (editorSettings) {
-      return getRelList(editorSettings) !== undefined;
-    };
-    var getLinkClassList = function (editorSettings) {
-      return editorSettings.link_class_list;
-    };
-    var hasLinkClassList = function (editorSettings) {
-      return getLinkClassList(editorSettings) !== undefined;
-    };
-    var shouldShowLinkTitle = function (editorSettings) {
-      return editorSettings.link_title !== false;
-    };
-    var allowUnsafeLinkTarget = function (editorSettings) {
-      return typeof editorSettings.allow_unsafe_link_target === 'boolean' ? editorSettings.allow_unsafe_link_target : false;
-    };
-    var Settings = {
-      assumeExternalTargets: assumeExternalTargets,
-      hasContextToolbar: hasContextToolbar,
-      getLinkList: getLinkList,
-      hasDefaultLinkTarget: hasDefaultLinkTarget,
-      getDefaultLinkTarget: getDefaultLinkTarget,
-      getTargetList: getTargetList,
-      setTargetList: setTargetList,
-      shouldShowTargetList: shouldShowTargetList,
-      getRelList: getRelList,
-      hasRelList: hasRelList,
-      getLinkClassList: getLinkClassList,
-      hasLinkClassList: hasLinkClassList,
-      shouldShowLinkTitle: shouldShowLinkTitle,
-      allowUnsafeLinkTarget: allowUnsafeLinkTarget,
-      useQuickLink: useQuickLink
-    };
-
-    var global$2 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
-
-    var global$3 = tinymce.util.Tools.resolve('tinymce.Env');
-
-    var appendClickRemove = function (link, evt) {
-      domGlobals.document.body.appendChild(link);
-      link.dispatchEvent(evt);
-      domGlobals.document.body.removeChild(link);
-    };
-    var open = function (url) {
-      if (!global$3.ie || global$3.ie > 10) {
-        var link = domGlobals.document.createElement('a');
-        link.target = '_blank';
-        link.href = url;
-        link.rel = 'noreferrer noopener';
-        var evt = domGlobals.document.createEvent('MouseEvents');
-        evt.initMouseEvent('click', true, true, domGlobals.window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-        appendClickRemove(link, evt);
-      } else {
-        var win = domGlobals.window.open('', '_blank');
-        if (win) {
-          win.opener = null;
-          var doc = win.document;
-          doc.open();
-          doc.write('<meta http-equiv="refresh" content="0; url=' + global$2.DOM.encode(url) + '">');
-          doc.close();
+    var get = function (fullscreenState) {
+      return {
+        isFullscreen: function () {
+          return fullscreenState.get() !== null;
         }
+      };
+    };
+    var Api = { get: get };
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+
+    var fireFullscreenStateChanged = function (editor, state) {
+      editor.fire('FullscreenStateChanged', { state: state });
+    };
+    var Events = { fireFullscreenStateChanged: fireFullscreenStateChanged };
+
+    var DOM = global$1.DOM;
+    var getWindowSize = function () {
+      var w;
+      var h;
+      var win = domGlobals.window;
+      var doc = domGlobals.document;
+      var body = doc.body;
+      if (body.offsetWidth) {
+        w = body.offsetWidth;
+        h = body.offsetHeight;
+      }
+      if (win.innerWidth && win.innerHeight) {
+        w = win.innerWidth;
+        h = win.innerHeight;
+      }
+      return {
+        w: w,
+        h: h
+      };
+    };
+    var getScrollPos = function () {
+      var vp = DOM.getViewPort();
+      return {
+        x: vp.x,
+        y: vp.y
+      };
+    };
+    var setScrollPos = function (pos) {
+      domGlobals.window.scrollTo(pos.x, pos.y);
+    };
+    var toggleFullscreen = function (editor, fullscreenState) {
+      var body = domGlobals.document.body;
+      var documentElement = domGlobals.document.documentElement;
+      var editorContainerStyle;
+      var editorContainer, iframe, iframeStyle;
+      var fullscreenInfo = fullscreenState.get();
+      var resize = function () {
+        DOM.setStyle(iframe, 'height', getWindowSize().h - (editorContainer.clientHeight - iframe.clientHeight));
+      };
+      var removeResize = function () {
+        DOM.unbind(domGlobals.window, 'resize', resize);
+      };
+      editorContainer = editor.getContainer();
+      editorContainerStyle = editorContainer.style;
+      iframe = editor.getContentAreaContainer().firstChild;
+      iframeStyle = iframe.style;
+      if (!fullscreenInfo) {
+        var newFullScreenInfo = {
+          scrollPos: getScrollPos(),
+          containerWidth: editorContainerStyle.width,
+          containerHeight: editorContainerStyle.height,
+          iframeWidth: iframeStyle.width,
+          iframeHeight: iframeStyle.height,
+          resizeHandler: resize,
+          removeHandler: removeResize
+        };
+        iframeStyle.width = iframeStyle.height = '100%';
+        editorContainerStyle.width = editorContainerStyle.height = '';
+        DOM.addClass(body, 'tox-fullscreen');
+        DOM.addClass(documentElement, 'tox-fullscreen');
+        DOM.addClass(editorContainer, 'tox-fullscreen');
+        DOM.bind(domGlobals.window, 'resize', resize);
+        editor.on('remove', removeResize);
+        resize();
+        fullscreenState.set(newFullScreenInfo);
+        Events.fireFullscreenStateChanged(editor, true);
+      } else {
+        iframeStyle.width = fullscreenInfo.iframeWidth;
+        iframeStyle.height = fullscreenInfo.iframeHeight;
+        if (fullscreenInfo.containerWidth) {
+          editorContainerStyle.width = fullscreenInfo.containerWidth;
+        }
+        if (fullscreenInfo.containerHeight) {
+          editorContainerStyle.height = fullscreenInfo.containerHeight;
+        }
+        DOM.removeClass(body, 'tox-fullscreen');
+        DOM.removeClass(documentElement, 'tox-fullscreen');
+        DOM.removeClass(editorContainer, 'tox-fullscreen');
+        setScrollPos(fullscreenInfo.scrollPos);
+        DOM.unbind(domGlobals.window, 'resize', fullscreenInfo.resizeHandler);
+        editor.off('remove', fullscreenInfo.removeHandler);
+        fullscreenState.set(null);
+        Events.fireFullscreenStateChanged(editor, false);
       }
     };
-    var OpenUrl = { open: open };
+    var Actions = { toggleFullscreen: toggleFullscreen };
+
+    var register = function (editor, fullscreenState) {
+      editor.addCommand('mceFullScreen', function () {
+        Actions.toggleFullscreen(editor, fullscreenState);
+      });
+    };
+    var Commands = { register: register };
+
+    var makeSetupHandler = function (editor, fullscreenState) {
+      return function (api) {
+        api.setActive(fullscreenState.get() !== null);
+        var editorEventCallback = function (e) {
+          return api.setActive(e.state);
+        };
+        editor.on('FullscreenStateChanged', editorEventCallback);
+        return function () {
+          return editor.off('FullscreenStateChanged', editorEventCallback);
+        };
+      };
+    };
+    var register$1 = function (editor, fullscreenState) {
+      editor.ui.registry.addToggleMenuItem('fullscreen', {
+        text: 'Fullscreen',
+        shortcut: 'Meta+Shift+F',
+        onAction: function () {
+          return editor.execCommand('mceFullScreen');
+        },
+        onSetup: makeSetupHandler(editor, fullscreenState)
+      });
+      editor.ui.registry.addToggleButton('fullscreen', {
+        tooltip: 'Fullscreen',
+        icon: 'fullscreen',
+        onAction: function () {
+          return editor.execCommand('mceFullScreen');
+        },
+        onSetup: makeSetupHandler(editor, fullscreenState)
+      });
+    };
+    var Buttons = { register: register$1 };
+
+    global.add('fullscreen', function (editor) {
+      var fullscreenState = Cell(null);
+      if (editor.settings.inline) {
+        return Api.get(fullscreenState);
+      }
+      Commands.register(editor, fullscreenState);
+      Buttons.register(editor, fullscreenState);
+      editor.addShortcut('Meta+Shift+F', '', 'mceFullScreen');
+      return Api.get(fullscreenState);
+    });
+    function Plugin () {
+    }
+
+    return Plugin;
+
+}(window));
+})();
+
+
+/***/ }),
+
+/***/ 266:
+/***/ (function(module, exports, __webpack_require__) {
+
+// Exports the "textpattern" plugin for usage with module loaders
+// Usage:
+//   CommonJS:
+//     require('tinymce/plugins/textpattern')
+//   ES2015:
+//     import 'tinymce/plugins/textpattern'
+__webpack_require__(267);
+
+/***/ }),
+
+/***/ 267:
+/***/ (function(module, exports) {
+
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.0.2 (2019-03-05)
+ */
+(function () {
+var textpattern = (function (domGlobals) {
+    'use strict';
+
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      var clone = function () {
+        return Cell(get());
+      };
+      return {
+        get: get,
+        set: set,
+        clone: clone
+      };
+    };
+
+    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var noop = function () {
       var args = [];
@@ -73278,6 +73431,14 @@ var link = (function (domGlobals) {
     var constant = function (value) {
       return function () {
         return value;
+      };
+    };
+    var identity = function (x) {
+      return x;
+    };
+    var die = function (msg) {
+      return function () {
+        throw new Error(msg);
       };
     };
     var never = constant(false);
@@ -73428,6 +73589,8 @@ var link = (function (domGlobals) {
       };
     };
     var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
     var isFunction = isType('function');
 
     var rawIndexOf = function () {
@@ -73458,6 +73621,16 @@ var link = (function (domGlobals) {
         f(x, i, xs);
       }
     };
+    var filter = function (xs, pred) {
+      var r = [];
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i, xs)) {
+          r.push(x);
+        }
+      }
+      return r;
+    };
     var foldl = function (xs, f, acc) {
       each(xs, function (x) {
         acc = f(acc, x);
@@ -73472,1044 +73645,1016 @@ var link = (function (domGlobals) {
       }
       return -1;
     };
-    var push = Array.prototype.push;
-    var flatten = function (xs) {
-      var r = [];
+    var forall = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!Array.prototype.isPrototypeOf(xs[i]))
-          throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-        push.apply(r, xs[i]);
+        var x = xs[i];
+        if (pred(x, i, xs) !== true) {
+          return false;
+        }
       }
-      return r;
-    };
-    var bind = function (xs, f) {
-      var output = map(xs, f);
-      return flatten(output);
+      return true;
     };
     var slice = Array.prototype.slice;
+    var sort = function (xs, comparator) {
+      var copy = slice.call(xs, 0);
+      copy.sort(comparator);
+      return copy;
+    };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return slice.call(x);
     };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+    var keys = Object.keys;
+    var hasOwnProperty = Object.hasOwnProperty;
+    var get = function (obj, key) {
+      return has(obj, key) ? Option.some(obj[key]) : Option.none();
+    };
+    var has = function (obj, key) {
+      return hasOwnProperty.call(obj, key);
+    };
 
-    var getHref = function (elm) {
-      var href = elm.getAttribute('data-mce-href');
-      return href ? href : elm.getAttribute('href');
-    };
-    var applyRelTargetRules = function (rel, isUnsafe) {
-      var rules = ['noopener'];
-      var rels = rel ? rel.split(/\s+/) : [];
-      var toString = function (rels) {
-        return global$4.trim(rels.sort().join(' '));
-      };
-      var addTargetRules = function (rels) {
-        rels = removeTargetRules(rels);
-        return rels.length > 0 ? rels.concat(rules) : rules;
-      };
-      var removeTargetRules = function (rels) {
-        return rels.filter(function (val) {
-          return global$4.inArray(rules, val) === -1;
-        });
-      };
-      var newRels = isUnsafe ? addTargetRules(rels) : removeTargetRules(rels);
-      return newRels.length > 0 ? toString(newRels) : '';
-    };
-    var trimCaretContainers = function (text) {
-      return text.replace(/\uFEFF/g, '');
-    };
-    var getAnchorElement = function (editor, selectedElm) {
-      selectedElm = selectedElm || editor.selection.getNode();
-      if (isImageFigure(selectedElm)) {
-        return editor.dom.select('a[href]', selectedElm)[0];
-      } else {
-        return editor.dom.getParent(selectedElm, 'a[href]');
+    var generate = function (cases) {
+      if (!isArray(cases)) {
+        throw new Error('cases must be an array');
       }
-    };
-    var getAnchorText = function (selection, anchorElm) {
-      var text = anchorElm ? anchorElm.innerText || anchorElm.textContent : selection.getContent({ format: 'text' });
-      return trimCaretContainers(text);
-    };
-    var isLink = function (elm) {
-      return elm && elm.nodeName === 'A' && !!elm.href;
-    };
-    var hasLinks = function (elements) {
-      return global$4.grep(elements, isLink).length > 0;
-    };
-    var isOnlyTextSelected = function (html) {
-      if (/</.test(html) && (!/^<a [^>]+>[^<]+<\/a>$/.test(html) || html.indexOf('href=') === -1)) {
-        return false;
+      if (cases.length === 0) {
+        throw new Error('there must be at least one case');
       }
-      return true;
-    };
-    var isImageFigure = function (elm) {
-      return elm && elm.nodeName === 'FIGURE' && /\bimage\b/i.test(elm.className);
-    };
-    var getLinkAttrs = function (data) {
-      return foldl([
-        'title',
-        'rel',
-        'class',
-        'target'
-      ], function (acc, key) {
-        data[key].each(function (value) {
-          acc[key] = value.length > 0 ? value : null;
-        });
-        return acc;
-      }, { href: data.href });
-    };
-    var updateLink = function (editor, anchorElm, text, linkAttrs) {
-      text.each(function (text) {
-        if (anchorElm.hasOwnProperty('innerText')) {
-          anchorElm.innerText = text;
-        } else {
-          anchorElm.textContent = text;
+      var constructors = [];
+      var adt = {};
+      each(cases, function (acase, count) {
+        var keys$1 = keys(acase);
+        if (keys$1.length !== 1) {
+          throw new Error('one and only one name per case');
         }
-      });
-      editor.dom.setAttribs(anchorElm, linkAttrs);
-      editor.selection.select(anchorElm);
-    };
-    var createLink = function (editor, selectedElm, text, linkAttrs) {
-      if (isImageFigure(selectedElm)) {
-        linkImageFigure(editor, selectedElm, linkAttrs);
-      } else {
-        text.fold(function () {
-          return editor.execCommand('mceInsertLink', false, linkAttrs);
-        }, function (text) {
-          return editor.insertContent(editor.dom.createHTML('a', linkAttrs, editor.dom.encode(text)));
-        });
-      }
-    };
-    var link = function (editor, attachState, data) {
-      editor.undoManager.transact(function () {
-        var selectedElm = editor.selection.getNode();
-        var anchorElm = getAnchorElement(editor, selectedElm);
-        var linkAttrs = getLinkAttrs(data);
-        if (!Settings.hasRelList(editor.settings) && Settings.allowUnsafeLinkTarget(editor.settings) === false) {
-          var newRel = applyRelTargetRules(linkAttrs.rel, linkAttrs.target === '_blank');
-          linkAttrs.rel = newRel ? newRel : null;
+        var key = keys$1[0];
+        var value = acase[key];
+        if (adt[key] !== undefined) {
+          throw new Error('duplicate key detected:' + key);
+        } else if (key === 'cata') {
+          throw new Error('cannot have a case named cata (sorry)');
+        } else if (!isArray(value)) {
+          throw new Error('case arguments must be an array');
         }
-        if (data.href === attachState.href) {
-          attachState.attach();
-        }
-        if (anchorElm) {
-          editor.focus();
-          updateLink(editor, anchorElm, data.text, linkAttrs);
-        } else {
-          createLink(editor, selectedElm, data.text, linkAttrs);
-        }
-      });
-    };
-    var unlink = function (editor) {
-      editor.undoManager.transact(function () {
-        var node = editor.selection.getNode();
-        if (isImageFigure(node)) {
-          unlinkImageFigure(editor, node);
-        } else {
-          var anchorElm = editor.dom.getParent(node, 'a[href]', editor.getBody());
-          if (anchorElm) {
-            editor.dom.remove(anchorElm, true);
+        constructors.push(key);
+        adt[key] = function () {
+          var argLength = arguments.length;
+          if (argLength !== value.length) {
+            throw new Error('Wrong number of arguments to case ' + key + '. Expected ' + value.length + ' (' + value + '), got ' + argLength);
           }
-        }
-        editor.focus();
-      });
-    };
-    var unlinkImageFigure = function (editor, fig) {
-      var img = editor.dom.select('img', fig)[0];
-      if (img) {
-        var a = editor.dom.getParents(img, 'a[href]', fig)[0];
-        if (a) {
-          a.parentNode.insertBefore(img, a);
-          editor.dom.remove(a);
-        }
-      }
-    };
-    var linkImageFigure = function (editor, fig, attrs) {
-      var img = editor.dom.select('img', fig)[0];
-      if (img) {
-        var a = editor.dom.create('a', attrs);
-        img.parentNode.insertBefore(a, img);
-        a.appendChild(img);
-      }
-    };
-    var Utils = {
-      link: link,
-      unlink: unlink,
-      isLink: isLink,
-      hasLinks: hasLinks,
-      getHref: getHref,
-      isOnlyTextSelected: isOnlyTextSelected,
-      getAnchorElement: getAnchorElement,
-      getAnchorText: getAnchorText,
-      applyRelTargetRules: applyRelTargetRules
-    };
-
-    var cat = function (arr) {
-      var r = [];
-      var push = function (x) {
-        r.push(x);
-      };
-      for (var i = 0; i < arr.length; i++) {
-        arr[i].each(push);
-      }
-      return r;
-    };
-    var findMap = function (arr, f) {
-      for (var i = 0; i < arr.length; i++) {
-        var r = f(arr[i], i);
-        if (r.isSome()) {
-          return r;
-        }
-      }
-      return Option.none();
-    };
-
-    var getValue = function (item) {
-      return isString(item.value) ? item.value : '';
-    };
-    var sanitizeList = function (list, extractValue) {
-      var out = [];
-      global$4.each(list, function (item) {
-        var text = isString(item.text) ? item.text : isString(item.title) ? item.title : '';
-        if (item.menu !== undefined) ; else {
-          var value = extractValue(item);
-          out.push({
-            text: text,
-            value: value
-          });
-        }
-      });
-      return out;
-    };
-    var sanitizeWith = function (extracter) {
-      if (extracter === void 0) {
-        extracter = getValue;
-      }
-      return function (list) {
-        return Option.from(list).map(function (list) {
-          return sanitizeList(list, extracter);
-        });
-      };
-    };
-    var sanitize = function (list) {
-      return sanitizeWith(getValue)(list);
-    };
-    var createUi = function (name, label) {
-      return function (items) {
-        return {
-          name: name,
-          type: 'selectbox',
-          label: label,
-          items: items
-        };
-      };
-    };
-    var ListOptions = {
-      sanitize: sanitize,
-      sanitizeWith: sanitizeWith,
-      createUi: createUi,
-      getValue: getValue
-    };
-
-    var Cell = function (initial) {
-      var value = initial;
-      var get = function () {
-        return value;
-      };
-      var set = function (v) {
-        value = v;
-      };
-      var clone = function () {
-        return Cell(get());
-      };
-      return {
-        get: get,
-        set: set,
-        clone: clone
-      };
-    };
-
-    var findTextByValue = function (value, catalog) {
-      return findMap(catalog, function (item) {
-        return Option.some(item).filter(function (i) {
-          return i.value === value;
-        });
-      });
-    };
-    var getDelta = function (persistentText, fieldName, catalog, data) {
-      var value = data[fieldName];
-      var hasPersistentText = persistentText.length > 0;
-      return value !== undefined ? findTextByValue(value, catalog).map(function (i) {
-        return {
-          url: {
-            value: i.value,
-            meta: {
-              text: hasPersistentText ? persistentText : i.text,
-              attach: noop
+          var args = new Array(argLength);
+          for (var i = 0; i < args.length; i++)
+            args[i] = arguments[i];
+          var match = function (branches) {
+            var branchKeys = keys(branches);
+            if (constructors.length !== branchKeys.length) {
+              throw new Error('Wrong number of arguments to match. Expected: ' + constructors.join(',') + '\nActual: ' + branchKeys.join(','));
             }
-          },
-          text: hasPersistentText ? persistentText : i.text
-        };
-      }) : Option.none();
-    };
-    var findCatalog = function (settings, fieldName) {
-      if (fieldName === 'link') {
-        return settings.catalogs.link;
-      } else if (fieldName === 'anchor') {
-        return settings.catalogs.anchor;
-      } else {
-        return Option.none();
-      }
-    };
-    var init = function (initialData, linkSettings) {
-      var persistentText = Cell(initialData.text);
-      var onUrlChange = function (data) {
-        if (persistentText.get().length <= 0) {
-          var urlText = data.url.meta.text !== undefined ? data.url.meta.text : data.url.value;
-          return Option.some({ text: urlText });
-        } else {
-          return Option.none();
-        }
-      };
-      var onCatalogChange = function (data, change) {
-        var catalog = findCatalog(linkSettings, change.name).getOr([]);
-        return getDelta(persistentText.get(), change.name, catalog, data);
-      };
-      var onChange = function (getData, change) {
-        if (change.name === 'url') {
-          return onUrlChange(getData());
-        } else if (contains([
-            'anchor',
-            'link'
-          ], change.name)) {
-          return onCatalogChange(getData(), change);
-        } else if (change.name === 'text') {
-          persistentText.set(getData().text);
-          return Option.none();
-        } else {
-          return Option.none();
-        }
-      };
-      return { onChange: onChange };
-    };
-    var DialogChanges = {
-      init: init,
-      getDelta: getDelta
-    };
-
-    var __assign = function () {
-      __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
-        }
-        return t;
-      };
-      return __assign.apply(this, arguments);
-    };
-
-    var nu = function (baseFn) {
-      var data = Option.none();
-      var callbacks = [];
-      var map = function (f) {
-        return nu(function (nCallback) {
-          get(function (data) {
-            nCallback(f(data));
-          });
-        });
-      };
-      var get = function (nCallback) {
-        if (isReady())
-          call(nCallback);
-        else
-          callbacks.push(nCallback);
-      };
-      var set = function (x) {
-        data = Option.some(x);
-        run(callbacks);
-        callbacks = [];
-      };
-      var isReady = function () {
-        return data.isSome();
-      };
-      var run = function (cbs) {
-        each(cbs, call);
-      };
-      var call = function (cb) {
-        data.each(function (x) {
-          setTimeout(function () {
-            cb(x);
-          }, 0);
-        });
-      };
-      baseFn(set);
-      return {
-        get: get,
-        map: map,
-        isReady: isReady
-      };
-    };
-    var pure = function (a) {
-      return nu(function (callback) {
-        callback(a);
-      });
-    };
-    var LazyValue = {
-      nu: nu,
-      pure: pure
-    };
-
-    var bounce = function (f) {
-      return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          args[_i] = arguments[_i];
-        }
-        var me = this;
-        setTimeout(function () {
-          f.apply(me, args);
-        }, 0);
-      };
-    };
-
-    var nu$1 = function (baseFn) {
-      var get = function (callback) {
-        baseFn(bounce(callback));
-      };
-      var map = function (fab) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            var value = fab(a);
-            callback(value);
-          });
-        });
-      };
-      var bind = function (aFutureB) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            aFutureB(a).get(callback);
-          });
-        });
-      };
-      var anonBind = function (futureB) {
-        return nu$1(function (callback) {
-          get(function (a) {
-            futureB.get(callback);
-          });
-        });
-      };
-      var toLazy = function () {
-        return LazyValue.nu(get);
-      };
-      var toCached = function () {
-        var cache = null;
-        return nu$1(function (callback) {
-          if (cache === null) {
-            cache = toLazy();
-          }
-          cache.get(callback);
-        });
-      };
-      return {
-        map: map,
-        bind: bind,
-        anonBind: anonBind,
-        toLazy: toLazy,
-        toCached: toCached,
-        get: get
-      };
-    };
-    var pure$1 = function (a) {
-      return nu$1(function (callback) {
-        callback(a);
-      });
-    };
-    var Future = {
-      nu: nu$1,
-      pure: pure$1
-    };
-
-    var global$5 = tinymce.util.Tools.resolve('tinymce.util.Delay');
-
-    var delayedConfirm = function (editor, message, callback) {
-      var rng = editor.selection.getRng();
-      global$5.setEditorTimeout(editor, function () {
-        editor.windowManager.confirm(message, function (state) {
-          editor.selection.setRng(rng);
-          callback(state);
-        });
-      });
-    };
-    var tryEmailTransform = function (data) {
-      var url = data.href;
-      var suggestMailTo = url.indexOf('@') > 0 && url.indexOf('//') === -1 && url.indexOf('mailto:') === -1;
-      return suggestMailTo ? Option.some({
-        message: 'The URL you entered seems to be an email address. Do you want to add the required mailto: prefix?',
-        preprocess: function (oldData) {
-          return __assign({}, oldData, { href: 'mailto:' + url });
-        }
-      }) : Option.none();
-    };
-    var tryProtocolTransform = function (assumeExternalTargets) {
-      return function (data) {
-        var url = data.href;
-        var suggestProtocol = assumeExternalTargets === true && !/^\w+:/i.test(url) || assumeExternalTargets === false && /^\s*www[\.|\d\.]/i.test(url);
-        return suggestProtocol ? Option.some({
-          message: 'The URL you entered seems to be an external link. Do you want to add the required http:// prefix?',
-          preprocess: function (oldData) {
-            return __assign({}, oldData, { href: 'http://' + url });
-          }
-        }) : Option.none();
-      };
-    };
-    var preprocess = function (editor, assumeExternalTargets, data) {
-      return findMap([
-        tryEmailTransform,
-        tryProtocolTransform(assumeExternalTargets)
-      ], function (f) {
-        return f(data);
-      }).fold(function () {
-        return Future.pure(data);
-      }, function (transform) {
-        return Future.nu(function (callback) {
-          delayedConfirm(editor, transform.message, function (state) {
-            console.log('state', state);
-            callback(state ? transform.preprocess(data) : data);
-          });
-        });
-      });
-    };
-    var DialogConfirms = { preprocess: preprocess };
-
-    var getAnchors = function (editor) {
-      var anchorNodes = editor.dom.select('a:not([href])');
-      var anchors = bind(anchorNodes, function (anchor) {
-        var id = anchor.name || anchor.id;
-        return id ? [{
-            text: id,
-            value: '#' + id
-          }] : [];
-      });
-      return anchors.length > 0 ? Option.some([{
-          text: 'None',
-          value: ''
-        }].concat(anchors)) : Option.none();
-    };
-    var AnchorListOptions = { getAnchors: getAnchors };
-
-    var getClasses = function (editor) {
-      if (Settings.hasLinkClassList(editor.settings)) {
-        var list = Settings.getLinkClassList(editor.settings);
-        return ListOptions.sanitize(list);
-      }
-      return Option.none();
-    };
-    var ClassListOptions = { getClasses: getClasses };
-
-    var global$6 = tinymce.util.Tools.resolve('tinymce.util.XHR');
-
-    var parseJson = function (text) {
-      try {
-        return Option.some(JSON.parse(text));
-      } catch (err) {
-        return Option.none();
-      }
-    };
-    var getLinks = function (editor) {
-      var extractor = function (item) {
-        return editor.convertURL(item.value || item.url, 'href');
-      };
-      var linkList = Settings.getLinkList(editor.settings);
-      return Future.nu(function (callback) {
-        if (typeof linkList === 'string') {
-          global$6.send({
-            url: linkList,
-            success: function (text) {
-              return callback(parseJson(text));
+            var allReqd = forall(constructors, function (reqKey) {
+              return contains(branchKeys, reqKey);
+            });
+            if (!allReqd)
+              throw new Error('Not all branches were specified when using match. Specified: ' + branchKeys.join(', ') + '\nRequired: ' + constructors.join(', '));
+            return branches[key].apply(null, args);
+          };
+          return {
+            fold: function () {
+              if (arguments.length !== cases.length) {
+                throw new Error('Wrong number of arguments to fold. Expected ' + cases.length + ', got ' + arguments.length);
+              }
+              var target = arguments[count];
+              return target.apply(null, args);
             },
-            error: function (_) {
-              return callback(Option.none());
+            match: match,
+            log: function (label) {
+              console.log(label, {
+                constructors: constructors,
+                constructor: key,
+                params: args
+              });
             }
-          });
-        } else if (typeof linkList === 'function') {
-          linkList(function (output) {
-            return callback(Option.some(output));
-          });
-        } else {
-          callback(Option.from(linkList));
-        }
-      }).map(function (opt) {
-        return opt.bind(ListOptions.sanitizeWith(extractor));
-      });
-    };
-    var LinkListOptions = { getLinks: getLinks };
-
-    var getRels = function (editor, initialTarget) {
-      if (Settings.hasRelList(editor.settings)) {
-        var list = Settings.getRelList(editor.settings);
-        var isTargetBlank_1 = initialTarget.is('_blank');
-        var enforceSafe = Settings.allowUnsafeLinkTarget(editor.settings) === false;
-        var safeRelExtractor = function (item) {
-          return Utils.applyRelTargetRules(ListOptions.getValue(item), isTargetBlank_1);
+          };
         };
-        var sanitizer = enforceSafe ? ListOptions.sanitizeWith(safeRelExtractor) : ListOptions.sanitize;
-        return sanitizer(list);
-      }
-      return Option.none();
+      });
+      return adt;
     };
-    var RelOptions = { getRels: getRels };
+    var Adt = { generate: generate };
 
-    var fallbacks = [
+    var comparison = Adt.generate([
       {
-        text: 'Current window',
-        value: ''
+        bothErrors: [
+          'error1',
+          'error2'
+        ]
       },
       {
-        text: 'New window',
-        value: '_blank'
+        firstError: [
+          'error1',
+          'value2'
+        ]
+      },
+      {
+        secondError: [
+          'value1',
+          'error2'
+        ]
+      },
+      {
+        bothValues: [
+          'value1',
+          'value2'
+        ]
+      }
+    ]);
+    var partition = function (results) {
+      var errors = [];
+      var values = [];
+      each(results, function (result) {
+        result.fold(function (err) {
+          errors.push(err);
+        }, function (value) {
+          values.push(value);
+        });
+      });
+      return {
+        errors: errors,
+        values: values
+      };
+    };
+
+    var value = function (o) {
+      var is = function (v) {
+        return o === v;
+      };
+      var or = function (opt) {
+        return value(o);
+      };
+      var orThunk = function (f) {
+        return value(o);
+      };
+      var map = function (f) {
+        return value(f(o));
+      };
+      var mapError = function (f) {
+        return value(o);
+      };
+      var each = function (f) {
+        f(o);
+      };
+      var bind = function (f) {
+        return f(o);
+      };
+      var fold = function (_, onValue) {
+        return onValue(o);
+      };
+      var exists = function (f) {
+        return f(o);
+      };
+      var forall = function (f) {
+        return f(o);
+      };
+      var toOption = function () {
+        return Option.some(o);
+      };
+      return {
+        is: is,
+        isValue: always,
+        isError: never,
+        getOr: constant(o),
+        getOrThunk: constant(o),
+        getOrDie: constant(o),
+        or: or,
+        orThunk: orThunk,
+        fold: fold,
+        map: map,
+        mapError: mapError,
+        each: each,
+        bind: bind,
+        exists: exists,
+        forall: forall,
+        toOption: toOption
+      };
+    };
+    var error = function (message) {
+      var getOrThunk = function (f) {
+        return f();
+      };
+      var getOrDie = function () {
+        return die(String(message))();
+      };
+      var or = function (opt) {
+        return opt;
+      };
+      var orThunk = function (f) {
+        return f();
+      };
+      var map = function (f) {
+        return error(message);
+      };
+      var mapError = function (f) {
+        return error(f(message));
+      };
+      var bind = function (f) {
+        return error(message);
+      };
+      var fold = function (onError, _) {
+        return onError(message);
+      };
+      return {
+        is: never,
+        isValue: never,
+        isError: always,
+        getOr: identity,
+        getOrThunk: getOrThunk,
+        getOrDie: getOrDie,
+        or: or,
+        orThunk: orThunk,
+        fold: fold,
+        map: map,
+        mapError: mapError,
+        each: noop,
+        bind: bind,
+        exists: never,
+        forall: always,
+        toOption: Option.none
+      };
+    };
+    var Result = {
+      value: value,
+      error: error
+    };
+
+    var isInlinePattern = function (pattern) {
+      return pattern.type === 'inline-command' || pattern.type === 'inline-format';
+    };
+    var isBlockPattern = function (pattern) {
+      return pattern.type === 'block-command' || pattern.type === 'block-format';
+    };
+    var sortPatterns = function (patterns) {
+      return sort(patterns, function (a, b) {
+        if (a.start.length === b.start.length) {
+          return 0;
+        }
+        return a.start.length > b.start.length ? -1 : 1;
+      });
+    };
+    var normalizePattern = function (pattern) {
+      var err = function (message) {
+        return Result.error({
+          message: message,
+          pattern: pattern
+        });
+      };
+      var formatOrCmd = function (name, onFormat, onCommand) {
+        if (pattern.format !== undefined) {
+          var formats = void 0;
+          if (isArray(pattern.format)) {
+            if (!forall(pattern.format, isString)) {
+              return err(name + ' pattern has non-string items in the `format` array');
+            }
+            formats = pattern.format;
+          } else if (isString(pattern.format)) {
+            formats = [pattern.format];
+          } else {
+            return err(name + ' pattern has non-string `format` parameter');
+          }
+          return Result.value(onFormat(formats));
+        } else if (pattern.cmd !== undefined) {
+          if (!isString(pattern.cmd)) {
+            return err(name + ' pattern has non-string `cmd` parameter');
+          }
+          return Result.value(onCommand(pattern.cmd, pattern.value));
+        } else {
+          return err(name + ' pattern is missing both `format` and `cmd` parameters');
+        }
+      };
+      if (!isObject(pattern)) {
+        return err('Raw pattern is not an object');
+      }
+      if (!isString(pattern.start)) {
+        return err('Raw pattern is missing `start` parameter');
+      }
+      if (pattern.end !== undefined) {
+        if (!isString(pattern.end)) {
+          return err('Inline pattern has non-string `end` parameter');
+        }
+        if (pattern.start.length === 0 && pattern.end.length === 0) {
+          return err('Inline pattern has empty `start` and `end` parameters');
+        }
+        var start_1 = pattern.start;
+        var end_1 = pattern.end;
+        if (end_1.length === 0) {
+          end_1 = start_1;
+          start_1 = '';
+        }
+        return formatOrCmd('Inline', function (format) {
+          return {
+            type: 'inline-format',
+            start: start_1,
+            end: end_1,
+            format: format
+          };
+        }, function (cmd, value) {
+          return {
+            type: 'inline-command',
+            start: start_1,
+            end: end_1,
+            cmd: cmd,
+            value: value
+          };
+        });
+      } else if (pattern.replacement !== undefined) {
+        if (!isString(pattern.replacement)) {
+          return err('Replacement pattern has non-string `replacement` parameter');
+        }
+        if (pattern.start.length === 0) {
+          return err('Replacement pattern has empty `start` parameter');
+        }
+        return Result.value({
+          type: 'inline-command',
+          start: '',
+          end: pattern.start,
+          cmd: 'mceInsertContent',
+          value: pattern.replacement
+        });
+      } else {
+        if (pattern.start.length === 0) {
+          return err('Block pattern has empty `start` parameter');
+        }
+        return formatOrCmd('Block', function (formats) {
+          return {
+            type: 'block-format',
+            start: pattern.start,
+            format: formats[0]
+          };
+        }, function (command, commandValue) {
+          return {
+            type: 'block-command',
+            start: pattern.start,
+            cmd: command,
+            value: commandValue
+          };
+        });
+      }
+    };
+    var denormalizePattern = function (pattern) {
+      if (pattern.type === 'block-command') {
+        return {
+          start: pattern.start,
+          cmd: pattern.cmd,
+          value: pattern.value
+        };
+      } else if (pattern.type === 'block-format') {
+        return {
+          start: pattern.start,
+          format: pattern.format
+        };
+      } else if (pattern.type === 'inline-command') {
+        if (pattern.cmd === 'mceInsertContent' && pattern.start === '') {
+          return {
+            start: pattern.end,
+            replacement: pattern.value
+          };
+        } else {
+          return {
+            start: pattern.start,
+            end: pattern.end,
+            cmd: pattern.cmd,
+            value: pattern.value
+          };
+        }
+      } else if (pattern.type === 'inline-format') {
+        return {
+          start: pattern.start,
+          end: pattern.end,
+          format: pattern.format.length === 1 ? pattern.format[0] : pattern.format
+        };
+      }
+    };
+    var createPatternSet = function (patterns) {
+      return {
+        inlinePatterns: filter(patterns, isInlinePattern),
+        blockPatterns: sortPatterns(filter(patterns, isBlockPattern))
+      };
+    };
+
+    var get$1 = function (patternsState) {
+      var setPatterns = function (newPatterns) {
+        var normalized = partition(map(newPatterns, normalizePattern));
+        if (normalized.errors.length > 0) {
+          var firstError = normalized.errors[0];
+          throw new Error(firstError.message + ':\n' + JSON.stringify(firstError.pattern, null, 2));
+        }
+        patternsState.set(createPatternSet(normalized.values));
+      };
+      var getPatterns = function () {
+        return map(patternsState.get().inlinePatterns, denormalizePattern).concat(map(patternsState.get().blockPatterns, denormalizePattern));
+      };
+      return {
+        setPatterns: setPatterns,
+        getPatterns: getPatterns
+      };
+    };
+    var Api = { get: get$1 };
+
+    var Global = typeof window !== 'undefined' ? window : Function('return this;')();
+
+    var error$1 = function () {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+      }
+      var console = Global.console;
+      if (console) {
+        if (console.error) {
+          console.error.apply(console, args);
+        } else {
+          console.log.apply(console, args);
+        }
+      }
+    };
+    var defaultPatterns = [
+      {
+        start: '*',
+        end: '*',
+        format: 'italic'
+      },
+      {
+        start: '**',
+        end: '**',
+        format: 'bold'
+      },
+      {
+        start: '#',
+        format: 'h1'
+      },
+      {
+        start: '##',
+        format: 'h2'
+      },
+      {
+        start: '###',
+        format: 'h3'
+      },
+      {
+        start: '####',
+        format: 'h4'
+      },
+      {
+        start: '#####',
+        format: 'h5'
+      },
+      {
+        start: '######',
+        format: 'h6'
+      },
+      {
+        start: '1. ',
+        cmd: 'InsertOrderedList'
+      },
+      {
+        start: '* ',
+        cmd: 'InsertUnorderedList'
+      },
+      {
+        start: '- ',
+        cmd: 'InsertUnorderedList'
       }
     ];
-    var getTargets = function (editor) {
-      if (Settings.shouldShowTargetList(editor.settings)) {
-        var list = Settings.getTargetList(editor.settings);
-        return ListOptions.sanitize(list).orThunk(function () {
-          return Option.some(fallbacks);
+    var getPatternSet = function (editorSettings) {
+      var patterns = get(editorSettings, 'textpattern_patterns').getOr(defaultPatterns);
+      if (!isArray(patterns)) {
+        error$1('The setting textpattern_patterns should be an array');
+        return {
+          inlinePatterns: [],
+          blockPatterns: []
+        };
+      }
+      var normalized = partition(map(patterns, normalizePattern));
+      each(normalized.errors, function (err) {
+        return error$1(err.message, err.pattern);
+      });
+      return createPatternSet(normalized.values);
+    };
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.VK');
+
+    var checkRange = function (str, substr, start) {
+      if (substr === '')
+        return true;
+      if (str.length < substr.length)
+        return false;
+      var x = str.substr(start, start + substr.length);
+      return x === substr;
+    };
+    var startsWith = function (str, prefix) {
+      return checkRange(str, prefix, 0);
+    };
+    var endsWith = function (str, suffix) {
+      return checkRange(str, suffix, str.length - suffix.length);
+    };
+
+    var global$3 = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
+
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var ATTRIBUTE = domGlobals.Node.ATTRIBUTE_NODE;
+    var CDATA_SECTION = domGlobals.Node.CDATA_SECTION_NODE;
+    var COMMENT = domGlobals.Node.COMMENT_NODE;
+    var DOCUMENT = domGlobals.Node.DOCUMENT_NODE;
+    var DOCUMENT_TYPE = domGlobals.Node.DOCUMENT_TYPE_NODE;
+    var DOCUMENT_FRAGMENT = domGlobals.Node.DOCUMENT_FRAGMENT_NODE;
+    var ELEMENT = domGlobals.Node.ELEMENT_NODE;
+    var TEXT = domGlobals.Node.TEXT_NODE;
+    var PROCESSING_INSTRUCTION = domGlobals.Node.PROCESSING_INSTRUCTION_NODE;
+    var ENTITY_REFERENCE = domGlobals.Node.ENTITY_REFERENCE_NODE;
+    var ENTITY = domGlobals.Node.ENTITY_NODE;
+    var NOTATION = domGlobals.Node.NOTATION_NODE;
+
+    var isElement = function (node) {
+      return node.nodeType === ELEMENT;
+    };
+    var isText = function (node) {
+      return node.nodeType === TEXT;
+    };
+    var generatePath = function (root, node, offset) {
+      if (offset < 0 || offset > node.data.length) {
+        return Option.none();
+      }
+      var p = [offset];
+      var current = node;
+      while (current !== root && current.parentNode) {
+        var parent = current.parentNode;
+        for (var i = 0; i < parent.childNodes.length; i++) {
+          if (parent.childNodes[i] === current) {
+            p.push(i);
+            break;
+          }
+        }
+        current = parent;
+      }
+      return current === root ? Option.some(p.reverse()) : Option.none();
+    };
+    var generatePathRange = function (root, startNode, startOffset, endNode, endOffset) {
+      return generatePath(root, startNode, startOffset).bind(function (start) {
+        return generatePath(root, endNode, endOffset).map(function (end) {
+          return {
+            start: start,
+            end: end
+          };
         });
+      });
+    };
+    var resolvePath = function (root, path) {
+      var nodePath = path.slice();
+      var offset = nodePath.pop();
+      return foldl(nodePath, function (optNode, index) {
+        return optNode.bind(function (node) {
+          return Option.from(node.childNodes[index]);
+        });
+      }, Option.some(root)).bind(function (node) {
+        if (isText(node) && offset >= 0 && offset <= node.data.length) {
+          return Option.some({
+            node: node,
+            offset: offset
+          });
+        }
+        return Option.none();
+      });
+    };
+    var resolvePathRange = function (root, range) {
+      return resolvePath(root, range.start).bind(function (_a) {
+        var startNode = _a.node, startOffset = _a.offset;
+        return resolvePath(root, range.end).map(function (_a) {
+          var endNode = _a.node, endOffset = _a.offset;
+          return {
+            startNode: startNode,
+            startOffset: startOffset,
+            endNode: endNode,
+            endOffset: endOffset
+          };
+        });
+      });
+    };
+
+    var findPattern = function (patterns, text) {
+      for (var i = 0; i < patterns.length; i++) {
+        var pattern = patterns[i];
+        if (text.indexOf(pattern.start) !== 0) {
+          continue;
+        }
+        if (pattern.end && text.lastIndexOf(pattern.end) !== text.length - pattern.end.length) {
+          continue;
+        }
+        return pattern;
+      }
+    };
+    var textBefore = function (node, offset, block) {
+      if (isText(node) && offset > 0) {
+        return Option.some({
+          node: node,
+          offset: offset
+        });
+      }
+      var startNode;
+      if (offset > 0) {
+        startNode = node.childNodes[offset - 1];
+      } else {
+        for (var current = node; current && current !== block && !startNode; current = current.parentNode) {
+          startNode = current.previousSibling;
+        }
+      }
+      var tw = new global$3(startNode, block);
+      for (var current = tw.current(); current; current = tw.prev()) {
+        if (isText(current) && current.length > 0) {
+          return Option.some({
+            node: current,
+            offset: current.length
+          });
+        }
       }
       return Option.none();
     };
-    var TargetOptions = { getTargets: getTargets };
-
-    var nonEmptyAttr = function (dom, elem, name) {
-      var val = dom.getAttrib(elem, name);
-      return val !== null && val.length > 0 ? Option.some(val) : Option.none();
-    };
-    var extractFromAnchor = function (editor, settings, anchor, selection) {
-      var dom = editor.dom;
-      var onlyText = Utils.isOnlyTextSelected(selection.getContent());
-      var text = onlyText ? Option.some(Utils.getAnchorText(selection, anchor)) : Option.none();
-      var url = anchor ? Option.some(dom.getAttrib(anchor, 'href')) : Option.none();
-      var defaultTarget = Settings.hasDefaultLinkTarget(settings) ? Option.some(Settings.getDefaultLinkTarget(settings)) : Option.none();
-      var target = anchor ? Option.from(dom.getAttrib(anchor, 'target')) : defaultTarget;
-      var rel = nonEmptyAttr(dom, anchor, 'rel');
-      var linkClass = nonEmptyAttr(dom, anchor, 'class');
-      var title = nonEmptyAttr(dom, anchor, 'title');
-      return {
-        url: url,
-        text: text,
-        title: title,
-        target: target,
-        rel: rel,
-        linkClass: linkClass
-      };
-    };
-    var collect = function (editor, settings, linkNode) {
-      return LinkListOptions.getLinks(editor).map(function (links) {
-        var anchor = extractFromAnchor(editor, settings, linkNode, editor.selection);
-        return {
-          anchor: anchor,
-          catalogs: {
-            targets: TargetOptions.getTargets(editor),
-            rels: RelOptions.getRels(editor, anchor.target),
-            classes: ClassListOptions.getClasses(editor),
-            anchor: AnchorListOptions.getAnchors(editor),
-            link: links
-          },
-          optNode: Option.from(linkNode),
-          flags: { titleEnabled: Settings.shouldShowLinkTitle(settings) }
-        };
-      });
-    };
-    var DialogInfo = { collect: collect };
-
-    var handleSubmit = function (editor, info, assumeExternalTargets) {
-      return function (api) {
-        var data = api.getData();
-        if (!data.url.value) {
-          Utils.unlink(editor);
-          api.close();
-          return;
-        }
-        var getChangedValue = function (key) {
-          return Option.from(data[key]).filter(function (value) {
-            return !info.anchor[key].is(value);
-          });
-        };
-        var changedData = {
-          href: data.url.value,
-          text: getChangedValue('text'),
-          target: getChangedValue('target'),
-          rel: getChangedValue('rel'),
-          class: getChangedValue('linkClass'),
-          title: getChangedValue('title')
-        };
-        var attachState = {
-          href: data.url.value,
-          attach: data.url.meta !== undefined && data.url.meta.attach ? data.url.meta.attach : function () {
-          }
-        };
-        DialogConfirms.preprocess(editor, assumeExternalTargets, changedData).get(function (pData) {
-          Utils.link(editor, attachState, pData);
+    var findInlinePatternStart = function (dom, pattern, node, offset, block, requireGap) {
+      if (requireGap === void 0) {
+        requireGap = false;
+      }
+      if (pattern.start.length === 0 && !requireGap) {
+        return Option.some({
+          node: node,
+          offset: offset
         });
-        api.close();
+      }
+      var sameBlockParent = function (spot) {
+        return dom.getParent(spot.node, dom.isBlock) === block;
       };
-    };
-    var collectData = function (editor) {
-      var settings = editor.settings;
-      var anchorNode = Utils.getAnchorElement(editor);
-      return DialogInfo.collect(editor, settings, anchorNode);
-    };
-    var getInitialData = function (info) {
-      return {
-        url: {
-          value: info.anchor.url.getOr(''),
-          meta: {
-            attach: function () {
-            },
-            text: info.anchor.url.fold(function () {
-              return '';
-            }, function () {
-              return info.anchor.text.getOr('');
-            }),
-            original: { value: info.anchor.url.getOr('') }
+      return textBefore(node, offset, block).filter(sameBlockParent).bind(function (_a) {
+        var node = _a.node, offset = _a.offset;
+        var text = node.data.substring(0, offset);
+        var startPos = text.lastIndexOf(pattern.start);
+        if (startPos === -1) {
+          if (text.indexOf(pattern.end) !== -1) {
+            return Option.none();
           }
-        },
-        text: info.anchor.text.getOr(''),
-        title: info.anchor.title.getOr(''),
-        anchor: info.anchor.url.getOr(''),
-        link: info.anchor.url.getOr(''),
-        rel: info.anchor.rel.getOr(''),
-        target: info.anchor.target.getOr(''),
-        linkClass: info.anchor.linkClass.getOr('')
-      };
-    };
-    var makeDialog = function (settings, onSubmit) {
-      var urlInput = [{
-          name: 'url',
-          type: 'urlinput',
-          filetype: 'file',
-          label: 'URL'
-        }];
-      var displayText = settings.anchor.text.map(function () {
-        return {
-          name: 'text',
-          type: 'input',
-          label: 'Text to display'
-        };
-      }).toArray();
-      var titleText = settings.flags.titleEnabled ? [{
-          name: 'title',
-          type: 'input',
-          label: 'Title'
-        }] : [];
-      var initialData = getInitialData(settings);
-      var dialogDelta = DialogChanges.init(initialData, settings);
-      var catalogs = settings.catalogs;
-      var body = {
-        type: 'panel',
-        items: flatten([
-          urlInput,
-          displayText,
-          titleText,
-          cat([
-            catalogs.anchor.map(ListOptions.createUi('anchor', 'Anchors')),
-            catalogs.rels.map(ListOptions.createUi('rel', 'Rel')),
-            catalogs.targets.map(ListOptions.createUi('target', 'Open link in...')),
-            catalogs.link.map(ListOptions.createUi('link', 'Link list')),
-            catalogs.classes.map(ListOptions.createUi('linkClass', 'Class'))
-          ])
-        ])
-      };
-      return {
-        title: 'Insert/Edit Link',
-        size: 'normal',
-        body: body,
-        buttons: [
-          {
-            type: 'cancel',
-            name: 'cancel',
-            text: 'Cancel'
-          },
-          {
-            type: 'submit',
-            name: 'save',
-            text: 'Save',
-            primary: true
-          }
-        ],
-        initialData: initialData,
-        onChange: function (api, _a) {
-          var name = _a.name;
-          dialogDelta.onChange(api.getData, { name: name }).each(function (newData) {
-            api.setData(newData);
-          });
-        },
-        onSubmit: onSubmit
-      };
-    };
-    var open$1 = function (editor) {
-      var data = collectData(editor);
-      data.map(function (info) {
-        var onSubmit = handleSubmit(editor, info, Settings.assumeExternalTargets(editor.settings));
-        return makeDialog(info, onSubmit);
-      }).get(function (spec) {
-        editor.windowManager.open(spec);
+          return findInlinePatternStart(dom, pattern, node, 0, block, requireGap && text.length === 0);
+        }
+        if (text.indexOf(pattern.end, startPos + pattern.start.length) !== -1) {
+          return Option.none();
+        }
+        if (requireGap && startPos + pattern.start.length === text.length) {
+          return Option.none();
+        }
+        return Option.some({
+          node: node,
+          offset: startPos
+        });
       });
     };
-    var Dialog = { open: open$1 };
-
-    var getLink = function (editor, elm) {
-      return editor.dom.getParent(elm, 'a[href]');
-    };
-    var getSelectedLink = function (editor) {
-      return getLink(editor, editor.selection.getStart());
-    };
-    var hasOnlyAltModifier = function (e) {
-      return e.altKey === true && e.shiftKey === false && e.ctrlKey === false && e.metaKey === false;
-    };
-    var gotoLink = function (editor, a) {
-      if (a) {
-        var href = Utils.getHref(a);
-        if (/^#/.test(href)) {
-          var targetEl = editor.$(href);
-          if (targetEl.length) {
-            editor.selection.scrollIntoView(targetEl[0], true);
+    var findInlinePatternRec = function (dom, patterns, node, offset, block) {
+      return textBefore(node, offset, block).bind(function (_a) {
+        var endNode = _a.node, endOffset = _a.offset;
+        var text = endNode.data.substring(0, endOffset);
+        var _loop_1 = function (i) {
+          var pattern = patterns[i];
+          if (!endsWith(text, pattern.end)) {
+            return 'continue';
           }
+          var newOffset = endOffset - pattern.end.length;
+          var hasContent = pattern.start.length > 0 && pattern.end.length > 0;
+          var allowInner = hasContent ? Option.some(true) : Option.none();
+          var recursiveMatch = allowInner.bind(function () {
+            var patternsWithoutCurrent = patterns.slice();
+            patternsWithoutCurrent.splice(i, 1);
+            return findInlinePatternRec(dom, patternsWithoutCurrent, endNode, newOffset, block);
+          }).fold(function () {
+            var start = findInlinePatternStart(dom, pattern, endNode, newOffset, block, hasContent);
+            return start.map(function (_a) {
+              var startNode = _a.node, startOffset = _a.offset;
+              var range = generatePathRange(dom.getRoot(), startNode, startOffset, endNode, endOffset).getOrDie('Internal constraint violation');
+              return [{
+                  pattern: pattern,
+                  range: range
+                }];
+            });
+          }, function (areas) {
+            var outermostRange = resolvePathRange(dom.getRoot(), areas[areas.length - 1].range).getOrDie('Internal constraint violation');
+            var start = findInlinePatternStart(dom, pattern, outermostRange.startNode, outermostRange.startOffset, block);
+            return start.map(function (_a) {
+              var startNode = _a.node, startOffset = _a.offset;
+              var range = generatePathRange(dom.getRoot(), startNode, startOffset, endNode, endOffset).getOrDie('Internal constraint violation');
+              return areas.concat([{
+                  pattern: pattern,
+                  range: range
+                }]);
+            });
+          });
+          if (recursiveMatch.isSome()) {
+            return { value: recursiveMatch };
+          }
+        };
+        for (var i = 0; i < patterns.length; i++) {
+          var state_1 = _loop_1(i);
+          if (typeof state_1 === 'object')
+            return state_1.value;
+        }
+        return Option.none();
+      });
+    };
+    var findNestedInlinePatterns = function (dom, patterns, rng, space) {
+      if (rng.collapsed === false) {
+        return [];
+      }
+      var block = dom.getParent(rng.startContainer, dom.isBlock);
+      return findInlinePatternRec(dom, patterns, rng.startContainer, rng.startOffset - (space ? 1 : 0), block).getOr([]);
+    };
+    var findBlockPattern = function (dom, patterns, rng) {
+      var block = dom.getParent(rng.startContainer, dom.isBlock);
+      if (!(dom.is(block, 'p') && isElement(block))) {
+        return Option.none();
+      }
+      var walker = new global$3(block, block);
+      var node;
+      var firstTextNode;
+      while (node = walker.next()) {
+        if (isText(node)) {
+          firstTextNode = node;
+          break;
+        }
+      }
+      if (!firstTextNode) {
+        return Option.none();
+      }
+      var pattern = findPattern(patterns, firstTextNode.data);
+      if (!pattern) {
+        return Option.none();
+      }
+      if (global$4.trim(block.textContent).length === pattern.start.length) {
+        return Option.none();
+      }
+      return Option.some(pattern);
+    };
+
+    var unique = 0;
+    var generate$1 = function (prefix) {
+      var date = new Date();
+      var time = date.getTime();
+      var random = Math.floor(Math.random() * 1000000000);
+      unique++;
+      return prefix + '_' + random + unique + String(time);
+    };
+
+    var liftN = function (arr, f) {
+      var r = [];
+      for (var i = 0; i < arr.length; i++) {
+        var x = arr[i];
+        if (x.isSome()) {
+          r.push(x.getOrDie());
         } else {
-          OpenUrl.open(a.href);
+          return Option.none();
+        }
+      }
+      return Option.some(f.apply(null, r));
+    };
+    function lift() {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+      }
+      var f = args.pop();
+      return liftN(args, f);
+    }
+
+    var isCollapsed = function (start, end, root) {
+      var walker = new global$3(start, root);
+      while (walker.next()) {
+        var node = walker.current();
+        if (isText(node) && node.data.length === 0) {
+          continue;
+        }
+        return node === end;
+      }
+      return false;
+    };
+    var applyInlinePatterns = function (editor, areas) {
+      var dom = editor.dom;
+      var newMarker = function (id) {
+        return dom.create('span', {
+          'data-mce-type': 'bookmark',
+          'id': id
+        });
+      };
+      var markerRange = function (ids) {
+        var start = Option.from(dom.select('#' + ids.start)[0]);
+        var end = Option.from(dom.select('#' + ids.end)[0]);
+        return lift(start, end, function (start, end) {
+          var range = dom.createRng();
+          range.setStartAfter(start);
+          if (!isCollapsed(start, end, dom.getRoot())) {
+            range.setEndBefore(end);
+          } else {
+            range.collapse(true);
+          }
+          return range;
+        });
+      };
+      var markerPrefix = generate$1('mce_');
+      var markerIds = map(areas, function (_area, i) {
+        return {
+          start: markerPrefix + '_' + i + '_start',
+          end: markerPrefix + '_' + i + '_end'
+        };
+      });
+      var cursor = editor.selection.getBookmark();
+      for (var i = areas.length - 1; i >= 0; i--) {
+        var _a = areas[i], pattern = _a.pattern, range = _a.range;
+        var _b = resolvePath(dom.getRoot(), range.end).getOrDie('Failed to resolve range[' + i + '].end'), endNode = _b.node, endOffset = _b.offset;
+        var textOutsideRange = endOffset === 0 ? endNode : endNode.splitText(endOffset);
+        textOutsideRange.parentNode.insertBefore(newMarker(markerIds[i].end), textOutsideRange);
+        if (pattern.start.length > 0) {
+          endNode.deleteData(endOffset - pattern.end.length, pattern.end.length);
+        }
+      }
+      for (var i = 0; i < areas.length; i++) {
+        var _c = areas[i], pattern = _c.pattern, range = _c.range;
+        var _d = resolvePath(dom.getRoot(), range.start).getOrDie('Failed to resolve range.start'), startNode = _d.node, startOffset = _d.offset;
+        var textInsideRange = startOffset === 0 ? startNode : startNode.splitText(startOffset);
+        textInsideRange.parentNode.insertBefore(newMarker(markerIds[i].start), textInsideRange);
+        if (pattern.start.length > 0) {
+          textInsideRange.deleteData(0, pattern.start.length);
+        } else {
+          textInsideRange.deleteData(0, pattern.end.length);
+        }
+      }
+      var _loop_1 = function (i) {
+        var pattern = areas[i].pattern;
+        var optRange = markerRange(markerIds[i]);
+        optRange.each(function (range) {
+          editor.selection.setRng(range);
+          if (pattern.type === 'inline-format') {
+            pattern.format.forEach(function (format) {
+              editor.formatter.apply(format);
+            });
+          } else {
+            editor.execCommand(pattern.cmd, false, pattern.value);
+          }
+        });
+        dom.remove(markerIds[i].start);
+        dom.remove(markerIds[i].end);
+      };
+      for (var i = 0; i < areas.length; i++) {
+        _loop_1(i);
+      }
+      editor.selection.moveToBookmark(cursor);
+    };
+    var applyBlockPattern = function (editor, pattern) {
+      var dom = editor.dom;
+      var rng = editor.selection.getRng();
+      var block = dom.getParent(rng.startContainer, dom.isBlock);
+      if (!block || !dom.is(block, 'p') || !isElement(block)) {
+        return;
+      }
+      var walker = new global$3(block, block);
+      var node;
+      var firstTextNode;
+      while (node = walker.next()) {
+        if (isText(node)) {
+          firstTextNode = node;
+          break;
+        }
+      }
+      if (!firstTextNode) {
+        return;
+      }
+      if (!startsWith(firstTextNode.data, pattern.start)) {
+        return;
+      }
+      if (global$4.trim(block.textContent).length === pattern.start.length) {
+        return;
+      }
+      var cursor = editor.selection.getBookmark();
+      if (pattern.type === 'block-format') {
+        var format = editor.formatter.get(pattern.format);
+        if (format && format[0].block) {
+          editor.undoManager.transact(function () {
+            firstTextNode.deleteData(0, pattern.start.length);
+            editor.selection.select(block);
+            editor.formatter.apply(pattern.format);
+          });
+        }
+      } else if (pattern.type === 'block-command') {
+        editor.undoManager.transact(function () {
+          firstTextNode.deleteData(0, pattern.start.length);
+          editor.selection.select(block);
+          editor.execCommand(pattern.cmd, false, pattern.value);
+        });
+      }
+      editor.selection.moveToBookmark(cursor);
+    };
+
+    var zeroWidth = function () {
+      return '\uFEFF';
+    };
+
+    var handleEnter = function (editor, patternSet) {
+      var inlineAreas = findNestedInlinePatterns(editor.dom, patternSet.inlinePatterns, editor.selection.getRng(), false);
+      var blockArea = findBlockPattern(editor.dom, patternSet.blockPatterns, editor.selection.getRng());
+      if (editor.selection.isCollapsed() && (inlineAreas.length > 0 || blockArea.isSome())) {
+        editor.undoManager.add();
+        editor.undoManager.extra(function () {
+          editor.execCommand('mceInsertNewLine');
+        }, function () {
+          editor.insertContent(zeroWidth());
+          applyInlinePatterns(editor, inlineAreas);
+          blockArea.each(function (pattern) {
+            return applyBlockPattern(editor, pattern);
+          });
+          var range = editor.selection.getRng();
+          var block = editor.dom.getParent(range.startContainer, editor.dom.isBlock);
+          var spot = textBefore(range.startContainer, range.startOffset, block);
+          editor.execCommand('mceInsertNewLine');
+          spot.each(function (s) {
+            if (s.node.data.charAt(s.offset - 1) === zeroWidth()) {
+              s.node.deleteData(s.offset - 1, 1);
+              if (editor.dom.isEmpty(s.node.parentNode)) {
+                editor.dom.remove(s.node.parentNode);
+              }
+            }
+          });
+        });
+        return true;
+      }
+      return false;
+    };
+    var handleInlineKey = function (editor, patternSet) {
+      var areas = findNestedInlinePatterns(editor.dom, patternSet.inlinePatterns, editor.selection.getRng(), true);
+      if (areas.length > 0) {
+        editor.undoManager.transact(function () {
+          applyInlinePatterns(editor, areas);
+        });
+      }
+    };
+    var checkKeyEvent = function (codes, event, predicate) {
+      for (var i = 0; i < codes.length; i++) {
+        if (predicate(codes[i], event)) {
+          return true;
         }
       }
     };
-    var openDialog = function (editor) {
-      return function () {
-        Dialog.open(editor);
-      };
+    var checkKeyCode = function (codes, event) {
+      return checkKeyEvent(codes, event, function (code, event) {
+        return code === event.keyCode && global$2.modifierPressed(event) === false;
+      });
     };
-    var gotoSelectedLink = function (editor) {
-      return function () {
-        gotoLink(editor, getSelectedLink(editor));
-      };
+    var checkCharCode = function (chars, event) {
+      return checkKeyEvent(chars, event, function (chr, event) {
+        return chr.charCodeAt(0) === event.charCode;
+      });
     };
-    var leftClickedOnAHref = function (editor) {
-      return function (elm) {
-        var sel, rng, node;
-        if (Settings.hasContextToolbar(editor.settings) && Utils.isLink(elm)) {
-          sel = editor.selection;
-          rng = sel.getRng();
-          node = rng.startContainer;
-          if (node.nodeType === 3 && sel.isCollapsed() && rng.startOffset > 0 && rng.startOffset < node.data.length) {
-            return true;
+    var KeyHandler = {
+      handleEnter: handleEnter,
+      handleInlineKey: handleInlineKey,
+      checkCharCode: checkCharCode,
+      checkKeyCode: checkKeyCode
+    };
+
+    var setup = function (editor, patternsState) {
+      var charCodes = [
+        ',',
+        '.',
+        ';',
+        ':',
+        '!',
+        '?'
+      ];
+      var keyCodes = [32];
+      editor.on('keydown', function (e) {
+        if (e.keyCode === 13 && !global$2.modifierPressed(e)) {
+          if (KeyHandler.handleEnter(editor, patternsState.get())) {
+            e.preventDefault();
           }
         }
-        return false;
-      };
-    };
-    var setupGotoLinks = function (editor) {
-      editor.on('click', function (e) {
-        var link = getLink(editor, e.target);
-        if (link && global$1.metaKeyPressed(e)) {
-          e.preventDefault();
-          gotoLink(editor, link);
+      }, true);
+      editor.on('keyup', function (e) {
+        if (KeyHandler.checkKeyCode(keyCodes, e)) {
+          KeyHandler.handleInlineKey(editor, patternsState.get());
         }
       });
-      editor.on('keydown', function (e) {
-        var link = getSelectedLink(editor);
-        if (link && e.keyCode === 13 && hasOnlyAltModifier(e)) {
-          e.preventDefault();
-          gotoLink(editor, link);
+      editor.on('keypress', function (e) {
+        if (KeyHandler.checkCharCode(charCodes, e)) {
+          global$1.setEditorTimeout(editor, function () {
+            KeyHandler.handleInlineKey(editor, patternsState.get());
+          });
         }
-      });
-    };
-    var toggleActiveState = function (editor) {
-      return function (api) {
-        var nodeChangeHandler = function (e) {
-          return api.setActive(!editor.readonly && !!Utils.getAnchorElement(editor, e.element));
-        };
-        editor.on('nodechange', nodeChangeHandler);
-        return function () {
-          return editor.off('nodechange', nodeChangeHandler);
-        };
-      };
-    };
-    var toggleEnabledState = function (editor) {
-      return function (api) {
-        api.setDisabled(!Utils.hasLinks(editor.dom.getParents(editor.selection.getStart())));
-        var nodeChangeHandler = function (e) {
-          return api.setDisabled(!Utils.hasLinks(e.parents));
-        };
-        editor.on('nodechange', nodeChangeHandler);
-        return function () {
-          return editor.off('nodechange', nodeChangeHandler);
-        };
-      };
-    };
-    var Actions = {
-      openDialog: openDialog,
-      gotoSelectedLink: gotoSelectedLink,
-      leftClickedOnAHref: leftClickedOnAHref,
-      setupGotoLinks: setupGotoLinks,
-      toggleActiveState: toggleActiveState,
-      toggleEnabledState: toggleEnabledState
-    };
-
-    var register = function (editor) {
-      editor.addCommand('mceLink', function () {
-        if (Settings.useQuickLink(editor.settings)) {
-          editor.fire('contexttoolbar-show', { toolbarKey: 'quicklink' });
-        } else {
-          Actions.openDialog(editor)();
-        }
-      });
-    };
-    var Commands = { register: register };
-
-    var setup = function (editor) {
-      editor.addShortcut('Meta+K', '', function () {
-        editor.execCommand('mceLink');
       });
     };
     var Keyboard = { setup: setup };
 
-    var setupButtons = function (editor) {
-      editor.ui.registry.addToggleButton('link', {
-        icon: 'link',
-        tooltip: 'Insert/edit link',
-        onAction: Actions.openDialog(editor),
-        onSetup: Actions.toggleActiveState(editor)
-      });
-      editor.ui.registry.addButton('unlink', {
-        icon: 'unlink',
-        tooltip: 'Remove link',
-        onAction: function () {
-          return Utils.unlink(editor);
-        },
-        onSetup: Actions.toggleEnabledState(editor)
-      });
-    };
-    var setupMenuItems = function (editor) {
-      editor.ui.registry.addMenuItem('openlink', {
-        text: 'Open link',
-        icon: 'new-tab',
-        onAction: Actions.gotoSelectedLink(editor),
-        onSetup: Actions.toggleEnabledState(editor)
-      });
-      editor.ui.registry.addMenuItem('link', {
-        icon: 'link',
-        text: 'Link...',
-        shortcut: 'Meta+K',
-        onAction: Actions.openDialog(editor)
-      });
-      editor.ui.registry.addMenuItem('unlink', {
-        icon: 'unlink',
-        text: 'Remove link',
-        onAction: function () {
-          return Utils.unlink(editor);
-        },
-        onSetup: Actions.toggleEnabledState(editor)
-      });
-    };
-    var setupContextMenu = function (editor) {
-      var noLink = 'link';
-      var inLink = 'link unlink openlink';
-      editor.ui.registry.addContextMenu('link', {
-        update: function (element) {
-          return Utils.hasLinks(editor.dom.getParents(element, 'a')) ? inLink : noLink;
-        }
-      });
-    };
-    var setupContextToolbars = function (editor) {
-      var collapseSelectionToEnd = function (editor) {
-        editor.selection.collapse(false);
-      };
-      editor.ui.registry.addContextForm('quicklink', {
-        launch: {
-          type: 'contextformtogglebutton',
-          icon: 'link',
-          tooltip: 'Link',
-          onSetup: Actions.toggleActiveState(editor)
-        },
-        label: 'Link',
-        predicate: function (node) {
-          return !!Utils.getAnchorElement(editor, node) && Settings.hasContextToolbar(editor.settings);
-        },
-        initValue: function () {
-          var elm = Utils.getAnchorElement(editor);
-          return !!elm ? Utils.getHref(elm) : '';
-        },
-        commands: [
-          {
-            type: 'contextformtogglebutton',
-            icon: 'link',
-            tooltip: 'Link',
-            primary: true,
-            onSetup: function (buttonApi) {
-              var node = editor.selection.getNode();
-              buttonApi.setActive(!!Utils.getAnchorElement(editor, node));
-              return Actions.toggleActiveState(editor)(buttonApi);
-            },
-            onAction: function (formApi) {
-              var anchor = Utils.getAnchorElement(editor);
-              var value = formApi.getValue();
-              if (!anchor) {
-                var attachState = {
-                  href: value,
-                  attach: function () {
-                  }
-                };
-                var onlyText = Utils.isOnlyTextSelected(editor.selection.getContent());
-                var text = onlyText ? Option.some(Utils.getAnchorText(editor.selection, anchor)).filter(function (t) {
-                  return t.length > 0;
-                }).or(Option.from(value)) : Option.none();
-                Utils.link(editor, attachState, {
-                  href: value,
-                  text: text,
-                  title: Option.none(),
-                  rel: Option.none(),
-                  target: Option.none(),
-                  class: Option.none()
-                });
-                formApi.hide();
-              } else {
-                editor.dom.setAttrib(anchor, 'href', value);
-                collapseSelectionToEnd(editor);
-                formApi.hide();
-              }
-            }
-          },
-          {
-            type: 'contextformtogglebutton',
-            icon: 'unlink',
-            tooltip: 'Remove link',
-            active: false,
-            onSetup: function () {
-              return function () {
-              };
-            },
-            onAction: function (formApi) {
-              Utils.unlink(editor);
-              formApi.hide();
-            }
-          }
-        ]
-      });
-    };
-    var Controls = {
-      setupButtons: setupButtons,
-      setupMenuItems: setupMenuItems,
-      setupContextMenu: setupContextMenu,
-      setupContextToolbars: setupContextToolbars
-    };
-
-    global.add('link', function (editor) {
-      Controls.setupButtons(editor);
-      Controls.setupMenuItems(editor);
-      Controls.setupContextMenu(editor);
-      Controls.setupContextToolbars(editor);
-      Actions.setupGotoLinks(editor);
-      Commands.register(editor);
-      Keyboard.setup(editor);
+    global.add('textpattern', function (editor) {
+      var patternsState = Cell(getPatternSet(editor.settings));
+      Keyboard.setup(editor, patternsState);
+      return Api.get(patternsState);
     });
     function Plugin () {
     }
@@ -74517,6 +74662,50 @@ var link = (function (domGlobals) {
     return Plugin;
 
 }(window));
+})();
+
+
+/***/ }),
+
+/***/ 268:
+/***/ (function(module, exports, __webpack_require__) {
+
+// Exports the "textcolor" plugin for usage with module loaders
+// Usage:
+//   CommonJS:
+//     require('tinymce/plugins/textcolor')
+//   ES2015:
+//     import 'tinymce/plugins/textcolor'
+__webpack_require__(269);
+
+/***/ }),
+
+/***/ 269:
+/***/ (function(module, exports) {
+
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.0.2 (2019-03-05)
+ */
+(function () {
+var textcolor = (function () {
+    'use strict';
+
+    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    global.add('textcolor', function () {
+      console.warn('Text color plugin is now built in to the core editor, please remove it from your editor configuration');
+    });
+    function Plugin () {
+    }
+
+    return Plugin;
+
+}());
 })();
 
 

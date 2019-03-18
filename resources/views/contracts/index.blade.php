@@ -39,9 +39,9 @@
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
-                                    <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$contract->id}}', event)">
+                                    <button type="button" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$contract->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
-                                    </a>
+                                    </button>
                                     <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$contract->id}}')">
                                         <i class="glyphicon glyphicon-remove text-danger"></i>
                                     </button>

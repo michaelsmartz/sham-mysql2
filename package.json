@@ -52,6 +52,7 @@
     "file-upload-with-preview": "^2.1.1",
     "flatpickr": "^4.5.1",
     "grindstone": "^3.2.1",
+    "highlight-within-textarea": "^2.0.5",
     "jquery": "^2.2.4",
     "jquery-asAccordion": "^0.2.2",
     "jquery-ui-slider": "^1.12.1",
