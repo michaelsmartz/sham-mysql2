@@ -11,18 +11,19 @@ import 'tinymce/plugins/lists';
 import 'tinymce/plugins/paste';
 import 'tinymce/plugins/fullscreen';
 import 'tinymce/plugins/textpattern';
-import 'tinymce/plugins/textcolor';
+import 'tinymce/plugins/noneditable';
 
 // Initialize the app
 tinymce.init({
   selector: '#tiny',
-  branding: false,
+	branding: false,
+	content_css : "../../css/tinymce-custom.css",
   menubar: 'file edit view format textcolor',
-	plugins: ['autosave', 'lists', 'paste', 'fullscreen', 'textpattern', 'textcolor'],
+	plugins: ['autosave', 'lists', 'paste', 'fullscreen', 'textpattern', 'noneditable'],
 	toolbar: [ 'undo', 'bold', 'italic', 'styleselect', '|', 'align', 'forecolor' ],
   mobile: {
     theme: 'mobile',
-    plugins: [ 'autosave', 'lists', 'paste' ],
+    plugins: [ 'autosave', 'lists', 'paste', 'noneditable' ],
     toolbar: [ 'undo', 'bold', 'italic', 'styleselect', 'textpattern' ]
   },
   style_formats: [
@@ -72,3 +73,7 @@ tinymce.init({
 		{start: '[[', end: ']]', styles: {color: 'blue'}, format:['bold'] }
   ]
 });
+
+window.insertPlaceHolder = function(val) {
+	tinymce.activeEditor.execCommand('mceInsertContent', false, " <span class='placeholder mceNonEditable'>" + val + "</span> ");
+};

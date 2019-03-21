@@ -90,6 +90,10 @@ mix.sass('resources/assets/sass/recruitment-request.scss', 'public/css', {
 mix.sass('resources/assets/sass/candidates.scss', 'public/css', {
     outputStyle: 'nested'
 });
+mix.sass('resources/assets/sass/tinymce-custom.scss', 'public/css', {
+  outputStyle: 'nested'
+});
+
 
 mix/*.webpackConfig({
     externals:{
@@ -132,6 +136,7 @@ mix.then(() => {
     minifier.minify('public/css/nav-wizard.css');
     minifier.minify('public/css/recruitment-request.css');
     minifier.minify('public/css/candidates.css');
+    minifier.minify('public/css/tinymce-custom.css');
 
     //minifier.minify('public/js/app.js');
     //minifier.minify('public/js/alt-app.js');

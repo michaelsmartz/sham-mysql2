@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 253);
+/******/ 	return __webpack_require__(__webpack_require__.s = 254);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -93,37 +93,37 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 253:
+/***/ 254:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(254);
+module.exports = __webpack_require__(255);
 
 
 /***/ }),
 
-/***/ 254:
+/***/ 255:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce__ = __webpack_require__(255);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce__ = __webpack_require__(256);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme__ = __webpack_require__(256);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme__ = __webpack_require__(257);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme__ = __webpack_require__(257);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme__ = __webpack_require__(258);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave__ = __webpack_require__(258);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave__ = __webpack_require__(259);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists__ = __webpack_require__(260);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists__ = __webpack_require__(261);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__ = __webpack_require__(262);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__ = __webpack_require__(263);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__ = __webpack_require__(264);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__ = __webpack_require__(265);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__ = __webpack_require__(266);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__ = __webpack_require__(267);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_textcolor__ = __webpack_require__(268);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_textcolor___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_textcolor__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_noneditable__ = __webpack_require__(269);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_noneditable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_noneditable__);
 // Import TinyMCE
 
 
@@ -143,12 +143,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce___default.a.init({
 	selector: '#tiny',
 	branding: false,
+	content_css: "../../css/tinymce-custom.css",
 	menubar: 'file edit view format textcolor',
-	plugins: ['autosave', 'lists', 'paste', 'fullscreen', 'textpattern', 'textcolor'],
+	plugins: ['autosave', 'lists', 'paste', 'fullscreen', 'textpattern', 'noneditable'],
 	toolbar: ['undo', 'bold', 'italic', 'styleselect', '|', 'align', 'forecolor'],
 	mobile: {
 		theme: 'mobile',
-		plugins: ['autosave', 'lists', 'paste'],
+		plugins: ['autosave', 'lists', 'paste', 'noneditable'],
 		toolbar: ['undo', 'bold', 'italic', 'styleselect', 'textpattern']
 	},
 	style_formats: [{
@@ -166,9 +167,13 @@ __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce___default.a.init({
 	textpattern_patterns: [{ start: '{{$', end: '}}', styles: { color: 'blue' }, format: ['bold'] }, { start: '[[', end: ']]', styles: { color: 'blue' }, format: ['bold'] }]
 });
 
+window.insertPlaceHolder = function (val) {
+	__WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce___default.a.activeEditor.execCommand('mceInsertContent', false, " <span class='placeholder mceNonEditable'>" + val + "</span> ");
+};
+
 /***/ }),
 
-/***/ 255:
+/***/ 256:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {/**
@@ -27220,7 +27225,7 @@ __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce___default.a.init({
 
 /***/ }),
 
-/***/ 256:
+/***/ 257:
 /***/ (function(module, exports) {
 
 /**
@@ -55251,7 +55256,7 @@ var silver = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 257:
+/***/ 258:
 /***/ (function(module, exports) {
 
 /**
@@ -68832,7 +68837,7 @@ var mobile = (function (exports, domGlobals) {
 
 /***/ }),
 
-/***/ 258:
+/***/ 259:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "autosave" plugin for usage with module loaders
@@ -68841,11 +68846,11 @@ var mobile = (function (exports, domGlobals) {
 //     require('tinymce/plugins/autosave')
 //   ES2015:
 //     import 'tinymce/plugins/autosave'
-__webpack_require__(259);
+__webpack_require__(260);
 
 /***/ }),
 
-/***/ 259:
+/***/ 260:
 /***/ (function(module, exports) {
 
 /**
@@ -69080,7 +69085,7 @@ var autosave = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 260:
+/***/ 261:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "lists" plugin for usage with module loaders
@@ -69089,11 +69094,11 @@ var autosave = (function (domGlobals) {
 //     require('tinymce/plugins/lists')
 //   ES2015:
 //     import 'tinymce/plugins/lists'
-__webpack_require__(261);
+__webpack_require__(262);
 
 /***/ }),
 
-/***/ 261:
+/***/ 262:
 /***/ (function(module, exports) {
 
 /**
@@ -71303,7 +71308,7 @@ var lists = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 262:
+/***/ 263:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "paste" plugin for usage with module loaders
@@ -71312,11 +71317,11 @@ var lists = (function (domGlobals) {
 //     require('tinymce/plugins/paste')
 //   ES2015:
 //     import 'tinymce/plugins/paste'
-__webpack_require__(263);
+__webpack_require__(264);
 
 /***/ }),
 
-/***/ 263:
+/***/ 264:
 /***/ (function(module, exports) {
 
 /**
@@ -73163,7 +73168,7 @@ var paste = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 264:
+/***/ 265:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "fullscreen" plugin for usage with module loaders
@@ -73172,11 +73177,11 @@ var paste = (function (domGlobals) {
 //     require('tinymce/plugins/fullscreen')
 //   ES2015:
 //     import 'tinymce/plugins/fullscreen'
-__webpack_require__(265);
+__webpack_require__(266);
 
 /***/ }),
 
-/***/ 265:
+/***/ 266:
 /***/ (function(module, exports) {
 
 /**
@@ -73374,7 +73379,7 @@ var fullscreen = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 266:
+/***/ 267:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "textpattern" plugin for usage with module loaders
@@ -73383,11 +73388,11 @@ var fullscreen = (function (domGlobals) {
 //     require('tinymce/plugins/textpattern')
 //   ES2015:
 //     import 'tinymce/plugins/textpattern'
-__webpack_require__(267);
+__webpack_require__(268);
 
 /***/ }),
 
-/***/ 267:
+/***/ 268:
 /***/ (function(module, exports) {
 
 /**
@@ -74667,20 +74672,20 @@ var textpattern = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 268:
+/***/ 269:
 /***/ (function(module, exports, __webpack_require__) {
 
-// Exports the "textcolor" plugin for usage with module loaders
+// Exports the "noneditable" plugin for usage with module loaders
 // Usage:
 //   CommonJS:
-//     require('tinymce/plugins/textcolor')
+//     require('tinymce/plugins/noneditable')
 //   ES2015:
-//     import 'tinymce/plugins/textcolor'
-__webpack_require__(269);
+//     import 'tinymce/plugins/noneditable'
+__webpack_require__(270);
 
 /***/ }),
 
-/***/ 269:
+/***/ 270:
 /***/ (function(module, exports) {
 
 /**
@@ -74692,13 +74697,115 @@ __webpack_require__(269);
  * Version: 5.0.2 (2019-03-05)
  */
 (function () {
-var textcolor = (function () {
+var noneditable = (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    global.add('textcolor', function () {
-      console.warn('Text color plugin is now built in to the core editor, please remove it from your editor configuration');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var getNonEditableClass = function (editor) {
+      return editor.getParam('noneditable_noneditable_class', 'mceNonEditable');
+    };
+    var getEditableClass = function (editor) {
+      return editor.getParam('noneditable_editable_class', 'mceEditable');
+    };
+    var getNonEditableRegExps = function (editor) {
+      var nonEditableRegExps = editor.getParam('noneditable_regexp', []);
+      if (nonEditableRegExps && nonEditableRegExps.constructor === RegExp) {
+        return [nonEditableRegExps];
+      } else {
+        return nonEditableRegExps;
+      }
+    };
+    var Settings = {
+      getNonEditableClass: getNonEditableClass,
+      getEditableClass: getEditableClass,
+      getNonEditableRegExps: getNonEditableRegExps
+    };
+
+    var hasClass = function (checkClassName) {
+      return function (node) {
+        return (' ' + node.attr('class') + ' ').indexOf(checkClassName) !== -1;
+      };
+    };
+    var replaceMatchWithSpan = function (editor, content, cls) {
+      return function (match) {
+        var args = arguments, index = args[args.length - 2];
+        var prevChar = index > 0 ? content.charAt(index - 1) : '';
+        if (prevChar === '"') {
+          return match;
+        }
+        if (prevChar === '>') {
+          var findStartTagIndex = content.lastIndexOf('<', index);
+          if (findStartTagIndex !== -1) {
+            var tagHtml = content.substring(findStartTagIndex, index);
+            if (tagHtml.indexOf('contenteditable="false"') !== -1) {
+              return match;
+            }
+          }
+        }
+        return '<span class="' + cls + '" data-mce-content="' + editor.dom.encode(args[0]) + '">' + editor.dom.encode(typeof args[1] === 'string' ? args[1] : args[0]) + '</span>';
+      };
+    };
+    var convertRegExpsToNonEditable = function (editor, nonEditableRegExps, e) {
+      var i = nonEditableRegExps.length, content = e.content;
+      if (e.format === 'raw') {
+        return;
+      }
+      while (i--) {
+        content = content.replace(nonEditableRegExps[i], replaceMatchWithSpan(editor, content, Settings.getNonEditableClass(editor)));
+      }
+      e.content = content;
+    };
+    var setup = function (editor) {
+      var editClass, nonEditClass;
+      var contentEditableAttrName = 'contenteditable';
+      editClass = ' ' + global$1.trim(Settings.getEditableClass(editor)) + ' ';
+      nonEditClass = ' ' + global$1.trim(Settings.getNonEditableClass(editor)) + ' ';
+      var hasEditClass = hasClass(editClass);
+      var hasNonEditClass = hasClass(nonEditClass);
+      var nonEditableRegExps = Settings.getNonEditableRegExps(editor);
+      editor.on('PreInit', function () {
+        if (nonEditableRegExps.length > 0) {
+          editor.on('BeforeSetContent', function (e) {
+            convertRegExpsToNonEditable(editor, nonEditableRegExps, e);
+          });
+        }
+        editor.parser.addAttributeFilter('class', function (nodes) {
+          var i = nodes.length, node;
+          while (i--) {
+            node = nodes[i];
+            if (hasEditClass(node)) {
+              node.attr(contentEditableAttrName, 'true');
+            } else if (hasNonEditClass(node)) {
+              node.attr(contentEditableAttrName, 'false');
+            }
+          }
+        });
+        editor.serializer.addAttributeFilter(contentEditableAttrName, function (nodes) {
+          var i = nodes.length, node;
+          while (i--) {
+            node = nodes[i];
+            if (!hasEditClass(node) && !hasNonEditClass(node)) {
+              continue;
+            }
+            if (nonEditableRegExps.length > 0 && node.attr('data-mce-content')) {
+              node.name = '#text';
+              node.type = 3;
+              node.raw = true;
+              node.value = node.attr('data-mce-content');
+            } else {
+              node.attr(contentEditableAttrName, null);
+            }
+          }
+        });
+      });
+    };
+    var FilterContent = { setup: setup };
+
+    global.add('noneditable', function (editor) {
+      FilterContent.setup(editor);
     });
     function Plugin () {
     }
