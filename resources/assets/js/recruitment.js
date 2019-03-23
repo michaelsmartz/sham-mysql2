@@ -119,8 +119,6 @@ var vm = new Vue({
                 $(".light-modal-footer .buttons").empty().html(data.footer);
                 $("#modalForm").attr('action',data.url);
 
-                cleanUrlHash();
-
                 $('.multipleSelect').each(function(){
                     $(this).multiselect({
                         submitAllLeft:false,

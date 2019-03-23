@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Candidate;
+use App\CandidateInterviewAttachments;
 use App\Department;
 use App\EmployeeStatus;
 use App\Enums\InterviewResultsType;
@@ -351,6 +352,7 @@ class RecruitmentRequestsController extends CustomController
                     {
                         return  $query->where('recruitment_id', $id);
                     },
+                    'interviews.media',
                     'interviews'=> function ($query) use ($id)
                     {
                         return  $query->where('recruitment_id', $id);
@@ -361,7 +363,6 @@ class RecruitmentRequestsController extends CustomController
                     }
                 ])
                 ->get();
-
         } catch (Exception $exception) {
             dd($exception);
         } finally {
@@ -464,7 +465,7 @@ class RecruitmentRequestsController extends CustomController
                 ->where('id', $pivot_table_id)
                 ->update($input);
 
-            $this->attach($request, $id, 'Recruitment');
+            $this->attach($request, $pivot_table_id, 'CandidateInterviewAttachments');
 
             \Session::put('success', 'Interview updated Successfully!!');
 
@@ -551,6 +552,13 @@ class RecruitmentRequestsController extends CustomController
             $data->skills()->sync($skills);
             $data->interviewTypes()->sync($interview_types);
         }
+    }
+
+    public function getInterviewAttachments(Request $request, $recruitment_id, $interview_id){
+        $relatedMedias = CandidateInterviewAttachments::find($interview_id);
+        $medias = $relatedMedias->media()->get();
+
+        return $medias;
     }
 
     /**

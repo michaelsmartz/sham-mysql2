@@ -44,9 +44,10 @@
             <div class="col-md-12" v-if="current.interviews.length" v-show="current">
 
                 <div class="table-responsive">
-                    <table id="new-table" data-toggle="table" style="width:100%" data-detail-view="true">
+                    <table id="new-table" data-toggle="table" style="width:100%" data-show-toggle="true" data-detail-view="true">
                         <thead>
                         <tr>
+                            <th></th>
                             <th>Type</th>
                             <th>ScheduledOn</th>
                             <th>Status</th>
@@ -56,26 +57,62 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="interview in current.interviews">
-                                <td>@{{interview.description}}</td>
-                                <td>@{{interview.pivot.schedule_at}}</td>
-                                {{--<td>!{$interviewStatus = @{{interview.pivot.status}} }!</td>--}}
-                                {{--<td>{!! App\Enums\InterviewStatusType::getDescription($interviewStatus= @{{ interview.pivot.status }}) !!}</td>--}}
-                                {{--<td v-bind:interview="{{ Auth::user()->id }}">@{{interview.pivot.status}}</td>--}}
-                                <td>@{{interview.pivot.status}}</td>
-                                <td>@{{interview.pivot.reasons}}</td>
-                                <td>@{{interview.pivot.results}}</td>
+                            <template v-for="interview in current.interviews">
+                                {{--TODO error happening because of accordion parent id="accordion"--}}
+                                <div class="panel-group" id="accordion">
+                                <tr>
+                                    <td>
+                                        <a class="detail-icon" data-parent="accordion" data-toggle="collapse" :data-target="'#row'+interview.pivot.id">
+                                            <span class="icon_toggle glyphicon glyphicon-plus"></span>
+                                        </a>
+                                    </td>
+                                    <td>@{{interview.description}}</td>
+                                    <td>@{{interview.pivot.schedule_at}}</td>
+                                    {{--<td>!{$interviewStatus = @{{interview.pivot.status}} }!</td>--}}
+                                    {{--<td>{!! App\Enums\InterviewStatusType::getDescription($interviewStatus= @{{ interview.pivot.status }}) !!}</td>--}}
+                                    {{--<td v-bind:interview="{{ Auth::user()->id }}">@{{interview.pivot.status}}</td>--}}
+                                    <td>@{{interview.pivot.status}}</td>
+                                    <td>@{{interview.pivot.reasons}}</td>
+                                    <td>@{{interview.pivot.results}}</td>
 
-                                <td data-html2canvas-ignore="true">
-                                    <div class="btn-group">
+                                    <td data-html2canvas-ignore="true">
                                         <div class="btn-group">
-                                            <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" @click="editInterviewForm(interview.id, current.id)">
-                                                <i class="glyphicon glyphicon-edit"></i>
-                                            </a>
+                                            <div class="btn-group">
+                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" @click="editInterviewForm(interview.id, current.id)">
+                                                    <i class="glyphicon glyphicon-edit"></i>
+                                                </a>
+                                            </div>
                                         </div>
+                                    </td>
+                                    <div class="collapse collapsed" :id="'row'+interview.pivot.id">
+                                        <table class="table table-striped tablesorter" id="new-table" data-toggle="table">
+                                            <thead>
+                                            <tr class="filters">
+                                                <th>File name</th>
+                                                <th style="text-align:right;">Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="media in interview.media" :data-id='media.id'>
+                                                <td>@{{media.filename}}.@{{media.extension}}</td>
+                                                <td style="text-align:right;">
+                                                    <div>
+                                                        <a href="" class="b-n b-n-r bg-transparent item-download" data-wenk="Download">
+                                                            <i class="fa fa-download text-primary"></i>
+                                                        </a>
+                                                        <a href="#!" class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove"
+                                                           onclick="">
+                                                            <i class="glyphicon glyphicon-remove text-danger"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
-                                </td>
-                            </tr>
+                                </tr>
+                                </div>
+                            </template>
                         </tbody>
                     </table>
                 </div>
@@ -94,7 +131,19 @@
             </div>
         </div>
     </div>
-    <div id="date-picker"> </div>
+    @push('js-stack')
+        <style>
+            [data-toggle="collapse"] .icon_toggle:before {
+                content:"\2212";
+            }
 
-    @component('partials.index', [])
-    @endcomponent
+            [data-toggle="collapse"].collapsed .icon_toggle:before {
+                content:"\2b";
+            }
+        </style>
+        <script>
+            $(function() {
+                $('.collapse').collapse('hide');
+            });
+        </script>
+    @endpush

@@ -3,10 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Plank\Mediable\Mediable;
 
 class Interview extends Model
 {
-
+    use Mediable;
     use SoftDeletes;
 
 

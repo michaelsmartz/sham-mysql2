@@ -113,7 +113,6 @@
 @endsection
 
 @section('post-body')
-    <script src="{{url('/')}}/js/tables.min.js"></script>
     <link href="{{URL::to('/')}}/css/nav-wizard.min.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/recruitment.min.js"></script>
 
@@ -198,9 +197,14 @@
             });
         };
         $(function(){
+            $('.detail-icon').click(function () {
+                $(this).find('.icon_toggle').toggleClass('glyphicon-minus glyphicon-plus');
+            });
+            $('#interviewing').click(function(){
+                $('.collapse').collapse('hide');
+            });
             initializeFileUpload();
         });
-
     </script>
 
     <style>
