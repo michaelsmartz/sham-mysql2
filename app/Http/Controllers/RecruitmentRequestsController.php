@@ -554,13 +554,6 @@ class RecruitmentRequestsController extends CustomController
         }
     }
 
-    public function getInterviewAttachments(Request $request, $recruitment_id, $interview_id){
-        $relatedMedias = CandidateInterviewAttachments::find($interview_id);
-        $medias = $relatedMedias->media()->get();
-
-        return $medias;
-    }
-
     /**
      * Validate the given request with the defined rules.
      *

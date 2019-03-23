@@ -131,6 +131,9 @@
             </div>
         </div>
     </div>
+
+    @component('partials.index', [])
+    @endcomponent
     @push('js-stack')
         <style>
             [data-toggle="collapse"] .icon_toggle:before {
