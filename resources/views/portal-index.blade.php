@@ -269,6 +269,7 @@
                 font-size: 12px;
                 height: 28px;
             }
+
         </style>
 
         @yield('scripts')
