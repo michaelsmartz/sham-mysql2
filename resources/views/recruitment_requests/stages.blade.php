@@ -105,6 +105,7 @@
 
             </div>
         </div>
+
         <div id="date-picker"></div>
         <modal v-if="showModal" @close="showModal=false">
 
@@ -205,6 +206,10 @@
             });
             initializeFileUpload();
         });
+
+        $('.datepicker').pickadate();
+        //alert();
+
     </script>
 
     <style>

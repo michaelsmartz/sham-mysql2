@@ -10023,7 +10023,7 @@ $(window).load(function () {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**
  * @author zhixin wen <wenzhixin2010@gmail.com>
- * version: 1.12.1
+ * version: 1.12.2
  * https://github.com/wenzhixin/bootstrap-table/
  */
 
@@ -11189,7 +11189,7 @@ $(window).load(function () {
                     sprintf(' btn-%s', this.options.iconSize) +
                     '" type="button" name="toggle" aria-label="toggle" title="%s">',
                     this.options.formatToggle()),
-                sprintf('<i class="%s %s"></i>', this.options.iconsPrefix, this.options.icons.toggle),
+                sprintf('<i class="%s %s"></i>', this.options.iconsPrefix, this.options.icons.toggleOff),
                 '</button>');
         }
 

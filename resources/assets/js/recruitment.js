@@ -167,7 +167,9 @@ var vm = new Vue({
 		},
 		downloadOffer: function(){
 			var startingOn = $('#starting_on').val(),
-				contractId = $('#contract_id').val();
+				contractId = $('#contract_id').val(),
+				offerId = $('#offer_id option:selected').val();
+				console.log(offerId);
 
 			fetch('./candidate/' + this.current.id + '/download-offer', {
 				headers: {
@@ -177,7 +179,7 @@ var vm = new Vue({
 					"X-CSRF-TOKEN": token
 				},
 				method: 'post',
-				body: JSON.stringify({ starting_on: startingOn, contract_id: contractId }),
+				body: JSON.stringify({ starting_on: startingOn, contract_id: contractId, offer_id: offerId}),
 				credentials: "same-origin"
 			}).then(function(resp) {
 				return resp.blob();
@@ -193,11 +195,11 @@ var vm = new Vue({
 		on('focusin', 'input.datepicker', function(event) {
 
 			// Use the picker object directly.
-			var picker = $(this).pickadate('picker');
+			//var picker = $(this).pickadate('picker');
 			
-			if(picker === undefined) {
-				picker = $(this).pickadate().pickadate('picker');
-			}
+			//if(picker === undefined) {
+			//	picker = $(this).pickadate().pickadate('picker');
+			//}
 		});
 		this.fetchOfferLetters();
 	},

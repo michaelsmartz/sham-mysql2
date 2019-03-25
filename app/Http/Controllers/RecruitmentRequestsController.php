@@ -503,21 +503,25 @@ class RecruitmentRequestsController extends CustomController
 
         $startingOn = $request->get('starting_on');
         $contractId = $request->get('contract_id');
+        $offerId = $request->get('offer_id');
 
-        $recruitment = Recruitment::find($id);
-        $recruitment->load(['department']);
-        $candidate = Candidate::find($cdt);
+        $recruitment = Recruitment::with('department')->find($id);
+        $candidate = Candidate::with('title')->find($cdt);
+        $offer = Offer::find($offerId);
+
+        $content = $this->getOfferContentInfo($recruitment, $candidate, $offer);
 
         try {
 
-            $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate'))
+            $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate','content'))
                    ->setPaper('a4', 'portrait');
 
         } catch(Exception $exception) {
 
         }
 
-        return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
+        //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
+        return $pdf->download('offer letter.pdf');
 
     }
 
@@ -581,5 +585,42 @@ class RecruitmentRequestsController extends CustomController
         ];
 
         $this->validate($request, $validateFields);
+    }
+
+    protected function getOfferContentInfo($recruitmentobj,$candidateobj, $offerobj){
+
+        $content = $offerobj->content;
+        //dump($candidateobj);
+        //title, name, phoneno, addressline1, addressline2, addressline3, addressline4, city, provinde, zipcode
+        //Job Title, department
+
+        $candidate_title = $candidateobj->title->description;
+        $candidate_name = $candidateobj->first_name . ' ' .$candidateobj->surname;
+        $candidate_phone_no = $candidateobj->phone;
+        $candidate_addr_1 = $candidateobj->addr_line_1;
+        $candidate_addr_2 = $candidateobj->addr_line_2;
+        $candidate_addr_3 = $candidateobj->addr_line_3;
+        $candidate_addr_4 = $candidateobj->addr_line_4;
+        $candidate_city = $candidateobj->city;
+        $candidate_province = $candidateobj->province;
+        $candidate_zip = $candidateobj->zip;
+
+        $recruitment_jobtitle = $recruitmentobj->job_title;
+        $recruitment_department = $recruitmentobj->department->description;
+
+        $content = str_replace('[[recruitment Job Title]]', $recruitment_jobtitle, $content);
+        $content = str_replace('[[recruitment Department]]', $recruitment_department, $content);
+        $content = str_replace('[[candidate Title]]', $candidate_title, $content);
+        $content = str_replace('[[candidate Name]]', $candidate_name, $content);
+        $content = str_replace('[[candidate Phone Number]]', $candidate_phone_no, $content);
+        $content = str_replace('[[candidate Address Line 1]]', $candidate_addr_1, $content);
+        $content = str_replace('[[candidate Address Line 2]]', $candidate_addr_2, $content);
+        $content = str_replace('[[candidate Address Line 3]]', $candidate_addr_3, $content);
+        $content = str_replace('[[candidate Address Line 4]]', $candidate_addr_4, $content);
+        $content = str_replace('[[candidate City]]', $candidate_city, $content);
+        $content = str_replace('[[candidate Province]]', $candidate_province, $content);
+        $content = str_replace('[[candidate Zip code]]', $candidate_zip, $content);
+
+        return $content;
     }
 }

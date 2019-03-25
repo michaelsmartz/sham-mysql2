@@ -10,6 +10,7 @@
     </style>
   </head>
   <body>
+  <!--
     <p>
         {{date('d/m/Y')}}
         <br><br>
@@ -39,7 +40,9 @@
     </p>
     <p>
         Signed and accepted: ………………………………………………………………………………<br>(candidate name) <br><br>Date: ……../……../…….
-                                  	
+
     </p>
+    -->
+  {!! $content !!}
   </body>
 </html>
