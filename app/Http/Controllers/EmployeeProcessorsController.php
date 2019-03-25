@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Employee;
 use App\Http\Controllers\CustomController;
 use App\Models\EmployeeProcessor;
+use App\SysConfigValue;
+use DB;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Exception;
@@ -53,6 +55,8 @@ class EmployeeProcessorsController extends CustomController
 
     private function updateCreateEmployee($array_csv){
         //dd($array_csv);
+        ini_set('max_execution_time', 300);
+        $insert = [];
         foreach ($array_csv as $key => $row){
             //dump($row);
 
@@ -62,19 +66,59 @@ class EmployeeProcessorsController extends CustomController
             }
             else{ //data to be updated or inserted
 
-                $existing_employees = Employee::all();
+                $existing_employees = Employee::all()->toArray();
 
-                $existing_employees->each(function($existing_employee) use ($row)
-                {
-                    if($existing_employee->employee_no == $row[1]){
-                        dump('exist in hams db');
-                    }else{
-                        dump('does not exist hams db ');
+                if(array_search($row[1], array_column($existing_employees, 'employee_no')) !== False) {
+                    //TODO update
+                } else {
+                    $sfeCode = SysConfigValue::where('key', '=', 'LATEST_SFE_CODE')->first();
+
+                    $sfeCodeUnique = null;
+                    if ($sfeCode !== null) {
+                        $sfeCodeUnique = $this->increment($sfeCode->value);
+                        $sfeCode->value = $sfeCodeUnique;
                     }
-                });
+                    $sfeCode->save();
+
+                    $insert[] = [
+                        'id_number' => $row[6],
+                        'employee_no' => $row[1],
+                        'employee_code' => $sfeCodeUnique,
+                        "birth_date" => $row[7],
+                        "gender_id" => null,
+                        "title_id" => null,
+                        "marital_status_id" => null,
+                        "first_name" => $row[3],
+                        "known_as" => null,
+                        "surname" => $row[5],
+                        "passport_country_id" => null,
+                        "passport_no" => $row[10],
+                        "immigration_status_id" => null,
+                        "nationality" => null,
+                        "ethnic_group_id" => null,
+                        "spouse_full_name" => null,
+                        "division_id" => null,
+                        "branch_id" => null,
+                        "department_id" => null,
+                        "team_id" => null,
+                        "physical_file_no" => null,
+                        "job_title_id" => null,
+                        "line_manager_id" => null,
+                        "date_joined" => null,
+                        "employee_status_id" => null,
+                        "tax_status_id" => null,
+                        "tax_number" => null
+                    ];
+                }
             }
         }
-        exit();
+
+        try{
+            DB::table('employees')->insert($insert);
+        } catch (Exception $exception) {
+            dd($exception->getMessage());
+            \Session::put('error', 'could not update Interview!');
+        }
     }
 
     /**
@@ -102,4 +146,13 @@ class EmployeeProcessorsController extends CustomController
 
         return $rows;
     }
+
+    private function increment($string) {
+        return preg_replace_callback('/^([^0-9]*)([0-9]+)([^0-9]*)$/', array($this, "subfunc"), $string);
+    }
+
+    private function subfunc($m) {
+        return $m[1].str_pad($m[2]+1, strlen($m[2]), '0', STR_PAD_LEFT).$m[3];
+    }
+
 }
