@@ -410,5 +410,9 @@
         "model-name": "Offer",
         "resource-file": "offers.json",
         "table-name": "offers"
+    },
+    {
+        "model-name": "EmployeeProcessor",
+        "resource-file": "employee_processors.json"
     }
 ]

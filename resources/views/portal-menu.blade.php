@@ -211,6 +211,17 @@
     </li>
 @endif
 
+    <li class="has-sub">
+        <a href="javascript:;">
+            <b class="caret pull-right"></b>
+            <strong><i class="fa fa-microchip fa-fw"></i></strong>
+            <span>Employee Processor</span>
+        </a>
+        <ul class="sub-menu">
+           <li class="{{ (Request::is('employee_processor/*') || Request::is('employee_processor') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/employee_processor">Import</a></li>
+        </ul>
+    </li>
+
 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS]))
     <li class="has-sub">
         <a href="javascript:;">

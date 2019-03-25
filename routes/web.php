@@ -224,5 +224,10 @@ Auth::routes();
         Route::get('candidates/{candidate?}/candidate-qualifications', 'CandidatesController@qualifications')->name('get-candidate-qualifications');
         Route::get('candidates/{candidate?}/previous_employments', 'CandidatesController@previousEmployments')->name('get-candidate-employments');
         #endregion
+
+        #region Employee Process
+        Route::get('employee_processor', 'EmployeeProcessorsController@showForm')->name('employeeProcessors.show-form');
+        Route::post('employee_processor', 'EmployeeProcessorsController@store')->name('employeeProcessors.store');
+        #endregion
     });
 #endregion
