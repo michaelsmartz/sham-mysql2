@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Employee;
 use App\Http\Controllers\CustomController;
 use App\Models\EmployeeProcessor;
 use Illuminate\Contracts\Session\Session;
@@ -53,15 +54,24 @@ class EmployeeProcessorsController extends CustomController
     private function updateCreateEmployee($array_csv){
         //dd($array_csv);
         foreach ($array_csv as $key => $row){
-
-            dump($row);
+            //dump($row);
 
             //header array
             if($key == 1){
-                $key = array_search ('Employee', $row);
+
             }
             else{ //data to be updated or inserted
 
+                $existing_employees = Employee::all();
+
+                $existing_employees->each(function($existing_employee) use ($row)
+                {
+                    if($existing_employee->employee_no == $row[1]){
+                        dump('exist in hams db');
+                    }else{
+                        dump('does not exist hams db ');
+                    }
+                });
             }
         }
         exit();
