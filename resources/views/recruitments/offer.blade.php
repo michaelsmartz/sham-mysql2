@@ -56,7 +56,7 @@
                             </div>
                             <div class="col-md-7">
                                 <label for="starting_on">Starting On</label>
-                                <input id="starting_on" class='form-control' type="text" name="starting_on" >
+                                <input id="starting_on" class='form-control datepicker' type="text" name="starting_on" >
                             </div>
                             <div class="col-md-7" style="padding-top: 10px;">
                                 <button type="button" @click="downloadOffer" class="btn btn-primary pull-right">Download</button>                            
