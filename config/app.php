@@ -188,7 +188,7 @@ return [
         //Arrilot\Widgets\ServiceProvider::class,
         //Clockwork\Support\Laravel\ClockworkServiceProvider::class,
         //Plank\Mediable\MediableServiceProvider::class
-
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -243,6 +243,8 @@ return [
         //'AsyncWidget' => Arrilot\Widgets\AsyncFacade::class,
         //'SearchTools' => \bnjns\SearchTools\Facades\SearchTools::class,
         //'MediaUploader' => Plank\Mediable\MediaUploaderFacade::class
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+
     ],
 
 ];

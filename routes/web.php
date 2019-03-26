@@ -228,6 +228,9 @@ Auth::routes();
         #region Employee Process
         Route::get('employee_processor', 'EmployeeProcessorsController@showForm')->name('employeeProcessors.show-form');
         Route::post('employee_processor', 'EmployeeProcessorsController@store')->name('employeeProcessors.store');
+
+        Route::get('data_export', 'EmployeeExportProcessorsController@showForm')->name('employeeExportProcessors.show-form');
+        Route::post('data_export', 'EmployeeExportProcessorsController@download')->name('employeeExportProcessors.download');
         #endregion
     });
 #endregion

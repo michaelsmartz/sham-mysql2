@@ -215,10 +215,11 @@
         <a href="javascript:;">
             <b class="caret pull-right"></b>
             <strong><i class="fa fa-microchip fa-fw"></i></strong>
-            <span>Employee Processor</span>
+            <span>Data Migration</span>
         </a>
         <ul class="sub-menu">
            <li class="{{ (Request::is('employee_processor/*') || Request::is('employee_processor') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/employee_processor">Import</a></li>
+            <li class="{{ (Request::is('data_export/*') || Request::is('data_export') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/data_export">Export</a></li>
         </ul>
     </li>
 
