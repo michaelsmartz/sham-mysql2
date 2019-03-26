@@ -10,13 +10,13 @@
                     <div class="col-sm-12">
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <div class="fileUploader" id="attachment"></div>
+                                <!--<div class="fileUploader" id="attachment"></div>-->
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="box-footer">
-                    <input class="btn btn-primary pull-right" type="submit" value="Add">
+                    <input class="btn btn-primary pull-right" type="submit" value="Download Changes">
                 </div>
             </form>
         </div>
