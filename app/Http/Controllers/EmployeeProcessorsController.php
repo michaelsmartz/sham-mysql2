@@ -54,7 +54,6 @@ class EmployeeProcessorsController extends CustomController
 
     private function updateCreateEmployee($array_csv){
         //dd($array_csv);
-        print_r($_SESSION);
         ini_set('max_execution_time', 1000);
         $insert = [];
         foreach ($array_csv as $key => $row){
