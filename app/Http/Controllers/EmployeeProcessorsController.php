@@ -43,33 +43,46 @@ class EmployeeProcessorsController extends CustomController
                 $this->updateCreateEmployee($data);
             }
 
-            return redirect()->route('employee_processors.upload')
-                             ->with('success_message', 'Employee details was successfully uploaded');
+            \Session::put('success', 'import was successful!');
 
         } catch (Exception $exception) {
-
-            return back()->withInput()
-                         ->withErrors(['unexpected_error' => 'Unexpected error occurred while trying to process your request.']);
+            \Session::put('error', 'import was not successful!');
         }
+
+        return redirect()->route('employeeProcessors.show-form');
     }
 
     private function updateCreateEmployee($array_csv){
         //dd($array_csv);
-        ini_set('max_execution_time', 300);
+        print_r($_SESSION);
+        ini_set('max_execution_time', 1000);
         $insert = [];
         foreach ($array_csv as $key => $row){
             //dump($row);
 
             //header array
-            if($key == 1){
-
-            }
-            else{ //data to be updated or inserted
+            if($key != 1){ //data to be updated or inserted
 
                 $existing_employees = Employee::all()->toArray();
 
                 if(array_search($row[1], array_column($existing_employees, 'employee_no')) !== False) {
-                    //TODO update
+                    //unset employee_no
+                    $employee_id = $row[1];
+                    unset($row[1]);
+
+                    $row = $this->removeNullEmptyValue($row);
+
+                    $row = $this->mapper($row);
+
+                    if(!empty($row) && !is_null($employee_id)){
+                        try{
+                            $employee = Employee::where(['employee_no'=>$employee_id]);
+                            $employee->update($row);
+                        } catch (Exception $exception) {
+                            //dd($exception->getMessage());
+                            \Session::put('error', 'could not update Employee!');
+                        }
+                    }
                 } else {
                     $sfeCode = SysConfigValue::where('key', '=', 'LATEST_SFE_CODE')->first();
 
@@ -89,7 +102,7 @@ class EmployeeProcessorsController extends CustomController
                         "title_id" => null,
                         "marital_status_id" => null,
                         "first_name" => $row[3],
-                        "known_as" => null,
+                        "known_as" => $row[4],
                         "surname" => $row[5],
                         "passport_country_id" => null,
                         "passport_no" => $row[10],
@@ -116,8 +129,8 @@ class EmployeeProcessorsController extends CustomController
         try{
             DB::table('employees')->insert($insert);
         } catch (Exception $exception) {
-            dd($exception->getMessage());
-            \Session::put('error', 'could not update Interview!');
+            //dd($exception->getMessage());
+            \Session::put('error', 'could not insert Employee!');
         }
     }
 
@@ -155,4 +168,63 @@ class EmployeeProcessorsController extends CustomController
         return $m[1].str_pad($m[2]+1, strlen($m[2]), '0', STR_PAD_LEFT).$m[3];
     }
 
+    /**
+     * if key exist in mapper replace $arr with value in mapper
+     * @param $arr
+     * @return array
+     */
+    private function mapper($arr){
+        $array_new = [];
+
+        //TODO link with lookup for one-to-many relations and missing entry
+        //Note mapper should be same as header in csv file, value should correspond to Hams database table fields
+        $mapper = [
+            1=>"employee_no",
+            2=>"title_id",
+            3=>"first_name",
+            4=>"known_as",
+            5=>"surname",
+            6=>"id_number",
+            7=>"birth_date",
+            8=>"date_joined",
+            10=>"passport_no",
+            11=>"passport_country_id",
+            13 =>"gender_id",
+            14=>"marital_status_id",
+            15=>"division_id",
+            16=>"branch_id",
+            18=>"team_id",
+            19=>"physical_file_no",
+            20=>"tax_number",
+            21=>"tax_status_id",
+            23=>"job_title_id",
+            24=>"department_id"
+        ];
+
+        foreach($arr as $key=>$value)
+        {
+            if(array_key_exists($key, $mapper))
+            {
+                $array_new[$mapper[$key]] = $arr[$key];
+            }
+        }
+
+        return $array_new;
+    }
+
+    /**
+     * remove null or empty value in an array
+     * @param $data
+     * @return mixed
+     */
+    private function removeNullEmptyValue($data){
+        //unset empty or null values from array $data
+        foreach($data as $key=>$value)
+        {
+            if(is_null($value) || $value == '')
+                unset($data[$key]);
+        }
+
+        return $data;
+    }
 }
