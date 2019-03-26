@@ -4,9 +4,10 @@ import asyncJS from 'async-js';
 
 window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
 require('touch-dnd/touch-dnd.js');
-require('picker');
-require('pickadate/lib/picker.date.js');
+import pickadate from 'pickadate-webpack/lib/picker';
+require('pickadate-webpack/lib/picker.date.js');
 window.on = global.on = on;
+window.pickadate = pickadate;
 
 $.ajaxSetup({
     headers: {

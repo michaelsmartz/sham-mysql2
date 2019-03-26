@@ -366,6 +366,7 @@ class RecruitmentRequestsController extends CustomController
         } catch (Exception $exception) {
             dd($exception);
         } finally {
+
             return Response()->json($result);
         }
     }

@@ -15,4 +15,7 @@ class MiscController extends Controller
     public function elearningHelper(){
         return view('elearning-helper');
     }
+    public function vueTest(){
+        return view('vue-test');
+    }
 }

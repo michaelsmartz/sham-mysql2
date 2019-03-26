@@ -3,8 +3,8 @@ import {on} from 'delegated-events';
 require('touch-dnd/touch-dnd.js');
 require('jquery-asAccordion');
 
-require('picker');
-require('pickadate/lib/picker.date.js');
+require('pickadate-webpack/lib/picker');
+require('pickadate-webpack/lib/picker.date.js');
 require('parsleyjs');
 require('sumoselect');
 

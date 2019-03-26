@@ -143,19 +143,41 @@ var vm = new Vue({
 		},
 		fetchCandidates: function() {
 			if (!route().current("candidates.create")) {
-				fetch('./candidates')
+				fetch('./candidates', {
+					credentials: "same-origin",
+					headers: {
+						"Content-Type": "application/json",
+						"Accept": "application/json, */*",
+						"X-Requested-With": "XMLHttpRequest",
+						"X-CSRF-TOKEN": token
+					}
+				  })
 					.then(res => res.json())
 					.then(res => {
 						this.people = res;
-					})
+					}).catch(err => {
+						// Do something for an error here
+						console.log("Error Reading data " + err);
+					});
 			}
 		},
 		fetchOfferLetters: function() {
-			fetch('./offer-letters')
+			fetch('./offer-letters', {
+				credentials: "same-origin",
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				}
+			  })
 			.then(res => res.json())
 			.then(res => {
 				this.offerLetters = res;
-			})
+			}).catch(err => {
+				// Do something for an error here
+				console.log("Error Reading data " + err);
+			  });
 		},
 		getBackground: function(src){
 			if (src !== null) {

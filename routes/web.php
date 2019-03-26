@@ -13,6 +13,7 @@
 
 Route::get('/', 'MiscController@welcome');
 Route::get('test', 'MiscController@test');
+Route::get('vue-test', 'MiscController@vueTest');
 
 Auth::routes();
 
