@@ -6897,6 +6897,9 @@ ADD COLUMN `marital_status_code` VARCHAR(45) NULL AFTER `id`;
 ALTER TABLE `tax_statuses`
 ADD COLUMN `tax_status_code` VARCHAR(45) NULL AFTER `id`;
 
+ALTER TABLE `countries`
+ADD COLUMN `country_code` VARCHAR(45) NULL AFTER `id`;
+
 ALTER TABLE `job_titles`
 ADD COLUMN `job_title_code` VARCHAR(45) NULL AFTER `id`;
 

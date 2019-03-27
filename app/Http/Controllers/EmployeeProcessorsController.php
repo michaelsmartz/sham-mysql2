@@ -6,6 +6,7 @@ use App\Employee;
 use App\Http\Controllers\CustomController;
 use App\Models\EmployeeProcessor;
 use App\SysConfigValue;
+use App\Title;
 use DB;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
@@ -57,7 +58,7 @@ class EmployeeProcessorsController extends CustomController
         ini_set('max_execution_time', 1000);
         $insert = [];
         foreach ($array_csv as $key => $row){
-            dd($row);
+            //dd($row);
 
             //header array
             if($key != 1){ //data to be updated or inserted
@@ -216,31 +217,33 @@ class EmployeeProcessorsController extends CustomController
 
     /**
      * lookup for definition of ids in hams e.g title_id, gender_id, marital_status_id
-     * @param $arr
+     * @param $csv_row
      * @return mixed
      */
-    private function lookupEmployeeForeignKey($arr){
-        dd($arr);
-        foreach($arr as $column_position => $vip_header_name)
+    private function lookupEmployeeForeignKey($csv_row){
+        //dump($arr);
+        foreach($csv_row as $column_position => $vip_header_name)
         {
             switch($column_position)
             {
                 //title
                 case 2:
-                    dump($column_position);
-                    dd($vip_header_name);
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Title', 'title_code');
                     break;
                 //passport country
                 case 11:
                     break;
                 //ethnic group
                 case 12:
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'EthnicGroup', 'ethnic_group_code');
                     break;
                 //gender
                 case 13:
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Gender', 'gender_code');
                     break;
                 //marital status
                 case 14:
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'MaritalStatus', 'marital_status_code');
                     break;
 //                //Home number
 //                case 15:
@@ -253,19 +256,40 @@ class EmployeeProcessorsController extends CustomController
 //                    break;
                 //tax status
                 case 21:
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'TaxStatus', 'tax_status_code');
                     break;
                 //job title
                 case 23:
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'JobTitle', 'job_title_code');
                     break;
                 //department
                 case 24:
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Department', 'department_code');
                     break;
                 default:
                     break;
             }
         }
+        dd($csv_row);
+        return $csv_row;
+    }
 
-        return $arr;
+    /**
+     * Function to replace column name from vip to match id in tables like titles, genders,...etc
+     * @param $csv_row
+     * @param $header_name
+     * @param $model
+     * @param $table_field_code
+     * @return mixed
+     */
+    private function replaceColumnNameWithId($csv_row, $header_name, $model, $table_field_code){
+        $modelClass = 'App\\'.$model;
+        $data = $modelClass::where([$table_field_code => $header_name])->get(['id'])->first();
+
+        $arr_key = array_search($header_name, $csv_row); // returns the first key whose value is e.g. "MR"
+        $csv_row[$arr_key] = $data->id; // replace e.g 'MR' with '14' id in title table
+
+        return $csv_row;
     }
 
     /**
