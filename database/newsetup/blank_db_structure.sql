@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `addresses` (
   KEY `FK_Addresses_AddressTypes` (`address_type_id`),
   KEY `FK_Addresses_Countries` (`country_id`),
   KEY `FK_Addresses_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16038 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `address_types` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_ADDRESS_TYPES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `advancemethods` (
   `Description` varchar(100) NOT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `announcement_department` (
   PRIMARY KEY (`id`),
   KEY `FK_AnnouncementsDepartments_Announcements` (`announcement_id`),
   KEY `FK_AnnouncementsDepartments_Departments` (`department_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `announcement_statuses` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -283,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `assessments` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=421 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -300,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `assessments_assessment_category` (
   PRIMARY KEY (`id`),
   KEY `FK_AssessmentsAssessmentCategories_AssessmentCategories` (`assessment_category_id`),
   KEY `FK_AssessmentsAssessmentCategories_Assessments` (`assessment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3033 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -321,7 +321,7 @@ CREATE TABLE IF NOT EXISTS `assessment_categories` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=272 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -341,7 +341,7 @@ CREATE TABLE IF NOT EXISTS `assessment_category_category_question` (
   PRIMARY KEY (`id`),
   KEY `FK_AssessmentCategoriesCategoryQuestions_AssessmentCategories` (`assessment_category_id`),
   KEY `FK_AssessmentCategoriesCategoryQuestions_CategoryQuestions` (`category_question_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1265 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -360,7 +360,7 @@ CREATE TABLE IF NOT EXISTS `assessment_types` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_ASSESSMENT_TYPES` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -402,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `assets` (
   KEY `FK_Assets_AssetConditions` (`asset_condition_id`),
   KEY `FK_Assets_AssetGroups` (`asset_group_id`),
   KEY `FK_Assets_Suppliers` (`asset_supplier_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=667 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -420,7 +420,7 @@ CREATE TABLE IF NOT EXISTS `asset_conditions` (
   `deleted_at` datetime DEFAULT NULL,
   `is_system_predefined` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -439,7 +439,7 @@ CREATE TABLE IF NOT EXISTS `asset_employee` (
   PRIMARY KEY (`id`),
   KEY `FK_AssetAllocations_Assets` (`asset_id`),
   KEY `FK_AssetAllocations_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=701 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -458,7 +458,7 @@ CREATE TABLE IF NOT EXISTS `asset_groups` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_ASSET_GROUP_ACTIVE` (`name`,`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -482,7 +482,7 @@ CREATE TABLE IF NOT EXISTS `asset_suppliers` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -509,7 +509,7 @@ CREATE TABLE IF NOT EXISTS `audits` (
   PRIMARY KEY (`id`),
   KEY `audits_auditable_id_auditable_type_index` (`auditable_id`,`auditable_type`),
   KEY `audits_user_id_user_type_index` (`user_id`,`user_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -547,7 +547,7 @@ CREATE TABLE IF NOT EXISTS `bankaccounttypes` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -570,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `bankingdetails` (
   PRIMARY KEY (`Id`),
   KEY `FK_BankingDetails_BankAccountTypes` (`BankAccountTypeId`),
   KEY `FK_BankingDetails_Employees` (`EmployeeId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7636 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -591,7 +591,7 @@ CREATE TABLE IF NOT EXISTS `branches` (
   PRIMARY KEY (`id`),
   KEY `IX_BRANCHES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`),
   KEY `FK_Branches_Companies1` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -671,7 +671,7 @@ CREATE TABLE IF NOT EXISTS `category_questions` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=343 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -691,7 +691,7 @@ CREATE TABLE IF NOT EXISTS `category_question_choices` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_CategoryQuestionChoices_CategoryQuestions2` (`category_question_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=763 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -708,7 +708,7 @@ CREATE TABLE IF NOT EXISTS `category_question_types` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -749,7 +749,7 @@ CREATE TABLE IF NOT EXISTS `companies` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -790,7 +790,7 @@ CREATE TABLE IF NOT EXISTS `countries` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=265 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -807,7 +807,7 @@ CREATE TABLE IF NOT EXISTS `courseparticipantstatuses` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -849,7 +849,7 @@ CREATE TABLE IF NOT EXISTS `courses` (
   PRIMARY KEY (`id`),
   KEY `IDX_active_public_description` (`is_public`,`is_active`,`description`),
   KEY `IDX_course_id_deleted` (`id`,`deleted_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -872,7 +872,7 @@ CREATE TABLE IF NOT EXISTS `course_discussions` (
   KEY `FK_CourseDiscussions_Courses` (`course_id`),
   KEY `FK_CourseDiscussions_Employees` (`employee_id`),
   KEY `FK_CourseDiscussions_ThreadStatuses` (`thread_status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -891,7 +891,7 @@ CREATE TABLE IF NOT EXISTS `course_employee` (
   KEY `FK_CourseParticipants_CourseParticipantStatuses` (`courseparticipantstatus_id`),
   KEY `FK_CourseParticipants_Courses` (`course_id`),
   KEY `FK_CourseParticipants_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -908,7 +908,7 @@ CREATE TABLE IF NOT EXISTS `course_module` (
   PRIMARY KEY (`id`),
   KEY `FK_CourseModules_Course` (`course_id`),
   KEY `FK_CourseModules_Module` (`module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -932,7 +932,7 @@ CREATE TABLE IF NOT EXISTS `course_progress` (
   KEY `FK_CourseProgress_Employees` (`employee_id`),
   KEY `FK_CourseProgress_Modules` (`module_id`),
   KEY `FK_CourseProgress_Topics` (`topic_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=347 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -963,7 +963,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   `Description` varchar(50) NOT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -997,7 +997,7 @@ CREATE TABLE IF NOT EXISTS `days` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1015,7 +1015,7 @@ CREATE TABLE IF NOT EXISTS `day_time_group_time_period` (
   KEY `FK_TimeGroupDays_Days` (`day_id`),
   KEY `FK_TimeGroupDays_TimeGroups` (`time_group_id`),
   KEY `FK_TimeGroupDays_TimePeriods` (`time_period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1034,7 +1034,7 @@ CREATE TABLE IF NOT EXISTS `departments` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_DEPARTMENTS_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1054,7 +1054,7 @@ CREATE TABLE IF NOT EXISTS `disabilities` (
   PRIMARY KEY (`id`),
   KEY `FK_disability_categories_id_idx` (`disability_category_id`),
   KEY `IX_DISABILITIES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Full blown Aids', '1', '1');
 INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Partially Hearing', '2', '1');
@@ -1105,7 +1105,7 @@ CREATE TABLE IF NOT EXISTS `disability_categories` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_DISABILITY_CATEGORIES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Aids', '1');
 INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Hearing', '1');
@@ -1157,7 +1157,7 @@ CREATE TABLE IF NOT EXISTS `disciplinary_actions` (
   KEY `FK_DisciplinaryActions_Decisions` (`disciplinary_decision_id`),
   KEY `FK_DisciplinaryActions_Employees` (`employee_id`),
   KEY `FK_DisciplinaryActions_Violations` (`violation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=693 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1192,7 +1192,7 @@ CREATE TABLE IF NOT EXISTS `divisions` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1212,7 +1212,7 @@ CREATE TABLE IF NOT EXISTS `document_categories` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_DOCUMENT_CATEGORIES` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1253,7 +1253,7 @@ CREATE TABLE IF NOT EXISTS `email_addresses` (
   PRIMARY KEY (`id`),
   KEY `FK_EmailAddresses_EmailAddressTypes` (`email_address_type_id`),
   KEY `FK_EmailAddresses_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17889 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1271,7 +1271,7 @@ CREATE TABLE IF NOT EXISTS `email_address_types` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_EMAIL_ADDRESS_TYPES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1339,7 +1339,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
   KEY `FK_Employees_TaxStatuses` (`tax_status_id`),
   KEY `FK_Employees_Teams` (`team_id`),
   KEY `FK_Employees_Titles` (`title_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2101 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1405,7 +1405,7 @@ CREATE TABLE IF NOT EXISTS `employees_audit` (
   `LeaveBalanceAtStart` int(11) DEFAULT NULL,
   `Timestamp` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4246 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1428,7 +1428,7 @@ CREATE TABLE IF NOT EXISTS `employee_attachments` (
   PRIMARY KEY (`id`),
   KEY `FK_EmployeeAttachments_EmployeeAttachmentTypes` (`employee_attachment_type_id`),
   KEY `FK_EmployeeAttachments_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16466 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1447,7 +1447,7 @@ CREATE TABLE IF NOT EXISTS `employee_attachment_types` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_EMPLOYEE_ATTACHMENT_TYPES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1497,7 +1497,7 @@ CREATE TABLE IF NOT EXISTS `employee_evaluation` (
   PRIMARY KEY (`id`),
   KEY `FK_EvaluationAssessors_Employees` (`employee_id`),
   KEY `FK_EvaluationAssessors_Evaluations` (`evaluation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=66084 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1514,7 +1514,7 @@ CREATE TABLE IF NOT EXISTS `employee_skill` (
   PRIMARY KEY (`id`),
   KEY `FK_EmployeeSkills_Employees` (`employee_id`),
   KEY `FK_EmployeeSkills_Skills` (`skill_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1533,7 +1533,7 @@ CREATE TABLE IF NOT EXISTS `employee_statuses` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_EMPLOYEE_STATUS_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1553,7 +1553,7 @@ CREATE TABLE IF NOT EXISTS `employee_training_session` (
   PRIMARY KEY (`id`),
   KEY `FK_TrainingSessionParticipants_Employees` (`employee_id`),
   KEY `FK_TrainingSessionParticipants_TrainingSessions` (`training_session_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1589,7 +1589,7 @@ CREATE TABLE IF NOT EXISTS `ethnic_groups` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_ETHNIC_GROUPS_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1626,7 +1626,7 @@ CREATE TABLE IF NOT EXISTS `evaluations` (
   KEY `FK_Evaluations_Employees1` (`createdby_employee_id`),
   KEY `FK_Evaluations_Languages` (`language_id`),
   KEY `FK_Evaluations_ProductCategories` (`productcategory_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22309 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1654,7 +1654,7 @@ CREATE TABLE IF NOT EXISTS `evaluation_results` (
   KEY `FK_EvaluationResults_CategoryQuestions` (`category_question_id`),
   KEY `FK_EvaluationResults_Employees` (`assessor_employee_id`),
   KEY `IX_EvaluationResults_evaluation_accessor` (`evaluation_id`,`assessor_employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=495529 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1671,7 +1671,7 @@ CREATE TABLE IF NOT EXISTS `evaluation_statuses` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1691,7 +1691,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1711,7 +1711,7 @@ CREATE TABLE IF NOT EXISTS `event_task` (
   PRIMARY KEY (`id`),
   KEY `FK__EventTask__Event__729BEF18` (`event_id`),
   KEY `FK__EventTask__TaskI__73901351` (`task_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1023 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1742,7 +1742,7 @@ CREATE TABLE IF NOT EXISTS `event_task_instances` (
   KEY `FK__EventTask__Event__7854C86E` (`event_task_id`),
   KEY `FK__EventTask__LinkT__7A3D10E0` (`link_type_id`),
   KEY `FK__EventTask__Targe__7B313519` (`target_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1761,7 +1761,7 @@ CREATE TABLE IF NOT EXISTS `forms` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1780,7 +1780,7 @@ CREATE TABLE IF NOT EXISTS `genders` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1830,7 +1830,7 @@ CREATE TABLE IF NOT EXISTS `history_departments` (
   PRIMARY KEY (`id`),
   KEY `FK_HistoryDepartments_Departments` (`department_id`),
   KEY `FK_HistoryDepartments_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2221 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1851,7 +1851,7 @@ CREATE TABLE IF NOT EXISTS `history_disciplinary_actions` (
   PRIMARY KEY (`id`),
   KEY `FK_HistoryDisciplinaryActions_DisciplinaryActions` (`disciplinary_action_id`),
   KEY `IX_HistoryDisciplinaryActions_employee_id` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=693 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1872,7 +1872,7 @@ CREATE TABLE IF NOT EXISTS `history_job_titles` (
   PRIMARY KEY (`id`),
   KEY `FK_HistoryJobTitles_JobTitles` (`job_title_id`),
   KEY `IX_HistoryJobTitle_employee_id` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2273 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1892,7 +1892,7 @@ CREATE TABLE IF NOT EXISTS `history_join_terminations` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_HistoryJoinsTerminations_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1732 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1934,7 +1934,7 @@ CREATE TABLE IF NOT EXISTS `history_rewards` (
   PRIMARY KEY (`id`),
   KEY `FK_HistoryRewards_Employees` (`employee_id`),
   KEY `FK_HistoryRewards_Rewards` (`reward_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1953,7 +1953,7 @@ CREATE TABLE IF NOT EXISTS `immigration_statuses` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_IMMIGRATION_STATUSES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2032,7 +2032,7 @@ CREATE TABLE IF NOT EXISTS `job_titles` (
   PRIMARY KEY (`id`),
   KEY `IX_JOB_TITLES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`),
   KEY `IX_JOB_TITLES_IS_MANAGER` (`is_manager`)
-) ENGINE=InnoDB AUTO_INCREMENT=300 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2050,7 +2050,7 @@ CREATE TABLE IF NOT EXISTS `languages` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2076,7 +2076,7 @@ CREATE TABLE IF NOT EXISTS `laws` (
   KEY `FK_Laws_Countries` (`country_id`),
   KEY `FK_Laws_LawCategories` (`law_category_id`),
   KEY `IX_laws_deleted_at` (`deleted_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2093,7 +2093,7 @@ CREATE TABLE IF NOT EXISTS `law_categories` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2109,7 +2109,7 @@ CREATE TABLE IF NOT EXISTS `law_documents` (
   `Content` longtext,
   PRIMARY KEY (`Id`),
   KEY `FK_law_documents_law_id` (`LawId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2144,7 +2144,7 @@ CREATE TABLE IF NOT EXISTS `learning_material_types` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2272,7 +2272,7 @@ CREATE TABLE IF NOT EXISTS `link_types` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2291,7 +2291,7 @@ CREATE TABLE IF NOT EXISTS `maritalstatuses` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2318,7 +2318,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   UNIQUE KEY `media_disk_directory_filename_extension_unique` (`disk`,`directory`(100),`filename`(100),`extension`),
   KEY `media_disk_directory_index` (`disk`,`directory`),
   KEY `media_aggregate_type_index` (`aggregate_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -2375,7 +2375,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_active_public_description` (`is_active`,`is_public`,`description`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2400,7 +2400,7 @@ CREATE TABLE IF NOT EXISTS `module_assessments` (
   KEY `FK_ModuleAssessments_AssessmentTypes` (`assessment_type_id`),
   KEY `FK_ModuleAssessments_Employees` (`trainer_id`),
   KEY `FK_ModuleAssessments_Module` (`module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2421,7 +2421,7 @@ CREATE TABLE IF NOT EXISTS `module_assessment_questions` (
   PRIMARY KEY (`id`),
   KEY `FK_ModuleAssessmentQuestions_ModuleAssessments` (`module_assessment_id`),
   KEY `FK_ModuleAssessmentQuestions_ModuleQuestions` (`module_question_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2449,7 +2449,7 @@ CREATE TABLE IF NOT EXISTS `module_assessment_responses` (
   KEY `FK_ModuleAssessmentResponses_Employees` (`employee_id`),
   KEY `FK_ModuleAssessmentResponses_ModuleAssessments` (`module_assessment_id`),
   KEY `FK_ModuleAssessmentResponses_Modules` (`module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2476,7 +2476,7 @@ CREATE TABLE IF NOT EXISTS `module_assessment_response_details` (
   KEY `FK_ModuleAssessmentResponseDetails_ModuleAssessments` (`module_assessment_id`),
   KEY `FK_ModuleAssessmentResponseDetails_ModuleQuestions` (`module_question_id`),
   KEY `FK_ModuleAssessmentResponseDetails_Modules` (`module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=445 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2496,7 +2496,7 @@ CREATE TABLE IF NOT EXISTS `module_questions` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ModuleQuestions_ModuleQuestionTypes` (`module_question_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2517,7 +2517,7 @@ CREATE TABLE IF NOT EXISTS `module_question_choices` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ModuleQuestionChoices_ModuleQuestions` (`module_question_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2536,7 +2536,7 @@ CREATE TABLE IF NOT EXISTS `module_question_types` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_MODULE_QUESTION_TYPES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2553,7 +2553,7 @@ CREATE TABLE IF NOT EXISTS `module_topic` (
   PRIMARY KEY (`id`),
   KEY `FK_ModuleTopics_Modules` (`module_id`),
   KEY `FK_ModuleTopics_Topics` (`topic_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2629,7 +2629,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   KEY `FK_Notifications_NotificationTimes` (`NotificationTimesId`),
   KEY `FK_Notifications_NotificationTypes` (`NotificationTypeId`),
   KEY `FK_Notifications_Triggers` (`TriggerId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2643,7 +2643,7 @@ CREATE TABLE IF NOT EXISTS `notificationstatuses` (
   `Description` varchar(100) NOT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2658,7 +2658,7 @@ CREATE TABLE IF NOT EXISTS `notificationtimes` (
   `Days` int(11) NOT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2672,7 +2672,7 @@ CREATE TABLE IF NOT EXISTS `notificationtypes` (
   `Description` varchar(100) NOT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2689,7 +2689,7 @@ CREATE TABLE IF NOT EXISTS `notification_groups` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2707,7 +2707,7 @@ CREATE TABLE IF NOT EXISTS `notification_recurrences` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2767,7 +2767,7 @@ CREATE TABLE IF NOT EXISTS `organisation_charts` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2807,7 +2807,7 @@ CREATE TABLE IF NOT EXISTS `policies` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_Policies_PolicyCategories` (`policy_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2824,7 +2824,7 @@ CREATE TABLE IF NOT EXISTS `policy_categories` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2844,7 +2844,7 @@ CREATE TABLE IF NOT EXISTS `policy_documents` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_PolicyDocuments_Policies` (`policy_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2862,7 +2862,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2879,7 +2879,7 @@ CREATE TABLE IF NOT EXISTS `product_categories` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2899,7 +2899,7 @@ CREATE TABLE IF NOT EXISTS `product_team` (
   PRIMARY KEY (`id`),
   KEY `FK_TeamsProducts_Products` (`product_id`),
   KEY `FK_TeamsProducts_Teams` (`team_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1037 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2914,7 +2914,7 @@ CREATE TABLE IF NOT EXISTS `publicholidays` (
   `Description` varchar(50) NOT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `IX_PublicHolidays` (`Date`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2968,7 +2968,7 @@ CREATE TABLE IF NOT EXISTS `qualifications` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_Qualifications_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=403 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -3045,7 +3045,7 @@ CREATE TABLE IF NOT EXISTS `recurrences` (
   `Days` int(11) NOT NULL DEFAULT '1',
   `Active` tinyint(1) NOT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -3066,7 +3066,7 @@ CREATE TABLE IF NOT EXISTS `report_templates` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_ReportTemplates_SystemModules` (`system_module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -3087,7 +3087,7 @@ CREATE TABLE IF NOT EXISTS `rewards` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_Rewards_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -3136,7 +3136,7 @@ CREATE TABLE IF NOT EXISTS `sham_permissions` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `alias` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `sham_permissions`
@@ -3165,7 +3165,7 @@ CREATE TABLE IF NOT EXISTS `sham_permission_sham_user_profile_system_sub_module`
   KEY `FK_ShamUserProfilesSubModulePermissions_ShamPermissions` (`sham_permission_id`),
   KEY `FK_ShamUserProfilesSubModulePermissions_ShamUserProfiles` (`sham_user_profile_id`),
   KEY `FK_ShamUserProfilesSubModulePermissions_SystemSubModules` (`system_sub_module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14052 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `sham_permission_sham_user_profile_system_sub_module`
@@ -4792,7 +4792,7 @@ CREATE TABLE IF NOT EXISTS `sham_users` (
   UNIQUE KEY `IX_ShamUsers` (`username`),
   KEY `FK_ShamUsers_ShamUserProfiles` (`ShamUserProfileId`),
   KEY `FK_ShamUsers_Employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5150 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4810,7 +4810,7 @@ CREATE TABLE IF NOT EXISTS `sham_user_profiles` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `sham_user_profiles`
@@ -4842,7 +4842,7 @@ CREATE TABLE IF NOT EXISTS `skills` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4864,7 +4864,7 @@ CREATE TABLE IF NOT EXISTS `suggestioncomments` (
   KEY `FK_SuggestionComments_ShamUsers` (`MadeByShamUserId`),
   KEY `FK_SuggestionComments_ShamUsers1` (`ApprovedByShamUserId`),
   KEY `FK_SuggestionComments_Suggestions` (`SuggestionId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4886,7 +4886,7 @@ CREATE TABLE IF NOT EXISTS `suggestions` (
   KEY `FK_Suggestions_ShamUsers` (`AuthorShamUserId`),
   KEY `FK_Suggestions_ShamUsers1` (`ReviewerShamUserId`),
   KEY `FK_Suggestions_SuggestionStatuses` (`SuggestionStatusId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4900,7 +4900,7 @@ CREATE TABLE IF NOT EXISTS `suggestionstatuses` (
   `Description` varchar(100) NOT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4930,7 +4930,7 @@ CREATE TABLE IF NOT EXISTS `surveys` (
   KEY `FK_Surveys_NotificationRecurrences` (`notification_recurrence_id`),
   KEY `FK_Surveys_ShamUsers` (`author_sham_user_id`),
   KEY `FK_Surveys_SurveyStatuses` (`survey_status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4951,7 +4951,7 @@ CREATE TABLE IF NOT EXISTS `survey_responses` (
   PRIMARY KEY (`id`),
   KEY `FK_SurveyResponses_ShamUsers` (`sham_user_id`),
   KEY `FK_SurveyResponses_Surveys` (`survey_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1995 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4968,7 +4968,7 @@ CREATE TABLE IF NOT EXISTS `survey_statuses` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4986,7 +4986,7 @@ CREATE TABLE IF NOT EXISTS `system_modules` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`Id`),
   KEY `IX_SYSTEMMODULES_ACTIVE` (`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `system_modules`
@@ -5024,7 +5024,7 @@ CREATE TABLE IF NOT EXISTS `system_sub_modules` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_SystemSubModules_SystemModules` (`system_module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `system_sub_modules`
@@ -5175,7 +5175,7 @@ CREATE TABLE IF NOT EXISTS `sys_config_values` (
   `value` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_SYS_CONFIG_VALUES_KEY` (`key`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5213,7 +5213,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_Tasks_Departments` (`department_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5230,7 +5230,7 @@ CREATE TABLE IF NOT EXISTS `tax_statuses` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5249,7 +5249,7 @@ CREATE TABLE IF NOT EXISTS `teams` (
   `time_group_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_Teams_TimeGroups` (`time_group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=371 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5270,7 +5270,7 @@ CREATE TABLE IF NOT EXISTS `telephone_numbers` (
   PRIMARY KEY (`id`),
   KEY `FK_TelephoneNumbers_Employees` (`employee_id`),
   KEY `FK_TelephoneNumbers_TelephoneNumberTypes` (`telephone_number_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29359 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5288,7 +5288,7 @@ CREATE TABLE IF NOT EXISTS `telephone_number_types` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_TELEPHONE_NUMBER_TYPES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5308,7 +5308,7 @@ CREATE TABLE IF NOT EXISTS `temporaryjobs` (
   PRIMARY KEY (`Id`),
   KEY `FK_TemporaryJobs_EmployeeStatuses` (`EmployeeStatusId`),
   KEY `FK_TemporaryJobs_JobTitles` (`JobTitleId`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5327,7 +5327,7 @@ CREATE TABLE IF NOT EXISTS `thread_statuses` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_THREAD_STATUSES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5348,7 +5348,7 @@ CREATE TABLE IF NOT EXISTS `timelines` (
   PRIMARY KEY (`id`),
   KEY `FK_Timelines_Employees` (`employee_id`),
   KEY `FK_Timelines_TimelineEventTypes` (`timeline_event_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5918 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5366,7 +5366,7 @@ CREATE TABLE IF NOT EXISTS `timeline_event_types` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5385,7 +5385,7 @@ CREATE TABLE IF NOT EXISTS `time_groups` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5405,7 +5405,7 @@ CREATE TABLE IF NOT EXISTS `time_periods` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5424,7 +5424,7 @@ CREATE TABLE IF NOT EXISTS `titles` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5444,7 +5444,7 @@ CREATE TABLE IF NOT EXISTS `topics` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_id_is_active` (`id`,`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5464,7 +5464,7 @@ CREATE TABLE IF NOT EXISTS `topic_attachments` (
   PRIMARY KEY (`id`),
   KEY `FK_TopicAttachments_LearningMaterialTypes` (`learning_material_type_id`),
   KEY `FK_TopicAttachments_Topics` (`topic_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5522,7 +5522,7 @@ CREATE TABLE IF NOT EXISTS `training_delivery_methods` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5544,7 +5544,7 @@ CREATE TABLE IF NOT EXISTS `training_sessions` (
   PRIMARY KEY (`id`),
   KEY `FK_TrainingSessions_Courses1` (`course_id`),
   KEY `FK_TrainingSessions_TrainingDeliveryMethods` (`training_delivery_method_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5588,7 +5588,7 @@ CREATE TABLE IF NOT EXISTS `travelexpenseclaimstatuses` (
   `Description` varchar(100) NOT NULL,
   `Active` tinyint(1) NOT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5667,7 +5667,7 @@ CREATE TABLE IF NOT EXISTS `travelrequeststatuses` (
   `Description` varchar(100) NOT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5689,7 +5689,7 @@ CREATE TABLE IF NOT EXISTS `triggers` (
   PRIMARY KEY (`Id`),
   KEY `FK_Triggers_ParserExpressions` (`ParserExpressionId`),
   KEY `FK_Triggers_TriggerTypes` (`TriggerTypeId`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5734,7 +5734,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   KEY `FK_users_sham_user_profile_id_idx` (`sham_user_profile_id`),
   KEY `IX_users_deleted_at` (`deleted_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
@@ -5813,7 +5813,7 @@ CREATE TABLE IF NOT EXISTS `violations` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -5991,7 +5991,7 @@ CREATE TABLE IF NOT EXISTS `workflowstepstates` (
   `Description` varchar(50) NOT NULL,
   `Active` tinyint(1) NOT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
