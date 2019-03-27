@@ -13,6 +13,8 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\HeadingRowImport;
 use Exception;
 use App\EmployeeExport;
+use App\Title;
+use App\TelephoneNumber;
 
 class EmployeeExportProcessorsController extends CustomController
 {
@@ -50,16 +52,23 @@ class EmployeeExportProcessorsController extends CustomController
 
         foreach ($auditItems as $auditItem) {
             $auditItemArray = array_fill(0, 30, "");
+            $newvalues =  $auditItem->new_values;
 
             if($auditItem->auditable_type == "App\Employee")
             {
                 $employee = Employee::find($auditItem->auditable_id);
-
                 $employee_no = $employee->employee_no;
-                $newvalues =  $auditItem->new_values;
 
                 // 02 Employee
                 $auditItemArray[1] = $employee_no;
+
+                // 03 First Name
+                if(array_key_exists('title_id',$newvalues)){
+                    $title_id = $newvalues['title_id'];
+
+                    $title = Title::find($title_id);
+                    $auditItemArray[2] = $title->description;
+                }
 
                 // 04 First Name
                 if(array_key_exists('first_name',$newvalues)){
@@ -101,9 +110,55 @@ class EmployeeExportProcessorsController extends CustomController
                     $auditItemArray[10] = $newvalues['passport_no'];
                 }
 
+                // 13 Group '{"ethnic_group_id":1}'
+                if(array_key_exists('ethnic_group_id',$newvalues)){
+                    $ethnic_group_id = $newvalues['ethnic_group_id'];
+                    // find and search ethinic group code
+                    $auditItemArray[12] = $newvalues['ethnic_group_id'];
+                }
+
+                // 14 Gender '{"gender_id":1}'
+                if(array_key_exists('gender_id',$newvalues)){
+                    $gender_id = $newvalues['gender_id'];
+                    // find and search ethinic group code
+                    $auditItemArray[13] = $newvalues['gender_id'];
+                }
+
+                // 15 Gender '{"marital_status_id":1}'
+                if(array_key_exists('marital_status_id',$newvalues)){
+                    $marital_status_id = $newvalues['marital_status_id'];
+                    // find and search ethinic group code
+                    $auditItemArray[14] = $newvalues['marital_status_id'];
+                }
+
                 // 21 Tax number
                 if(array_key_exists('tax_number',$newvalues)){
                     $auditItemArray[20] = $newvalues['tax_number'];
+                }
+            }
+
+            // 16 Home number
+            if($auditItem->auditable_type == "App\TelephoneNumber"){
+
+                if(array_key_exists('tel_number',$newvalues)){
+                    $tel_no = $newvalues['tel_number'];
+                    $telephone_number_id = $auditItem->auditable_id;
+
+                    $telephone_number = TelephoneNumber::find($telephone_number_id);
+                    $employee_id = $telephone_number->employee_id;
+
+                    $employee = Employee::find($employee_id);
+                    $employee_no = $employee->employee_no;
+
+                    // 02 Employee
+                    $auditItemArray[1] = $employee_no;
+
+                    if($telephone_number->telephone_number_type_id == 1){
+                        $auditItemArray[15] = $tel_no;
+                    }
+                    elseif($telephone_number->telephone_number_type_id == 2){
+                        $auditItemArray[16] = $tel_no;
+                    }
                 }
             }
 
