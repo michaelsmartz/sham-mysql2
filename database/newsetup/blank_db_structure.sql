@@ -6879,6 +6879,29 @@ UPDATE `system_sub_modules` SET `is_active` = '0' WHERE (`id` = '87');
 UPDATE `system_sub_modules` SET `is_active` = '0' WHERE (`id` = '9');
 UPDATE `system_sub_modules` SET `deleted_at` = '2018-11-29 11:11:38' WHERE (`id` = '87');
 
+ALTER TABLE `genders`
+ADD COLUMN `gender_code` VARCHAR(45) NULL AFTER `id`;
+
+ALTER TABLE `titles`
+ADD COLUMN `title_code` VARCHAR(45) NULL AFTER `id`;
+
+ALTER TABLE `departments`
+ADD COLUMN `department_code` VARCHAR(45) NULL AFTER `id`;
+
+ALTER TABLE `ethnic_groups`
+ADD COLUMN `ethnic_group_code` VARCHAR(45) NULL AFTER `id`;
+
+ALTER TABLE `maritalstatuses`
+ADD COLUMN `marital_status_code` VARCHAR(45) NULL AFTER `id`;
+
+ALTER TABLE `tax_statuses`
+ADD COLUMN `tax_status_code` VARCHAR(45) NULL AFTER `id`;
+
+ALTER TABLE `job_titles`
+ADD COLUMN `job_title_code` VARCHAR(45) NULL AFTER `id`;
+
+ALTER TABLE `job_titles`
+CHANGE COLUMN `is_manager` `is_manager` TINYINT(1) NOT NULL DEFAULT '0' ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

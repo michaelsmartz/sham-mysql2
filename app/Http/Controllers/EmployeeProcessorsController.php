@@ -57,7 +57,7 @@ class EmployeeProcessorsController extends CustomController
         ini_set('max_execution_time', 1000);
         $insert = [];
         foreach ($array_csv as $key => $row){
-            //dump($row);
+            dd($row);
 
             //header array
             if($key != 1){ //data to be updated or inserted
@@ -175,7 +175,10 @@ class EmployeeProcessorsController extends CustomController
     private function mapper($arr){
         $array_new = [];
 
-        //TODO link with lookup for one-to-many relations and missing entry
+        //TODO link with lookup for one-to-many relations
+        //TODO and missing entry in Hams employee table addresses, phone numbers
+        $arr = $this->lookupEmployeeForeignKey($arr);
+
         //Note mapper should be same as header in csv file, value should correspond to Hams database table fields
         $mapper = [
             1=>"employee_no",
@@ -209,6 +212,60 @@ class EmployeeProcessorsController extends CustomController
         }
 
         return $array_new;
+    }
+
+    /**
+     * lookup for definition of ids in hams e.g title_id, gender_id, marital_status_id
+     * @param $arr
+     * @return mixed
+     */
+    private function lookupEmployeeForeignKey($arr){
+        dd($arr);
+        foreach($arr as $column_position => $vip_header_name)
+        {
+            switch($column_position)
+            {
+                //title
+                case 2:
+                    dump($column_position);
+                    dd($vip_header_name);
+                    break;
+                //passport country
+                case 11:
+                    break;
+                //ethnic group
+                case 12:
+                    break;
+                //gender
+                case 13:
+                    break;
+                //marital status
+                case 14:
+                    break;
+//                //Home number
+//                case 15:
+//                    break;
+//                //cell number
+//                case 16:
+//                    break;
+//                //email
+//                case 17:
+//                    break;
+                //tax status
+                case 21:
+                    break;
+                //job title
+                case 23:
+                    break;
+                //department
+                case 24:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return $arr;
     }
 
     /**
