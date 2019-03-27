@@ -59,8 +59,7 @@ class EmployeeProcessorsController extends CustomController
         foreach ($array_csv as $key => $row){
 
             //header array
-            if($key != 1){ //data to be updated or inserted
-
+            if($key !== 1){ //data to be updated or inserted
                 $existing_employees = Employee::all()->toArray();
 
                 if(array_search($row[1], array_column($existing_employees, 'employee_no')) !== False) {
@@ -92,10 +91,8 @@ class EmployeeProcessorsController extends CustomController
 
                     $row = $this->removeEmptyMapperUnset($row);
 
-                    //dump($row);
-
                     $insert[] = [
-                        'id_number' => isset($row['id_number'])?$row['id_number']:null,
+                        'id_number' => isset($row['id_number'])?$row['id_number']:-1,
                         'employee_no' => isset($row['employee_no'])?$row['employee_no']:null,
                         'employee_code' => $sfeCodeUnique,
                         "birth_date" => isset($row['birth_date'])?$row['birth_date']:null,
@@ -116,7 +113,6 @@ class EmployeeProcessorsController extends CustomController
         }
 
         try{
-            //dd($insert);
             DB::table('employees')->insert($insert);
         } catch (Exception $exception) {
             dd($exception->getMessage());
@@ -227,45 +223,49 @@ class EmployeeProcessorsController extends CustomController
      * @return mixed
      */
     private function lookupEmployeeForeignKey($csv_row){
-        foreach($csv_row as $column_position => $vip_header_name)
-        {
-            switch($column_position)
+        try{
+            foreach($csv_row as $column_position => $vip_header_name)
             {
-                //title
-                case 2:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Title', 'title_code');
-                    break;
-                //passport country
-                case 11:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Country', 'country_code');
-                    break;
-                //ethnic group
-                case 12:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'EthnicGroup', 'ethnic_group_code');
-                    break;
-                //gender
-                case 13:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Gender', 'gender_code');
-                    break;
-                //marital status
-                case 14:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'MaritalStatus', 'marital_status_code');
-                    break;
-                //tax status
-                case 21:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'TaxStatus', 'tax_status_code');
-                    break;
-                //job title
-                case 22:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'JobTitle', 'job_title_code');
-                    break;
-                //department
-                case 24:
-                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Department', 'department_code');
-                    break;
-                default:
-                    break;
+                switch($column_position)
+                {
+                    //title
+                    case 2:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Title', 'title_code');
+                        break;
+                    //passport country
+                    case 11:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Country', 'country_code');
+                        break;
+                    //ethnic group
+                    case 12:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'EthnicGroup', 'ethnic_group_code');
+                        break;
+                    //gender
+                    case 13:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Gender', 'gender_code');
+                        break;
+                    //marital status
+                    case 14:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'MaritalStatus', 'marital_status_code');
+                        break;
+                    //tax status
+                    case 21:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'TaxStatus', 'tax_status_code');
+                        break;
+                    //job title
+                    case 22:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'JobTitle', 'job_title_code');
+                        break;
+                    //department
+                    case 24:
+                        $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Department', 'department_code');
+                        break;
+                    default:
+                        break;
+                }
             }
+        } catch (Exception $exception) {
+            dd($exception->getMessage());
         }
         return $csv_row;
     }
@@ -282,8 +282,10 @@ class EmployeeProcessorsController extends CustomController
         $modelClass = 'App\\'.$model;
         $data = $modelClass::where([$table_field_code => $header_name])->get(['id'])->first();
 
-        $arr_key = array_search($header_name, $csv_row); // returns the first key whose value is e.g. "MR"
-        $csv_row[$arr_key] = $data->id; // replace e.g 'MR' with '14' id in title table
+        $arr_key = array_search($header_name, $csv_row);
+        //TODO if does not find foreign key in corresponding table it set id to null,
+        //TODO problem of incoherent data
+        $csv_row[$arr_key] = (isset($data))?$data->id:null;
 
         return $csv_row;
     }
