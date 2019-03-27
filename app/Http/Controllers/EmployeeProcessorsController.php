@@ -232,6 +232,7 @@ class EmployeeProcessorsController extends CustomController
                     break;
                 //passport country
                 case 11:
+                    $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'Country', 'country_code');
                     break;
                 //ethnic group
                 case 12:
@@ -245,15 +246,6 @@ class EmployeeProcessorsController extends CustomController
                 case 14:
                     $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'MaritalStatus', 'marital_status_code');
                     break;
-//                //Home number
-//                case 15:
-//                    break;
-//                //cell number
-//                case 16:
-//                    break;
-//                //email
-//                case 17:
-//                    break;
                 //tax status
                 case 21:
                     $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'TaxStatus', 'tax_status_code');
@@ -270,7 +262,7 @@ class EmployeeProcessorsController extends CustomController
                     break;
             }
         }
-        dd($csv_row);
+        //dd($csv_row);
         return $csv_row;
     }
 
