@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use App\Http\Controllers\CustomController;
-use App\Models\EmployeeProcessor;
 use App\SysConfigValue;
-use App\Title;
 use DB;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Exception;
 
@@ -47,6 +44,7 @@ class EmployeeProcessorsController extends CustomController
             \Session::put('success', 'import was successful!');
 
         } catch (Exception $exception) {
+            dd($exception->getMessage());
             \Session::put('error', 'import was not successful!');
         }
 
@@ -55,10 +53,10 @@ class EmployeeProcessorsController extends CustomController
 
     private function updateCreateEmployee($array_csv){
         //dd($array_csv);
+        //TODO and missing entry in Hams employee table addresses, phone numbers
         ini_set('max_execution_time', 1000);
         $insert = [];
         foreach ($array_csv as $key => $row){
-            //dd($row);
 
             //header array
             if($key != 1){ //data to be updated or inserted
@@ -66,20 +64,19 @@ class EmployeeProcessorsController extends CustomController
                 $existing_employees = Employee::all()->toArray();
 
                 if(array_search($row[1], array_column($existing_employees, 'employee_no')) !== False) {
-                    //unset employee_no
-                    $employee_id = $row[1];
-                    unset($row[1]);
 
-                    $row = $this->removeNullEmptyValue($row);
+                    $row = $this->removeEmptyMapperUnset($row);
 
-                    $row = $this->mapper($row);
-
-                    if(!empty($row) && !is_null($employee_id)){
+                    if(!empty($row) && !is_null($row['employee_no'])){
                         try{
-                            $employee = Employee::where(['employee_no'=>$employee_id]);
+                            $employee = Employee::where(['employee_no'=>$row['employee_no']]);
+
+                            if(isset($row['employee_no']))
+                                unset($row['employee_no']);
+
                             $employee->update($row);
                         } catch (Exception $exception) {
-                            //dd($exception->getMessage());
+                            dd($exception->getMessage());
                             \Session::put('error', 'could not update Employee!');
                         }
                     }
@@ -93,43 +90,36 @@ class EmployeeProcessorsController extends CustomController
                     }
                     $sfeCode->save();
 
+                    $row = $this->removeEmptyMapperUnset($row);
+
+                    //dump($row);
+
                     $insert[] = [
-                        'id_number' => $row[6],
-                        'employee_no' => $row[1],
+                        'id_number' => isset($row['id_number'])?$row['id_number']:null,
+                        'employee_no' => isset($row['employee_no'])?$row['employee_no']:null,
                         'employee_code' => $sfeCodeUnique,
-                        "birth_date" => $row[7],
-                        "gender_id" => null,
-                        "title_id" => null,
-                        "marital_status_id" => null,
-                        "first_name" => $row[3],
-                        "known_as" => $row[4],
-                        "surname" => $row[5],
-                        "passport_country_id" => null,
-                        "passport_no" => $row[10],
-                        "immigration_status_id" => null,
-                        "nationality" => null,
-                        "ethnic_group_id" => null,
-                        "spouse_full_name" => null,
-                        "division_id" => null,
-                        "branch_id" => null,
-                        "department_id" => null,
-                        "team_id" => null,
-                        "physical_file_no" => null,
-                        "job_title_id" => null,
-                        "line_manager_id" => null,
-                        "date_joined" => null,
-                        "employee_status_id" => null,
-                        "tax_status_id" => null,
-                        "tax_number" => null
+                        "birth_date" => isset($row['birth_date'])?$row['birth_date']:null,
+                        "gender_id" => isset($row['gender_id'])?$row['gender_id']:null,
+                        "title_id" => isset($row['title_id'])?$row['title_id']:null,
+                        "marital_status_id" => isset($row['marital_status_id'])?$row['marital_status_id']:null,
+                        "first_name" => isset($row['first_name'])?$row['first_name']:null,
+                        "known_as" => isset($row['known_as'])?$row['known_as']:null,
+                        "surname" => isset($row['surname'])?$row['surname']:null,
+                        "passport_country_id" => isset($row['passport_country_id'])?$row['passport_country_id']:null,
+                        "department_id" => isset($row['department_id'])?$row['department_id']:null,
+                        "job_title_id" => isset($row['job_title_id'])?$row['job_title_id']:null,
+                        "tax_status_id" => isset($row['tax_status_id'])?$row['tax_status_id']:null,
+                        "tax_number" => isset($row['tax_number'])?$row['tax_number']:null
                     ];
                 }
             }
         }
 
         try{
+            //dd($insert);
             DB::table('employees')->insert($insert);
         } catch (Exception $exception) {
-            //dd($exception->getMessage());
+            dd($exception->getMessage());
             \Session::put('error', 'could not insert Employee!');
         }
     }
@@ -168,6 +158,24 @@ class EmployeeProcessorsController extends CustomController
         return $m[1].str_pad($m[2]+1, strlen($m[2]), '0', STR_PAD_LEFT).$m[3];
     }
 
+    private function removeEmptyMapperUnset($csv_row){
+        $csv_row = $this->removeNullEmptyValue($csv_row);
+
+        $csv_row = $this->mapper($csv_row);
+
+        //unset what is not needed in update
+        if(isset($csv_row['division_id']))
+            unset($csv_row['division_id']);
+        if(isset($csv_row['branch_id']))
+            unset($csv_row['branch_id']);
+        if(isset($csv_row['team_id']))
+            unset($csv_row['team_id']);
+        if(isset($csv_row['physical_file_no']))
+            unset($csv_row['physical_file_no']);
+
+        return $csv_row;
+    }
+
     /**
      * if key exist in mapper replace $arr with value in mapper
      * @param $arr
@@ -176,8 +184,6 @@ class EmployeeProcessorsController extends CustomController
     private function mapper($arr){
         $array_new = [];
 
-        //TODO link with lookup for one-to-many relations
-        //TODO and missing entry in Hams employee table addresses, phone numbers
         $arr = $this->lookupEmployeeForeignKey($arr);
 
         //Note mapper should be same as header in csv file, value should correspond to Hams database table fields
@@ -200,7 +206,7 @@ class EmployeeProcessorsController extends CustomController
             19=>"physical_file_no",
             20=>"tax_number",
             21=>"tax_status_id",
-            23=>"job_title_id",
+            22=>"job_title_id",
             24=>"department_id"
         ];
 
@@ -221,7 +227,6 @@ class EmployeeProcessorsController extends CustomController
      * @return mixed
      */
     private function lookupEmployeeForeignKey($csv_row){
-        //dump($arr);
         foreach($csv_row as $column_position => $vip_header_name)
         {
             switch($column_position)
@@ -251,7 +256,7 @@ class EmployeeProcessorsController extends CustomController
                     $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'TaxStatus', 'tax_status_code');
                     break;
                 //job title
-                case 23:
+                case 22:
                     $csv_row = $this->replaceColumnNameWithId($csv_row, $vip_header_name, 'JobTitle', 'job_title_code');
                     break;
                 //department
@@ -262,7 +267,6 @@ class EmployeeProcessorsController extends CustomController
                     break;
             }
         }
-        //dd($csv_row);
         return $csv_row;
     }
 
