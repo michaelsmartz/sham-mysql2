@@ -165,16 +165,120 @@ class EmployeeExportProcessorsController extends CustomController
             $data[] = $auditItemArray;
         }
 
-        //dump($audit);
-        //die;
 
         $export = new EmployeeExport();
         $export->employees($data);
+
+//        if(!is_null($data))
+//            $this->fixedWidthFileProcess($export->array());
 
         $filedateformat = date("Ymdhms");
 
         return Excel::download($export, 'Employee_Change_'.$filedateformat.'.xlsx');
     }
 
+    private function fixedWidthFileProcess($files){
+
+        //dd($files);
+
+        $result = [];
+        foreach ($files as $lines) {
+            foreach ($lines as $key => $line) {
+                $result[] = $this->str_pad_unicode($line, $key, ' ', STR_PAD_BOTH);
+                //$result[] = $this->str_pad_html($line, $key, ' ', STR_PAD_BOTH);
+            }
+        }
+
+        dd($result);
+    }
+
+    /**
+     * @param $str
+     * @param $pad_len
+     * @param string $pad_str
+     * @param int $dir
+     * @return null|string
+     */
+    function str_pad_unicode($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT) {
+
+        $str_len = mb_strlen($str);
+        $pad_str_len = mb_strlen($pad_str);
+
+        if (!$str_len && ($dir == STR_PAD_RIGHT || $dir == STR_PAD_LEFT)) {
+            $str_len = 1; // @debug
+        }
+
+        if (!$pad_len || !$pad_str_len || $pad_len <= $str_len) {
+            return $str;
+        }
+
+        $result = null;
+        $repeat = ceil($str_len - $pad_str_len + $pad_len);
+
+        if ($dir == STR_PAD_RIGHT) {
+            $result = $str . str_repeat($pad_str, $repeat);
+            $result = mb_substr($result, 0, $pad_len);
+        }
+        else if ($dir == STR_PAD_LEFT) {
+            $result = str_repeat($pad_str, $repeat) . $str;
+            $result = mb_substr($result, -$pad_len);
+        }
+        else if ($dir == STR_PAD_BOTH) {
+            $length = ($pad_len - $str_len) / 2;
+            $repeat = ceil($length / $pad_str_len);
+            $result = mb_substr(str_repeat($pad_str, $repeat), 0, floor($length))
+                . $str
+                . mb_substr(str_repeat($pad_str, $repeat), 0, ceil($length));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $strInput
+     * @param $intPadLength
+     * @param string $strPadString
+     * @param int $intPadType
+     * @return string
+     */
+    function str_pad_html($strInput = "", $intPadLength, $strPadString = "&nbsp;", $intPadType = STR_PAD_RIGHT) {
+        if (strlen(trim(strip_tags($strInput))) < intval($intPadLength)) {
+
+            switch ($intPadType) {
+                // STR_PAD_LEFT
+                case 0:
+                    $offsetLeft = intval($intPadLength - strlen(trim(strip_tags($strInput))));
+                    $offsetRight = 0;
+                    break;
+
+                // STR_PAD_RIGHT
+                case 1:
+                    $offsetLeft = 0;
+                    $offsetRight = intval($intPadLength - strlen(trim(strip_tags($strInput))));
+                    break;
+
+                // STR_PAD_BOTH
+                case 2:
+                    $offsetLeft = intval(($intPadLength - strlen(trim(strip_tags($strInput)))) / 2);
+                    $offsetRight = round(($intPadLength - strlen(trim(strip_tags($strInput)))) / 2, 0);
+                    break;
+
+                // STR_PAD_RIGHT
+                default:
+                    $offsetLeft = 0;
+                    $offsetRight = intval($intPadLength - strlen(trim(strip_tags($strInput))));
+                    break;
+            }
+
+            $strPadded = str_repeat($strPadString, $offsetLeft) . $strInput . str_repeat($strPadString, $offsetRight);
+            unset($strInput, $offsetLeft, $offsetRight);
+
+            return $strPadded;
+        }
+
+        else {
+            return $strInput;
+        }
+    }
 
 }

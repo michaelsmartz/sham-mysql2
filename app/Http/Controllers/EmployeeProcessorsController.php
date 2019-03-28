@@ -6,6 +6,7 @@ use App\Employee;
 use App\Http\Controllers\CustomController;
 use App\SysConfigValue;
 use DB;
+use Debugbar;
 use Illuminate\Http\Request;
 use Exception;
 
@@ -115,6 +116,7 @@ class EmployeeProcessorsController extends CustomController
         }
 
         try{
+            \DB::connection()->disableQueryLog();
             DB::table('employees')->insert($insert);
         } catch (Exception $exception) {
             dd($exception->getMessage());
