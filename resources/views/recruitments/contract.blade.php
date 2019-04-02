@@ -55,21 +55,13 @@
                             <div class="col-md-7" style="padding-top: 0px;">
                                 <h4>Signed Copy</h4>
                             </div>
-                            <div class="col-md-7">
-                                <label for="signedOnContract">Signed On</label>
-                                <input id="signedOnContract" class='form-control datepicker' type="text" name="signedOnContract" >
+                            <div class="col-md-12" v-if="current.contracts[0].signed_on != null">
+                                The offer letter was signed on @{{current.contracts[0].signed_on | formatDate}} 
                             </div>
-                            <div class="col-md-7">
-                                <label for="comments">Comments</label>
-                                <textarea
-                                        id="comments"
-                                        class='form-control'
-                                        {{--v-model="overallComment"--}}
-                                        name="comments">
-                                </textarea>
-                            </div>
-                            <div class="col-md-7" style="padding-top: 10px;">
-                                <button type="button" class="btn btn-success pull-right">Upload</button>
+                            <div class="col-md-7" style="padding-top: 10px;" v-if="current.contracts[0].signed_on == null">
+                                <a href="#light-modal" class="btn btn-success pull-right" data-wenk="Upload" @click="uploadSignedContract(current.id)">
+                                    <i class="fa fa-upload"></i>
+                                </a>
                             </div>
                             
                         </div>

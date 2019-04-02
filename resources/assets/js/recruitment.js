@@ -1,9 +1,17 @@
 import {on} from 'delegated-events';
 import Modal from './components/Modal.vue';
+import moment from 'moment';
+import FileUploader from './components/FileUploader.vue';
 window.Vue = require('vue/dist/vue.common.js');
 
 let download = require("downloadjs");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+Vue.filter('formatDate', function(value) {
+  if (value) {
+    return moment(String(value)).format('DD/MM/YYYY')
+  }
+});
 
 // usage: {{ file.size | prettyBytes }}
 Vue.filter('prettyBytes', function (num) {
@@ -32,6 +40,7 @@ Vue.filter('prettyBytes', function (num) {
 	return (neg ? '-' : '') + num + ' ' + unit;
 });
 
+Vue.prototype.window = window;
 
 var vm = new Vue({
 	el: "#recruitment",
@@ -46,7 +55,8 @@ var vm = new Vue({
 		submitInterview: false,
 		interviews: [],
 		offerLetters: [],
-		currentOffer: 0
+		currentOffer: 0,
+		currentContract: 0
 	},
 	computed: {
 		filteredPeople: function () {
@@ -60,7 +70,7 @@ var vm = new Vue({
 					return person.status[0].status === category;
 				});
 			}
-		},
+		}
 	},
 	methods: {
 		setCurrent: function (item) {
@@ -69,6 +79,11 @@ var vm = new Vue({
 				item.offers.push({offer_id: 0});
 			} else {
 				this.currentOffer = item.offers[0].offer_id;
+			}
+			if(item.contracts.length == 0) {
+				item.contracts.push({contract_id: 0});
+			} else {
+				this.currentContract = item.contracts[0].contract_id;
 			}
 			this.current = item;
 			this.counter = 0;
@@ -79,6 +94,10 @@ var vm = new Vue({
 		},
 		route: function(){
 			return window.route();
+		},
+		uploader: function(){
+			window.vueFileUpload();
+			return true;
 		},
 		pipelineSwitchState: function (id, title, current, candidate, newState) {
 			var vm = this;
@@ -110,6 +129,14 @@ var vm = new Vue({
 		},
         editInterviewForm: function(interview_id, candidate_id){
             this.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
+		},
+        uploadSignedOffer: function(candidateId){
+			var offerId = $('#offer_id option:selected').val();
+            this.loadUrl('./candidate/'+ candidateId + '/offer/' + offerId + '/upload-offer-form');
+		},
+        uploadSignedContract: function(candidateId){
+			var contractId = $('#contract_id option:selected').val();
+            this.loadUrl('./candidate/'+ candidateId + '/contract/' + contractId + '/upload-contract-form');
 		},
         loadUrl: function(url) {
             $(".light-modal-body").empty().html('Loading...please wait...');
@@ -252,16 +279,17 @@ var vm = new Vue({
 		on('focusin', 'input.datepicker', function(event) {
 
 			// Use the picker object directly.
-			//var picker = $(this).pickadate('picker');
+			var picker = $(this).fn.pickadate('picker');
 			
-			//if(picker === undefined) {
-			//	picker = $(this).pickadate().pickadate('picker');
-			//}
+			if(picker === undefined) {
+				picker = $(this).fn.pickadate().pickadate('picker');
+			}
 		});
 		this.fetchOfferLetters();
 	},
 	components: {
-		'modal': Modal
+		'modal': Modal,
+		'file-uploader': FileUploader
 	},
 	filters: {
 		stageCount:function(people, status){

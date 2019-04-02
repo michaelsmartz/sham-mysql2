@@ -449,3 +449,10 @@ COLLATE='utf8mb4_0900_ai_ci'
 
 ALTER TABLE `candidates`
 ADD COLUMN `employee_no` VARCHAR(45) NULL AFTER `id`;
+
+
+ALTER TABLE `contract_recruitment`
+	ADD COLUMN `master_copy` MEDIUMBLOB NULL DEFAULT NULL AFTER `contract_id`;
+
+ALTER TABLE `offer_recruitment`
+	ADD COLUMN `master_copy` MEDIUMBLOB NULL DEFAULT NULL AFTER `offer_id`;

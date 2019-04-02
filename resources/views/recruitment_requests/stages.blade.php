@@ -123,8 +123,8 @@
     <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
     <script>
-        var initializeFileUpload = function() {
-            $('#one').fileUploader({
+        window.vueFileUpload = function() {
+            $('#uploadSignedOffer').fileUploader({
                 lang: 'en',
                 useFileIcons: true,
                 fileMaxSize: {!! '1.7' !!},
@@ -204,7 +204,6 @@
             $('#interviewing').click(function(){
                 $('.collapse').collapse('hide');
             });
-            initializeFileUpload();
         });
 
         $('.datepicker').pickadate();

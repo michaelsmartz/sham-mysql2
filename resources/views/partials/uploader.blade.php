@@ -6,8 +6,8 @@
 <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
 <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
 <script>
-    var initializeFileUpload = function() {
-        $('#one').fileUploader({
+    window.initializeFileUpload = function() {
+        $('.fileUploader').fileUploader({
             lang: 'en',
             useFileIcons: true,
             fileMaxSize: {!! $uploader['fileMaxSize'] or '1.7' !!},

@@ -2,31 +2,23 @@ import {on} from 'delegated-events';
 import Popper from 'popper.js';
 import asyncJS from 'async-js';
 
-window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
+var $ = require('jquery');
 
 require('touch-dnd/touch-dnd.js');
 
-import pickadate from 'pickadate-webpack/lib/picker';
+var amsulPickadate = require('pickadate-webpack/lib/picker');
 require('pickadate-webpack/lib/picker.date.js');
-window.on = global.on = on;
-window.pickadate = pickadate;
 
-$.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
-
-function specialTitleCaseFormat() {
+window.specialTitleCaseFormat = function() {
     //var s = "mcdonald mack macdonald macleod elizabeth mchenry-phipps";
     var s = $(this).val();
     s = s.replace(/\b(m(a)?c)?(\w)(?=\w)/ig, function($1, $2, $3, $4) {
         return ($2) ? "M" + ($3 || "") + "c" + $4.toUpperCase() : $4.toUpperCase();
     });
     $(this).val(s);
-}
+};
 
-function validateDigitQty(e) {
+window.validateDigitQty = function(e){
     var key = window.event ? e.keyCode : e.which;
     if (e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 37 || e.keyCode == 39) {
         return true;
@@ -34,6 +26,35 @@ function validateDigitQty(e) {
         return false;
     } else return true;
 };
+
+
+$(function() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('[data-toggle=offcanvas]').click(function() {
+        $('.row-offcanvas').toggleClass('active');
+    });
+    // Extend the default picker options for all instances.
+    $.extend($.fn.pickadate.defaults, {
+        format: 'yyyy-mm-dd',
+        formatSubmit: 'yyyy-mm-dd',
+        selectYears: 20,
+        selectMonths: true,
+        closeOnSelect: true,
+        container: '#date-picker'
+    });
+
+    $(window).blur(function() {
+        var $focused = $(document.activeElement);
+        if ($focused.hasClass('picker__holder')) {
+            $(document.activeElement).blur();
+        }
+    });
+});
 
 $.fn.mirror = function (selector) {
     return this.each(function () {
@@ -59,27 +80,10 @@ $.fn.clickToggle = function (f1, f2) {
     });
 };
 
-$(function(){
-    $('[data-toggle=offcanvas]').click(function() {
-        $('.row-offcanvas').toggleClass('active');
-    });
-    // Extend the default picker options for all instances.
-    $.extend($.fn.pickadate.defaults, {
-        format: 'yyyy-mm-dd',
-        formatSubmit: 'yyyy-mm-dd',
-        selectYears: 20,
-        selectMonths: true,
-        closeOnSelect: true,
-        container: '#date-picker'
-    });
+on('change keyup input', 'input.fix-case', specialTitleCaseFormat);
 
-    $(window).blur(function() {
-        var $focused = $(document.activeElement);
-        if ($focused.hasClass('picker__holder')) {
-            $(document.activeElement).blur();
-        }
-    });
-});
+window.$ = window.jQuery = global.$ = global.jQuery = $;
+window.on = global.on = on;
 
 // Listen for browser-generated events.
 on('focusin', 'input.datepicker', function(event) {
@@ -133,10 +137,10 @@ on('focusin', 'input.datepicker', function(event) {
     }
 
 });
-on('change keyup input', 'input.fix-case', specialTitleCaseFormat);
 
-window.validateDigitQty = validateDigitQty;
+window.pickadate = amsulPickadate;
 
+// make bootstrap js available
 window.Popper = Popper;
 window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-disable-line
 window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
