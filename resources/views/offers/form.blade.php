@@ -33,7 +33,7 @@
 <div class="row">
     <div class="form-group col-xs-12 {{ $errors->has('content') ? 'has-error' : '' }}">
         <label for="content">Content <i class="fa fa-info-circle text-danger" data-wenk="Required"></i></label>
-            <textarea class="form-control" name="content" cols="50" rows="5" id="tiny" required="true" placeholder="Enter content">{{ old('content', optional($offer)->content) }}</textarea>
+            <textarea class="form-control" name="content" cols="50" rows="5" id="tiny" placeholder="Enter content">{{ old('content', optional($offer)->content) }}</textarea>
             {!! $errors->first('content', '<p class="help-block">:message</p>') !!}
     </div>
 </div>

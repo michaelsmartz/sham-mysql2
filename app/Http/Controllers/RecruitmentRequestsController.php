@@ -315,7 +315,6 @@ class RecruitmentRequestsController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
 
-
     /**
      * Remove the specified branch from the storage.
      *
@@ -357,9 +356,13 @@ class RecruitmentRequestsController extends CustomController
                     {
                         return  $query->where('recruitment_id', $id);
                     },
-                    'offers'=> function ($query) use ($id)
+                    'contracts'=> function ($query) use ($id)
                     {
                         return  $query->where('recruitment_id', $id);
+                    },
+                    'offers'=> function ($query) use ($id, $data)
+                    {
+                        return  $query->where('recruitment_id', '=', $id);
                     }
                 ])
                 ->get();
@@ -394,8 +397,17 @@ class RecruitmentRequestsController extends CustomController
 
             $data = $this->contextObj->findData($id);
         }
+        
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+            "fileMaxSize" => "5", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+        ];
 
-        return view($this->baseViewPath .'.stages', compact('data'));
+        return view($this->baseViewPath .'.stages', compact('data','uploader'));
     }
 
     /**
@@ -510,15 +522,27 @@ class RecruitmentRequestsController extends CustomController
         $candidate = Candidate::with('title')->find($cdt);
         $offer = Offer::find($offerId);
 
-        $content = $this->getOfferContentInfo($recruitment, $candidate, $offer);
+        $offerRecruitment = $recruitment->offers()->where([
+                                ['candidate_id', $cdt]
+                            ])->get()->first();
 
-        try {
+        // offer letter is signed, download the original, i.e. archived master copy
+        if($offerRecruitment->signed_on != null){
+            $content = $offerRecruitment->master_copy;
+            
+            try {            
+                $pdf = PDF::loadHTML($content)->setPaper('a4', 'portrait');
+            } catch(Exception $exception) {}
 
-            $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate','content'))
-                   ->setPaper('a4', 'portrait');
+        } else {
+            $content = $this->getOfferContentInfo($recruitment, $candidate, $offer);
+            
+            try {
 
-        } catch(Exception $exception) {
+                $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate','content'))
+                    ->setPaper('a4', 'portrait');
 
+            } catch(Exception $exception) {}
         }
 
         //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
@@ -526,6 +550,64 @@ class RecruitmentRequestsController extends CustomController
 
     }
 
+    public function uploadSignedOfferForm(Request $request){
+
+        $recruitment_id = intval(Route::current()->parameter('recruitment_request'));
+        $candidate_id = intval(Route::current()->parameter('candidate'));
+        $offer_id = intval(Route::current()->parameter('offer'));
+
+        $data = $this->contextObj::find($recruitment_id);
+
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['pdf']",
+            "fileMaxSize" => "5", // in MB
+            "totalMaxSize" => "6", // in MB
+            "multiple" => "" // set as empty string for single file, default multiple if not set
+        ];
+
+        if($request->ajax()) {
+            $view = view('recruitments.upload-signed', compact('data', 'recruitment_id', 'candidate_id', 'offer_id', 'uploader'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view('recruitments.upload-signed', compact('data', 'recruitment_id', 'candidate_id', 'offer_id', 'uploader'));
+
+    }
+
+    public function saveSignedOfferForm(Request $request){
+        try {
+            $input = array_except($request->all(),array('_token','_method','attachment','signed_on_submit'));
+            
+            $data = Recruitment::with('offers')->find($input['recruitment_id']);
+            $offerRecruitment = $data->offers()->where([
+                ['candidate_id', '=', $input['candidate_id']],
+                ['offer_id', '=', $input['offer_id']]
+            ])->get()->first();
+
+            if($offerRecruitment) {
+                $offerRecruitment->pivot->signed_on = $input['signed_on'];
+                $offerRecruitment->pivot->comments = $input['comments'];
+                $offerRecruitment->pivot->save();
+                
+                $this->attach($request, $offerRecruitment->pivot->id, 'OfferRecruitmentAttachments');
+            }
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
+        }
+
+        \Session::put('success', 'Offer updated Successfully!!');
+
+        return redirect()->route($this->baseViewPath .'.index');
+    }
+    
     protected function saveRecruitmentRequest($request, $id = null) {
 
         $employee_id  = (\Auth::check()) ? \Auth::user()->employee_id : 0;
