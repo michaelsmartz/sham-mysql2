@@ -132,8 +132,10 @@ class CategoryQuestionsController extends CustomController
 
         $categoryquestionchoices = CategoryQuestionChoice::where('category_question_id',$id)->get();
 
+        $categoryquestionchoicesCount = $categoryquestionchoices->count();
+
         return view($this->baseViewPath .'.edit',
-            compact('_mode','fullPageEdit','data','categoryQuestionTypes','categoryquestionchoices'));
+            compact('_mode','fullPageEdit','data','categoryQuestionTypes','categoryquestionchoices','$categoryquestionchoicesCount'));
     }
 
     /**
