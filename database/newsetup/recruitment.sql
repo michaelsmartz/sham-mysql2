@@ -446,3 +446,6 @@ CREATE TABLE `offer_recruitment` (
 )
 COLLATE='utf8mb4_0900_ai_ci'
 ;
+
+ALTER TABLE `candidates`
+ADD COLUMN `employee_no` VARCHAR(45) NULL AFTER `id`;

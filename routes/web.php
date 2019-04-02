@@ -219,6 +219,7 @@ Auth::routes();
         Route::post('recruitment_requests/{recruitment_request}/interviewing/{candidate}', 'RecruitmentRequestsController@getInterviewing')->name('recruitment_requests.get-interviewing');
 
         Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-offer', 'RecruitmentRequestsController@downloadOffer')->name('recruitment_requests.download-offer');
+        Route::any('recruitment_requests/{recruitment_request}/candidate/{candidate}/hired', 'RecruitmentRequestsController@importHiredCandidate')->name('recruitment_requests.hired');
         Route::get('recruitment_requests/{request?}/manage-candidate', 'RecruitmentRequestsController@manageCandidate');
         Route::patch('recruitment_requests/{request?}/update-candidate', 'RecruitmentRequestsController@updateCandidate')->name('recruitment_requests.update-candidate');
         Route::fileResource('candidates', 'CandidatesController');

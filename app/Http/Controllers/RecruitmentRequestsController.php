@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Candidate;
 use App\CandidateInterviewAttachments;
 use App\Department;
+use App\Employee;
 use App\EmployeeStatus;
 use App\Enums\InterviewResultsType;
 use App\Enums\InterviewStatusType;
@@ -15,7 +16,9 @@ use App\QualificationRecruitment;
 use App\Recruitment;
 use App\Skill;
 use App\Support\Helper;
+use App\SysConfigValue;
 use App\SystemSubModule;
+use App\TimelineManager;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
@@ -525,6 +528,105 @@ class RecruitmentRequestsController extends CustomController
         return $pdf->download('offer letter.pdf');
 
     }
+
+    public function importHiredCandidate(Request $request, $recruitment_id, $candidate_id){
+        $result = true;
+
+        $comments = $request->get('comments');
+        $employee_no = $request->get('employee_no');
+
+        try{
+            if(!is_null($candidate_id)){
+                $candidate = Candidate::find($candidate_id);
+
+                if($candidate) {
+                    $candidate->employee_no = $employee_no;
+                    $candidate->save();
+
+
+                    $candidate_arr = $candidate->ToArray();
+
+                    $sfeCode = SysConfigValue::where('key', '=', 'LATEST_SFE_CODE')->first();
+
+                    if ($sfeCode !== null) {
+                        $candidate_arr['employee_code'] = $this->increment($sfeCode->value);
+                        $candidate_arr['employee_no'] = $employee_no;
+                        $sfeCode->value = $candidate_arr['employee_code'];
+                    }
+                    $sfeCode->save();
+
+                    $data_employee = array_except($candidate_arr,
+                        ['addr_line_1',
+                            'addr_line_2',
+                            'addr_line_3',
+                            'addr_line_4',
+                            'city',
+                            'province',
+                            'zip',
+                            'preferred_notification_id',
+                            'created_at',
+                            'updated_at',
+                            'deleted_at',
+                            'name',
+                        ]);
+
+                    $data_address = array_except($candidate_arr, [
+                        'id',
+                        'title_id',
+                        'gender_id',
+                        'marital_status_id',
+                        'job_title_id',
+                        'first_name',
+                        'surname',
+                        'email',
+                        'id_number',
+                        'phone',
+                        'date_available',
+                        'salary_expectation',
+                        'preferred_notification_id',
+                        'birth_date',
+                        'overview',
+                        'cover',
+                        'picture',
+                        'employee_code',
+                        'employee_no',
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                        'name'
+                    ]);
+
+                    $employee = new Employee();
+
+                    $all_employees = Employee::all()->toArray();
+
+                    //if employee_no already exist update else insert
+                    if (in_array($data_employee['employee_no'], array_column($all_employees, 'employee_no'))) { // search value in the array
+                        $data = Employee::where('employee_no', $data_employee['employee_no'])->get()->first();
+
+                        $data->update($data_employee);
+                        TimelineManager::updateEmployeeTimelineHistory($data);
+
+                    } else {
+                        $data = $employee->addData($data_employee);
+                        TimelineManager::addEmployeeTimelineHistory($data);
+                    }
+                }
+            }
+        } catch(Exception $exception) {
+            return false;
+        }
+        return Response()->json($result);
+    }
+
+    protected function increment($string) {
+        return preg_replace_callback('/^([^0-9]*)([0-9]+)([^0-9]*)$/', array($this, "subfunc"), $string);
+    }
+
+    protected function subfunc($m) {
+        return $m[1].str_pad($m[2]+1, strlen($m[2]), '0', STR_PAD_LEFT).$m[3];
+    }
+
 
     protected function saveRecruitmentRequest($request, $id = null) {
 

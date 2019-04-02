@@ -208,7 +208,42 @@ var vm = new Vue({
 			}).then(function(blob) {
 				download(blob, 'offer letter.pdf');
 			});
-		}
+		},
+        importHired: function(){
+            var vm = this;
+            var comments = $('#hired_comments').val(),
+                employee_no = $('#employee_no').val();
+
+            alerty.confirm(
+                "Are you sure to <strong class='text-danger'> import </strong> candidate " + vm.current.name + "'s data <strong class='text-danger'></strong>?<br>", {
+                    okLabel: '<span class="text-danger">Yes</span>',
+                    cancelLabel: 'No'
+                },
+                function () {
+                    fetch('./candidate/' + vm.current.id + '/hired', {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json, */*",
+                            "X-Requested-With": "XMLHttpRequest",
+                            "X-CSRF-TOKEN": token
+                        },
+                        method: 'post',
+                        body: JSON.stringify({ comments: comments, employee_no: employee_no}),
+                        credentials: "same-origin"
+                    })
+					.then(function (res) {
+						if (res.ok == true) {
+							alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
+                                $('.hired').attr('disabled','disabled');
+                                $('#hired_comments').attr('disabled','disabled');
+                                $('#employee_no').attr('disabled','disabled');
+							});
+						}
+
+					});
+                }
+            );
+        }
 	},
 	created: function () {
 		this.fetchCandidates();
