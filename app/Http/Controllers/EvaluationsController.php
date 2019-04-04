@@ -283,9 +283,46 @@ class EvaluationsController extends CustomController
 
             $data->assessors()->sync($selectedassessors);
 
+            // Removing deleted assessors_results from evaluation_results
+            // Feature added on 2019-04-04 following meeting with Rebinc
+            $InitialAssessors = $data->assessors()->pluck('full_name','employee_evaluation.employee_id');
+            foreach ($InitialAssessors as $key => $value){
+
+                if(!in_array($key,$selectedassessors)){
+                    $data->evaluationResults()->detach([$key]);
+                }
+            }
+
+            // Setting the evaluation status if new assesor has been added or removed
+            $employee_evaluations = $data->assessors()->get();
+
+            if ($employee_evaluations !=null && !empty($employee_evaluations)) {
+                $closed = true;
+
+                foreach ($employee_evaluations as $result)
+                {
+                    if($result->is_completed == false)
+                    {
+                        $closed = false;
+                    }
+
+                }
+                if($closed)
+                {
+                    $data->update(['evaluation_status_id'=>EvaluationStatusType::CLOSED]);
+                }
+                else
+                {
+                    $data->update(['evaluation_status_id'=>EvaluationStatusType::OPEN]);
+                }
+            }
+
+
+
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            return $exception->getMessage();
 
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
