@@ -34,5 +34,6 @@ class ContractRecruitmentAttachments extends Model
                   'signed_on',
                   'start_date',
                   'comments',
+                  'master_copy'
               ];
 }

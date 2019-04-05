@@ -10,6 +10,7 @@ use App\EmployeeStatus;
 use App\Enums\InterviewResultsType;
 use App\Enums\InterviewStatusType;
 use App\Enums\RecruitmentType;
+use App\Contract;
 use App\Interview;
 use App\Offer;
 use App\QualificationRecruitment;
@@ -391,6 +392,20 @@ class RecruitmentRequestsController extends CustomController
 
     }
 
+    public function getContracts(Request $request) {
+        try {
+
+            $result = Contract::select(['description','id'])->get();
+
+        } catch(Exception $exception) {
+
+            $result = false;
+        }
+
+        return Response()->json($result);
+
+    }
+
     public function showStages(Request $request){
         $id = Route::current()->parameter('recruitment_request');
 
@@ -529,27 +544,118 @@ class RecruitmentRequestsController extends CustomController
                                 ['candidate_id', $cdt]
                             ])->get()->first();
 
+        $content = $this->getOfferContentInfo($recruitment, $candidate, $offer);
+
+        try {
+
+            $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate','content'))
+                ->setPaper('a4', 'portrait');
+
+        } catch(Exception $exception) {}
+  
+        //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
+        return $pdf->download('offer letter.pdf');
+
+    }
+
+    public function downloadContract(Request $request){
+
+        $id = intval(Route::current()->parameter('recruitment_request'));
+        $cdt = intval(Route::current()->parameter('candidate'));
+
+        $contractId = $request->get('contract_id');
+
+        $recruitment = Recruitment::with('department')->find($id);
+        $candidate = Candidate::with('title')->find($cdt);
+        $contract = Contract::find($contractId);
+
+        $contractRecruitment = $recruitment->contracts()->where([
+                                ['candidate_id', $cdt]
+                            ])->get()->first();
+
+        // no previously set contract
+        if ($contractRecruitment == null) {
+
+        }
+
+        $content = $this->getOfferContentInfo($recruitment, $candidate, $contract);
+            
+        try {
+
+            $pdf = PDF::loadView('recruitments.contract-document', compact('recruitment','candidate','content'))
+                ->setPaper('a4', 'portrait');
+
+        } catch(Exception $exception) {}
+
+        //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
+        return $pdf->download('contract.pdf');
+    }
+
+    public function downloadSignedOffer(Request $request){
+
+        $id = intval(Route::current()->parameter('recruitment_request'));
+        $cdt = intval(Route::current()->parameter('candidate'));
+
+        $offerId = $request->get('offer_id');
+
+        $recruitment = Recruitment::find($id);
+        $offer = Offer::find($offerId);
+
+        $offerRecruitment = $recruitment->offers()->where([
+                                ['candidate_id', $cdt]
+                            ])->get()->first();
+
         // offer letter is signed, download the original, i.e. archived master copy
         if($offerRecruitment->signed_on != null){
             $content = $offerRecruitment->master_copy;
+            
+            try {            
+                $pdf = PDF::loadHTML($content)->setPaper('a4', 'portrait');
 
-            try {
+            } catch(Exception $exception) {}
+
+        }
+
+        //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
+        return $pdf->download('signed offer letter.pdf');
+
+    }
+
+    public function downloadSignedContract(Request $request){
+
+        $id = intval(Route::current()->parameter('recruitment_request'));
+        $cdt = intval(Route::current()->parameter('candidate'));
+
+        $contractId = $request->get('contract_id');
+
+        $recruitment = Recruitment::find($id);
+        $contract = Contract::find($contractId);
+
+        $contractRecruitment = $recruitment->contracts()->where([
+                                ['candidate_id', $cdt]
+                            ])->get()->first();
+
+        // offer letter is signed, download the original, i.e. archived master copy
+        if($contractRecruitment->signed_on != null){
+            $content = $contractRecruitment->master_copy;
+            
+            try {            
                 $pdf = PDF::loadHTML($content)->setPaper('a4', 'portrait');
             } catch(Exception $exception) {}
 
         } else {
-            $content = $this->getOfferContentInfo($recruitment, $candidate, $offer);
-
+            $content = $this->getOfferContentInfo($recruitment, $candidate, $contract);
+            
             try {
 
-                $pdf = PDF::loadView('recruitments.offer-letter', compact('recruitment','candidate','content'))
+                $pdf = PDF::loadView('recruitments.contract-document', compact('recruitment','candidate','content'))
                     ->setPaper('a4', 'portrait');
 
             } catch(Exception $exception) {}
         }
 
         //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
-        return $pdf->download('offer letter.pdf');
+        return $pdf->download('signed contract.pdf');
 
     }
 
@@ -651,7 +757,6 @@ class RecruitmentRequestsController extends CustomController
         return $m[1].str_pad($m[2]+1, strlen($m[2]), '0', STR_PAD_LEFT).$m[3];
     }
 
-
     public function uploadSignedOfferForm(Request $request){
 
         $recruitment_id = intval(Route::current()->parameter('recruitment_request'));
@@ -670,7 +775,7 @@ class RecruitmentRequestsController extends CustomController
         ];
 
         if($request->ajax()) {
-            $view = view('recruitments.upload-signed', compact('data', 'recruitment_id', 'candidate_id', 'offer_id', 'uploader'))->renderSections();
+            $view = view('recruitments.upload-signed-offer', compact('data', 'recruitment_id', 'candidate_id', 'offer_id', 'uploader'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -679,13 +784,72 @@ class RecruitmentRequestsController extends CustomController
             ]);
         }
 
-        return view('recruitments.upload-signed', compact('data', 'recruitment_id', 'candidate_id', 'offer_id', 'uploader'));
+        return view('recruitments.upload-signed-offer', compact('data', 'recruitment_id', 'candidate_id', 'offer_id', 'uploader'));
 
+    }
+
+    public function uploadSignedContractForm(Request $request){
+
+        $recruitment_id = intval(Route::current()->parameter('recruitment_request'));
+        $candidate_id = intval(Route::current()->parameter('candidate'));
+        $contract_id = intval(Route::current()->parameter('contract'));
+
+        $data = $this->contextObj::find($recruitment_id);
+
+        $uploader = [
+            "fieldLabel" => "Add attachments...",
+            "restrictionMsg" => "Upload document files",
+            "acceptedFiles" => "['pdf']",
+            "fileMaxSize" => "2", // in MB
+            "totalMaxSize" => "2", // in MB
+            "multiple" => "" // set as empty string for single file, default multiple if not set
+        ];
+
+        if($request->ajax()) {
+            $view = view('recruitments.upload-signed-contract', compact('data', 'recruitment_id', 'candidate_id', 'contract_id', 'uploader'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view('recruitments.upload-signed-contract', compact('data', 'recruitment_id', 'candidate_id', 'contract_id', 'uploader'));
+
+    }
+
+    public function saveSignedContractForm(Request $request){
+        try {
+            $input = array_except($request->all(),array('_token','_method','signed_on_submit'));
+
+            $data = Recruitment::with('contracts')->find($input['recruitment_id']);
+            $contractRecruitment = $data->contracts()->where([
+                ['candidate_id', '=', $input['candidate_id']],
+                ['contract_id', '=', $input['contract_id']]
+            ])->get()->first();
+
+            if($contractRecruitment) {
+                $contractRecruitment->pivot->signed_on = $input['signed_on'];
+                $contractRecruitment->pivot->comments = $input['comments'];
+                $contractRecruitment->pivot->master_copy = $input['attachment'][0]['value'];
+                $contractRecruitment->pivot->save();
+
+                $this->attach($request, $contractRecruitment->pivot->id, 'ContractRecruitmentAttachments');
+            }
+
+        } catch (Exception $exception) {
+            \Session::put('error', 'could not update '. $this->baseFlash . '!');
+        }
+
+        \Session::put('success', 'Contract updated Successfully!!');
+
+        return redirect()->route($this->baseViewPath .'.index');
     }
 
     public function saveSignedOfferForm(Request $request){
         try {
-            $input = array_except($request->all(),array('_token','_method','attachment','signed_on_submit'));
+            $input = array_except($request->all(),array('_token','_method','signed_on_submit'));
 
             $data = Recruitment::with('offers')->find($input['recruitment_id']);
             $offerRecruitment = $data->offers()->where([
@@ -696,6 +860,7 @@ class RecruitmentRequestsController extends CustomController
             if($offerRecruitment) {
                 $offerRecruitment->pivot->signed_on = $input['signed_on'];
                 $offerRecruitment->pivot->comments = $input['comments'];
+                $offerRecruitment->pivot->master_copy = $input['attachment'][0]['value'];
                 $offerRecruitment->pivot->save();
 
                 $this->attach($request, $offerRecruitment->pivot->id, 'OfferRecruitmentAttachments');

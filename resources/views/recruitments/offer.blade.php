@@ -43,11 +43,11 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-11 col-md-offset-1">
+                        <div class="col-md-11 col-md-offset-1" v-show="current.offers[0].signed_on == null">
                             <div class="col-md-7">
                                 <h4>Original Copy</h4>
                             </div>
-                            <div class="col-md-7" v-show="current.offers[0].signed_on == null">
+                            <div class="col-md-7">
                                 <label for="offer_id">Offer Letter</label>
                                 <select class="form-control" name="offer_id" id="offer_id" v-model="currentOffer">
                                         <option value="">Choose Offer Letter</option>
@@ -64,15 +64,22 @@
                             <div class="col-md-12">
                                 <hr/>
                             </div>
+                        </div>
+                        <div class="col-md-11 col-md-offset-1">
                             <div class="col-md-7">
                                 <h4>Signed Copy</h4>
                             </div>
                             <div class="col-md-12" v-if="current.offers[0].signed_on != null">
                                 The offer letter was signed on @{{current.offers[0].signed_on | formatDate}} 
                             </div>
-                            <div class="col-md-7" style="padding-top: 10px;" v-if="current.offers[0].signed_on == null">
-                                <a href="#light-modal" class="btn btn-primary pull-right" data-wenk="Upload" @click="uploadSignedOffer(current.id)">
-                                    <i class="fa fa-upload"></i>
+                            <div class="col-md-7" style="padding-top: 10px;">
+                                <a href="#light-modal" class="btn btn-primary pull-right" data-wenk="Upload" 
+                                 @click="uploadSignedOffer(current.id)" v-if="current.offers[0].signed_on == null">
+                                    <i class="fa fa-upload"></i> Upload
+                                </a>
+                                <a href="#light-modal" class="btn btn-primary pull-right" data-wenk="Download" 
+                                 @click="downloadSignedOffer(current.id)" v-if="current.offers[0].signed_on != null">
+                                    <i class="fa fa-download"></i> Download
                                 </a>
                             </div>
                             

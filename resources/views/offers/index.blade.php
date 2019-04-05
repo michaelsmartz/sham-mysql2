@@ -42,9 +42,6 @@
                                     <button type="button" class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$offer->id}}', event)">
                                         <i class="glyphicon glyphicon-edit text-primary"></i>
                                     </button>
-                                    <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$offer->id}}')">
-                                        <i class="glyphicon glyphicon-remove text-danger"></i>
-                                    </button>
                                 </div>
                             </td>
                         </tr>

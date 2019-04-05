@@ -55,6 +55,7 @@ var vm = new Vue({
 		submitInterview: false,
 		interviews: [],
 		offerLetters: [],
+		contracts: [],
 		currentOffer: 0,
 		currentContract: 0
 	},
@@ -206,6 +207,24 @@ var vm = new Vue({
 				console.log("Error Reading data " + err);
 			  });
 		},
+		fetchContracts: function() {
+			fetch('./contracts', {
+				credentials: "same-origin",
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				}
+			  })
+			.then(res => res.json())
+			.then(res => {
+				this.contracts = res;
+			}).catch(err => {
+				// Do something for an error here
+				console.log("Error Reading data " + err);
+			  });
+		},
 		getBackground: function(src){
 			if (src !== null) {
 				return 'background-image: ' + 'url(' + src + ')';
@@ -270,7 +289,61 @@ var vm = new Vue({
 					});
                 }
             );
-        }
+		},
+		downloadContract: function(){
+			var contractId = $('#contract_id option:selected').val();
+				console.log(contractId);
+
+			fetch('./candidate/' + this.current.id + '/download-contract', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				body: JSON.stringify({ contract_id: contractId}),
+				credentials: "same-origin"
+			}).then(function(resp) {
+				return resp.blob();
+			}).then(function(blob) {
+				//download(blob, 'contract.pdf');
+			});
+		},
+		downloadSignedOffer: function(){
+
+			fetch('./candidate/' + this.current.id + '/download-signed-offer', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				credentials: "same-origin"
+			}).then(function(resp) {
+				return resp.blob();
+			}).then(function(blob) {
+				download(blob, 'offer.pdf');
+			});
+		},
+		downloadSignedContract: function(){
+
+			fetch('./candidate/' + this.current.id + '/download-signed-contract', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				credentials: "same-origin"
+			}).then(function(resp) {
+				return resp.blob();
+			}).then(function(blob) {
+				download(blob, 'contract.pdf');
+			});
+		}
 	},
 	created: function () {
 		this.fetchCandidates();
@@ -286,6 +359,7 @@ var vm = new Vue({
 			}
 		});
 		this.fetchOfferLetters();
+		this.fetchContracts();
 	},
 	components: {
 		'modal': Modal,
