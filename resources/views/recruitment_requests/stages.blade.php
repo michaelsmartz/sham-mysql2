@@ -82,19 +82,19 @@
                 @endcomponent
             </div>
             <div class="tab-pane"  role="tabpanel" id="offer">
-                    @component('recruitments.offer', ['step' => [
-                     ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve offer'],
-                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
-                        ] ])
-                    @endcomponent
+                @component('recruitments.offer', ['step' => [
+                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve offer'],
+                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                    ] ])
+                @endcomponent
 
             </div>
             <div class="tab-pane"  role="tabpanel" id="contract">
-                    @component('recruitments.contract', ['step' => [
-                     ['id'=>'item-approve','btnclass'=>'btn btn-success','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve contract'],
-                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
-                        ] ])
-                    @endcomponent
+                @component('recruitments.contract', ['step' => [
+                    ['id'=>'item-approve','btnclass'=>'btn btn-success','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve contract'],
+                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                    ] ])
+                @endcomponent
             </div>
             <div class="tab-pane" role="tabpanel" id="hired">
                 @component('recruitments.hired', ['step' => [
@@ -107,9 +107,7 @@
         </div>
 
         <div id="date-picker"></div>
-        <modal v-if="showModal" @close="showModal=false">
-
-        </modal>
+        <modal v-if="showModal" @close="showModal=false"></modal>
     </section>
 @endsection
 

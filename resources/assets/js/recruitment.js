@@ -7,6 +7,16 @@ window.Vue = require('vue/dist/vue.common.js');
 let download = require("downloadjs");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+window.waitForEl = function(selector, callback) {
+	if (jQuery(selector).length) {
+	  callback();
+	} else {
+	  setTimeout(function() {
+		waitForEl(selector, callback);
+	  }, 100);
+	}
+};
+
 Vue.filter('formatDate', function(value) {
   if (value) {
     return moment(String(value)).format('DD/MM/YYYY')
@@ -69,7 +79,7 @@ var vm = new Vue({
 				return vm.people;
 			} else {
 				return vm.people.filter(function (person) {
-					return person.status[0].status === category;
+					return (person.status[0].status >= 0 && person.status[0].status === category);
 				});
 			}
 		}
@@ -245,7 +255,6 @@ var vm = new Vue({
 			var startingOn = $('#starting_on').val(),
 				contractId = $('#contract_id').val(),
 				offerId = $('#offer_id option:selected').val();
-				console.log(offerId);
 
 			fetch('./candidate/' + this.current.id + '/download-offer', {
 				headers: {
@@ -319,11 +328,11 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				//download(blob, 'contract.pdf');
+				download(blob, 'contract.pdf');
 			});
 		},
 		downloadSignedOffer: function(){
-
+			var offerId = $('#offer_id').val();
 			fetch('./candidate/' + this.current.id + '/download-signed-offer', {
 				headers: {
 					"Content-Type": "application/json",
@@ -332,15 +341,16 @@ var vm = new Vue({
 					"X-CSRF-TOKEN": token
 				},
 				method: 'post',
+				body: JSON.stringify({ offer_id: offerId}),
 				credentials: "same-origin"
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, 'offer.pdf');
+				download(blob, 'signed offer.pdf');
 			});
 		},
 		downloadSignedContract: function(){
-
+			var contractId = $('#contract_id').val();
 			fetch('./candidate/' + this.current.id + '/download-signed-contract', {
 				headers: {
 					"Content-Type": "application/json",
@@ -349,11 +359,12 @@ var vm = new Vue({
 					"X-CSRF-TOKEN": token
 				},
 				method: 'post',
+				body: JSON.stringify({ contract_id: contractId}),
 				credentials: "same-origin"
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, 'contract.pdf');
+				download(blob, 'signed contract.pdf');
 			});
 		}
 	},
@@ -364,14 +375,15 @@ var vm = new Vue({
 		on('focusin', 'input.datepicker', function(event) {
 
 			// Use the picker object directly.
-			var picker = $(this).fn.pickadate('picker');
+			var picker = $(this).pickadate('picker');
 			
 			if(picker === undefined) {
-				picker = $(this).fn.pickadate().pickadate('picker');
+				picker = $(this).pickadate().pickadate('picker');
 			}
 		});
 		this.fetchOfferLetters();
 		this.fetchContracts();
+		$.when($('#contract_signed_on')).then((self) => { console.log(self); });
 	},
 	components: {
 		'modal': Modal,

@@ -597,37 +597,33 @@ class RecruitmentRequestsController extends CustomController
     public function downloadSignedOffer(Request $request){
 
         $id = intval(Route::current()->parameter('recruitment_request'));
-        $cdt = intval(Route::current()->parameter('candidate'));
+        $candidateId = intval(Route::current()->parameter('candidate'));
 
         $offerId = $request->get('offer_id');
 
         $recruitment = Recruitment::find($id);
         $offer = Offer::find($offerId);
-
+        
         $offerRecruitment = $recruitment->offers()->where([
-                                ['candidate_id', $cdt]
+                                ['candidate_id', $candidateId],
+                                ['offer_id', $offerId]
                             ])->get()->first();
 
         // offer letter is signed, download the original, i.e. archived master copy
-        if($offerRecruitment->signed_on != null){
-            $content = $offerRecruitment->master_copy;
-            
-            try {            
-                $pdf = PDF::loadHTML($content)->setPaper('a4', 'portrait');
+        $content = base64_decode(str_replace('data:application/pdf;base64,', '', $offerRecruitment->pivot->master_copy));
 
-            } catch(Exception $exception) {}
+        try {
 
-        }
+            return response()->pdf($content);
 
-        //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
-        return $pdf->download('signed offer letter.pdf');
+        } catch(Exception $exception) {}
 
     }
 
     public function downloadSignedContract(Request $request){
 
         $id = intval(Route::current()->parameter('recruitment_request'));
-        $cdt = intval(Route::current()->parameter('candidate'));
+        $candidateId = intval(Route::current()->parameter('candidate'));
 
         $contractId = $request->get('contract_id');
 
@@ -635,31 +631,19 @@ class RecruitmentRequestsController extends CustomController
         $contract = Contract::find($contractId);
 
         $contractRecruitment = $recruitment->contracts()->where([
-                                ['candidate_id', $cdt]
+                                ['candidate_id', $candidateId],
+                                ['contract_id', $contractId]
                             ])->get()->first();
 
-        // offer letter is signed, download the original, i.e. archived master copy
-        if($contractRecruitment->signed_on != null){
-            $content = $contractRecruitment->master_copy;
+        // contract is signed, download the original, i.e. archived master copy
+        $content = base64_decode(str_replace('data:application/pdf;base64,', '', $contractRecruitment->pivot->master_copy));
             
-            try {            
-                $pdf = PDF::loadHTML($content)->setPaper('a4', 'portrait');
-            } catch(Exception $exception) {}
-
-        } else {
-            $content = $this->getOfferContentInfo($recruitment, $candidate, $contract);
-            
-            try {
-
-                $pdf = PDF::loadView('recruitments.contract-document', compact('recruitment','candidate','content'))
-                    ->setPaper('a4', 'portrait');
-
-            } catch(Exception $exception) {}
-        }
+        try {
+            return response()->pdf($content);
+        } catch(Exception $exception) {}
 
         //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
         return $pdf->download('signed contract.pdf');
-
     }
 
     public function importHiredCandidate(Request $request, $recruitment_id, $candidate_id){
@@ -805,11 +789,11 @@ class RecruitmentRequestsController extends CustomController
         $data = $this->contextObj::find($recruitment_id);
 
         $uploader = [
-            "fieldLabel" => "Add attachments...",
-            "restrictionMsg" => "Upload document files",
+            "fieldLabel" => "Add signed offer letter...",
+            "restrictionMsg" => "Upload 1 document file",
             "acceptedFiles" => "['pdf']",
-            "fileMaxSize" => "5", // in MB
-            "totalMaxSize" => "6", // in MB
+            "fileMaxSize" => "2", // in MB
+            "totalMaxSize" => "2", // in MB
             "multiple" => "" // set as empty string for single file, default multiple if not set
         ];
 
@@ -836,8 +820,8 @@ class RecruitmentRequestsController extends CustomController
         $data = $this->contextObj::find($recruitment_id);
 
         $uploader = [
-            "fieldLabel" => "Add attachments...",
-            "restrictionMsg" => "Upload document files",
+            "fieldLabel" => "Add signed contract...",
+            "restrictionMsg" => "Upload 1 document file",
             "acceptedFiles" => "['pdf']",
             "fileMaxSize" => "2", // in MB
             "totalMaxSize" => "2", // in MB
@@ -860,7 +844,7 @@ class RecruitmentRequestsController extends CustomController
 
     public function saveSignedContractForm(Request $request){
         try {
-            $input = array_except($request->all(),array('_token','_method','signed_on_submit'));
+            $input = array_except($request->all(),array('_token','_method','contract_signed_on_submit'));
 
             $data = Recruitment::with('contracts')->find($input['recruitment_id']);
             $contractRecruitment = $data->contracts()->where([
@@ -869,7 +853,7 @@ class RecruitmentRequestsController extends CustomController
             ])->get()->first();
 
             if($contractRecruitment) {
-                $contractRecruitment->pivot->signed_on = $input['signed_on'];
+                $contractRecruitment->pivot->signed_on = $input['contract_signed_on'];
                 $contractRecruitment->pivot->comments = $input['comments'];
                 $contractRecruitment->pivot->master_copy = $input['attachment'][0]['value'];
                 $contractRecruitment->pivot->save();
@@ -888,7 +872,7 @@ class RecruitmentRequestsController extends CustomController
 
     public function saveSignedOfferForm(Request $request){
         try {
-            $input = array_except($request->all(),array('_token','_method','signed_on_submit'));
+            $input = array_except($request->all(),array('_token','_method','offer_signed_on_submit'));
 
             $data = Recruitment::with('offers')->find($input['recruitment_id']);
             $offerRecruitment = $data->offers()->where([
@@ -897,7 +881,7 @@ class RecruitmentRequestsController extends CustomController
             ])->get()->first();
 
             if($offerRecruitment) {
-                $offerRecruitment->pivot->signed_on = $input['signed_on'];
+                $offerRecruitment->pivot->signed_on = $input['offer_signed_on'];
                 $offerRecruitment->pivot->comments = $input['comments'];
                 $offerRecruitment->pivot->master_copy = $input['attachment'][0]['value'];
                 $offerRecruitment->pivot->save();

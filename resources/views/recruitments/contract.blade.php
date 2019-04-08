@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-11 col-md-offset-1" v-show="current.contracts[0].signed_on == null">
+                        <div class="col-md-11 col-md-offset-1" v-if="current.contracts[0].signed_on == null">
                             <div class="col-md-7">
                                 <h4>Original Copy</h4>
                             </div>
@@ -65,7 +65,8 @@
                                 <h4>Signed Copy</h4>
                             </div>
                             <div class="col-md-12" v-if="current.contracts[0].signed_on != null">
-                                The offer letter was signed on @{{current.contracts[0].signed_on | formatDate}} 
+                                <input type="hidden" name="contract_id" id="contract_id" v-model="current.contracts[0].contract_id">
+                                The contract was signed on @{{current.contracts[0].signed_on | formatDate}} 
                             </div>
                             <div class="col-md-7 btn-group" style="padding-top: 10px;">
                                 <a href="#light-modal" class="btn btn-success pull-right" data-wenk="Upload" 

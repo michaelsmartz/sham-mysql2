@@ -13,8 +13,8 @@
 
         <div class="form-group col-md-12">
             <span class="field">
-                <label for="signed_on">Signed On</label>
-                {!! Form::text('signed_on', null, ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Signed On', 'required', 'title'=>'Required','id'=>'signed_on']) !!}
+                <label for="offer_signed_on">Signed On</label>
+                {!! Form::text('offer_signed_on', null, ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Signed On', 'required', 'title'=>'Required','id'=>'offer_signed_on']) !!}
             </span>
         </div>
 

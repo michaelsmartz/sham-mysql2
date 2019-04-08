@@ -4,6 +4,7 @@
         {{ csrf_field() }}
         {{ method_field('post') }}
 
+        <div id="date-picker"></div>
         <div class="form-group col-md-12">
             <span class="field">
                 <label for="comments">Comments</label>
@@ -13,8 +14,8 @@
 
         <div class="form-group col-md-12">
             <span class="field">
-                <label for="signed_on">Signed On</label>
-                {!! Form::text('signed_on', null, ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Signed On', 'required', 'title'=>'Required','id'=>'signed_on']) !!}
+                <label for="contract_signed_on">Signed On</label>
+                {!! Form::text('contract_signed_on', null, ['class'=>'form-control field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Signed On', 'required', 'title'=>'Required','id'=>'contract_signed_on']) !!}
             </span>
         </div>
 
@@ -26,3 +27,9 @@
                 'acceptedFiles' => "['pdf']"
             ])
         </div>
+
+@section('post-body')
+    $(function(){
+        $('#contract_signed_on').datepicker();
+    });
+@endsection
