@@ -39142,7 +39142,8 @@ var vm = new Vue({
 		offerLetters: [],
 		contracts: [],
 		currentOffer: 0,
-		currentContract: 0
+		currentContract: 0,
+		currentComment: ''
 	},
 	computed: {
 		filteredPeople: function filteredPeople() {
@@ -39171,6 +39172,13 @@ var vm = new Vue({
 			} else {
 				this.currentContract = item.contracts[0].contract_id;
 			}
+
+			if (item.recruitment_status.length == 0) {
+				this.currentComment = "";
+			} else {
+				this.currentComment = item.recruitment_status[0].comment;
+			}
+
 			this.current = item;
 			this.counter = 0;
 			this.lastInterview = false;
@@ -39365,9 +39373,13 @@ var vm = new Vue({
 				}).then(function (res) {
 					if (res.ok == true) {
 						alerty.toasts('Operation successful', { 'place': 'top', 'time': 3500 }, function () {
-							$('.hired').attr('disabled', 'disabled');
-							$('#hired_comments').attr('disabled', 'disabled');
-							$('#employee_no').attr('disabled', 'disabled');
+							// $('.hired').attr('disabled','disabled');
+							// $('#hired_comments').attr('disabled','disabled');
+							// $('#employee_no').attr('disabled','disabled');
+							// this.current.employee_no = employee_no;
+							// this.currentComment = comments;
+							location.reload();
+							// $('#steps a[href="hired"]').tab('show');
 						});
 					}
 				});

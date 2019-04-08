@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Candidate;
 use App\CandidateInterviewAttachments;
 use App\Department;
+use App\EmailAddress;
 use App\Employee;
 use App\EmployeeStatus;
 use App\Enums\InterviewResultsType;
@@ -19,6 +20,7 @@ use App\Skill;
 use App\Support\Helper;
 use App\SysConfigValue;
 use App\SystemSubModule;
+use App\TelephoneNumber;
 use App\TimelineManager;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Traits\MediaFiles;
@@ -356,6 +358,7 @@ class RecruitmentRequestsController extends CustomController
                         return  $query->where('recruitment_id', $id);
                     },
                     'interviews.media',
+                    'recruitment_status',
                     'interviews'=> function ($query) use ($id)
                     {
                         return  $query->where('recruitment_id', $id);
@@ -726,21 +729,57 @@ class RecruitmentRequestsController extends CustomController
                         'name'
                     ]);
 
+                    $recruitment_status = [
+                      'recruitment_id' =>  $recruitment_id,
+                      'candidate_id' =>  $candidate_id,
+                      'comment' => $comments
+                    ];
+
                     $employee = new Employee();
 
                     $all_employees = Employee::all()->toArray();
 
                     //if employee_no already exist update else insert
                     if (in_array($data_employee['employee_no'], array_column($all_employees, 'employee_no'))) { // search value in the array
+                        DB::table('recruitment_status')
+                            ->where('recruitment_id', $recruitment_id)
+                            ->where('candidate_id', $candidate_id)
+                            ->update($recruitment_status);
+
                         $data = Employee::where('employee_no', $data_employee['employee_no'])->get()->first();
 
                         $data->update($data_employee);
                         TimelineManager::updateEmployeeTimelineHistory($data);
 
                     } else {
+                        DB::table('recruitment_status')
+                            ->insert($recruitment_status);
+
                         $data = $employee->addData($data_employee);
                         TimelineManager::addEmployeeTimelineHistory($data);
                     }
+
+                    if(empty($candidate_arr['phone'])) {
+                        TelephoneNumber::where('employee_id', '=', $data->id)->delete();
+                    }
+                    if(!empty($candidate_arr['phone'])){
+                        $data->phones()
+                            ->updateOrCreate(['employee_id'=>$data->id, 'telephone_number_type_id'=>1],
+                                ['tel_number' =>  $candidate_arr['phone']]);
+                    }
+
+                    if(!isset($candidate_arr['email'])) {
+                        EmailAddress::where('employee_id', '=', $data->id)->delete();
+                    }
+                    if(!empty($candidate_arr['email'])) {
+                        $data->emails()
+                            ->updateOrCreate(['employee_id'=>$data->id, 'email_address_type_id'=>1],
+                                ['email_address' => $candidate_arr['email']]);
+                    }
+
+                    $data->addresses()
+                        ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>1],
+                            $data_address);
                 }
             }
         } catch(Exception $exception) {

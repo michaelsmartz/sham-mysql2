@@ -9,7 +9,7 @@
 @section('content')
     <br>
     <section id="recruitment">
-        <ul class="nav nav-tabs steps">
+        <ul class="nav nav-tabs steps" id="steps">
             <li class="orange nav-item">
                 <a class="nav-link active show" href="#applied" role="tab" data-toggle="tab" @click="selectedCategory=0;current=false;">
                     <h2 :text-content.prop="people|stageCount(0)">&nbsp;</h2>
