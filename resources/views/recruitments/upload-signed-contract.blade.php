@@ -12,7 +12,7 @@
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            @include ('recruitments.upload-signed-offer-form', [
+            @include ('recruitments.upload-signed-contract-form', [
             'recruitment_id' => $recruitment_id,
             'candidate_id' => $candidate_id,
             'contract_id' => $contract_id

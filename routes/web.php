@@ -224,6 +224,7 @@ Auth::routes();
         Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-signed-offer', 'RecruitmentRequestsController@downloadSignedOffer')->name('recruitment_requests.download-signed-offer');
         Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/offer/{offer}/upload-offer-form', 'RecruitmentRequestsController@uploadSignedOfferForm')->name('recruitment_requests.upload-offer-form');
 
+        Route::post('recruitment_requests/{recruitment_request}/upload-contract', 'RecruitmentRequestsController@saveSignedContractForm')->name('recruitment_requests.upload-contract');
         Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-contract', 'RecruitmentRequestsController@downloadContract')->name('recruitment_requests.download-contract');
         Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-signed-contract', 'RecruitmentRequestsController@downloadSignedContract')->name('recruitment_requests.download-signed-contract');
         Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/contract/{contract}/upload-contract-form', 'RecruitmentRequestsController@uploadSignedContractForm')->name('recruitment_requests.upload-contract-form');

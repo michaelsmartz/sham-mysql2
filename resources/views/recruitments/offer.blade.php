@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-11 col-md-offset-1" v-show="current.offers[0].signed_on == null">
+                        <div class="col-md-11 col-md-offset-1" v-if="current.offers[0].signed_on == null">
                             <div class="col-md-7">
                                 <h4>Original Copy</h4>
                             </div>
@@ -70,6 +70,7 @@
                                 <h4>Signed Copy</h4>
                             </div>
                             <div class="col-md-12" v-if="current.offers[0].signed_on != null">
+                                <input type="hidden" name="offer_id" id="offer_id" v-model="current.offers[0].offer_id">
                                 The offer letter was signed on @{{current.offers[0].signed_on | formatDate}} 
                             </div>
                             <div class="col-md-7" style="padding-top: 10px;">
@@ -77,10 +78,10 @@
                                  @click="uploadSignedOffer(current.id)" v-if="current.offers[0].signed_on == null">
                                     <i class="fa fa-upload"></i> Upload
                                 </a>
-                                <a href="#light-modal" class="btn btn-primary pull-right" data-wenk="Download" 
+                                <button type="button" class="btn btn-primary pull-right" data-wenk="Download" 
                                  @click="downloadSignedOffer(current.id)" v-if="current.offers[0].signed_on != null">
                                     <i class="fa fa-download"></i> Download
-                                </a>
+                                </button>
                             </div>
                             
                         </div>
