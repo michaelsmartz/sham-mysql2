@@ -15049,5 +15049,11 @@ button[class*="item-"]:not(:last-child) {
   clear: both;
 }
 
+.hiddenRow {
+  padding: 0 4px !important;
+  background-color: #eeeeee;
+  font-size: 13px;
+}
+
 
 /*# sourceMappingURL=app.css.map*/
