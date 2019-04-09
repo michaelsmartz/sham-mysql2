@@ -75,7 +75,8 @@ var vm = new Vue({
 		contracts: [],
 		currentOffer: 0,
 		currentContract: 0,
-        currentComment: ''
+        currentComment: '',
+		interviewMedias: []
 	},
 	computed: {
 		filteredPeople: function () {
@@ -93,6 +94,7 @@ var vm = new Vue({
 	},
 	methods: {
 		setCurrent: function (item) {
+			let scope = this;
 			// handle empty offer letters error
 			if(item.offers.length == 0) {
 				item.offers.push({offer_id: 0});
@@ -110,6 +112,30 @@ var vm = new Vue({
             } else {
                 this.currentComment = item.recruitment_status[0].comment;
             }
+			if(item.interviews.length == 0) {
+				scope.interviewMedias = [];
+			}else{
+				$.each(item.interviews, function (index, obj ) {
+					scope.interviewMedias[index] = [];
+					$.each(obj.media, function (key, value){
+						let medias = [];
+
+						if (value.hasOwnProperty('id')) {
+							medias['id'] = value.id;
+						}
+						if (value.hasOwnProperty('filename')) {
+							medias['filename'] = value.filename;
+						}
+						if (value.hasOwnProperty('extension')) {
+							medias['extension'] = value.extension;
+						}
+
+						scope.interviewMedias[index][key] = medias;
+					});
+				});
+			}
+
+			console.log(this.interviewMedias);
 
 			this.current = item;
 			this.counter = 0;
@@ -153,7 +179,8 @@ var vm = new Vue({
 			);
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},
-        editInterviewForm: function(interview_id, candidate_id){
+        editInterviewForm: function(interview_id, candidate_id, e){
+			e.stopPropagation();
             this.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
 		},
         uploadSignedOffer: function(candidateId){
@@ -190,6 +217,30 @@ var vm = new Vue({
                 alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
             });
         },
+		deleteInterviewMedia: function(interview_id, media_id, e){
+			e.stopPropagation();
+			fetch('./candidate/' + this.current.id + '/interview/' + interview_id + '/delete-media/'+ media_id, {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				credentials: "same-origin"
+			}).then(function(resp) {
+				if (resp.ok == true) {
+					alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
+						const index = this.interviewMedias.findIndex(media => media.id === media_id) // find the post index
+						if (~index) // if the post exists in array
+							this.interviewMedias.splice(index, 1) //delete the post
+					});
+				}
+			});
+		},
+		downloadInterviewMedia: function(interview_id, media_id, e){
+			e.stopPropagation();
+		},
 		setVal(item, h, b, f) {
 			this.current = item;
 

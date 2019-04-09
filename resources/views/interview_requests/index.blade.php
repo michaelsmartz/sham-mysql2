@@ -44,7 +44,9 @@
             <div class="col-md-12" v-if="current.interviews.length" v-show="current">
 
                 <div class="table-responsive">
-                    <table id="new-table" data-toggle="table" style="width:100%" data-show-toggle="true" data-detail-view="true">
+                    <table class="table table-condensed" id="new-table" data-toggle="table"
+                           style="width:100%;border-spacing:0.1em!important;" data-show-toggle="true"
+                           data-detail-view="true">
                         <thead>
                         <tr>
                             <th></th>
@@ -57,12 +59,10 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <template v-for="interview in current.interviews">
-                                {{--TODO error happening because of accordion parent id="accordion"--}}
-                                <div class="panel-group" id="accordion">
+                            <template v-for="(interview, key) in current.interviews">
                                 <tr>
                                     <td>
-                                        <a class="detail-icon" data-parent="accordion" data-toggle="collapse" :data-target="'#row'+interview.pivot.id">
+                                        <a class="detail-icon collapsed"  data-toggle="collapse" :data-target="'#row'+interview.pivot.id" class="accordion-toggle">
                                             <span class="icon_toggle glyphicon glyphicon-plus"></span>
                                         </a>
                                     </td>
@@ -74,44 +74,45 @@
                                     <td>@{{interview.pivot.status}}</td>
                                     <td>@{{interview.pivot.reasons}}</td>
                                     <td>@{{interview.pivot.results}}</td>
-
                                     <td data-html2canvas-ignore="true">
                                         <div class="btn-group">
-                                            <div class="btn-group">
-                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" @click="editInterviewForm(interview.id, current.id)">
-                                                    <i class="glyphicon glyphicon-edit"></i>
-                                                </a>
-                                            </div>
+                                            <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" @click="editInterviewForm(interview.id, current.id, $event)">
+                                                <i class="glyphicon glyphicon-edit"></i>
+                                            </a>
                                         </div>
                                     </td>
-                                    <div class="collapse collapsed" :id="'row'+interview.pivot.id">
-                                        <table class="table table-striped tablesorter" id="new-table" data-toggle="table">
-                                            <thead>
-                                            <tr class="filters">
-                                                <th>File name</th>
-                                                <th style="text-align:right;">Actions</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr v-for="media in interview.media" :data-id='media.id'>
-                                                <td>@{{media.filename}}.@{{media.extension}}</td>
-                                                <td style="text-align:right;">
-                                                    <div>
-                                                        <a href="" class="b-n b-n-r bg-transparent item-download" data-wenk="Download">
-                                                            <i class="fa fa-download text-primary"></i>
-                                                        </a>
-                                                        <a href="#!" class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove"
-                                                           onclick="">
-                                                            <i class="glyphicon glyphicon-remove text-danger"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </tr>
-                                </div>
+                                <tr>
+                                    <td colspan="12" class="hiddenRow">
+                                        <div class="accordian-body collapse" :id="'row'+interview.pivot.id">
+                                            <table class="table table-striped tablesorter" data-toggle="table">
+                                                <thead>
+                                                <tr class="filters">
+                                                    <th>File name</th>
+                                                    <th style="text-align:right;">Actions</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="media in interviewMedias[key]" :data-id='media.id'>
+                                                    <td>@{{media.filename}}.@{{media.extension}}</td>
+                                                    <td style="text-align:right;">
+                                                        <div class="btn-group">
+                                                            <a class="b-n b-n-r bg-transparent item-download" data-wenk="Download"
+                                                               @click="downloadInterviewMedia(interview.id, media.id, $event)">
+                                                                <i class="fa fa-download text-primary"></i>
+                                                            </a>
+                                                            <a class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove"
+                                                               @click="deleteInterviewMedia(interview.id, media.id, $event)">
+                                                                <i class="glyphicon glyphicon-remove text-danger"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
                             </template>
                         </tbody>
                     </table>

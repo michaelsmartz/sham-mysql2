@@ -646,6 +646,17 @@ class RecruitmentRequestsController extends CustomController
         return $pdf->download('signed contract.pdf');
     }
 
+    public function deleteInterviewMedia(){
+        $recruitment_id = intval(Route::current()->parameter('recruitment_request'));
+        $interviewId = intval(Route::current()->parameter('interview'));
+        $candidateId = intval(Route::current()->parameter('candidate'));
+        $mediaId = intval(Route::current()->parameter('media'));
+        dump($recruitment_id);
+        dump($interviewId);
+        dump($mediaId);
+        dd($candidateId);
+    }
+
     public function importHiredCandidate(Request $request, $recruitment_id, $candidate_id){
         $result = true;
 

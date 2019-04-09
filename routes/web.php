@@ -229,6 +229,8 @@ Auth::routes();
         Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-signed-contract', 'RecruitmentRequestsController@downloadSignedContract')->name('recruitment_requests.download-signed-contract');
         Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/contract/{contract}/upload-contract-form', 'RecruitmentRequestsController@uploadSignedContractForm')->name('recruitment_requests.upload-contract-form');
 
+        Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/interview/{interview}/delete-media/{media}', 'RecruitmentRequestsController@deleteInterviewMedia')->name('recruitment_requests.delete-interview-media');
+
         Route::any('recruitment_requests/{recruitment_request}/candidate/{candidate}/hired', 'RecruitmentRequestsController@importHiredCandidate')->name('recruitment_requests.hired');
         Route::get('recruitment_requests/{request?}/manage-candidate', 'RecruitmentRequestsController@manageCandidate');
         Route::patch('recruitment_requests/{request?}/update-candidate', 'RecruitmentRequestsController@updateCandidate')->name('recruitment_requests.update-candidate');
