@@ -1,3 +1,8 @@
+@php
+    $minDate = date("Y-m-d", strtotime("-65 years"));
+    $maxDate = date("Y-m-d", strtotime("-18 years"));
+@endphp
+
 {!! Form::hidden('redirectsTo', URL::previous()) !!}
 
 <div class="position-center" id="accordion-app">
@@ -20,7 +25,7 @@
                     </div>
                     <div class="col-sm-3">
                     <span class="field">
-                        {!! Form::text('birth_date', old('birth_date', isset($employee->birth_date) ? $employee->birth_date : null), ['class'=>'form-control datepicker field-required', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
+                        {!! Form::text('birth_date', old('birth_date', isset($employee->birth_date) ? $employee->birth_date : null), ['class'=>'form-control datepicker field-required', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date', 'data-min-date'=>$minDate, 'data-max-date'=>$maxDate]) !!}
                         <label for="birth_date">Date of birth</label>
                     </span>
                     </div>

@@ -2,12 +2,27 @@ import {on} from 'delegated-events';
 import Popper from 'popper.js';
 import asyncJS from 'async-js';
 
+// Need to add base css for flatpickr
+import 'flatpickr/dist/flatpickr.min.css';
+
 var $ = require('jquery');
 
 require('touch-dnd/touch-dnd.js');
 
 var amsulPickadate = require('pickadate-webpack/lib/picker');
 require('pickadate-webpack/lib/picker.date.js');
+
+var flatpickr = require("flatpickr");
+// https://chmln.github.io/flatpickr/plugins/
+import ConfirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate.js';
+import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
+
+// Override Global settings
+flatpickr.setDefaults({
+    dateFormat: 'Y-m-d',
+    plugins: [new ConfirmDatePlugin()]
+});
+window.flatpickr = flatpickr;
 
 window.specialTitleCaseFormat = function() {
     //var s = "mcdonald mack macdonald macleod elizabeth mchenry-phipps";
@@ -26,7 +41,6 @@ window.validateDigitQty = function(e){
         return false;
     } else return true;
 };
-
 
 $(function() {
     $.ajaxSetup({
@@ -88,7 +102,18 @@ window.on = global.on = on;
 // Listen for browser-generated events.
 on('focusin', 'input.datepicker', function(event) {
 
-    // Use the picker object directly.
+    var el = $(this),
+        val = el.val(),
+        toPickerId = $(this).data('pairElementId'),
+        instance = el._flatpickr;
+
+    if(typeof el._flatpickr === "undefined") {
+        el._flatpickr = flatpickr(el, {defaultDate: val}).open();
+    } else {
+        el._flatpickr.defaultDate = val;
+    }
+
+    /*
     var picker = $(this).pickadate('picker'),
         toPickerId = $(this).data('pairElementId'),
         toPicker = $(`#${toPickerId}`).pickadate('picker');
@@ -135,6 +160,7 @@ on('focusin', 'input.datepicker', function(event) {
         }
 
     }
+    */
 
 });
 

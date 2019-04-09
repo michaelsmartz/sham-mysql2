@@ -15,6 +15,7 @@
         <div class="form-group col-md-12">
             <span class="field">
                 <label for="contract_signed_on">Signed On</label>
+                
                 {!! Form::text('contract_signed_on', null, ['class'=>'form-control field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Signed On', 'required', 'title'=>'Required','id'=>'contract_signed_on']) !!}
             </span>
         </div>
@@ -28,8 +29,8 @@
             ])
         </div>
 
-@section('post-body')
-    $(function(){
-        $('#contract_signed_on').datepicker();
-    });
-@endsection
+@push('js-stack')
+    <script>
+        const fp = flatpickr('#contract_signed_on', {dateFormat:'Y-m-d',static:true});
+    </script>
+@endpush

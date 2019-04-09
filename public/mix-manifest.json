@@ -16,6 +16,7 @@
     "/css/recruitment-request.css": "/css/recruitment-request.css",
     "/css/candidates.css": "/css/candidates.css",
     "/css/tinymce-custom.css": "/css/tinymce-custom.css",
+    "/css/flatpickr.css": "/css/flatpickr.css",
     "/js/new-employee.js.map": "/js/new-employee.js.map",
     "/css/app.css.map": "/css/app.css.map",
     "/css/employees.css.map": "/css/employees.css.map",
@@ -27,14 +28,15 @@
     "/css/recruitment-request.css.map": "/css/recruitment-request.css.map",
     "/css/candidates.css.map": "/css/candidates.css.map",
     "/css/tinymce-custom.css.map": "/css/tinymce-custom.css.map",
+    "/css/flatpickr.css.map": "/css/flatpickr.css.map",
+    "/js/app2.js": "/js/app2.js",
+    "/js/app2.js.map": "/js/app2.js.map",
     "/js/tinymce.js": "/js/tinymce.js",
     "/js/tinymce.js.map": "/js/tinymce.js.map",
     "/js/employees.js": "/js/employees.js",
     "/js/employees.js.map": "/js/employees.js.map",
     "/js/vue-component-test.js": "/js/vue-component-test.js",
     "/js/vue-component-test.js.map": "/js/vue-component-test.js.map",
-    "/js/app2.js": "/js/app2.js",
-    "/js/app2.js.map": "/js/app2.js.map",
     "/js/tables.js": "/js/tables.js",
     "/js/tables.js.map": "/js/tables.js.map",
     "/js/parsley.js": "/js/parsley.js",
@@ -58,5 +60,6 @@
     "/css/import_steps.min.css": "/css/import_steps.min.css",
     "/css/nav-wizard.min.css": "/css/nav-wizard.min.css",
     "/css/recruitment-request.min.css": "/css/recruitment-request.min.css",
-    "/css/candidates.min.css": "/css/candidates.min.css"
+    "/css/candidates.min.css": "/css/candidates.min.css",
+    "/css/flatpickr.min.css": "/css/flatpickr.min.css"
 }

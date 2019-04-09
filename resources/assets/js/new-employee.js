@@ -10,6 +10,7 @@ require('sumoselect');
 
 window.Vue = require('vue/dist/vue.common.js');
 
+Vue.config.productionTip = false;
 Vue.config.devtools = false;
 Vue.config.performance = false;
 

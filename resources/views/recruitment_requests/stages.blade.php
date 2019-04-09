@@ -120,6 +120,9 @@
 
     <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
+
+
+
     <script>
         window.vueFileUpload = function() {
             $('#uploadSignedOffer').fileUploader({

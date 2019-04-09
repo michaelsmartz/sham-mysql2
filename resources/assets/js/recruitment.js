@@ -2,7 +2,14 @@ import {on} from 'delegated-events';
 import Modal from './components/Modal.vue';
 import moment from 'moment';
 import FileUploader from './components/FileUploader.vue';
+
+import VueFlatPickr from 'vue-flatpickr-component';
+// Need to add base css for flatpickr
+import 'flatpickr/dist/flatpickr.min.css';
+
 window.Vue = require('vue/dist/vue.common.js');
+Vue.config.productionTip = false;
+Vue.use(VueFlatPickr);
 
 let download = require("downloadjs");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -372,18 +379,19 @@ var vm = new Vue({
 		this.fetchCandidates();
 	},
 	mounted: function() {
-		on('focusin', 'input.datepicker', function(event) {
+		on('focusin', 'input.flatpickr', function(event) {
 
 			// Use the picker object directly.
-			var picker = $(this).pickadate('picker');
+			//var picker = $(this).pickadate('picker');
 			
-			if(picker === undefined) {
-				picker = $(this).pickadate().pickadate('picker');
-			}
+			//if(picker === undefined) {
+			//	picker = $(this).pickadate().pickadate('picker');
+			//}
+			//flatpickr($(this), {});
 		});
 		this.fetchOfferLetters();
 		this.fetchContracts();
-		$.when($('#contract_signed_on')).then((self) => { console.log(self); });
+		//$.when($('#contract_signed_on')).then((self) => { flatpickr('#contract_signed_on'); });
 	},
 	components: {
 		'modal': Modal,

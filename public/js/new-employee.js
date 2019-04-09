@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 348);
+/******/ 	return __webpack_require__(__webpack_require__.s = 355);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10705,14 +10705,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ 16:
+/***/ 18:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return on; });
 /* unused harmony export off */
 /* unused harmony export fire */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(19);
 
 
 var bubbleEvents = {};
@@ -10845,7 +10845,7 @@ function fire(target, name, detail) {
 
 /***/ }),
 
-/***/ 17:
+/***/ 19:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11259,7 +11259,35 @@ SelectorSet.prototype.matches = function(el) {
 
 /***/ }),
 
-/***/ 18:
+/***/ 2:
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ 20:
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -12425,71 +12453,45 @@ return PickerConstructor
 
 /***/ }),
 
-/***/ 2:
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-
-/***/ 348:
+/***/ 355:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(349);
-__webpack_require__(350);
-__webpack_require__(354);
-__webpack_require__(355);
 __webpack_require__(356);
 __webpack_require__(357);
 __webpack_require__(358);
 __webpack_require__(359);
 __webpack_require__(360);
 __webpack_require__(361);
-module.exports = __webpack_require__(362);
+__webpack_require__(362);
+__webpack_require__(363);
+__webpack_require__(364);
+__webpack_require__(365);
+__webpack_require__(366);
+module.exports = __webpack_require__(367);
 
 
 /***/ }),
 
-/***/ 349:
+/***/ 356:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony export (immutable) */ __webpack_exports__["readURL"] = readURL;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(18);
 
 
-__webpack_require__(43);
-__webpack_require__(44);
+__webpack_require__(47);
+__webpack_require__(48);
 
-__webpack_require__(18);
-__webpack_require__(45);
+__webpack_require__(20);
+__webpack_require__(49);
 __webpack_require__(9);
 __webpack_require__(10);
 
 window.Vue = __webpack_require__(7);
 
+Vue.config.productionTip = false;
 Vue.config.devtools = false;
 Vue.config.performance = false;
 
@@ -12689,34 +12691,6 @@ var app = new Vue({
 
 /***/ }),
 
-/***/ 350:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 354:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 355:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 356:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
 /***/ 357:
 /***/ (function(module, exports) {
 
@@ -12753,6 +12727,41 @@ var app = new Vue({
 /***/ }),
 
 /***/ 362:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 363:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 364:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 365:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 366:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 367:
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
@@ -12950,7 +12959,7 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ 43:
+/***/ 47:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {(function($) {
@@ -14015,7 +14024,7 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ 44:
+/***/ 48:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14443,7 +14452,7 @@ __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_
 
 /***/ }),
 
-/***/ 45:
+/***/ 49:
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -14455,7 +14464,7 @@ __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.asAccordion = __WEBPACK_IMPORTED_
 
     // Node.js/browserify.
     if ( true )
-        module.exports = factory( __webpack_require__(18), __webpack_require__(1) )
+        module.exports = factory( __webpack_require__(20), __webpack_require__(1) )
 
     // Browser globals.
     else factory( Picker, jQuery )
