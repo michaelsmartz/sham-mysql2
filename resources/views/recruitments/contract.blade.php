@@ -63,7 +63,6 @@
                         <div class="col-md-11 col-md-offset-1">
                             <div class="col-md-7" style="padding-top: 0px;">
                                 <h4>Signed Copy</h4>
-                                <flat-pickr name="zzz" class="form-control" value=""></flat-pickr>
                             </div>
                             <div class="col-md-12" v-if="current.contracts[0].signed_on != null">
                                 <input type="hidden" name="contract_id" id="contract_id" v-model="current.contracts[0].contract_id">

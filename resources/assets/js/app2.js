@@ -113,6 +113,19 @@ on('focusin', 'input.datepicker', function(event) {
         el._flatpickr.defaultDate = val;
     }
 
+    if(typeof toPickerId !== "undefined") {
+        var toPickerVal = $('#' + toPickerId).val(),
+            toPicker = flatpickr('#' + toPickerId, {defaultDate: toPickerVal});
+
+        el._flatpickr.onClose = function(selectedDates, dateStr, instance) {
+            toPicker.set('minDate', selectedDates[0]);
+        };
+        toPicker.onClose = function(selectedDates, dateStr, instance) {
+            el.set('maxDate', selectedDates[0]);
+        };
+
+    }
+
     /*
     var picker = $(this).pickadate('picker'),
         toPickerId = $(this).data('pairElementId'),

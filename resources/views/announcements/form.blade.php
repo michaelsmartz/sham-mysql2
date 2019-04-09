@@ -14,7 +14,7 @@
 
 <div class="form-group col-xs-4 {{ $errors->has('start_date') ? 'has-error' : '' }}">
     <label for="start_date">Start Date</label>
-        <input class="form-control datepicker" name="start_date" type="text" id="start_date" value="{{ old('start_date', optional($announcement)->start_date) }}" minlength="1" required="true" data-pair-element-id="end_date" autocomplete="off" placeholder="Enter start date" data-min-date="0">
+        <input class="form-control datepicker" name="start_date" type="text" id="start_date" value="{{ old('start_date', optional($announcement)->start_date) }}" minlength="1" required="true" data-pair-element-id="end_date" autocomplete="off" placeholder="Enter start date">
         {!! $errors->first('start_date', '<p class="help-block">:message</p>') !!}
 </div>
 
