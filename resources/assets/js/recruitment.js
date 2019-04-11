@@ -135,8 +135,6 @@ var vm = new Vue({
 				});
 			}
 
-			console.log(this.interviewMedias);
-
 			this.current = item;
 			this.counter = 0;
 			this.lastInterview = false;
@@ -217,28 +215,64 @@ var vm = new Vue({
                 alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
             });
         },
-		deleteInterviewMedia: function(interview_id, media_id, e){
+		deleteInterviewMedia: function(current, interview_id, media, e){
+			let vm = this;
 			e.stopPropagation();
-			fetch('./candidate/' + this.current.id + '/interview/' + interview_id + '/delete-media/'+ media_id, {
-				headers: {
-					"Content-Type": "application/json",
-					"Accept": "application/json, */*",
-					"X-Requested-With": "XMLHttpRequest",
-					"X-CSRF-TOKEN": token
+
+			alerty.confirm(
+				"Are you sure to delete interview media <strong class='text-danger'>"+ media.filename + "." + media.extension+"</strong> for the candidate <strong class='text-danger'>" + current.name + "</strong>?<br>", {
+					okLabel: '<span class="text-danger">Yes</span>',
+					cancelLabel: 'No'
 				},
-				method: 'post',
-				credentials: "same-origin"
-			}).then(function(resp) {
-				if (resp.ok == true) {
-					alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
-						const index = this.interviewMedias.findIndex(media => media.id === media_id) // find the post index
-						if (~index) // if the post exists in array
-							this.interviewMedias.splice(index, 1) //delete the post
+				function () {
+					fetch('./candidate/' + current.id + '/interview/' + interview_id + '/delete-media/'+ media.id, {
+						headers: {
+							"Content-Type": "application/json",
+							"Accept": "application/json, */*",
+							"X-Requested-With": "XMLHttpRequest",
+							"X-CSRF-TOKEN": token
+						},
+						method: 'post',
+						credentials: "same-origin"
+					}).then(function(resp) {
+						if (resp.ok == true) {
+							alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
+								vm.interviewMedias = vm.removeIndexMultiDimensionalArr(vm.interviewMedias, media.id);
+							});
+						}
 					});
 				}
-			});
+			);
 		},
-		downloadInterviewMedia: function(interview_id, media_id, e){
+
+		/**
+		 * Remove Index of Multidimensional Array
+		 * @param arr {!Array} - the input array
+		 * @param media_id {object} - the value to search
+		 * @return {Array}
+		 */
+		removeIndexMultiDimensionalArr(arr, media_id) {
+			//make a copy of array
+			let new_arr = [];
+
+			$.each(arr, function (index, i) {
+				new_arr[index] = [];
+				let count = 0;
+				$.each(i, function (key, j) {
+					if (j.hasOwnProperty("id")) {
+						if(j.id === media_id) {
+							//new_arr[index].splice(key, 1);
+						}else{
+							new_arr[index][count] = j;
+							count++;
+						}
+					}
+				}, new_arr);
+			}, new_arr);
+			return new_arr;
+		},
+		downloadInterviewMedia: function(current, interview_id, media, e){
+			let vm = this;
 			e.stopPropagation();
 		},
 		setVal(item, h, b, f) {

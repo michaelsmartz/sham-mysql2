@@ -98,11 +98,11 @@
                                                     <td style="text-align:right;">
                                                         <div class="btn-group">
                                                             <a class="b-n b-n-r bg-transparent item-download" data-wenk="Download"
-                                                               @click="downloadInterviewMedia(interview.id, media.id, $event)">
+                                                               @click="downloadInterviewMedia(current, interview.id, media, $event)">
                                                                 <i class="fa fa-download text-primary"></i>
                                                             </a>
                                                             <a class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove"
-                                                               @click="deleteInterviewMedia(interview.id, media.id, $event)">
+                                                               @click="deleteInterviewMedia(current, interview.id, media, $event)">
                                                                 <i class="glyphicon glyphicon-remove text-danger"></i>
                                                             </a>
                                                         </div>
