@@ -130,6 +130,10 @@ var vm = new Vue({
 							medias['extension'] = value.extension;
 						}
 
+						if (value.hasOwnProperty('pivot')) {
+							medias['mediable_id'] = value.pivot.mediable_id;
+						}
+
 						scope.interviewMedias[index][key] = medias;
 					});
 				});
@@ -225,7 +229,7 @@ var vm = new Vue({
 					cancelLabel: 'No'
 				},
 				function () {
-					fetch('./candidate/' + current.id + '/interview/' + interview_id + '/delete-media/'+ media.id, {
+					fetch('./candidate/' + current.id + '/interview/' + interview_id + '/delete-media', {
 						headers: {
 							"Content-Type": "application/json",
 							"Accept": "application/json, */*",
@@ -233,6 +237,7 @@ var vm = new Vue({
 							"X-CSRF-TOKEN": token
 						},
 						method: 'post',
+						body: JSON.stringify({ media_id: media.id, mediable_id: media.mediable_id}),
 						credentials: "same-origin"
 					}).then(function(resp) {
 						if (resp.ok == true) {

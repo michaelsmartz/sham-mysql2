@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
+use Plank\Mediable\Media;
 
 class RecruitmentRequestsController extends CustomController
 {
@@ -373,6 +374,7 @@ class RecruitmentRequestsController extends CustomController
                     }
                 ])
                 ->get();
+            //dd($result[0]['interviews']);
         } catch (Exception $exception) {
             dd($exception);
         } finally {
@@ -646,15 +648,27 @@ class RecruitmentRequestsController extends CustomController
         return $pdf->download('signed contract.pdf');
     }
 
-    public function deleteInterviewMedia(){
-        $recruitment_id = intval(Route::current()->parameter('recruitment_request'));
-        $interviewId = intval(Route::current()->parameter('interview'));
-        $candidateId = intval(Route::current()->parameter('candidate'));
-        $mediaId = intval(Route::current()->parameter('media'));
-        dump($recruitment_id);
-        dump($interviewId);
-        dump($mediaId);
-        dd($candidateId);
+    public function deleteInterviewMedia(Request $request){
+        $media_id = $request->get('media_id');
+        $mediable_id = $request->get('mediable_id');
+
+        try {
+            $model = "Interview";
+            $this->detachMedia($model, $mediable_id, $media_id);
+
+        }catch(Exception $exception) {
+            dd($exception->getMessage());
+        }
+    }
+
+    private function detachMedia($model, $pivot_mediable_id, $mediaId)
+    {
+        $modelClass = 'App\\'.$model;
+        $relatedMedias = $modelClass::find($pivot_mediable_id);
+
+        $media = Media::find($mediaId);
+        $media->delete();
+        $relatedMedias->detachMedia($media);
     }
 
     public function importHiredCandidate(Request $request, $recruitment_id, $candidate_id){
