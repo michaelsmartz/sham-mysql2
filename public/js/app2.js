@@ -14811,23 +14811,26 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
     var el = $(this),
         val = el.val(),
         toPickerId = $(this).data('pairElementId'),
-        instance = el._flatpickr;
+        elFlatpickr = el._flatpickr;
 
     if (typeof el._flatpickr === "undefined") {
-        el._flatpickr = flatpickr(el, { defaultDate: val }).open();
+        elFlatpickr = flatpickr(el, { defaultDate: val });
+        elFlatpickr.open();
     } else {
-        el._flatpickr.defaultDate = val;
+        elFlatpickr = flatpickr(el, { defaultDate: val });
+        //el._flatpickr.defaultDate = val;
     }
 
     if (typeof toPickerId !== "undefined") {
         var toPickerVal = $('#' + toPickerId).val(),
             toPicker = flatpickr('#' + toPickerId, { defaultDate: toPickerVal });
 
-        el._flatpickr.onClose = function (selectedDates, dateStr, instance) {
+        elFlatpickr.onChange = function (selectedDates, dateStr, instance) {
             toPicker.set('minDate', selectedDates[0]);
         };
-        toPicker.onClose = function (selectedDates, dateStr, instance) {
-            el.set('maxDate', selectedDates[0]);
+        toPicker.onChange = function (selectedDates, dateStr, instance) {
+            console.log('to picker close', selectedDates, dateStr, instance);
+            elFlatpickr.set('maxDate', selectedDates[0]);
         };
     }
 
