@@ -42453,8 +42453,13 @@ var vm = new Vue({
 		},
 
 		downloadInterviewMedia: function downloadInterviewMedia(current, interview_id, media, e) {
-			var vm = this;
 			e.stopPropagation();
+
+			var url = './candidate/' + current.id + '/interview/' + interview_id + '/download-media/' + media.id;
+			var link = document.createElement('a');
+			link.href = url;
+			document.body.appendChild(link);
+			link.click();
 		},
 		setVal: function setVal(item, h, b, f) {
 			this.current = item;

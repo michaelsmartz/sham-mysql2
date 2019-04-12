@@ -277,8 +277,13 @@ var vm = new Vue({
 			return new_arr;
 		},
 		downloadInterviewMedia: function(current, interview_id, media, e){
-			let vm = this;
 			e.stopPropagation();
+
+			const url = './candidate/' + current.id + '/interview/' + interview_id + '/download-media/' + media.id;
+			const link = document.createElement('a');
+			link.href = url;
+			document.body.appendChild(link);
+			link.click();
 		},
 		setVal(item, h, b, f) {
 			this.current = item;

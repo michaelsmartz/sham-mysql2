@@ -671,6 +671,17 @@ class RecruitmentRequestsController extends CustomController
         $relatedMedias->detachMedia($media);
     }
 
+    public function downloadInterviewMedia(){
+        $media_id = intval(Route::current()->parameter('media'));
+        $mediable_id = null;
+
+        try {
+            return $this->download($mediable_id, $media_id);
+        }catch(Exception $exception) {
+            dd($exception->getMessage());
+        }
+    }
+
     public function importHiredCandidate(Request $request, $recruitment_id, $candidate_id){
         $result = true;
 
