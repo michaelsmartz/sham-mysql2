@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Candidate;
-use App\CandidateInterviewAttachments;
 use App\Department;
 use App\EmailAddress;
 use App\Employee;
@@ -31,6 +30,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Exception;
 use Plank\Mediable\Media;
+use Illuminate\Database\Eloquent\Builder;
 
 class RecruitmentRequestsController extends CustomController
 {
@@ -346,13 +346,13 @@ class RecruitmentRequestsController extends CustomController
 
     public function getCandidates(Request $request)
     {
-        $result = false;
+        $candidates = false;
         try {
             $id = Route::current()->parameter('recruitment_request');
 
             $data = $this->contextObj->findData($id);
 
-            $result = $data->candidates()
+            $candidates = $data->candidates()
                 ->with(['media','jobTitle','previousEmployments','qualifications',
                     'status'=> function ($query) use ($id)
                     {
@@ -374,12 +374,25 @@ class RecruitmentRequestsController extends CustomController
                     }
                 ])
                 ->get();
-            //dd($result[0]['interviews']);
+
+            foreach($candidates as $candidate){
+                foreach ($candidate['interviews'] as $interview){
+                    $interviewMedias =
+                        DB::table('mediables')
+                            ->join('media', 'mediables.media_id', '=', 'media.id')
+                            ->select('*')
+                            ->where('mediables.mediable_id', $interview->pivot->id)
+                            ->get()->toArray();
+
+                    $interview->interviewMedias = $interviewMedias;
+                }
+            }
+
         } catch (Exception $exception) {
             dd($exception);
         } finally {
 
-            return Response()->json($result);
+            return Response()->json($candidates);
         }
     }
 
@@ -653,7 +666,7 @@ class RecruitmentRequestsController extends CustomController
         $mediable_id = $request->get('mediable_id');
 
         try {
-            $model = "Interview";
+            $model = "CandidateInterviewAttachments";
             $this->detachMedia($model, $mediable_id, $media_id);
 
         }catch(Exception $exception) {

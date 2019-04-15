@@ -117,7 +117,7 @@ var vm = new Vue({
 			}else{
 				$.each(item.interviews, function (index, obj ) {
 					scope.interviewMedias[index] = [];
-					$.each(obj.media, function (key, value){
+					$.each(obj.interviewMedias, function (key, value){
 						let medias = [];
 
 						if (value.hasOwnProperty('id')) {
@@ -130,8 +130,8 @@ var vm = new Vue({
 							medias['extension'] = value.extension;
 						}
 
-						if (value.hasOwnProperty('pivot')) {
-							medias['mediable_id'] = value.pivot.mediable_id;
+						if (value.hasOwnProperty('mediable_id')) {
+							medias['mediable_id'] = value.mediable_id;
 						}
 
 						scope.interviewMedias[index][key] = medias;
