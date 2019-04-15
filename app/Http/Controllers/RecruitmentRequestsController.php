@@ -684,6 +684,44 @@ class RecruitmentRequestsController extends CustomController
         $relatedMedias->detachMedia($media);
     }
 
+    public function updateInterviewComment(Request $request){
+        $id = intval(Route::current()->parameter('recruitment_request'));
+        $candidateId = intval(Route::current()->parameter('candidate'));
+        $overallComment= $request->get('overallComment');
+
+//        dump($id);
+//        dump($candidateId);
+//        dd($overallComment);
+
+        $result = true;
+
+        try{
+
+            $dataSet = [
+                    'recruitment_id'  => $id,
+                    'candidate_id'    => $candidateId,
+                    'status'       => 1,
+                    'comment'       => $overallComment,
+            ];
+            DB::table('recruitment_status')->insert($dataSet);
+
+
+            $data = Recruitment::find($id);
+
+            if($data) {
+                $data->status()
+                    ->updateOrCreate(['recruitment_id'=>$id, 'candidate_id'=>$candidateId],
+                        $dataSet);
+            }
+
+
+        } catch(Exception $exception) {
+            $result = false;
+        }
+
+        return Response()->json($result);
+    }
+
     public function downloadInterviewMedia(){
         $media_id = intval(Route::current()->parameter('media'));
         $mediable_id = null;

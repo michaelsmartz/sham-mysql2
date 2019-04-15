@@ -42256,7 +42256,8 @@ var vm = new Vue({
 		currentOffer: 0,
 		currentContract: 0,
 		currentComment: '',
-		interviewMedias: []
+		interviewMedias: [],
+		interviewOverallComment: ""
 	},
 	computed: {
 		filteredPeople: function filteredPeople() {
@@ -42265,6 +42266,10 @@ var vm = new Vue({
 
 			if (category === 0) {
 				return vm.people;
+			} else if (category === 1) {
+				return vm.people.filter(function (person) {
+					return person.status[0].status >= 1 || person.status[0].status === 2 || person.status[0].status === -2;
+				});
 			} else {
 				return vm.people.filter(function (person) {
 					return person.status[0].status >= 0 && person.status[0].status === category;
@@ -42644,12 +42649,52 @@ var vm = new Vue({
 			}).then(function (blob) {
 				download(blob, 'signed contract.pdf');
 			});
+		},
+		processInterviewForm: function processInterviewForm(e) {
+			e.preventDefault();
+			var vm = this;
+			var overallComment = $('#overallComment').val();
+
+			fetch('./candidate/' + vm.current.id + '/update-interview-comment', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				body: JSON.stringify({ overallComment: overallComment }),
+				credentials: "same-origin"
+			}).then(function (res) {
+				if (res.ok == true) {
+					alerty.toasts('Operation successful', { 'place': 'top', 'time': 3500 }, function () {});
+				}
+			});
 		}
 	},
 	created: function created() {
 		this.fetchCandidates();
 	},
 	mounted: function mounted() {
+
+		// const interviewCommentForm = document.getElementById('interview-comment-form');
+		// const overallComment  = interviewCommentForm.querySelector('input[name=overallComment]');
+		//
+		// // listen for the submit event
+		// interviewCommentForm.addEventListener('submit', processInterviewCommentForm);
+		// function processInterviewCommentForm(e) {
+		// 	e.preventDefault();
+		//
+		// 	// get our data
+		// 	const comment  = overallComment.value;
+		// 	console.log(comment);
+		//
+		// 	// process the form!
+		// 	alert('Processing!');
+		//
+		// 	// form processing here
+		// }
+
 		Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.flatpickr', function (event) {
 
 			// Use the picker object directly.

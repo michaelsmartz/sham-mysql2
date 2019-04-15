@@ -30,13 +30,26 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="btn-group pull-right" v-show="current">
+                <div class="btn-group pull-right" v-if="current.status[0].status == 1" v-show="current.status[0].status == 1">
                     <button id="{{ $step[0]['id'] }}" type="button"  @click="pipelineSwitchState(1,'Mark the overall results as Pass',current,current.id,2)" class="{{ $step[0]['btnclass'] }}">
                         <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                     </button>
                     <button id="{{ $step[1]['id'] }}" type="button" @click="pipelineSwitchState(1,'Mark the overall results as Fail',current,current.id,-2)" class="{{ $step[1]['btnclass'] }}">
                         <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
                     </button>
+                </div>
+
+                <div  v-else>
+                    <div class="btn-group pull-right" v-show="current.status[0].status != -2">
+                        <h1><span class="badge badge-success"
+                                  style="font-size: 16px!important;"
+                            >Passed</span></h1>
+                    </div>
+                    <div class="btn-group pull-right" v-show="current.status[0].status == -2">
+                        <h1><span class="badge badge-danger"
+                                  style="font-size: 16px!important;"
+                            >Failed</span></h1>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,17 +131,17 @@
                     </table>
                 </div>
                 <br>
-
-                <label for="overallComment">Overall Comments</label>
-                <textarea
-                        id="overallComment"
-                        class='form-control'
-                        {{--v-model="overallComment"--}}
-                        name="overallComment">
-                    </textarea>
-                <div class="pull-right" style="font-size: 2rem;padding-top: 15px">
-                    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Save</button>
-                </div>
+                <form id="interview-comment-form">
+                    <label for="overallComment">Overall Comments</label>
+                    <textarea
+                            id="overallComment"
+                            class='form-control'
+                            name="overallComment">
+                        </textarea>
+                    <div class="pull-right" style="font-size: 2rem;padding-top: 15px">
+                        <button class="btn btn-primary" @click="processInterviewForm($event)" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
