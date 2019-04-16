@@ -8,13 +8,13 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('start_time') ? 'has-error' : '' }}">
     <label for="start_time">Start Time</label>
-        <input class="form-control timepicker" name="start_time" type="text" id="start_time" value="{{ old('start_time', optional($timePeriod)->start_time) }}" minlength="1" required="true" placeholder="Enter start time">
+        <input class="form-control datepicker" name="start_time" type="text" id="start_time" value="{{ old('start_time', optional($timePeriod)->start_time) }}" minlength="1" required="true" placeholder="Enter start time" data-date-format="H:i" data-enable-time="true" data-no-calendar="true">
         {!! $errors->first('start_time', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-12 {{ $errors->has('end_time') ? 'has-error' : '' }}">
     <label for="end_time">End Time</label>
-        <input class="form-control timepicker" name="end_time" type="text" id="end_time" value="{{ old('end_time', optional($timePeriod)->end_time) }}" minlength="1" required="true" placeholder="Enter end time">
+        <input class="form-control datepicker" name="end_time" type="text" id="end_time" value="{{ old('end_time', optional($timePeriod)->end_time) }}" minlength="1" required="true" placeholder="Enter end time" data-date-format="H:i" data-enable-time="true" data-no-calendar="true">
         {!! $errors->first('end_time', '<p class="help-block">:message</p>') !!}
 </div>
 
