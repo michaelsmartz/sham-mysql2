@@ -3,26 +3,11 @@ import Modal from './components/Modal.vue';
 import moment from 'moment';
 import FileUploader from './components/FileUploader.vue';
 
-import VueFlatPickr from 'vue-flatpickr-component';
-// Need to add base css for flatpickr
-import 'flatpickr/dist/flatpickr.min.css';
-
 window.Vue = require('vue/dist/vue.common.js');
 Vue.config.productionTip = false;
-Vue.use(VueFlatPickr);
 
 let download = require("downloadjs");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-window.waitForEl = function(selector, callback) {
-	if (jQuery(selector).length) {
-	  callback();
-	} else {
-	  setTimeout(function() {
-		waitForEl(selector, callback);
-	  }, 100);
-	}
-};
 
 Vue.filter('formatDate', function(value) {
   if (value) {
@@ -422,7 +407,6 @@ var vm = new Vue({
 		},
 		downloadContract: function(){
 			var contractId = $('#contract_id option:selected').val();
-				console.log(contractId);
 
 			fetch('./candidate/' + this.current.id + '/download-contract', {
 				headers: {
@@ -506,6 +490,7 @@ var vm = new Vue({
 		this.fetchCandidates();
 	},
 	mounted: function() {
+<<<<<<< Updated upstream
 
 		// const interviewCommentForm = document.getElementById('interview-comment-form');
 		// const overallComment  = interviewCommentForm.querySelector('input[name=overallComment]');
@@ -526,18 +511,11 @@ var vm = new Vue({
 		// }
 
 		on('focusin', 'input.flatpickr', function(event) {
+=======
+>>>>>>> Stashed changes
 
-			// Use the picker object directly.
-			//var picker = $(this).pickadate('picker');
-			
-			//if(picker === undefined) {
-			//	picker = $(this).pickadate().pickadate('picker');
-			//}
-			//flatpickr($(this), {});
-		});
 		this.fetchOfferLetters();
 		this.fetchContracts();
-		//$.when($('#contract_signed_on')).then((self) => { flatpickr('#contract_signed_on'); });
 	},
 	components: {
 		'modal': Modal,

@@ -9,9 +9,6 @@ var $ = require('jquery');
 
 require('touch-dnd/touch-dnd.js');
 
-var amsulPickadate = require('pickadate-webpack/lib/picker');
-require('pickadate-webpack/lib/picker.date.js');
-
 var flatpickr = require("flatpickr");
 // https://chmln.github.io/flatpickr/plugins/
 import ConfirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate.js';
@@ -20,7 +17,7 @@ import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 // Override Global settings
 flatpickr.setDefaults({
     dateFormat: 'Y-m-d',
-    plugins: [new ConfirmDatePlugin()]
+    plugins: [new ConfirmDatePlugin({confirmText: 'Done', showAlways:true})]
 });
 window.flatpickr = flatpickr;
 
@@ -51,15 +48,6 @@ $(function() {
 
     $('[data-toggle=offcanvas]').click(function() {
         $('.row-offcanvas').toggleClass('active');
-    });
-    // Extend the default picker options for all instances.
-    $.extend($.fn.pickadate.defaults, {
-        format: 'yyyy-mm-dd',
-        formatSubmit: 'yyyy-mm-dd',
-        selectYears: 20,
-        selectMonths: true,
-        closeOnSelect: true,
-        container: '#date-picker'
     });
 
     $(window).blur(function() {
@@ -179,8 +167,6 @@ on('focusin', 'input.datepicker', function(event) {
     */
 
 });
-
-window.pickadate = amsulPickadate;
 
 // make bootstrap js available
 window.Popper = Popper;
