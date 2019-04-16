@@ -546,7 +546,13 @@ var vm = new Vue({
 		stageCount:function(people, status){
 			if (status == 0 || status === void 0) {
 				return people.length;
-			} else {
+			}
+			else if (status === 1){
+				return people.filter(function (person) {
+					return (person.status[0].status >= 1 || person.status[0].status === 2 || person.status[0].status === -2);
+				}).length;
+			}
+			else {
 				return people.filter(function(person) {
 					return person.status[0].status == status
 				}).length;
