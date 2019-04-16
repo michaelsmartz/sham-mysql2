@@ -493,9 +493,10 @@ var vm = new Vue({
 				credentials: "same-origin"
 			})
 			.then(function (res) {
+				console.log(res);
 				if (res.ok == true) {
 					alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
-
+						this.currentComment = overallComment;
 					});
 				}
 			});

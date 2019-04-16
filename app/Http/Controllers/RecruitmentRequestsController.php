@@ -688,11 +688,6 @@ class RecruitmentRequestsController extends CustomController
         $id = intval(Route::current()->parameter('recruitment_request'));
         $candidateId = intval(Route::current()->parameter('candidate'));
         $overallComment= $request->get('overallComment');
-
-//        dump($id);
-//        dump($candidateId);
-//        dd($overallComment);
-
         $result = true;
 
         try{
@@ -703,15 +698,17 @@ class RecruitmentRequestsController extends CustomController
                     'status'       => 1,
                     'comment'       => $overallComment,
             ];
-            DB::table('recruitment_status')->insert($dataSet);
-
 
             $data = Recruitment::find($id);
 
             if($data) {
-                $data->status()
-                    ->updateOrCreate(['recruitment_id'=>$id, 'candidate_id'=>$candidateId],
-                        $dataSet);
+                $status = $data->status()->where(['recruitment_id'=>$id, 'candidate_id'=>$candidateId])->get()->first();
+
+                if(is_null($status)) {
+                    DB::table('recruitment_status')->insert($dataSet);
+                } else {
+                    DB::table('recruitment_status')->where(['id' => $status->pivot->id])->update($dataSet);
+                }
             }
 
 

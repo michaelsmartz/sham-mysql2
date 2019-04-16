@@ -136,6 +136,7 @@
                     <textarea
                             id="overallComment"
                             class='form-control'
+                            :value="currentComment"
                             name="overallComment">
                         </textarea>
                     <div class="pull-right" style="font-size: 2rem;padding-top: 15px">
