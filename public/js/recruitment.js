@@ -39555,8 +39555,11 @@ var vm = new Vue({
 				body: JSON.stringify({ overallComment: overallComment }),
 				credentials: "same-origin"
 			}).then(function (res) {
+				console.log(res);
 				if (res.ok == true) {
-					alerty.toasts('Operation successful', { 'place': 'top', 'time': 3500 }, function () {});
+					alerty.toasts('Operation successful', { 'place': 'top', 'time': 3500 }, function () {
+						this.currentComment = overallComment;
+					});
 				}
 			});
 		}
@@ -39565,33 +39568,6 @@ var vm = new Vue({
 		this.fetchCandidates();
 	},
 	mounted: function mounted() {
-<<<<<<< Updated upstream
-
-		// const interviewCommentForm = document.getElementById('interview-comment-form');
-		// const overallComment  = interviewCommentForm.querySelector('input[name=overallComment]');
-		//
-		// // listen for the submit event
-		// interviewCommentForm.addEventListener('submit', processInterviewCommentForm);
-		// function processInterviewCommentForm(e) {
-		// 	e.preventDefault();
-		//
-		// 	// get our data
-		// 	const comment  = overallComment.value;
-		// 	console.log(comment);
-		//
-		// 	// process the form!
-		// 	alert('Processing!');
-		//
-		// 	// form processing here
-		// }
-
-		Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.flatpickr', function (event) {
-
-			// Use the picker object directly.
-			//var picker = $(this).pickadate('picker');
-=======
->>>>>>> Stashed changes
-
 		this.fetchOfferLetters();
 		this.fetchContracts();
 	},

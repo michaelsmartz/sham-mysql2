@@ -490,30 +490,6 @@ var vm = new Vue({
 		this.fetchCandidates();
 	},
 	mounted: function() {
-<<<<<<< Updated upstream
-
-		// const interviewCommentForm = document.getElementById('interview-comment-form');
-		// const overallComment  = interviewCommentForm.querySelector('input[name=overallComment]');
-		//
-		// // listen for the submit event
-		// interviewCommentForm.addEventListener('submit', processInterviewCommentForm);
-		// function processInterviewCommentForm(e) {
-		// 	e.preventDefault();
-		//
-		// 	// get our data
-		// 	const comment  = overallComment.value;
-		// 	console.log(comment);
-		//
-		// 	// process the form!
-		// 	alert('Processing!');
-		//
-		// 	// form processing here
-		// }
-
-		on('focusin', 'input.flatpickr', function(event) {
-=======
->>>>>>> Stashed changes
-
 		this.fetchOfferLetters();
 		this.fetchContracts();
 	},

@@ -207,9 +207,6 @@
             });
         });
 
-        $('.datepicker').pickadate();
-        //alert();
-
     </script>
 
     <style>
