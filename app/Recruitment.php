@@ -129,7 +129,7 @@ class Recruitment extends Model
 
     public function offers()
     {
-        return $this->belongsToMany(Offer::class,'offer_recruitment')->withPivot(['id','signed_on','comments','master_copy']);
+        return $this->belongsToMany(Offer::class,'offer_recruitment')->withPivot(['id','signed_on','starting_on','comments','master_copy']);
     }
 
     public function candidates()

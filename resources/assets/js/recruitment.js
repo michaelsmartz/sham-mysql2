@@ -59,6 +59,7 @@ var vm = new Vue({
 		offerLetters: [],
 		contracts: [],
 		currentOffer: 0,
+		currentOfferStartsOn: '',
 		currentContract: 0,
         currentComment: '',
 		interviewMedias: [],
@@ -90,11 +91,14 @@ var vm = new Vue({
 			// handle empty offer letters error
 			if(item.offers.length == 0) {
 				item.offers.push({offer_id: 0});
+				this.currentOffer = "";
 			} else {
 				this.currentOffer = item.offers[0].offer_id;
+				this.currentOfferStartsOn = item.offers[0].starting_on;
 			}
 			if(item.contracts.length == 0) {
 				item.contracts.push({contract_id: 0});
+				this.currentContract = "";
 			} else {
 				this.currentContract = item.contracts[0].contract_id;
 			}
@@ -347,8 +351,8 @@ var vm = new Vue({
 		},
 		downloadOffer: function(){
 			var startingOn = $('#starting_on').val(),
-				contractId = $('#contract_id').val(),
-				offerId = $('#offer_id option:selected').val();
+				offerId = $('#offer_id option:selected').val(),
+				cdt = this.current;
 
 			fetch('./candidate/' + this.current.id + '/download-offer', {
 				headers: {
@@ -358,12 +362,12 @@ var vm = new Vue({
 					"X-CSRF-TOKEN": token
 				},
 				method: 'post',
-				body: JSON.stringify({ starting_on: startingOn, contract_id: contractId, offer_id: offerId}),
+				body: JSON.stringify({ starting_on: startingOn, offer_id: offerId}),
 				credentials: "same-origin"
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, 'offer letter.pdf');
+				download(blob, cdt.name + ' - offer letter.pdf');
 			});
 		},
         importHired: function(){
@@ -406,7 +410,8 @@ var vm = new Vue({
             );
 		},
 		downloadContract: function(){
-			var contractId = $('#contract_id option:selected').val();
+			var contractId = $('#contract_id option:selected').val(),
+			cdt = this.current;
 
 			fetch('./candidate/' + this.current.id + '/download-contract', {
 				headers: {
@@ -421,11 +426,13 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, 'contract.pdf');
+				download(blob, cdt.name + ' - contract.pdf');
 			});
 		},
 		downloadSignedOffer: function(){
-			var offerId = $('#offer_id').val();
+			var offerId = $('#offer_id').val(),
+			cdt = this.current;
+
 			fetch('./candidate/' + this.current.id + '/download-signed-offer', {
 				headers: {
 					"Content-Type": "application/json",
@@ -439,11 +446,13 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, 'signed offer.pdf');
+				download(blob, cdt.name + ' - signed offer.pdf');
 			});
 		},
 		downloadSignedContract: function(){
-			var contractId = $('#contract_id').val();
+			var contractId = $('#contract_id').val(),
+			cdt = this.current;
+
 			fetch('./candidate/' + this.current.id + '/download-signed-contract', {
 				headers: {
 					"Content-Type": "application/json",
@@ -457,7 +466,7 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, 'signed contract.pdf');
+				download(blob, cdt.name + ' - signed contract.pdf');
 			});
 		},
 		processInterviewForm: function (e) {

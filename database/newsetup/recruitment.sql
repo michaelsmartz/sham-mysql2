@@ -456,3 +456,10 @@ ALTER TABLE `contract_recruitment`
 
 ALTER TABLE `offer_recruitment`
 	ADD COLUMN `master_copy` MEDIUMBLOB NULL DEFAULT NULL AFTER `offer_id`;
+
+ALTER TABLE `offer_recruitment`
+	ADD COLUMN `starting_on` DATE NULL AFTER `master_copy`,
+	CHANGE COLUMN `signed_on` `signed_on` DATE NULL DEFAULT NULL AFTER `starting_on`;
+
+ALTER TABLE `contract_recruitment`
+	CHANGE COLUMN `signed_on` `signed_on` DATE NULL DEFAULT NULL AFTER `starting_on`;

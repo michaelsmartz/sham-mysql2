@@ -7,6 +7,7 @@ require('parsleyjs');
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {ClientTable, Event} from 'vue-tables-2';
+Vue.config.productionTip = false;
 
 Vue.use(ClientTable);
 Vue.use(Event);

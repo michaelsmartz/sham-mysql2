@@ -172,7 +172,7 @@ class Candidate extends Model
     public function offers()
     {
         return $this->belongsToMany(Offer::class, 'offer_recruitment')
-                    ->select(['candidate_id','offer_id','signed_on','comments']);
+                    ->select(['candidate_id','offer_id','starting_on','signed_on','comments']);
     }
 
     public function scopeCandidatesList($query)

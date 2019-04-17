@@ -7,7 +7,7 @@
         <div class="form-group col-md-12">
             <span class="field">
                 <label for="comments">Comments</label>
-                {!! Form::textarea('comments', null, ['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Reasons', 'id'=>'reasons', 'maxlength' => '50', 'rows'=>3]) !!}
+                {!! Form::textarea('comments', null, ['class'=>'form-control ', 'autocomplete'=>'off', 'placeholder'=>'Comments', 'id'=>'reasons', 'maxlength' => '50', 'rows'=>3]) !!}
             </span>
         </div>
 

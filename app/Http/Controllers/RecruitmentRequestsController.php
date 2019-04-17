@@ -551,16 +551,16 @@ class RecruitmentRequestsController extends CustomController
         $cdt = intval(Route::current()->parameter('candidate'));
 
         $startingOn = $request->get('starting_on');
-        $contractId = $request->get('contract_id');
         $offerId = $request->get('offer_id');
 
         $recruitment = Recruitment::with('department')->find($id);
         $candidate = Candidate::with('title')->find($cdt);
         $offer = Offer::find($offerId);
 
-        $offerRecruitment = $recruitment->offers()->where([
-                                ['candidate_id', $cdt]
-                            ])->get()->first();
+        $recruitment->offers()->sync([$offerId =>
+            ['candidate_id' => $cdt,
+             'starting_on' => $startingOn]
+        ]);
 
         $content = $this->getOfferContentInfo($recruitment, $candidate, $offer);
 
@@ -571,7 +571,6 @@ class RecruitmentRequestsController extends CustomController
 
         } catch(Exception $exception) {}
   
-        //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
         return $pdf->download('offer letter.pdf');
 
     }
@@ -587,14 +586,9 @@ class RecruitmentRequestsController extends CustomController
         $candidate = Candidate::with('title')->find($cdt);
         $contract = Contract::find($contractId);
 
-        $contractRecruitment = $recruitment->contracts()->where([
-                                ['candidate_id', $cdt]
-                            ])->get()->first();
-
-        // no previously set contract
-        if ($contractRecruitment == null) {
-
-        }
+        $recruitment->contracts()->sync([$contractId =>
+            ['candidate_id' => $cdt]
+        ]);
 
         $content = $this->getOfferContentInfo($recruitment, $candidate, $contract);
             
@@ -605,7 +599,6 @@ class RecruitmentRequestsController extends CustomController
 
         } catch(Exception $exception) {}
 
-        //return $pdf->download($recruitment->job_title . ' - ' . $candidate->name .'- offer letter.pdf');
         return $pdf->download('contract.pdf');
     }
 
@@ -956,6 +949,7 @@ class RecruitmentRequestsController extends CustomController
 
     public function saveSignedOfferForm(Request $request){
         try {
+
             $input = array_except($request->all(),array('_token','_method','offer_signed_on_submit'));
 
             $data = Recruitment::with('offers')->find($input['recruitment_id']);
@@ -963,15 +957,14 @@ class RecruitmentRequestsController extends CustomController
                 ['candidate_id', '=', $input['candidate_id']],
                 ['offer_id', '=', $input['offer_id']]
             ])->get()->first();
-
+            
             if($offerRecruitment) {
                 $offerRecruitment->pivot->signed_on = $input['offer_signed_on'];
                 $offerRecruitment->pivot->comments = $input['comments'];
                 $offerRecruitment->pivot->master_copy = $input['attachment'][0]['value'];
                 $offerRecruitment->pivot->save();
-
-                $this->attach($request, $offerRecruitment->pivot->id, 'OfferRecruitmentAttachments');
             }
+            
 
         } catch (Exception $exception) {
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
