@@ -49194,6 +49194,7 @@ __webpack_require__(9);
 
 
 
+__WEBPACK_IMPORTED_MODULE_0_vue__["default"].config.productionTip = false;
 
 __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["ClientTable"]);
 __WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["Event"]);
