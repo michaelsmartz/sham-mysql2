@@ -35,7 +35,7 @@
                                 <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve the contract',current,current.id, 4)" class="{{ $step[0]['btnclass'] }}">
                                     <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                                 </button>
-                                <button id="{{ $step[1]['id'] }}" class="{{ $step[1]['btnclass'] }}">
+                                <button id="{{ $step[1]['id'] }}" @click="pipelineSwitchState(1,'Disaprove the contract',current,current.id, -4)" class="{{ $step[1]['btnclass'] }}">
                                     <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
                                 </button>
                             </div>
@@ -49,7 +49,7 @@
                             <div class="col-md-7">
                                 <label for="contract_id">Contract</label>
                                 <select class="form-control" name="contract_id" id="contract_id" v-model="currentContract">
-                                        <option value="">Choose Contract</option>
+                                        <option value=0>Choose Contract</option>
                                         <option v-for="contract in contracts" v-bind:value="contract.id"> @{{ contract.description }}</option>
                                 </select>
                             </div>
@@ -60,7 +60,7 @@
                                 <hr/>
                             </div>
                         </div>
-                        <div class="col-md-11 col-md-offset-1">
+                        <div class="col-md-11 col-md-offset-1" v-if="current.contracts[0].contract_id > 0">
                             <div class="col-md-7" style="padding-top: 0px;">
                                 <h4>Signed Copy</h4>
                             </div>

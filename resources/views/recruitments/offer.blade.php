@@ -36,7 +36,7 @@
                                 <button id="{{ $step[0]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, 3)" class="{{ $step[0]['btnclass'] }}">
                                     <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                                 </button>
-                                <button id="{{ $step[1]['id'] }}" @click="pipelineSwitchState(1,'Approve the offer',current,current.id, -3)" class="{{ $step[1]['btnclass'] }}">
+                                <button id="{{ $step[1]['id'] }}" @click="pipelineSwitchState(1,'Disaprove the offer',current,current.id, -3)" class="{{ $step[1]['btnclass'] }}">
                                     <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
                                 </button>
                             </div>
@@ -50,13 +50,13 @@
                             <div class="col-md-7">
                                 <label for="offer_id">Offer Letter</label>
                                 <select class="form-control" name="offer_id" id="offer_id" v-model="currentOffer">
-                                        <option value="">Choose Offer Letter</option>
+                                        <option value=0>Choose Offer Letter</option>
                                         <option v-for="letter in offerLetters" v-bind:value="letter.id"> @{{ letter.description }}</option>
                                 </select>
                             </div>
                             <div class="col-md-7" v-if="current.offers[0].signed_on == null">
                                 <label for="starting_on">Starting On</label>
-                                <input id="starting_on" class='form-control datepicker' type="text" name="starting_on" v-model="currentOfferStartsOn" >
+                                <input id="starting_on" class='form-control datepicker' type="text" name="starting_on" v-model="current.offers[0].starting_on" >
                             </div>
                             <div class="col-md-7" style="padding-top: 10px;">
                                 <button type="button" @click="downloadOffer" class="btn btn-primary pull-right">Download</button>                            
@@ -65,7 +65,7 @@
                                 <hr/>
                             </div>
                         </div>
-                        <div class="col-md-11 col-md-offset-1">
+                        <div class="col-md-11 col-md-offset-1" v-if="current.offers[0].offer_id > 0">
                             <div class="col-md-7">
                                 <h4>Signed Copy</h4>
                             </div>

@@ -462,4 +462,4 @@ ALTER TABLE `offer_recruitment`
 	CHANGE COLUMN `signed_on` `signed_on` DATE NULL DEFAULT NULL AFTER `starting_on`;
 
 ALTER TABLE `contract_recruitment`
-	CHANGE COLUMN `signed_on` `signed_on` DATE NULL DEFAULT NULL AFTER `starting_on`;
+	CHANGE COLUMN `signed_on` `signed_on` DATE NULL DEFAULT NULL;

@@ -90,15 +90,15 @@ var vm = new Vue({
 			let scope = this;
 			// handle empty offer letters error
 			if(item.offers.length == 0) {
-				item.offers.push({offer_id: 0});
-				this.currentOffer = "";
+				item.offers.push({offer_id: 0,starting_on:""});
+				this.currentOffer = 0;
 			} else {
 				this.currentOffer = item.offers[0].offer_id;
 				this.currentOfferStartsOn = item.offers[0].starting_on;
 			}
 			if(item.contracts.length == 0) {
 				item.contracts.push({contract_id: 0});
-				this.currentContract = "";
+				this.currentContract =0;
 			} else {
 				this.currentContract = item.contracts[0].contract_id;
 			}

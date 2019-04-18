@@ -556,9 +556,22 @@ class RecruitmentRequestsController extends CustomController
         $recruitment = Recruitment::with('department')->find($id);
         $candidate = Candidate::with('title')->find($cdt);
         $offer = Offer::find($offerId);
+        $offerRecruitment = $recruitment->offers()->where([
+            ['candidate_id', $cdt]
+        ])->get()->first();
 
-        $recruitment->offers()->sync([$offerId =>
+        $dataSet = ['candidate_id' => $cdt,
+                    'recruitment_id' => $id,
+                    'offer_id' => $offerId,
+                    'starting_on' => $startingOn];
+        if(is_null($offerRecruitment)) {
+            DB::table('offer_recruitment')->insert($dataSet);
+        } else {
+            DB::table('offer_recruitment')->where(['id' => $offerRecruitment->pivot->id])->update($dataSet);
+        }
+        $recruitment->offers()->syncWithoutDetaching([$offerId =>
             ['candidate_id' => $cdt,
+             'recruitment_id' => $id,
              'starting_on' => $startingOn]
         ]);
 
@@ -585,10 +598,18 @@ class RecruitmentRequestsController extends CustomController
         $recruitment = Recruitment::with('department')->find($id);
         $candidate = Candidate::with('title')->find($cdt);
         $contract = Contract::find($contractId);
+        $contractRecruitment = $recruitment->contracts()->where([
+            ['candidate_id', $cdt]
+        ])->get()->first();
 
-        $recruitment->contracts()->sync([$contractId =>
-            ['candidate_id' => $cdt]
-        ]);
+        $dataSet = ['candidate_id' => $cdt,
+                    'recruitment_id' => $id,
+                    'contract_id' => $contractId];
+        if(is_null($contractRecruitment)) {
+            DB::table('contract_recruitment')->insert($dataSet);
+        } else {
+            DB::table('contract_recruitment')->where(['id' => $contractRecruitment->pivot->id])->update($dataSet);
+        }
 
         $content = $this->getOfferContentInfo($recruitment, $candidate, $contract);
             
