@@ -209,6 +209,9 @@ Auth::routes();
         #region Recruitment
         Route::resource('recruitment', 'RecruitmentsController');
 
+	    Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/interview/{interview}/delete-media', 'RecruitmentRequestsController@deleteInterviewMedia')->name('recruitment_requests.delete-interview-media');
+        Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/interview/{interview}/download-media/{media}', 'RecruitmentRequestsController@downloadInterviewMedia')->name('recruitment_requests.download-interview-media');
+
         Route::get('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/edit-interview', 'RecruitmentRequestsController@editInterview')->name('recruitment_requests.edit-interview');
         Route::patch('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/update-interview', 'RecruitmentRequestsController@updateInterview')->name('recruitment_requests.update-interview');
         Route::fileResource('recruitment_requests', 'RecruitmentRequestsController');
@@ -228,9 +231,6 @@ Auth::routes();
         Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-contract', 'RecruitmentRequestsController@downloadContract')->name('recruitment_requests.download-contract');
         Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-signed-contract', 'RecruitmentRequestsController@downloadSignedContract')->name('recruitment_requests.download-signed-contract');
         Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/contract/{contract}/upload-contract-form', 'RecruitmentRequestsController@uploadSignedContractForm')->name('recruitment_requests.upload-contract-form');
-
-        Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/interview/{interview}/delete-media', 'RecruitmentRequestsController@deleteInterviewMedia')->name('recruitment_requests.delete-interview-media');
-        Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/interview/{interview}/download-media/{media}', 'RecruitmentRequestsController@downloadInterviewMedia')->name('recruitment_requests.download-interview-media');
 
         Route::any('recruitment_requests/{recruitment_request}/candidate/{candidate}/hired', 'RecruitmentRequestsController@importHiredCandidate')->name('recruitment_requests.hired');
         Route::any('recruitment_requests/{recruitment_request}/candidate/{candidate}/update-interview-comment', 'RecruitmentRequestsController@updateInterviewComment')->name('recruitment_requests.update-interview-comment');

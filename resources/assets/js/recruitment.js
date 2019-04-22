@@ -1,7 +1,5 @@
 import {on} from 'delegated-events';
-import Modal from './components/Modal.vue';
 import moment from 'moment';
-import FileUploader from './components/FileUploader.vue';
 
 window.Vue = require('vue/dist/vue.common.js');
 Vue.config.productionTip = false;
@@ -146,7 +144,6 @@ var vm = new Vue({
 			return window.route();
 		},
 		uploader: function(){
-			window.vueFileUpload();
 			return true;
 		},
 		pipelineSwitchState: function (id, title, current, candidate, newState) {

@@ -382,6 +382,7 @@ class RecruitmentRequestsController extends CustomController
                             ->join('media', 'mediables.media_id', '=', 'media.id')
                             ->select('*')
                             ->where('mediables.mediable_id', $interview->pivot->id)
+                            ->where('mediables.mediable_type', 'App\CandidateInterviewAttachments')
                             ->get()->toArray();
 
                     $interview->interviewMedias = $interviewMedias;
@@ -389,7 +390,7 @@ class RecruitmentRequestsController extends CustomController
             }
 
         } catch (Exception $exception) {
-            dd($exception);
+            dd($exception->getMessage());
         } finally {
 
             return Response()->json($candidates);
