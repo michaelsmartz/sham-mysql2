@@ -66,12 +66,27 @@ class TimelineManager extends Model
 
             self::addToTimeline($employee->id,TimelineEventType::JobTitle, $historyjobtitleObj->id);
         }
+
+        $team_id = $employee->team_id;
+        if($team_id != null)
+        {
+            $historyTeamObj = new HistoryTeam();
+            $historyTeamObj->employee_id = $employee->id;
+            $historyTeamObj->team_id = $team_id;
+            $historyTeamObj->date_occurred = date('Y-m-d\TH:i:s');
+            $historyTeamObj->updated_by_employee_id = "";
+
+            $historyTeamObj->save();
+
+            self::addToTimeline($employee->id,TimelineEventType::Team, $historyTeamObj->id);
+        }
     }
 
     public static function updateEmployeeTimelineHistory($employee)
     {
         $terminationDate = $employee->date_terminated;
         $departmentid = $employee->department_id;
+        $teamid = $employee->team_id;
         $jobtitleid = $employee->job_title_id;
         $selectedTerminationDate = "";
         
@@ -91,6 +106,10 @@ class TimelineManager extends Model
         // Get last jobtitleid from history table
         $lastJobTitle = HistoryJobTitle::where('employee_id','=', $id)->orderBy('id','desc')->get()->first();
         $selectedJobtitleid = optional($lastJobTitle)->job_title_id;
+
+        // Get last teamid from history table
+        $lastTeam = HistoryTeam::where('employee_id','=', $id)->orderBy('id','desc')->get()->first();
+        $selectedTeamid = optional($lastTeam)->team_id;
 
         // Add  new terminationdate if keyed termination date is not equal to historytermination date.
         if ($terminationDate != null) {
@@ -138,6 +157,22 @@ class TimelineManager extends Model
                 $historyJobtitleObj->save();
 
                 self::addToTimeline($employee->id, TimelineEventType::JobTitle, $historyJobtitleObj->id);
+            }
+        }
+
+        if($teamid != null)
+        {
+            if($teamid != $selectedTeamid)
+            {
+                $historyTeamObj = new HistoryTeam();
+                $historyTeamObj->employee_id = $employee->id;
+                $historyTeamObj->team_id = $teamid;
+                $historyTeamObj->date_occurred = date('Y-m-d\TH:i:s');
+                $historyTeamObj->updated_by_employee_id = "";
+
+                $historyTeamObj->save();
+
+                self::addToTimeline($employee->id, TimelineEventType::Team, $historyTeamObj->id);
             }
         }
     }

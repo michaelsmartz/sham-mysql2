@@ -45,7 +45,8 @@ class TimelinesController extends CustomController
                         'historyDisciplinaryActions.disciplinaryAction',
                         'historyJoinTermination',
                         'historyJobTitles.jobTitle',
-                        'historyQualification.qualification'
+                        'historyQualification.qualification',
+                        'historyTeams.team'
                     ])
                     ->where('employees.id',$id)->get()->first();
 
@@ -56,10 +57,12 @@ class TimelinesController extends CustomController
 
     private static function getTimeline($employee) {
 
+        try{
         $timeCompileResults = [];
 
         foreach( $employee->timelines as $timeline) {
             $timelineEventType = TimelineEventType::getDescription($timeline->timeline_event_type_id);
+
             $event_id = trim($timeline->event_id);
 
             switch ($timelineEventType) {
@@ -113,7 +116,7 @@ class TimelinesController extends CustomController
                             $violation = Violation::find($historyDisciplinary->disciplinaryAction->violation_id);
                             $timeline->DisciplinaryActionId = $historyDisciplinary->disciplinary_action_id;
                             $timeline->Description = "Discriplinary Action: " . $violation->description;
-                            $timeline->EventType = "Discriplinary Action";//$timelineeventype;
+                            $timeline->EventType = $timelineEventType;
                             //$timelineresultObj->Date = "Date: " . $timeline->EventDate;
                             $timeline->formattedDate = date("Y-m-d", strtotime($historyDisciplinary->date_occurred));
                             $timeCompileResults[] = $timeline;
@@ -135,10 +138,12 @@ class TimelinesController extends CustomController
 
                             if ($historyJoinTermination->is_joined == true) {
                                 $timeline->Description = "Joined Date";
+                                $timeline->EventType = "Joined Date";
                                 $timeline->MainClass = 'success';
                                 $timeline->formattedDate =  date("Y-m-d", strtotime($employee->date_joined));
                             } else {
                                 $timeline->Description = "Termination";
+                                $timeline->EventType = "Termination";
                                 $timeline->formattedDate = date("Y-m-d", strtotime($historyJoinTermination->date_occurred));
                                 $timeline->MainClass = 'warning';
                                 $timeline->icon = 'fa fa-sign-out';
@@ -158,7 +163,24 @@ class TimelinesController extends CustomController
                             $timeline->ShortcutType = 5;
                             $timeline->MainClass = 'info';
                             $timeline->Description = "Started as: " . $historyJobTitle->jobTitle->description;
+                            $timeline->EventType = $timelineEventType;
                             $timeline->formattedDate = date("Y-m-d", strtotime($historyJobTitle->date_occurred));
+                            $timeCompileResults[] = $timeline;
+                        }
+                    }
+                    break;
+
+                case "Team":
+                    $historyTeams =  $employee->historyTeams->where('id', $event_id);
+
+                    if (count($historyTeams) > 0) {
+                        foreach ($historyTeams as $historyTeam) {
+                            $timeline = new Timeline();
+                            $timeline->ShortcutType = 6;
+                            $timeline->MainClass = 'info';
+                            $timeline->Description = "Team: " . $historyTeam->team->description;
+                            $timeline->EventType = $timelineEventType;
+                            $timeline->formattedDate = date("Y-m-d", strtotime($historyTeam->date_occurred));
                             $timeCompileResults[] = $timeline;
                         }
                     }
@@ -172,7 +194,7 @@ class TimelinesController extends CustomController
                     {
                         foreach ($historyQualifications as $historyQualification) {
                             $timeline = new Timeline();
-                            $timeline->ShortcutType = 6;
+                            $timeline->ShortcutType = 7;
                             $timeline->MainClass = 'success';
                             $timeline->Description = "Obtained: " . $historyQualification->qualification->description;
                             $timeline->formattedDate = date("d-m-Y", strtotime($historyQualification->date_occurred));
@@ -187,6 +209,10 @@ class TimelinesController extends CustomController
         }
 
         $timeCompileResults = collect($timeCompileResults)->sortBy('formattedDate');
+
+        }catch (Exception $exception) {
+            $exception->getMessage();
+        }
         return $timeCompileResults;
 
     }

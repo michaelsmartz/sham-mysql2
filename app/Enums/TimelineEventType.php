@@ -13,6 +13,7 @@ final class TimelineEventType extends Enum
     const Qualification = 5;
     const JoinTermination = 6;
     const Training = 7;
+    const Team = 8;
 
         /**
      * Get the description for an enum value
@@ -36,11 +37,17 @@ final class TimelineEventType extends Enum
             case self::Reward:
                 return 'Reward';
                 break;
-                case self::Qualification:
+            case self::Qualification:
                 return 'Qualification';
                 break;
             case self::JoinTermination:
                 return 'Join/Termination Date';
+                break;
+            case self::Training:
+                return 'Training';
+                break;
+            case self::Team:
+                return 'Team';
                 break;
             default:
                 return  self::getKey($value);
