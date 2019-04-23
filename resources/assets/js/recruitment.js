@@ -499,10 +499,6 @@ var vm = new Vue({
 		this.fetchOfferLetters();
 		this.fetchContracts();
 	},
-	components: {
-		'modal': Modal,
-		'file-uploader': FileUploader
-	},
 	filters: {
 		stageCount:function(people, status){
 			if (status == 0 || status === void 0) {
