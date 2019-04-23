@@ -6028,6 +6028,21 @@ CREATE TABLE IF NOT EXISTS `workflowtransitions` (
   KEY `FK_WorkflowTransitions_WorkflowSteps1` (`TargetWorkflowStepId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+DROP TABLE IF EXISTS `history_teams`;
+CREATE TABLE IF NOT EXISTS `history_teams` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `employee_id` int(11) NOT NULL,
+  `team_id` int(11) NOT NULL,
+  `date_occurred` date NOT NULL,
+  `updated_by_employee_id` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_HistoryTeam_Employees` (`employee_id`),
+  KEY `FK_HistoryTeam_Teams` (`team_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
 
 INSERT INTO `sys_config_values` (`key`, `value`) VALUES ('LATEST_SFE_CODE', 'SG0001');
 

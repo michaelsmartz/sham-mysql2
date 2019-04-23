@@ -177,3 +177,20 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '133');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '133');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '133');
+
+
+#--23/04/19
+DROP TABLE IF EXISTS `history_teams`;
+CREATE TABLE IF NOT EXISTS `history_teams` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `employee_id` int(11) NOT NULL,
+  `team_id` int(11) NOT NULL,
+  `date_occurred` date NOT NULL,
+  `updated_by_employee_id` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_HistoryTeam_Employees` (`employee_id`),
+  KEY `FK_HistoryTeam_Teams` (`team_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;

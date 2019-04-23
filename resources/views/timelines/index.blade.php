@@ -49,6 +49,10 @@
                                             <label for="chkReward">Rewards: </label>
                                             <input id="chkReward" name="chkReward" type="checkbox" data-shortcut-type="2" data-group-cls="btn-group-sm" data-off-active-cls="btn-warning" data-off-title="No" data-on-title="Yes" checked>
                                         </div>
+                                        <div class="col-md-3">
+                                            <label for="chkTeam">Teams: </label>
+                                            <input id="chkTeam" name="chkTeam" type="checkbox" data-shortcut-type="6" data-group-cls="btn-group-sm" data-off-active-cls="btn-warning" data-off-title="No" data-on-title="Yes" checked>
+                                        </div>
                                         {{-- 
                                         <div class="col-md-3">
                                             <label for="chkELearning">E-learning: </label>

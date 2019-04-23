@@ -410,5 +410,9 @@
         "model-name": "Offer",
         "resource-file": "offers.json",
         "table-name": "offers"
+    },
+    {
+        "model-name": "HistoryTeam",
+        "resource-file": "history_teams.json"
     }
 ]
