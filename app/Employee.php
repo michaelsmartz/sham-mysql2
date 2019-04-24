@@ -288,6 +288,11 @@ class Employee extends Model implements AuditableContract
         return $this->hasMany('App\HistoryJobTitle','employee_id','id');
     }
 
+    public function historyTeams()
+    {
+        return $this->hasMany('App\HistoryTeam','employee_id','id');
+    }
+
     public function historyJoinTermination()
     {
         return $this->hasMany('App\HistoryJoinTermination','employee_id','id');

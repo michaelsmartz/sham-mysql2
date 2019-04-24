@@ -76,7 +76,7 @@
                             ?>
                             <tr class="clickable-row"  id="tr{{$evaluation->id}}" data-id="{{$evaluation->id}}"  data-url="{{URL::to('/evaluations')}}">
                                 <td>{{ optional($evaluation->assessment)->name }}</td>
-                                <td>{{ optional($evaluation->employee)->full_name }}</td>
+                                <td>{{ optional($evaluation->useremployee)->full_name }}</td>
                                 <td>{{ optional($evaluation->department)->description }}</td>
                                 <td>{{ $evaluation->feedback_date }}</td>
                                 <td>{!! App\Enums\EvaluationStatusType::getDescription($evaluation->evaluation_status_id) !!}</td>
@@ -86,7 +86,7 @@
                         </tbody>
                     </table>
                     <nav>
-                        {!! $evaluations->render() !!}
+                        {!! $evaluations->appends(request()->query())->render() !!}
                     </nav>
                 @endif
             </div>

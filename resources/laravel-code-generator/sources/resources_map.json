@@ -414,5 +414,9 @@
     {
         "model-name": "EmployeeProcessor",
         "resource-file": "employee_processors.json"
+    },
+    {
+        "model-name": "HistoryTeam",
+        "resource-file": "history_teams.json"
     }
 ]

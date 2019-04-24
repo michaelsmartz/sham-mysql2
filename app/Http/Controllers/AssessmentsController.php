@@ -70,7 +70,7 @@ class AssessmentsController extends CustomController
         /*  $modules = Module::pluck('description', 'id');
         return view($this->baseViewPath . '.create',compact('modules'));*/
 
-        $assessmentcategories = AssessmentCategory::pluck('description', 'id');
+        $assessmentcategories = AssessmentCategory::pluck('name', 'id');
         return view('assessments.create',compact('assessmentcategories'));
     }
 
@@ -118,8 +118,8 @@ class AssessmentsController extends CustomController
             //dump(count($data->evaluationResultsEvaluations()->get()));die;
             //dump($data::with('evaluationResultsEvaluations')->where('id',1)->get());die;
         }
-        $assessmentcategories = AssessmentCategory::pluck('description', 'id');
-        $assessmentaAssessmentCategories = $data->assessmentAssessmentCategory()->pluck('description', 'assessments_assessment_category.assessment_category_id');
+        $assessmentcategories = AssessmentCategory::pluck('name', 'id');
+        $assessmentaAssessmentCategories = $data->assessmentAssessmentCategory()->pluck('name', 'assessments_assessment_category.assessment_category_id');
 
         return view($this->baseViewPath .'.edit',
             compact('_mode','fullPageEdit','data','assessmentcategories','assessmentaAssessmentCategories'));
