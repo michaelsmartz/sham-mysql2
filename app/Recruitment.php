@@ -122,8 +122,23 @@ class Recruitment extends Model
         return $this->belongsTo('App\QualificationRecruitment','qualification_id');
     }
 
+    public function contracts()
+    {
+        return $this->belongsToMany(Contract::class,'contract_recruitment')->withPivot(['id','signed_on','comments','master_copy']);
+    }
+
+    public function offers()
+    {
+        return $this->belongsToMany(Offer::class,'offer_recruitment')->withPivot(['id','signed_on','starting_on','comments','master_copy']);
+    }
+
     public function candidates()
     {
         return $this->belongsToMany(Candidate::class)->withPivot('status');
+    }
+
+    public function status()
+    {
+        return $this->belongsToMany(Recruitment::class, 'recruitment_status')->withPivot(['id']);
     }
 }

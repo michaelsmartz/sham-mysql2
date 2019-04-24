@@ -1,9 +1,17 @@
 import {on} from 'delegated-events';
-import Modal from './components/Modal.vue';
+import moment from 'moment';
+
 window.Vue = require('vue/dist/vue.common.js');
+Vue.config.productionTip = false;
 
 let download = require("downloadjs");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+Vue.filter('formatDate', function(value) {
+  if (value) {
+    return moment(String(value)).format('DD/MM/YYYY')
+  }
+});
 
 // usage: {{ file.size | prettyBytes }}
 Vue.filter('prettyBytes', function (num) {
@@ -32,6 +40,7 @@ Vue.filter('prettyBytes', function (num) {
 	return (neg ? '-' : '') + num + ' ' + unit;
 });
 
+Vue.prototype.window = window;
 
 var vm = new Vue({
 	el: "#recruitment",
@@ -46,7 +55,13 @@ var vm = new Vue({
 		submitInterview: false,
 		interviews: [],
 		offerLetters: [],
-		currentOffer: 0
+		contracts: [],
+		currentOffer: 0,
+		currentOfferStartsOn: '',
+		currentContract: 0,
+        currentComment: '',
+		interviewMedias: [],
+		interviewOverallComment: ""
 	},
 	computed: {
 		filteredPeople: function () {
@@ -55,21 +70,69 @@ var vm = new Vue({
 
 			if (category === 0) {
 				return vm.people;
-			} else {
+			}
+			else if (category === 1){
 				return vm.people.filter(function (person) {
-					return person.status[0].status === category;
+					return (person.status[0].status >= 1 || person.status[0].status === 2 || person.status[0].status === -2);
 				});
 			}
-		},
+			else {
+				return vm.people.filter(function (person) {
+					return (person.status[0].status >= 0 && person.status[0].status === category);
+				});
+			}
+		}
 	},
 	methods: {
 		setCurrent: function (item) {
+			let scope = this;
 			// handle empty offer letters error
 			if(item.offers.length == 0) {
-				item.offers.push({offer_id: 0});
+				item.offers.push({offer_id: 0,starting_on:""});
+				this.currentOffer = 0;
 			} else {
 				this.currentOffer = item.offers[0].offer_id;
+				this.currentOfferStartsOn = item.offers[0].starting_on;
 			}
+			if(item.contracts.length == 0) {
+				item.contracts.push({contract_id: 0});
+				this.currentContract =0;
+			} else {
+				this.currentContract = item.contracts[0].contract_id;
+			}
+
+            if(item.recruitment_status.length == 0) {
+                this.currentComment = "";
+            } else {
+                this.currentComment = item.recruitment_status[0].comment;
+            }
+			if(item.interviews.length == 0) {
+				scope.interviewMedias = [];
+			}else{
+				$.each(item.interviews, function (index, obj ) {
+					scope.interviewMedias[index] = [];
+					$.each(obj.interviewMedias, function (key, value){
+						let medias = [];
+
+						if (value.hasOwnProperty('id')) {
+							medias['id'] = value.id;
+						}
+						if (value.hasOwnProperty('filename')) {
+							medias['filename'] = value.filename;
+						}
+						if (value.hasOwnProperty('extension')) {
+							medias['extension'] = value.extension;
+						}
+
+						if (value.hasOwnProperty('mediable_id')) {
+							medias['mediable_id'] = value.mediable_id;
+						}
+
+						scope.interviewMedias[index][key] = medias;
+					});
+				});
+			}
+
 			this.current = item;
 			this.counter = 0;
 			this.lastInterview = false;
@@ -79,6 +142,9 @@ var vm = new Vue({
 		},
 		route: function(){
 			return window.route();
+		},
+		uploader: function(){
+			return true;
 		},
 		pipelineSwitchState: function (id, title, current, candidate, newState) {
 			var vm = this;
@@ -108,8 +174,17 @@ var vm = new Vue({
 			);
 			//return window.pipelineSwitchState(id, $event, candidate, newState);
 		},
-        editInterviewForm: function(interview_id, candidate_id){
+        editInterviewForm: function(interview_id, candidate_id, e){
+			e.stopPropagation();
             this.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
+		},
+        uploadSignedOffer: function(candidateId){
+			var offerId = $('#offer_id option:selected').val();
+            this.loadUrl('./candidate/'+ candidateId + '/offer/' + offerId + '/upload-offer-form');
+		},
+        uploadSignedContract: function(candidateId){
+			var contractId = $('#contract_id option:selected').val();
+            this.loadUrl('./candidate/'+ candidateId + '/contract/' + contractId + '/upload-contract-form');
 		},
         loadUrl: function(url) {
             $(".light-modal-body").empty().html('Loading...please wait...');
@@ -137,6 +212,72 @@ var vm = new Vue({
                 alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
             });
         },
+		deleteInterviewMedia: function(current, interview_id, media, e){
+			let vm = this;
+			e.stopPropagation();
+
+			alerty.confirm(
+				"Are you sure to delete interview media <strong class='text-danger'>"+ media.filename + "." + media.extension+"</strong> for the candidate <strong class='text-danger'>" + current.name + "</strong>?<br>", {
+					okLabel: '<span class="text-danger">Yes</span>',
+					cancelLabel: 'No'
+				},
+				function () {
+					fetch('./candidate/' + current.id + '/interview/' + interview_id + '/delete-media', {
+						headers: {
+							"Content-Type": "application/json",
+							"Accept": "application/json, */*",
+							"X-Requested-With": "XMLHttpRequest",
+							"X-CSRF-TOKEN": token
+						},
+						method: 'post',
+						body: JSON.stringify({ media_id: media.id, mediable_id: media.mediable_id}),
+						credentials: "same-origin"
+					}).then(function(resp) {
+						if (resp.ok == true) {
+							alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
+								vm.interviewMedias = vm.removeIndexMultiDimensionalArr(vm.interviewMedias, media.id);
+							});
+						}
+					});
+				}
+			);
+		},
+
+		/**
+		 * Remove Index of Multidimensional Array
+		 * @param arr {!Array} - the input array
+		 * @param media_id {object} - the value to search
+		 * @return {Array}
+		 */
+		removeIndexMultiDimensionalArr(arr, media_id) {
+			//make a copy of array
+			let new_arr = [];
+
+			$.each(arr, function (index, i) {
+				new_arr[index] = [];
+				let count = 0;
+				$.each(i, function (key, j) {
+					if (j.hasOwnProperty("id")) {
+						if(j.id === media_id) {
+							//new_arr[index].splice(key, 1);
+						}else{
+							new_arr[index][count] = j;
+							count++;
+						}
+					}
+				}, new_arr);
+			}, new_arr);
+			return new_arr;
+		},
+		downloadInterviewMedia: function(current, interview_id, media, e){
+			e.stopPropagation();
+
+			const url = './candidate/' + current.id + '/interview/' + interview_id + '/download-media/' + media.id;
+			const link = document.createElement('a');
+			link.href = url;
+			document.body.appendChild(link);
+			link.click();
+		},
 		setVal(item, h, b, f) {
 			this.current = item;
 
@@ -179,6 +320,24 @@ var vm = new Vue({
 				console.log("Error Reading data " + err);
 			  });
 		},
+		fetchContracts: function() {
+			fetch('./contracts', {
+				credentials: "same-origin",
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				}
+			  })
+			.then(res => res.json())
+			.then(res => {
+				this.contracts = res;
+			}).catch(err => {
+				// Do something for an error here
+				console.log("Error Reading data " + err);
+			  });
+		},
 		getBackground: function(src){
 			if (src !== null) {
 				return 'background-image: ' + 'url(' + src + ')';
@@ -189,9 +348,8 @@ var vm = new Vue({
 		},
 		downloadOffer: function(){
 			var startingOn = $('#starting_on').val(),
-				contractId = $('#contract_id').val(),
-				offerId = $('#offer_id option:selected').val();
-				console.log(offerId);
+				offerId = $('#offer_id option:selected').val(),
+				cdt = this.current;
 
 			fetch('./candidate/' + this.current.id + '/download-offer', {
 				headers: {
@@ -201,12 +359,136 @@ var vm = new Vue({
 					"X-CSRF-TOKEN": token
 				},
 				method: 'post',
-				body: JSON.stringify({ starting_on: startingOn, contract_id: contractId, offer_id: offerId}),
+				body: JSON.stringify({ starting_on: startingOn, offer_id: offerId}),
 				credentials: "same-origin"
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, 'offer letter.pdf');
+				download(blob, cdt.name + ' - offer letter.pdf');
+			});
+		},
+        importHired: function(){
+            var vm = this;
+            var comments = $('#hired_comments').val(),
+                employee_no = $('#employee_no').val();
+
+            alerty.confirm(
+                "Are you sure to <strong class='text-danger'> import </strong> candidate " + vm.current.name + "'s data <strong class='text-danger'></strong>?<br>", {
+                    okLabel: '<span class="text-danger">Yes</span>',
+                    cancelLabel: 'No'
+                },
+                function () {
+                    fetch('./candidate/' + vm.current.id + '/hired', {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json, */*",
+                            "X-Requested-With": "XMLHttpRequest",
+                            "X-CSRF-TOKEN": token
+                        },
+                        method: 'post',
+                        body: JSON.stringify({ comments: comments, employee_no: employee_no}),
+                        credentials: "same-origin"
+                    })
+					.then(function (res) {
+						if (res.ok == true) {
+							alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
+                                // $('.hired').attr('disabled','disabled');
+                                // $('#hired_comments').attr('disabled','disabled');
+                                // $('#employee_no').attr('disabled','disabled');
+                                // this.current.employee_no = employee_no;
+                                // this.currentComment = comments;
+                                location.reload();
+                                // $('#steps a[href="hired"]').tab('show');
+							});
+						}
+
+					});
+                }
+            );
+		},
+		downloadContract: function(){
+			var contractId = $('#contract_id option:selected').val(),
+			cdt = this.current;
+
+			fetch('./candidate/' + this.current.id + '/download-contract', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				body: JSON.stringify({ contract_id: contractId}),
+				credentials: "same-origin"
+			}).then(function(resp) {
+				return resp.blob();
+			}).then(function(blob) {
+				download(blob, cdt.name + ' - contract.pdf');
+			});
+		},
+		downloadSignedOffer: function(){
+			var offerId = $('#offer_id').val(),
+			cdt = this.current;
+
+			fetch('./candidate/' + this.current.id + '/download-signed-offer', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				body: JSON.stringify({ offer_id: offerId}),
+				credentials: "same-origin"
+			}).then(function(resp) {
+				return resp.blob();
+			}).then(function(blob) {
+				download(blob, cdt.name + ' - signed offer.pdf');
+			});
+		},
+		downloadSignedContract: function(){
+			var contractId = $('#contract_id').val(),
+			cdt = this.current;
+
+			fetch('./candidate/' + this.current.id + '/download-signed-contract', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				body: JSON.stringify({ contract_id: contractId}),
+				credentials: "same-origin"
+			}).then(function(resp) {
+				return resp.blob();
+			}).then(function(blob) {
+				download(blob, cdt.name + ' - signed contract.pdf');
+			});
+		},
+		processInterviewForm: function (e) {
+			e.preventDefault();
+			let vm = this;
+			let overallComment = $('#overallComment').val();
+
+			fetch('./candidate/' + vm.current.id + '/update-interview-comment', {
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json, */*",
+					"X-Requested-With": "XMLHttpRequest",
+					"X-CSRF-TOKEN": token
+				},
+				method: 'post',
+				body: JSON.stringify({ overallComment: overallComment}),
+				credentials: "same-origin"
+			})
+			.then(function (res) {
+				console.log(res);
+				if (res.ok == true) {
+					alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
+						this.currentComment = overallComment;
+					});
+				}
 			});
 		}
 	},
@@ -214,25 +496,20 @@ var vm = new Vue({
 		this.fetchCandidates();
 	},
 	mounted: function() {
-		on('focusin', 'input.datepicker', function(event) {
-
-			// Use the picker object directly.
-			//var picker = $(this).pickadate('picker');
-			
-			//if(picker === undefined) {
-			//	picker = $(this).pickadate().pickadate('picker');
-			//}
-		});
 		this.fetchOfferLetters();
-	},
-	components: {
-		'modal': Modal
+		this.fetchContracts();
 	},
 	filters: {
 		stageCount:function(people, status){
 			if (status == 0 || status === void 0) {
 				return people.length;
-			} else {
+			}
+			else if (status === 1){
+				return people.filter(function (person) {
+					return (person.status[0].status >= 1 || person.status[0].status === 2 || person.status[0].status === -2);
+				}).length;
+			}
+			else {
 				return people.filter(function(person) {
 					return person.status[0].status == status
 				}).length;

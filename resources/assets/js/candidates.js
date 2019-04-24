@@ -8,6 +8,10 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import {ClientTable, Event} from 'vue-tables-2';
 
+Vue.config.productionTip = false;
+Vue.config.devtools = false;
+Vue.config.performance = false;
+
 Vue.use(ClientTable);
 Vue.use(Event);
 Vue.use(Vuex);

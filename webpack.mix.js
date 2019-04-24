@@ -63,6 +63,7 @@ mix.js('resources/assets/js/recruitment-request.js', 'public/js');
 mix.js('resources/assets/js/candidates.js', 'public/js');
 mix.js('resources/assets/js/vue-component-test.js', 'public/js');
 mix.js('resources/assets/js/tinymce.js', 'public/js');
+mix.js('resources/assets/js/app2.js', 'public/js');
 
 mix.sass('resources/assets/sass/app.scss', 'public/css', {
     outputStyle: 'nested'
@@ -94,7 +95,9 @@ mix.sass('resources/assets/sass/candidates.scss', 'public/css', {
 mix.sass('resources/assets/sass/tinymce-custom.scss', 'public/css', {
   outputStyle: 'nested'
 });
-
+mix.sass('resources/assets/sass/flatpickr.scss', 'public/css', {
+  outputStyle: 'nested'
+});
 
 mix/*.webpackConfig({
     externals:{
@@ -105,6 +108,7 @@ mix/*.webpackConfig({
 
 //mix.minify('public/js/app.js');
 //mix.minify('public/js/alt-app.js');
+mix.minify('public/js/app2.js');
 mix.minify('public/js/tables.js');
 mix.minify('public/js/parsley.js');
 mix.minify('public/js/new-employee.js');
@@ -127,6 +131,7 @@ mix.minify('public/css/import_steps.css');
 mix.minify('public/css/nav-wizard.css');
 mix.minify('public/css/recruitment-request.css');
 mix.minify('public/css/candidates.css');
+mix.minify('public/css/flatpickr.css');
 
 mix.then(() => {
     minifier.minify('public/css/app.css');
@@ -139,6 +144,7 @@ mix.then(() => {
     minifier.minify('public/css/recruitment-request.css');
     minifier.minify('public/css/candidates.css');
     minifier.minify('public/css/tinymce-custom.css');
+    minifier.minify('public/css/flatpickr.css');
 
     //minifier.minify('public/js/app.js');
     //minifier.minify('public/js/alt-app.js');
@@ -148,6 +154,7 @@ mix.then(() => {
     minifier.minify('public/js/recruitment.js');
     minifier.minify('public/js/recruitment-request.js');
     minifier.minify('public/js/candidates.js');
+    minifier.minify('public/js/app2.js');
     //minifier.minify('public/js/vue-component-test.js');
 
     if (!mix.inProduction()) {

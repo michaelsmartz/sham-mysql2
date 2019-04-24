@@ -3,7 +3,9 @@ import Popper from 'popper.js';
 import asyncJS from 'async-js';
 
 window.$ = window.jQuery = global.$ = global.jQuery = require('jquery');
+
 require('touch-dnd/touch-dnd.js');
+
 import pickadate from 'pickadate-webpack/lib/picker';
 require('pickadate-webpack/lib/picker.date.js');
 window.on = global.on = on;

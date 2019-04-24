@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="btn-group pull-right" v-show="current">
+                <div class="btn-group pull-right" v-if="current.status[0].status == 1" v-show="current.status[0].status == 1">
                     <button id="{{ $step[0]['id'] }}" type="button"  @click="pipelineSwitchState(1,'Mark the overall results as Pass',current,current.id,2)" class="{{ $step[0]['btnclass'] }}">
                         <i class="{{ $step[0]['class'] }}"></i> {{ $step[0]['label'] }}
                     </button>
@@ -38,13 +38,28 @@
                         <i class="{{ $step[1]['class'] }}"></i> {{ $step[1]['label'] }}
                     </button>
                 </div>
+
+                <div  v-else>
+                    <div class="btn-group pull-right" v-show="current.status[0].status != -2">
+                        <h1><span class="badge badge-success"
+                                  style="font-size: 16px!important;"
+                            >Passed</span></h1>
+                    </div>
+                    <div class="btn-group pull-right" v-show="current.status[0].status == -2">
+                        <h1><span class="badge badge-danger"
+                                  style="font-size: 16px!important;"
+                            >Failed</span></h1>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" v-if="current.interviews.length" v-show="current">
 
                 <div class="table-responsive">
-                    <table id="new-table" data-toggle="table" style="width:100%" data-show-toggle="true" data-detail-view="true">
+                    <table class="table table-condensed" id="new-table" data-toggle="table"
+                           style="width:100%;border-spacing:0.1em!important;" data-show-toggle="true"
+                           data-detail-view="true">
                         <thead>
                         <tr>
                             <th></th>
@@ -57,12 +72,10 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <template v-for="interview in current.interviews">
-                                {{--TODO error happening because of accordion parent id="accordion"--}}
-                                <div class="panel-group" id="accordion">
+                            <template v-for="(interview, key) in current.interviews">
                                 <tr>
                                     <td>
-                                        <a class="detail-icon" data-parent="accordion" data-toggle="collapse" :data-target="'#row'+interview.pivot.id">
+                                        <a class="detail-icon collapsed"  data-toggle="collapse" :data-target="'#row'+interview.pivot.id" class="accordion-toggle">
                                             <span class="icon_toggle glyphicon glyphicon-plus"></span>
                                         </a>
                                     </td>
@@ -74,60 +87,62 @@
                                     <td>@{{interview.pivot.status}}</td>
                                     <td>@{{interview.pivot.reasons}}</td>
                                     <td>@{{interview.pivot.results}}</td>
-
                                     <td data-html2canvas-ignore="true">
                                         <div class="btn-group">
-                                            <div class="btn-group">
-                                                <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" @click="editInterviewForm(interview.id, current.id)">
-                                                    <i class="glyphicon glyphicon-edit"></i>
-                                                </a>
-                                            </div>
+                                            <a href="#light-modal" class="b-n b-n-r bg-transparent item-view" data-wenk="Edit Interview" @click="editInterviewForm(interview.id, current.id, $event)">
+                                                <i class="glyphicon glyphicon-edit"></i>
+                                            </a>
                                         </div>
                                     </td>
-                                    <div class="collapse collapsed" :id="'row'+interview.pivot.id">
-                                        <table class="table table-striped tablesorter" id="new-table" data-toggle="table">
-                                            <thead>
-                                            <tr class="filters">
-                                                <th>File name</th>
-                                                <th style="text-align:right;">Actions</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr v-for="media in interview.media" :data-id='media.id'>
-                                                <td>@{{media.filename}}.@{{media.extension}}</td>
-                                                <td style="text-align:right;">
-                                                    <div>
-                                                        <a href="" class="b-n b-n-r bg-transparent item-download" data-wenk="Download">
-                                                            <i class="fa fa-download text-primary"></i>
-                                                        </a>
-                                                        <a href="#!" class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove"
-                                                           onclick="">
-                                                            <i class="glyphicon glyphicon-remove text-danger"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </tr>
-                                </div>
+                                <tr>
+                                    <td colspan="12" class="hiddenRow">
+                                        <div class="accordian-body collapse" :id="'row'+interview.pivot.id">
+                                            <table class="table table-striped tablesorter" data-toggle="table">
+                                                <thead>
+                                                <tr class="filters">
+                                                    <th>File name</th>
+                                                    <th style="text-align:right;">Actions</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="media in interviewMedias[key]" :data-id='media.id'>
+                                                    <td>@{{media.filename}}.@{{media.extension}}</td>
+                                                    <td style="text-align:right;">
+                                                        <div class="btn-group">
+                                                            <a class="b-n b-n-r bg-transparent item-download" data-wenk="Download"
+                                                               @click="downloadInterviewMedia(current, interview.id, media, $event)">
+                                                                <i class="fa fa-download text-primary"></i>
+                                                            </a>
+                                                            <a class="b-n b-n-r bg-transparent item-detach" data-wenk="Remove"
+                                                               @click="deleteInterviewMedia(current, interview.id, media, $event)">
+                                                                <i class="glyphicon glyphicon-remove text-danger"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
                             </template>
                         </tbody>
                     </table>
                 </div>
                 <br>
-
-                <label for="overallComment">Overall Comments</label>
-                <textarea
-                        id="overallComment"
-                        class='form-control'
-                        {{--v-model="overallComment"--}}
-                        name="overallComment">
-                    </textarea>
-                <div class="pull-right" style="font-size: 2rem;padding-top: 15px">
-                    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Save</button>
-                </div>
+                <form id="interview-comment-form">
+                    <label for="overallComment">Overall Comments</label>
+                    <textarea
+                            id="overallComment"
+                            class='form-control'
+                            :value="currentComment"
+                            name="overallComment">
+                        </textarea>
+                    <div class="pull-right" style="font-size: 2rem;padding-top: 15px">
+                        <button class="btn btn-primary" @click="processInterviewForm($event)" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

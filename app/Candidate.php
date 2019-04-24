@@ -152,6 +152,12 @@ class Candidate extends Model
                     ->select(['candidate_id','status']);
     }
 
+    public function recruitment_status()
+    {
+        return $this->belongsToMany(Recruitment::class, 'recruitment_status')
+            ->select(['candidate_id','comment']);
+    }
+
     public function interviews()
     {
         return $this->belongsToMany(Interview::class, 'candidate_interview_recruitment','candidate_id','interview_id')->withPivot('id','reasons','schedule_at','results','location','status');
@@ -166,7 +172,7 @@ class Candidate extends Model
     public function offers()
     {
         return $this->belongsToMany(Offer::class, 'offer_recruitment')
-                    ->select(['candidate_id','offer_id','signed_on','comments']);
+                    ->select(['candidate_id','offer_id','starting_on','signed_on','comments']);
     }
 
     public function scopeCandidatesList($query)

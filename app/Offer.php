@@ -2,12 +2,12 @@
 
 namespace App;
 
-
+use Plank\Mediable\Mediable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Offer extends Model
 {
-    
+    use Mediable;
     use SoftDeletes;
 
 

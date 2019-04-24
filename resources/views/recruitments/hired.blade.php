@@ -34,20 +34,23 @@
     <div class="row">
         <div class="col-md-11 col-md-offset-1">
             <div class="col-md-7">
-                <label for="startDate">Start Date</label>
-                <input id="startDate" class='form-control datepicker' type="text" name="startDate" >
+                <label for="employee_no">Employee No.</label>
+                <input id="employee_no" class='form-control' type="text" name="employee_no"
+                       :value="current.employee_no" v-bind:disabled="current.employee_no !== null">
             </div>
             <div class="col-md-7">
-                <label for="comments">Comments</label>
+                <label for="hired_comments">Comments</label>
                 <textarea
-                        id="comments"
+                        id="hired_comments"
                         class='form-control'
-                        name="comments">
+                        name="hired_comments"
+                        :value="currentComment"
+                        v-bind:disabled="current.employee_no !== null"
+                >
                 </textarea>
             </div>
             <div class="col-md-7" style="padding-top: 10px;">
-                <button type="button" class="btn btn-success pull-right">Save</button>
-                <button type="button" class="btn btn-success">Import Candidate Data</button>
+                <button type="button" v-bind:disabled="current.employee_no !== null" @click="importHired" class="hired btn btn-success pull-right">Import Candidate Data</button>
             </div>
         </div>
     </div>

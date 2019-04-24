@@ -9,7 +9,7 @@
 @section('content')
     <br>
     <section id="recruitment">
-        <ul class="nav nav-tabs steps">
+        <ul class="nav nav-tabs steps" id="steps">
             <li class="orange nav-item">
                 <a class="nav-link active show" href="#applied" role="tab" data-toggle="tab" @click="selectedCategory=0;current=false;">
                     <h2 :text-content.prop="people|stageCount(0)">&nbsp;</h2>
@@ -82,19 +82,19 @@
                 @endcomponent
             </div>
             <div class="tab-pane"  role="tabpanel" id="offer">
-                    @component('recruitments.offer', ['step' => [
-                     ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve offer'],
-                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
-                        ] ])
-                    @endcomponent
+                @component('recruitments.offer', ['step' => [
+                    ['id'=>'item-approve','btnclass'=>'btn btn-primary','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve offer'],
+                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                    ] ])
+                @endcomponent
 
             </div>
             <div class="tab-pane"  role="tabpanel" id="contract">
-                    @component('recruitments.contract', ['step' => [
-                     ['id'=>'item-approve','btnclass'=>'btn btn-success','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve contract'],
-                     ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
-                        ] ])
-                    @endcomponent
+                @component('recruitments.contract', ['step' => [
+                    ['id'=>'item-approve','btnclass'=>'btn btn-success','class'=>'glyphicon glyphicon-thumbs-up','label'=>'Approve contract'],
+                    ['id'=>'item-reject','btnclass'=>'btn btn-link','class'=>'glyphicon glyphicon-thumbs-down','label'=>'Not-approved']
+                    ] ])
+                @endcomponent
             </div>
             <div class="tab-pane" role="tabpanel" id="hired">
                 @component('recruitments.hired', ['step' => [
@@ -107,9 +107,7 @@
         </div>
 
         <div id="date-picker"></div>
-        <modal v-if="showModal" @close="showModal=false">
-
-        </modal>
+        <modal v-if="showModal" @close="showModal=false"></modal>
     </section>
 @endsection
 
@@ -122,9 +120,12 @@
 
     <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
+
+
+
     <script>
-        var initializeFileUpload = function() {
-            $('#one').fileUploader({
+        window.vueFileUpload = function() {
+            $('#uploadSignedOffer').fileUploader({
                 lang: 'en',
                 useFileIcons: true,
                 fileMaxSize: {!! '1.7' !!},
@@ -204,11 +205,7 @@
             $('#interviewing').click(function(){
                 $('.collapse').collapse('hide');
             });
-            initializeFileUpload();
         });
-
-        $('.datepicker').pickadate();
-        //alert();
 
     </script>
 
