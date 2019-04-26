@@ -59,7 +59,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Name</th>
+                            <th data-sortable="true">Name</th>
                             <th data-sortable="true">Description</th>
                             <th data-sortable="true">Passmark Percentage</th>
 
@@ -69,7 +69,7 @@
                     <tbody>
                         @foreach($assessments as $assessment)
                         <tr id="tr{{$assessment->id}}">
-                                                        <td>{{ $assessment->name }}</td>
+                            <td>{{ $assessment->name }}</td>
                             <td>{{ $assessment->description }}</td>
                             <td>{{ $assessment->passmark_percentage }}</td>
 
@@ -80,6 +80,12 @@
                                             <i class="glyphicon glyphicon-edit text-primary"></i>
                                             </a>
                                     @endif
+                                        <a href="#light-modal" data-wenk="Clone" class="b-n b-n-r bg-transparent item-clone" onclick="editCloneAssessment('{{$assessment->id}}', event)">
+                                            <i class="fas fa fa-clone text-primary" style="-webkit-text-stroke-width:1px;"></i>
+                                        </a>
+                                        <a href="#light-modal" data-wenk="Preview" class="b-n b-n-r bg-transparent item-preview" onclick="previewAssessment('{{$assessment->id}}', event)">
+                                            <i class="glyphicon glyphicon-blackboard text-primary"></i>
+                                        </a>
                                     @if($allowedActions->contains('Delete'))
                                             <a href="#!" class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$assessment->id}}')">
                                                 <i class="glyphicon glyphicon-remove text-danger"></i>

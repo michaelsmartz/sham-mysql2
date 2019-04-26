@@ -20,6 +20,8 @@
             "use strict";
 
             var oldVal, $mainButton, loadUrl = function(url) {
+                $(".light-modal-heading").empty().html('');
+                $(".light-modal-footer .buttons").empty().html('');
                 $(".light-modal-body").empty().html('Loading...please wait...');
                 $.get(url).done(function(data) {
                     $(".light-modal-heading").empty().html(data.title);
@@ -111,6 +113,14 @@
                 var route;
                 route = '{{url()->current()}}/';
                 window.location = route + id + '/employee/'+ emp_id + '/editAssessment';
+            };
+
+            window.editCloneAssessment = function(id, event) {
+                loadUrl('{{url()->to('assessments')}}/assessment/'+id+'/cloneForm');
+            };
+
+            window.previewAssessment = function(id, event) {
+                loadUrl('{{url()->to('assessments')}}/assessment/'+id+'/preview');
             };
 
             window.showForm = function(id, event) {

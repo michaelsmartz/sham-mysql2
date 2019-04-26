@@ -6,6 +6,7 @@ use App\Assessment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
@@ -224,6 +225,154 @@ class AssessmentsController extends CustomController
             }
         }
         return response()->json(['success' => true,'duplicates' => $hasDuplicates,'questions' => $questions], 200);
+    }
+
+    public function cloneForm(Request $request){
+
+        try {
+            $id = Route::current()->parameter('assessment');
+            $assessment = $this->contextObj->findData($id);
+
+            $assessmentCategories = $assessment->assessmentAssessmentCategory()->get()->all();
+
+            if ($request->ajax()) {
+                $view = view('assessments.clone', compact('assessment', 'assessmentCategories'))->renderSections();
+                return response()->json([
+                    'title' => $view['modalTitle'],
+                    'content' => $view['modalContent'],
+                    'footer' => $view['modalFooter'],
+                    'url' => $view['postModalUrl']
+                ]);
+            }
+
+            return view('assessments.clone', compact('assessment', 'assessmentCategories'));
+        }catch(Exception $exception){
+            dd($exception->getMessage());
+        }
+    }
+
+    public function clone(Request $request, $id){
+        try {
+            $input = array_except($request->all(),array('_token','_method'));
+            $assessments_assessment_category_pivot = [];
+            $assessment_category_category_question_pivot = [];
+            $last_id_assessment = null;
+
+            $assessment = $this->contextObj->findData($id);
+            $assessmentCategories = $assessment->assessmentAssessmentCategory()->with('assessmentCategoryCategoryQuestions')->get()->toArray();
+            $clone_assessment = $assessment->toArray();
+
+            if(!empty($input)) {
+                if (!empty($clone_assessment)) {
+                    $clone_assessment['name'] = $input['assessment'];
+                    unset($clone_assessment['id']);
+                    $last_id_assessment = DB::table('assessments')->insertGetId($clone_assessment);
+                }
+
+                if (!empty($assessmentCategories)) {
+                    foreach ($input['assessmentCategory'] as $key => $cloneAssessmentCategory){
+                        $assessmentCategories[$key]['name'] = $cloneAssessmentCategory;
+                        $assessmentCategoryCategoryQuestions = $assessmentCategories[$key]['assessment_category_category_questions'];
+                        unset($assessmentCategories[$key]['id']);
+                        unset($assessmentCategories[$key]['pivot']);
+                        unset($assessmentCategories[$key]['assessment_category_category_questions']);
+
+                        $last_id_assessment_category = DB::table('assessment_categories')->insertGetId($assessmentCategories[$key]);
+
+                        $assessments_assessment_category_pivot[$key] = [
+                            'assessment_id' => $last_id_assessment ,
+                            'assessment_category_id' => $last_id_assessment_category
+                        ];
+
+                        foreach($assessmentCategoryCategoryQuestions as  $assessmentCategoryCategoryQuestion){
+                            $assessment_category_category_question_pivot[] = [
+                                'assessment_category_id' => $last_id_assessment_category,
+                                'category_question_id' => $assessmentCategoryCategoryQuestion['id'] ,
+                            ];
+                        }
+                    }
+                }
+
+                DB::table('assessments_assessment_category')->insert($assessments_assessment_category_pivot);
+                DB::table('assessment_category_category_question')->insert($assessment_category_category_question_pivot);
+            }
+
+            \Session::put('success', 'Assessment was cloned Successfully!!');
+
+        } catch (Exception $exception) {
+            dd($exception->getMessage());
+            \Session::put('error', 'could not clone assessment!');
+        }
+
+        return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    public function preview(Request $request)
+    {
+        try {
+            $html = "";
+            $assessmentId = Route::current()->parameter('assessment');
+
+            $assessment = Assessment::with('assessmentAssessmentCategory.assessmentCategoryCategoryQuestions')
+                ->find($assessmentId);
+
+            $questionNo = 0;
+            foreach ($assessment->assessmentAssessmentCategory as $assessmetCategory) {
+                $html .= "<div class = \"panel panel-default\">";
+                $html .= "<div class =\"panel-heading\">" . $assessmetCategory->name . "</div>";
+                $html .= "<div class = \"panel-body\">";
+
+                foreach ($assessmetCategory->assessmentCategoryCategoryQuestions as $categoryquestion) {
+                    $questionNo++;
+                    $questionid = $categoryquestion->id;
+
+                    $questionbase = "question_id[" . $questionid . "]";
+                    $question_id = $questionbase . "[Response][]";
+
+                    $html .= "<div class=\"form-group \">";
+
+                    $html .= "<div class=\"col - md - 12\" title=\"" . $categoryquestion->description . "\">" . "<label>" . $questionNo . " " . $categoryquestion->title . "</label>" . "<span class=\"pull-right\">" .  $categoryquestion->points . " Points</span></div>";
+
+                    if ($categoryquestion->category_question_type_id == 1) {
+                        $choicetext = '';
+                        $html .= "<input class=\"form-control\" id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"text\" value=\"" . $choicetext . "\" readonly=\"readonly\" disabled=\"disabled\"> " . "" . "<br/>";
+                    } else {
+                        $counter = 0;
+                        $html .= "<div class=\"input-group \">";
+
+                        foreach ($categoryquestion->categoryQuestionChoices as $result) {
+                            $selectedValue = $result->choice_text . "|" . $result->points;
+
+                            if ($categoryquestion->category_question_type_id == 2) {
+                                // Generate radio buttons
+                                $html .= "<input id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"radio\" value=\"" . $selectedValue . "\" required  readonly=\"readonly\" disabled=\"disabled\"> " . $result->choice_text . "<br/>";
+                            } else {
+                                $html .= "<input id=\"" . "ID" . "\" name=\"" . $question_id . "\" type=\"checkbox\" value=\"" . $selectedValue . "\" required readonly=\"readonly\" disabled=\"disabled\"> " . $result->choice_text . "<br/>";
+                            }
+                            $counter = $counter + 1;
+                        }
+                        $html .= "</div>";
+                    }
+                    $html .= " </div>";
+                }
+
+                $html .= "</div>";
+                $html .= "</div>"; // End of tag for panel
+            }
+
+            if ($request->ajax()) {
+                $view = view('assessments.preview', compact('assessment', 'html'))->renderSections();
+                return response()->json([
+                    'title' => $view['modalTitle'],
+                    'content' => $view['modalContent'],
+                    'footer' => $view['modalFooter'],
+                ]);
+            }
+
+            return view('assessments.preview', compact('assessment', 'html'));
+        }catch(Exception $exception){
+            dd($exception->getMessage());
+        }
     }
     
 }

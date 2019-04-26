@@ -59,7 +59,7 @@
                 <table id="new-table" data-toggle="table">
                     <thead>
                         <tr>
-                                                        <th data-sortable="true">Title</th>
+                            <th data-sortable="true">Title</th>
                             <th data-sortable="true">Question Type</th>
                             <th data-sortable="true">Points</th>
 
@@ -69,8 +69,8 @@
                     <tbody>
                         @foreach($categoryQuestions as $categoryQuestion)
                         <tr id="tr{{$categoryQuestion->id}}">
-                                                        <td>{{ $categoryQuestion->title }}</td>
-                            <td>{{ optional($categoryQuestion->categoryQuestionType)->description }}</td>
+                            <td>{{ $categoryQuestion->title }}</td>
+                            <td>{!! App\Enums\CategoryQuestionType::getDescription($categoryQuestion->category_question_type_id) !!}</td>
                             <td>{{ $categoryQuestion->points }}</td>
 
                             <td data-html2canvas-ignore="true">

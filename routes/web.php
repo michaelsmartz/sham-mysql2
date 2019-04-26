@@ -177,6 +177,9 @@ Auth::routes();
         #endregion
 
         #region Quality
+            Route::any('assessments/assessment/{assessment}/clone', 'AssessmentsController@clone')->name('assessment.clone');
+            Route::get('assessments/assessment/{assessment}/cloneForm', 'AssessmentsController@cloneForm')->name('assessments.clone-assessment-form');
+            Route::get('assessments/assessment/{assessment}/preview', 'AssessmentsController@preview')->name('assessments.preview');
             Route::resource('assessments', 'AssessmentsController' );
             Route::any('assessments/duplicates/', 'AssessmentsController@duplicates')->name('assessment.duplicates');
             Route::resource('assessment_categories', 'AssessmentCategoriesController');
