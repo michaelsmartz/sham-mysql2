@@ -63,3 +63,9 @@ ENGINE=InnoDB
 
 INSERT INTO `sys_config_values` (`key`, `value`) VALUES ('WORKING_YEAR_START', '2019-01-01');
 INSERT INTO `sys_config_values` (`key`, `value`) VALUES ('WORKING_YEAR_END', '2019-12-31');
+
+--
+-- Alter table `employees` : Add probation_end_date
+--
+ALTER TABLE `sham_dev`.`employees`
+ADD COLUMN `probation_end_date` DATE NULL AFTER `deleted_at`;
