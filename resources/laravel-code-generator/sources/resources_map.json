@@ -414,5 +414,10 @@
     {
         "model-name": "HistoryTeam",
         "resource-file": "history_teams.json"
+    },
+    {
+        "model-name": "AbsenceType",
+        "resource-file": "absence_types.json",
+        "table-name": "absence_types"
     }
 ]
