@@ -9,7 +9,7 @@
     </ul>
     <br>
     <form method="POST" action="{{ route('general_options.store') }}" id="general_update_form" name="general_update_form" data-parsley-validate="" accept-charset="UTF-8">
-    <div class="form-group">
+    <div class="form-group col-sm-6">
         <label class="control-label">Working Year Start</label>
         <div class="">
                     <span class="field">
@@ -17,7 +17,7 @@
                     </span>
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group col-sm-6">
         <label class="control-label">Working Year End</label>
         <div class="">
                    <span class="field">
