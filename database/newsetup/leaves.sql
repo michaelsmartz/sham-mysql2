@@ -67,5 +67,25 @@ INSERT INTO `sys_config_values` (`key`, `value`) VALUES ('WORKING_YEAR_END', '20
 --
 -- Alter table `employees` : Add probation_end_date
 --
-ALTER TABLE `sham_dev`.`employees`
+ALTER TABLE `employees`
 ADD COLUMN `probation_end_date` DATE NULL AFTER `deleted_at`;
+
+INSERT INTO `system_modules` (`description`, `is_active`) VALUES ('Leave', '1');
+INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Absence Types', '14', '1');
+
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '134');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '134');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '134');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '134');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '134');
+
+
+ALTER TABLE `absence_types`
+CHANGE COLUMN `eligilibity_begins` `eligibility_begins` TINYINT(2) NULL DEFAULT '0' COMMENT '0 - From the first day at work,1 - When probation starts, 2 - After probation period' ;
+
+ALTER TABLE `absence_types`
+CHANGE COLUMN `duration_unit` `duration_unit` TINYINT(2) NULL DEFAULT '1' COMMENT '0-Days, 1-Hours' ,
+CHANGE COLUMN `eligibility_begins` `eligibility_begins` TINYINT(2) NULL DEFAULT '1' COMMENT '0 - From the first day at work,1 - When probation starts, 2 - After probation period' ,
+CHANGE COLUMN `eligibility_ends` `eligibility_ends` TINYINT(2) NULL DEFAULT '1' COMMENT '0 - last day at work, 1 - When probation ends' ,
+CHANGE COLUMN `accrue_period` `accrue_period` TINYINT(2) NULL DEFAULT '1' COMMENT '0 - Every 12 months, 1 -  Every 1 month, 2 - Every 24 months, 3 - Every 36 months' ;
+

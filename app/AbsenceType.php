@@ -4,7 +4,6 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use San4io\EloquentFilter\Filters\LikeFilter;
-use San4io\EloquentFilter\Filters\WhereFilter;
 
 class AbsenceType extends Model
 {
@@ -22,12 +21,12 @@ class AbsenceType extends Model
                   'description',
                   'duration_unit',
                   'eligibility_ends',
-                  'eligilibity_begins'
+                  'eligibility_begins'
               ];
 
     protected $filterable = [
                 'description' => LikeFilter::class,
-                'eligilibity_begins' => LikeFilter::class,
+                'eligibility_begins' => LikeFilter::class,
                 'eligibility_ends' => LikeFilter::class
             ];
 
