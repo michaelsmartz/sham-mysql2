@@ -57,12 +57,12 @@ class EmployeeProcessorsController extends CustomController
         //TODO and missing entry in Hams employee table addresses, phone numbers
         ini_set('max_execution_time', 1000);
         $insert = [];
-        foreach ($array_csv as $key => $row){
 
+        $existing_employees = Employee::all()->toArray();
+
+        foreach ($array_csv as $key => $row){
             //header array
             if($key !== 1){ //data to be updated or inserted
-                $existing_employees = Employee::all()->toArray();
-
                 if(array_search($row[1], array_column($existing_employees, 'employee_no')) !== False) {
 
                     $row = $this->removeEmptyMapperUnset($row);
