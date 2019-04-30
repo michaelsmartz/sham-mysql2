@@ -156,6 +156,8 @@ Auth::routes();
             Route::any('sham_user_profiles/{Id}/matrix', 'ShamUserProfilesController@matrix')->name('sham_user_profiles.matrix');
             Route::resource('sham_users', 'ShamUsersController');
             Route::resource('users', 'UsersController');
+            Route::get('/general_options', 'GeneralOptionsController@index')->name('general_options.index');
+            Route::post('/general_options/store', 'GeneralOptionsController@store')->name('general_options.store');
             Route::resource('asset_conditions', 'AssetConditionsController');
             Route::resource('violations', 'ViolationsController');
 
