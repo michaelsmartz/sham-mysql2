@@ -35,7 +35,7 @@ class Employee extends Model implements AuditableContract
                   'physical_file_no', 'job_title_id',
                   'division_id', 'branch_id',
                   'picture', 'line_manager_id',
-                  'leave_balance_at_start'
+                  'leave_balance_at_start','probation_end_date'
               ];
 
     protected $dates = ['deleted_at'];

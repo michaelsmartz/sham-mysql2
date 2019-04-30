@@ -325,16 +325,22 @@
                 </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Join/Termination Dates</label>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <span class="field">
                             {!! Form::text('date_joined', old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null), ['class'=>'form-control datepicker', 'placeholder'=>'Joined Date', 'id'=>'JoinedDate', 'data-pair-element-id'=>'TerminationDate' ]) !!}
                             <label for="date_joined">Date Joined</label>
                         </span>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <span class="field">
                             {!! Form::text('date_terminated', old('date_terminated', isset($employee->date_terminated) ? $employee->date_terminated : null), ($_mode=='view' || $_mode=='create')?['class'=>'form-control','disabled', 'placeholder'=>'Termination Date']:['class'=>'form-control datepicker', 'placeholder'=>'Termination Date', 'id'=>'TerminationDate']) !!}
                             <label for="date_terminated">Termination Date</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-2">
+                        <span class="field">
+                            {!! Form::text('probation_end_date', old('probation_end_date', isset($employee->probation_end_date) ? $employee->probation_end_date : null), ($_mode=='view' || $_mode=='create')?['class'=>'form-control','disabled', 'placeholder'=>'Probation End Date']:['class'=>'form-control datepicker', 'placeholder'=>'Probation End Date', 'id'=>'ProbationEndDate']) !!}
+                            <label for="probation_end_date">Probation end date</label>
                         </span>
                     </div>
                     <div class="col-sm-4">
