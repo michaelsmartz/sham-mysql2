@@ -9,6 +9,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         @include('absence_types.form', [
+                            'mode' => 'create',
                             'absenceType' => null,
                         ])
                     </div>

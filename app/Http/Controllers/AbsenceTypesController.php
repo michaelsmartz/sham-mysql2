@@ -101,7 +101,7 @@ class AbsenceTypesController extends CustomController
     public function store(Request $request)
     {
         try {
-            $this->validator($request);
+            $this->createValidator($request);
 
             $this->saveAbsenceTypes($request);
 
@@ -163,7 +163,7 @@ class AbsenceTypesController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            $this->editValidator($request);
 
             $this->saveAbsenceTypes($request, $id);
 
@@ -181,7 +181,6 @@ class AbsenceTypesController extends CustomController
         $otherFields = [
             '_token',
             '_method',
-            'redirectsTo',
             'jobTitles'
         ];
         foreach($otherFields as $field){
@@ -225,9 +224,21 @@ class AbsenceTypesController extends CustomController
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    protected function validator(Request $request)
+    protected function createValidator(Request $request)
+    {
+        $validateFields = [
+            'description' => 'required|string|min:1|max:100',
+            'duration_unit' => 'required'
+        ];
+
+       $this->validator($request, $validateFields);
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function editValidator(Request $request)
     {
         $validateFields = [
             'description' => 'required|string|min:1|max:100',
@@ -235,9 +246,19 @@ class AbsenceTypesController extends CustomController
             'eligibility_begins' => 'required',
             'eligibility_ends' => 'required',
             'accrue_period' => 'required',
-            'amount_earns' => 'nullable',
+            'amount_earns' => 'required',
         ];
 
+        $this->validator($request, $validateFields);
+    }
+
+    /**
+     * @param Request $request
+     * @param $validateFields
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function validator(Request $request, $validateFields)
+    {
         $validator = Validator::make($request->all(), $validateFields);
         if($validator->fails()) {
             return redirect()->back()
@@ -245,4 +266,6 @@ class AbsenceTypesController extends CustomController
                 ->withErrors($validator);
         }
     }
+
+
 }
