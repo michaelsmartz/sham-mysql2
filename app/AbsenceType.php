@@ -45,7 +45,7 @@ class AbsenceType extends Model
         return $this->belongsToMany('App\Employee','eligibility_employee');
     }
 
-    public function absenceTypeJobTitles()
+    public function jobTitles()
     {
         return $this->belongsToMany('App\JobTitle','absence_type_job_title');
     }

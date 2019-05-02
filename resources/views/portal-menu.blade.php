@@ -234,9 +234,6 @@
             <span>@lang('home.ConfigurationParameters')</span>
         </a>
         <ul class="sub-menu">
-            @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS]))
-                <li class="{{ (Request::is('configurations') || Request::is('configurations/*') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/configurations">General Options</a></li>
-            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_EMPLOYEE_DATABASE]))
                 <li class="{{ (Request::is('countries/*') ||
                                Request::is('countries') ||
@@ -312,7 +309,8 @@
             @endif
                 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
                 <li class="{{ (Request::is('sham_user_profiles/*') ||
-                               Request::is('sham_user_profiles')
+                               Request::is('sham_user_profiles') ||
+                               Request::is('general_options')
                                ? 'active' : '')
                            }}"
                 > <a href="{{URL::to('/')}}/users">System Configuration</a></li>
