@@ -7,8 +7,8 @@ use BenSampo\Enum\Enum;
 final class LeaveDurationUnitType extends Enum
 {
     
-    const Days = 1;
-    const Hours = 2;
+    const Days = 0;
+    const Hours = 1;
 
     /**
      * Get the description for an enum value
