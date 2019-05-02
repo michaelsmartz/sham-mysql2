@@ -13,7 +13,7 @@
         <label class="control-label">Working Year Start</label>
         <div class="">
                     <span class="field">
-                        {!! Form::text('working_year_start', old('working_year_start', $working_year_start), ['class'=>'form-control datepicker', 'placeholder'=>'Working Year Start', 'id'=>'WorkingYearStart', 'data-pair-element-id'=>'WorkingYearStart' ]) !!}
+                        {!! Form::text('working_year_start', old('working_year_start', $working_year_start), ['class'=>'form-control datepicker', 'autocomplete'=>'off',  'placeholder'=>'Working Year Start', 'id'=>'WorkingYearStart' ]) !!}
                     </span>
         </div>
     </div>
@@ -21,13 +21,13 @@
         <label class="control-label">Working Year End</label>
         <div class="">
                    <span class="field">
-                        {!! Form::text('working_year_end', old('date_joined', $working_year_end), ['class'=>'form-control datepicker', 'placeholder'=>'Working Year End', 'id'=>'WorkingYearEnd', 'data-pair-element-id'=>'WorkingYearEnd' ]) !!}
+                        {!! Form::text('working_year_end', old('date_joined', $working_year_end), ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'Working Year End', 'id'=>'WorkingYearEnd']) !!}
                     </span>
         </div>
     </div>
         <div class="row">
             <div class="col-sm-12 text-right">
-                <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+                <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Save</button>
             </div>
         </div>
     </form>
