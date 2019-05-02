@@ -21,6 +21,7 @@ class SystemModule extends Model
     const CONST_DASHBOARD = 11;
     const CONST_CONFIGURATION_PARAMETERS = 12;
     const CONST_TODO_LIST = 13;
+    const CONST_LEAVE = 14;
 
     protected $primaryKey = "id";
 

@@ -241,8 +241,8 @@
             "on-update": null
         },
         {
-            "name": "eligilibity_begins",
-            "labels": "Eligilibity Begins",
+            "name": "eligibility_begins",
+            "labels": "Eligibility Begins",
             "html-type": "text",
             "css-class": "",
             "options": {},
@@ -266,7 +266,7 @@
             "is-date": false,
             "date-format": "",
             "cast-as": "",
-            "placeholder": "Enter eligilibity begins",
+            "placeholder": "Enter eligibility begins",
             "delimiter": "; ",
             "range": [],
             "foreign-relation": null,

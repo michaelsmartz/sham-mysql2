@@ -245,5 +245,9 @@ Auth::routes();
         Route::get('candidates/{candidate?}/candidate-qualifications', 'CandidatesController@qualifications')->name('get-candidate-qualifications');
         Route::get('candidates/{candidate?}/previous_employments', 'CandidatesController@previousEmployments')->name('get-candidate-employments');
         #endregion
+
+        #region Leaves
+            Route::resource('absence_types', 'AbsenceTypesController');
+        #endregion
     });
 #endregion

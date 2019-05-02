@@ -211,6 +211,21 @@
     </li>
 @endif
 
+@if (isset($allowedmodules[App\SystemModule::CONST_LEAVE]))
+    <li class="has-sub">
+        <a href="javascript:;">
+            <b class="caret pull-right"></b>
+            <strong><i class="fa fa-calendar fa-calendar"></i></strong>
+            <span>Leave</span>
+        </a>
+        <ul class="sub-menu">
+            @if (isset($allowedmodules[App\SystemModule::CONST_LEAVE][App\SystemSubModule::CONST_ABSENCE_TYPES]))
+                <li class="{{ (Request::is('absence_types/*') || Request::is('absence_types') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/absence_types">Absence Types</a></li>
+            @endif
+        </ul>
+    </li>
+@endif
+
 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS]))
     <li class="has-sub">
         <a href="javascript:;">

@@ -7,7 +7,7 @@
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
 @endsection
 
-@section('postModalUrl', route('absenceTypes.update', $data->id))
+@section('postModalUrl', route('absence_types.update', $data->id))
 
 @section('modalContent')
     <div class="row">
@@ -25,7 +25,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('absenceTypes.update', $data->id) }}" id="edit_absence_type_form" name="edit_absence_type_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('absence_types.update', $data->id) }}" id="edit_absence_type_form" name="edit_absence_type_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <div class="box box-primary">

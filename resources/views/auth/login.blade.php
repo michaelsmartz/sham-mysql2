@@ -42,7 +42,7 @@
                 <div class="panel-body">
                     <form class="form-horizontal" method="POST" action="{{ route('login') }}" autocomplete="off">
                         {{ csrf_field() }}
-
+                        <input type="hidden" name="timezone" id="timezone">
                         @if(env('USE_C4_AUTH',0) == 0)
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                                 <label class="control-label">@lang('auth.E-mail')</label>
@@ -92,4 +92,13 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('post-body')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data.js"></script>
+    <script>
+        var timezone = moment.tz.guess();
+        $('#timezone').val(timezone);
+    </script>
 @endsection

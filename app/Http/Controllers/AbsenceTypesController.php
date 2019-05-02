@@ -3,7 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\AbsenceType;
+use App\Enums\LeaveAccruePeriodType;
+use App\Enums\LeaveDurationUnitType;
+use App\Enums\LeaveEmployeeGainEligibilityType;
+use App\Enums\LeaveEmployeeLossEligibilityType;
 use App\JobTitle;
+use App\Support\Helper;
+use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
@@ -24,19 +30,65 @@ class AbsenceTypesController extends CustomController
     public function __construct()
     {
         $this->contextObj = new AbsenceType();
-        $this->baseViewPath = 'absenceTypes';
+        $this->baseViewPath = 'absence_types';
         $this->baseFlash = 'Absence Type details ';
     }
 
     /**
      * Display a listing of the absence types.
      *
-     * @return Illuminate\View\View
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $absenceTypes = $this->contextObj::filtered()->paginate(10);
-        return view($this->baseViewPath .'.index', compact('absenceTypes'));
+
+        $description = $request->get('description', null);
+
+        if(!empty($description)){
+            $request->merge(['description' => '%'.$description.'%']);
+        }
+
+        $eligibility_begins = $request->get('$eligibility_begins', null);
+
+        if(!empty($eligibility_begins)){
+            $request->merge(['eligibility_begins' => '%'.$eligibility_begins.'%']);
+        }
+
+        $eligibility_ends = $request->get('$eligibility_ends', null);
+
+        if(!empty($eligibility_ends)){
+            $request->merge(['eligibility_ends' => '%'.$eligibility_ends.'%']);
+        }
+
+        // handle empty result bug
+        if (Input::has('page')) {
+            return redirect()->route($this->baseViewPath .'.index');
+        }
+
+        $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_ABSENCE_TYPES);
+
+        $absenceTypes = $this->contextObj->filtered()->paginate(10);
+
+        return view($this->baseViewPath .'.index', compact('absenceTypes','allowedActions'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $duration_units = LeaveDurationUnitType::ddList();
+        $start_eligibilities = LeaveEmployeeGainEligibilityType::ddList();
+        $end_eligibilities = LeaveEmployeeLossEligibilityType::ddList();
+        $accrue_periods = LeaveAccruePeriodType::ddList();
+
+        $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+
+        return view($this->baseViewPath . '.create',
+            compact('data', 'jobTitles', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'));
     }
 
     /**
@@ -51,9 +103,7 @@ class AbsenceTypesController extends CustomController
         try {
             $this->validator($request);
 
-            $input = array_except($request->all(),array('_token'));
-
-            $this->contextObj->addData($input);
+            $this->saveAbsenceTypes($request);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
@@ -72,16 +122,22 @@ class AbsenceTypesController extends CustomController
      */
     public function edit(Request $request)
     {
-        $data = $announcementStatuses = null;
+        $data = null;
         $id = Route::current()->parameter('absence_type');
         if(!empty($id)) {
             $data = $this->contextObj->findData($id);
-            $jobTitles = JobTitle::pluck('description', 'id');
+            $duration_units = LeaveDurationUnitType::ddList();
+            $start_eligibilities = LeaveEmployeeGainEligibilityType::ddList();
+            $end_eligibilities = LeaveEmployeeLossEligibilityType::ddList();
+            $accrue_periods = LeaveAccruePeriodType::ddList();
+            $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+
+            $absenceTypeJobTitles = $data->absenceTypeJobTitles->pluck('id');
         }
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit',
-                compact('data', 'jobTitles'))
+                compact('data', 'absenceTypeJobTitles', 'jobTitles', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'))
                     ->renderSections();
 
             return response()->json([
@@ -93,7 +149,7 @@ class AbsenceTypesController extends CustomController
         }
 
         return view($this->baseViewPath . '.edit',
-            compact('data', 'jobTitles'));
+            compact('data', 'absenceTypeJobTitles', 'jobTitles', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'));
     }
 
     /**
@@ -108,12 +164,8 @@ class AbsenceTypesController extends CustomController
     {
         try {
             $this->validator($request);
-            
-            $redirectsTo = $request->get('redirectsTo', route($this->baseViewPath .'.index'));
-            
-            $input = array_except($request->all(),array('_token','_method','redirectsTo'));
 
-            $this->contextObj->updateData($id, $input);
+            $this->saveAbsenceTypes($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
@@ -121,7 +173,31 @@ class AbsenceTypesController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return Redirect::to($redirectsTo);
+        return redirect()->route($this->baseViewPath .'.index');
+    }
+
+    protected function saveAbsenceTypes($request, $id = null) {
+
+        $otherFields = [
+            '_token',
+            '_method',
+            'redirectsTo',
+            'jobTitles'
+        ];
+        foreach($otherFields as $field){
+            ${$field} = array_get($request->all(), $field);
+        }
+
+        $input = array_except($request->all(), $otherFields);
+
+        if ($id == null) { // Create
+            $data = $this->contextObj->addData($input);
+        } else { // Update
+            $this->contextObj->updateData($id, $input);
+            $data = AbsenceType::find($id);
+        }
+
+        $data->absenceTypeJobTitles()->sync($jobTitles);
     }
 
     /**
@@ -145,22 +221,22 @@ class AbsenceTypesController extends CustomController
 
         return redirect()->back();
     }
-    
-    
+
 
     /**
-     * Validate the given request with the defined rules.
-     *
      * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     protected function validator(Request $request)
     {
         $validateFields = [
             'description' => 'required|string|min:1|max:100',
-            'eligibility_starts' => 'required|string|min:0|max:10',
-            'eligibility_ends' => 'required|string|min:0|max:10',
+            'duration_unit' => 'required',
+            'eligibility_begins' => 'required',
+            'eligibility_ends' => 'required',
+            'accrue_period' => 'required',
+            'amount_earns' => 'nullable',
         ];
-
 
         $validator = Validator::make($request->all(), $validateFields);
         if($validator->fails()) {
