@@ -36,8 +36,8 @@
                     <li>
                         <ul class="nav">
                             <li><p class="menu-label">Quick Filters</p></li>
-                            <li><a href="{{route('absence_types.index')}}?duration_unit=1"><span class="icon circle info"></span>Days</a></li>
-                            <li><a href="{{route('absence_types.index')}}?duration_unit=2"><span class="icon circle default"></span>Hours</a></li>
+                            <li><a href="{{route('absence_types.index')}}?duration_unit=0"><span class="icon circle info"></span>Days</a></li>
+                            <li><a href="{{route('absence_types.index')}}?duration_unit=1"><span class="icon circle default"></span>Hours</a></li>
                         </ul>
                     </li>
                 </ul>

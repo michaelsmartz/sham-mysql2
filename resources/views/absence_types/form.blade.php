@@ -12,11 +12,19 @@
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
                data-wenk="The basic unit to calculate absence.
 
-You need to decide which unit you would like to use:
+You need to decide which unit you
 
-Hours - it also can be displayed as days according to 'Time Shift' hours grid.
+would like to use:
 
-Days - entitlement of this absence type will be calculated only in days (or 1/2, 1/4, of day, etc.)">
+Hours - it also can be displayed as days
+
+according to 'Time Shift' hours grid.
+
+Days - entitlement of this absence type
+
+will be calculated only in days
+
+(or 1/2, 1/4, of day, etc.)">
             </i>
         </span>
     </label>
@@ -37,11 +45,17 @@ Days - entitlement of this absence type will be calculated only in days (or 1/2,
         <label for="eligibility_begins">Employee Gains Eligibility
             <span>
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
-               data-wenk="Is the starting date when the employee is allowed to earn the entitlement.
+               data-wenk="Is the starting date when the employee
 
-First day at work - it means from hire date (the day is included)
+is allowed to earn the entitlement.
 
-After probation period - it means the first date following the
+First day at work - it means from
+
+hire date (the day is included)
+
+After probation period - it means
+
+the first date following the
 
 end of probation period">
             </i>
@@ -62,11 +76,17 @@ end of probation period">
         <label for="eligibility_ends">Employee Gains Eligibility
             <span >
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="left"
-               data-wenk="Is the day when the employee is no longer allowed to earn the entitlement.
+               data-wenk="Is the day when the employee is
 
-By default it's the last day of the working year, but you can also choose:
+no longer allowed to earn the entitlement.
 
-After probation ends - it means the first date following the end of probation period">
+By default it's the last day of the working
+
+year, but you can also choose:
+
+After probation ends - it means the first
+
+date following the end of probation period">
             </i>
             </span>
         </label>
@@ -81,26 +101,35 @@ After probation ends - it means the first date following the end of probation pe
         {!! $errors->first('eligibility_ends', '<p class="help-block">:message</p>') !!}
     </div>
 
-    <div class="form-group col-xs-12">
-        <div class="col-xs-3" style="display: inline-block; text-align: center">Employee earns</div>
-        <div class="form-group col-xs-3 {{ $errors->has('amount_earns') ? 'has-error' : '' }}">
+    <div class="form-group col-xs-12" style="margin-bottom: 0px;!important;">
+        <div class="col-xs-3 center-block text-center" style="margin-top: 15px;">Employee earns</div>
+        <div class="form-group col-xs-4 {{ $errors->has('amount_earns') ? 'has-error' : '' }}" style="margin-top: 10px;">
 
             <input class="form-control" name="amount_earns" type="text" id="amount_earns" value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}" placeholder="Enter amount earns" required="true">
             {!! $errors->first('amount_earns', '<p class="help-block">:message</p>') !!}
         </div>
-        <div class="col-xs-5" style="display: inline-block; text-align: center">{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!} when the period begins</div>
+        <div class="col-xs-4 center-block text-center" style="margin-top: 15px;">{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!} when the period begins</div>
     </div>
+
     <div class="form-group col-xs-12 {{ $errors->has('accrue_period') ? 'has-error' : '' }}">
         <label for="accrue_period">Accrue Period
             <span>
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
-               data-wenk="You can choose a single accrual or a cyclic accrual.
+               data-wenk="You can choose a single
 
-Monthly, annually..Those types give you a possibility to give your employees
+accrual or a cyclic accrual.
 
-entitlement in shorter cycles than a year or an accrual
+Monthly, annually..Those types
 
-period that spans over more than a year.">
+give you a possibility to give
+
+your employees entitlement in
+
+shorter cycles than a year or
+
+an accrual period that spans
+
+over more than a year.">
             </i>
             </span>
         </label>

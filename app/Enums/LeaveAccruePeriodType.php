@@ -7,10 +7,10 @@ use BenSampo\Enum\Enum;
 final class LeaveAccruePeriodType extends Enum
 {
     
-    const months_12 = 1;
-    const month_1  = 2;
-    const months_24 = 3;
-    const months_36 = 4;
+    const months_12 = 0;
+    const month_1  = 1;
+    const months_24 = 2;
+    const months_36 = 3;
 
     /**
      * Get the description for an enum value
