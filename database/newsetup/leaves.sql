@@ -2,9 +2,9 @@ CREATE TABLE `absence_types` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
 	`description` VARCHAR(100) NOT NULL,
 	`duration_unit` TINYINT(2) NULL DEFAULT '0' COMMENT '0-Days, 1-Hours',
-	`eligilibity_begins` TINYINT(2) NULL DEFAULT '0' COMMENT '0 - From the first day at work,1 - When probation starts, 2 - After probation period',
-	`eligibility_ends` TINYINT(2) NULL DEFAULT '0' COMMENT '0 - last day at work, 1 - When probation ends',
-	`amount_earns` TINYINT(2) NULL COMMENT 'either days or hours',
+	`eligibility_begins` TINYINT(2) NULL DEFAULT '0' COMMENT '0 - From the first day at work,1 - After probation period',
+	`eligibility_ends` TINYINT(2) NULL DEFAULT '0' COMMENT '0 - Last day of working year, 1 - When probation ends',
+	`amount_earns` TINYINT(2) NULL DEFAULT NULL COMMENT 'either days or hours',
 	`accrue_period` TINYINT(2) NULL DEFAULT '0' COMMENT '0 - Every 12 months, 1 -  Every 1 month, 2 - Every 24 months, 3 - Every 36 months',
 	`created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
 	`updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
@@ -50,8 +50,8 @@ CREATE TABLE `absence_type_employee` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`absence_type_id` INT NOT NULL DEFAULT '0',
 	`employee_id` INT NOT NULL DEFAULT '0',
-	`starts_at` DATE NOT NULL,
-	`ends_at` DATE NOT NULL,
+	`starts_at` DATETIME NOT NULL DEFAULT NULL,
+	`ends_at` DATETIME NOT NULL DEFAULT NULL,	
 	`status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0 - pending, 1 - approved, 2 - denied, 3 - cancelled',
 	`approved_by_employee_id` INT NOT NULL DEFAULT '0',
 	`is_processed` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'processed by job scheduler, skip if already processed',
@@ -80,14 +80,3 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '134');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '134');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '134');
-
-
-ALTER TABLE `absence_types`
-CHANGE COLUMN `eligilibity_begins` `eligibility_begins` TINYINT(2) NULL DEFAULT '0' COMMENT '0 - From the first day at work,1 - When probation starts, 2 - After probation period' ;
-
-ALTER TABLE `absence_types`
-CHANGE COLUMN `duration_unit` `duration_unit` TINYINT(2) NULL DEFAULT '1' COMMENT '0-Days, 1-Hours' ,
-CHANGE COLUMN `eligibility_begins` `eligibility_begins` TINYINT(2) NULL DEFAULT '1' COMMENT '0 - From the first day at work,1 - When probation starts, 2 - After probation period' ,
-CHANGE COLUMN `eligibility_ends` `eligibility_ends` TINYINT(2) NULL DEFAULT '1' COMMENT '0 - last day at work, 1 - When probation ends' ,
-CHANGE COLUMN `accrue_period` `accrue_period` TINYINT(2) NULL DEFAULT '1' COMMENT '0 - Every 12 months, 1 -  Every 1 month, 2 - Every 24 months, 3 - Every 36 months' ;
-

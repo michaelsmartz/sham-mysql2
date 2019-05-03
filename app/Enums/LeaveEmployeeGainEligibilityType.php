@@ -7,9 +7,9 @@ use BenSampo\Enum\Enum;
 final class LeaveEmployeeGainEligibilityType extends Enum
 {
     
-    const first_working_day = 1;
-    const probation_start = 2;
-    const probation_end = 3;
+    const first_working_day = 0;
+    const probation_start = 1;
+    const probation_end = 2;
 
     /**
      * Get the description for an enum value

@@ -5,6 +5,10 @@ namespace App\Jobs;
 use App\AbsenceType;
 use App\Employee;
 use App\SysConfigValue;
+use App\Enums\LeaveAccruePeriodType;
+use App\Enums\LeaveDurationUnitType;
+use App\Enums\LeaveEmployeeGainEligibilityType;
+use App\Enums\LeaveEmployeeLossEligibilityType;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -41,8 +45,8 @@ class ProcessLeaves implements ShouldQueue
 
         $workYearStart = SysConfigValue::where('key','=', 'WORKING_YEAR_START')->first();
         $workYearEnd = SysConfigValue::where('key','=', 'WORKING_YEAR_END')->first();
-        $absenceTypes = AbsenceType::get();
-        $employees = Employee::get();
+        $absenceTypes = AbsenceType::with('jobTitles')->get();
+        $employees = Employee::employeesLite()->whereNull('date_terminated')->get();
 
         if ( !is_null($workYearStart) ) {
             $this->workYearStart = $workYearStart->value;
@@ -58,11 +62,17 @@ class ProcessLeaves implements ShouldQueue
             foreach($absenceTypes as $absenceType) {
 
                 $ret = $this->getEligibilityValues($absenceType);
-
-                foreach($employees as $employee) {
-                    $toInsert = array_merge($ret, ['employee_id' => $employee->id]);
-                    DB::table('eligibility_employee')->insert($toInsert);
+                // for 1 employee only
+                if(!is_null($this->employeeId)) {
+                    $employee = Employee::find($this->employeeId);
+                    $this->insertEmployee($employee);
+                } else {
+                    // for all employees
+                    foreach($employees as $employee) {
+                        $this->insertEmployee($employee);
+                    }
                 }
+
             }
         }
 
@@ -79,14 +89,14 @@ class ProcessLeaves implements ShouldQueue
         ];
 
         switch ($absenceType->accrue_period) {
-            case 0:
+            case LeaveAccruePeriodType::months_12:
                 // handle 12 months
                 // in Days
-                if($absenceType->duration_unit == 0) {
+                if($absenceType->duration_unit == LeaveDurationUnitType::Days) {
                     // eligibility begins = first day at work
                     // eligibility ends = last day at work
-                    if($absenceType->eligibility_begins == 0 && 
-                       $absenceType->eligibility_ends == 0) {
+                    if($absenceType->eligibility_begins == LeaveEmployeeGainEligibilityType::first_working_day && 
+                       $absenceType->eligibility_ends == LeaveEmployeeLossEligibilityType::last_working_day) {
                         $ret['start_date'] = $this->workYearStart;
                         $ret['end_date'] = $this->workYearEnd;
                     }
@@ -98,11 +108,11 @@ class ProcessLeaves implements ShouldQueue
                 }
                 break;
 
-            case 1:
+            case LeaveAccruePeriodType::month_1:
                 // handle 1 month
                 break;
 
-            case 2:
+            case LeaveAccruePeriodType::months_24:
                 // handle 24 months
                 break;
 
@@ -113,5 +123,10 @@ class ProcessLeaves implements ShouldQueue
 
         return $ret;
 
+    }
+
+    private function insertEmployee($employee){
+        $toInsert = array_merge($ret, ['employee_id' => $employee->id]);
+        DB::table('eligibility_employee')->insert($toInsert);
     }
 }

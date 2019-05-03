@@ -81,14 +81,9 @@ class AbsenceTypesController extends CustomController
     public function create()
     {
         $duration_units = LeaveDurationUnitType::ddList();
-        $start_eligibilities = LeaveEmployeeGainEligibilityType::ddList();
-        $end_eligibilities = LeaveEmployeeLossEligibilityType::ddList();
-        $accrue_periods = LeaveAccruePeriodType::ddList();
-
-        $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
 
         return view($this->baseViewPath . '.create',
-            compact('data', 'jobTitles', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'));
+            compact('data', 'duration_units'));
     }
 
     /**
@@ -101,13 +96,14 @@ class AbsenceTypesController extends CustomController
     public function store(Request $request)
     {
         try {
-            $this->validator($request);
+            $this->createValidator($request);
 
             $this->saveAbsenceTypes($request);
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
         } catch (Exception $exception) {
+            dd($exception->getMessage());
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
@@ -132,7 +128,7 @@ class AbsenceTypesController extends CustomController
             $accrue_periods = LeaveAccruePeriodType::ddList();
             $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
 
-            $absenceTypeJobTitles = $data->absenceTypeJobTitles->pluck('id');
+            $absenceTypeJobTitles = $data->jobTitles->pluck('id');
         }
 
         if($request->ajax()) {
@@ -163,13 +159,14 @@ class AbsenceTypesController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            $this->editValidator($request);
 
             $this->saveAbsenceTypes($request, $id);
 
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            dd($exception->getMessage());
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
@@ -181,7 +178,6 @@ class AbsenceTypesController extends CustomController
         $otherFields = [
             '_token',
             '_method',
-            'redirectsTo',
             'jobTitles'
         ];
         foreach($otherFields as $field){
@@ -191,13 +187,12 @@ class AbsenceTypesController extends CustomController
         $input = array_except($request->all(), $otherFields);
 
         if ($id == null) { // Create
-            $data = $this->contextObj->addData($input);
+            $this->contextObj->addData($input);
         } else { // Update
             $this->contextObj->updateData($id, $input);
             $data = AbsenceType::find($id);
+            $data->jobTitles()->sync($jobTitles);
         }
-
-        $data->absenceTypeJobTitles()->sync($jobTitles);
     }
 
     /**
@@ -225,19 +220,41 @@ class AbsenceTypesController extends CustomController
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    protected function validator(Request $request)
+    protected function createValidator(Request $request)
     {
         $validateFields = [
             'description' => 'required|string|min:1|max:100',
-            'duration_unit' => 'required',
-            'eligibility_begins' => 'required',
-            'eligibility_ends' => 'required',
-            'accrue_period' => 'required',
+            'duration_unit' => 'required'
+        ];
+
+       $this->validator($request, $validateFields);
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function editValidator(Request $request)
+    {
+        $validateFields = [
+            'description' => 'required|string|min:1|max:100',
+            'duration_unit' => 'nullable',
+            'eligibility_begins' => 'nullable',
+            'eligibility_ends' => 'nullable',
+            'accrue_period' => 'nullable',
             'amount_earns' => 'nullable',
         ];
 
+        $this->validator($request, $validateFields);
+    }
+
+    /**
+     * @param Request $request
+     * @param $validateFields
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function validator(Request $request, $validateFields)
+    {
         $validator = Validator::make($request->all(), $validateFields);
         if($validator->fails()) {
             return redirect()->back()
@@ -245,4 +262,6 @@ class AbsenceTypesController extends CustomController
                 ->withErrors($validator);
         }
     }
+
+
 }

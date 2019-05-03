@@ -91,7 +91,7 @@ class Employee extends Model implements AuditableContract
 
     protected function withEmployeesLite($query)
     {
-        $query->select(['job_title_id','first_name','surname','id'])
+        $query->select(['job_title_id','first_name','surname','id','date_joined','probation_end_date'])
               ->whereNull('deleted_at');
     }
 
