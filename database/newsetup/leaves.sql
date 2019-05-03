@@ -50,6 +50,8 @@ CREATE TABLE `absence_type_employee` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`absence_type_id` INT NOT NULL DEFAULT '0',
 	`employee_id` INT NOT NULL DEFAULT '0',
+	`starts_at` DATE NOT NULL,
+	`ends_at` DATE NOT NULL,
 	`status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0 - pending, 1 - approved, 2 - denied, 3 - cancelled',
 	`approved_by_employee_id` INT NOT NULL DEFAULT '0',
 	`is_processed` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'processed by job scheduler, skip if already processed',

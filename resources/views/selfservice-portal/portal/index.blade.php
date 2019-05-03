@@ -444,6 +444,8 @@
         @endif
         <!-- end of assets -->
 
+        @include('selfservice-portal.absences.absence')
+
         <!-- working hours -->
         <div class="col2 col-lg-4 col-md-4">
             <main class="main-container" id="timesheet-main-container">
