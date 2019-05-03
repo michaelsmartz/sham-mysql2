@@ -24,6 +24,7 @@ use App\Support\Helper;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\View;
 use Storage;
+use Carbon\Carbon;
 
 class EvaluationsController extends CustomController
 {
@@ -481,6 +482,7 @@ class EvaluationsController extends CustomController
 
         $assessors = $evaluationDetails->assessors;
         foreach($assessors as $assessor){
+
             $workingscore = $evaluationDetails->evaluationResults->where('assessor_employee_id',$assessor->employee_id)->where('is_active',1)
                             ->sum('pivot.points');
 
@@ -491,11 +493,28 @@ class EvaluationsController extends CustomController
             else{
                 $assessor->overall_score = "";
             }
+
+            $assessor->start_time = $this->getAdjustedTime($assessor->start_time);
+            $assessor->end_time = $this->getAdjustedTime($assessor->end_time);
         }
 
         //https://laravel.io/forum/06-23-2014-eager-loading-with-multiple-relations
         return view('partials.evaluationinstances', compact('evaluationDetails'));
     }
+
+    private function getAdjustedTime($time)
+    {
+        if( $time == null ||  strlen($time) == 0){
+            return $time;
+        }
+
+        $timezone = session('timezone');
+        $dateandTime = Carbon::createFromFormat('Y-m-d H:i:s', $time, 'UTC')
+            ->setTimezone($timezone)->format('Y-m-d H:i:s');
+
+        return $dateandTime;
+    }
+
 
     private function getAssessmentTotalScore($assessmentid)
     {
