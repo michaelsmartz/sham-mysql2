@@ -50,8 +50,8 @@ CREATE TABLE `absence_type_employee` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`absence_type_id` INT NOT NULL DEFAULT '0',
 	`employee_id` INT NOT NULL DEFAULT '0',
-	`starts_at` DATETIME NOT NULL DEFAULT NULL,
-	`ends_at` DATETIME NOT NULL DEFAULT NULL,	
+	`starts_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`ends_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,	
 	`status` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0 - pending, 1 - approved, 2 - denied, 3 - cancelled',
 	`approved_by_employee_id` INT NOT NULL DEFAULT '0',
 	`is_processed` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'processed by job scheduler, skip if already processed',
@@ -80,3 +80,6 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '134');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '134');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '134');
+
+ALTER TABLE `eligibility_employee`
+	ADD INDEX `IXELIGIBILITY_EMPLOYEE_START_END` (`start_date`, `end_date`);
