@@ -1,5 +1,19 @@
 @extends('portal-index')
 @section('title','System Configuration')
+<div class="alert-container">
+    @if ($errors->any())
+        <div class="alert error" role="alert">
+            <input type="checkbox" id="alert1"/>
+            <label class="close" title="close" for="alert1">
+                <i class="fa fa-times"></i>
+            </label>
+
+            @foreach ($errors->all() as $error)
+                <p class="inner">{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+</div>
 @section('content')
     <br>
     <ul class="nav nav-tabs">
@@ -13,7 +27,7 @@
         <label class="control-label">Working Year Start</label>
         <div class="">
                     <span class="field">
-                        {!! Form::text('working_year_start', old('working_year_start', $working_year_start), ['class'=>'form-control datepicker', 'autocomplete'=>'off',  'placeholder'=>'Working Year Start', 'id'=>'WorkingYearStart' ]) !!}
+                        {!! Form::text('working_year_start', old('working_year_start', $working_year_start), ['class'=>'form-control datepicker', 'autocomplete'=>'off',  'placeholder'=>'Working Year Start', 'id'=>'working_year_end' ]) !!}
                     </span>
         </div>
     </div>
@@ -21,7 +35,7 @@
         <label class="control-label">Working Year End</label>
         <div class="">
                    <span class="field">
-                        {!! Form::text('working_year_end', old('date_joined', $working_year_end), ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'Working Year End', 'id'=>'WorkingYearEnd']) !!}
+                        {!! Form::text('working_year_end', old('date_joined', $working_year_end), ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'Working Year End', 'id'=>'working_year_end']) !!}
                     </span>
         </div>
     </div>
