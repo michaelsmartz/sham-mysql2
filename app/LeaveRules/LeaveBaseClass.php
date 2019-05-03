@@ -36,27 +36,6 @@ class LeaveBaseClass
         }
     }
 
-    protected function getDurationUnitPeriods()
-    {
-        $ret = [];
 
-        // TODO: accrue_period value to be changed to LeaveAccruePeriodType ennum
-        if($this->absenceTypeObj->accrue_period == 0 || $this->absenceTypeObj->accrue_period == 1){
-            $ret["start_date"] = $this->workYearStart;
-            $ret["end_date"] = $this->workYearEnd;
-        }
-        else if($this->absenceTypeObj->accrue_period == 2){
-            $ret["start_date"] = $this->workYearStart;
-            $ret["end_date"] =   Carbon::parse($this->workYearEnd)->addMonths(12) ;
-            //$ret["end_date"] =   $this->workYearEnd;
-        }
-
-        else if($this->absenceTypeObj->accrue_period == 3){
-            $ret["start_date"] = $this->workYearStart;
-            $ret["end_date"] =   Carbon::parse($this->workYearEnd)->addMonths(36) ;
-        }
-
-        return $ret;
-    }
 
 }

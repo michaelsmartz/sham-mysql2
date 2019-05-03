@@ -13,21 +13,13 @@ class Rule0000 extends LeaveBaseClass implements ILeaveRules
         //dump($this->employeeObj);
         //dump($this->absenceTypeObj);
 
-        // get an array of start date as start working year and enddate as end of working year base on accrue period.
-        // E.g if Accrue period is 24 month and start date is 2019-01-01, will return array('start_date' => '2019-01-01', 'end_date' => '2020-12-31')
-        $duration_periods = $this->getDurationUnitPeriods();
-
-        //Check if record is present in eligibility_employee table base on employee_id, absence_type_id, >= start_date and <= end_date
-        $hasAbsenseTypeForEmployee = $this->checkIfEmployeeHasAbsenceType($duration_periods["start_date"],$duration_periods["end_date"]);
-
         $ret = [];
 
-        if(!$hasAbsenseTypeForEmployee){
-
+        if(sizeof($this->employeeObj->eligibilities) == 0){
             $ret = [
                 'absence_type_id' => $this->absenceTypeObj->id,
-                'start_date' => $this->getEmployeeLeaveStartDate($duration_periods["start_date"]),
-                'end_date' => $duration_periods["end_date"],
+                'start_date' => $this->getEmployeeLeaveStartDate($this->workYearStart),
+                'end_date' => $this->workYearEnd,
                 'total' => $this->absenceTypeObj->amount_earns,
                 'taken' => 0,
                 'employee_id' => $this->employeeObj->id,
@@ -35,8 +27,8 @@ class Rule0000 extends LeaveBaseClass implements ILeaveRules
                 'action' => "I"
             ];
         }
+        //dd($ret);
         return $ret;
-
     }
 
     private function getEmployeeLeaveStartDate($start_date){

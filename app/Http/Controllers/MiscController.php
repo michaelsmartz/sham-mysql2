@@ -14,6 +14,7 @@ use App\Enums\LeaveEmployeeLossEligibilityType;
 use Illuminate\Support\Facades\DB;
 
 use App\LeaveRules\Rule0000;
+use Carbon\Carbon;
 
 class MiscController extends Controller
 {
@@ -30,16 +31,37 @@ class MiscController extends Controller
         return view('vue-test');
     }
 
-    public function testleave(){
+    protected function getDurationUnitPeriods($accrue_period, $workYearStart, $workYearEnd)
+    {
+        $ret = [];
 
+        // TODO: accrue_period value to be changed to LeaveAccruePeriodType ennum
+        if($accrue_period == 0 || $accrue_period == 1){
+            $ret["start_date"] = $workYearStart;
+            $ret["end_date"] = $workYearEnd;
+        }
+        else if($accrue_period == 2){
+            $ret["start_date"] = $workYearStart;
+            $ret["end_date"] =   Carbon::parse($workYearEnd)->addMonths(12) ;
+            //$ret["end_date"] =   $workYearEnd;
+        }
+
+        else if($accrue_period == 3){
+            $ret["start_date"] = $workYearStart;
+            $ret["end_date"] =   Carbon::parse($workYearEnd)->addMonths(36) ;
+        }
+
+        return $ret;
+    }
+
+    public function testleave(){
+        ini_set('max_execution_time', 180);
         $workYearStartVal = "";
         $workYearEndVal = "";
 
         $workYearStart = SysConfigValue::where('key','=', 'WORKING_YEAR_START')->first();
         $workYearEnd = SysConfigValue::where('key','=', 'WORKING_YEAR_END')->first();
         $absenceTypes = AbsenceType::with('jobTitles')->get();
-        $employees = Employee::employeesLite()->whereNull('date_terminated')->get();
-
 
         if ( !is_null($workYearStart) ) {
             $workYearStartVal = $workYearStart->value;
@@ -48,30 +70,39 @@ class MiscController extends Controller
             $workYearEndVal = $workYearEnd->value;
         }
 
-        $retval = [];
-        foreach($employees as $employee){
-            $retval = [];
-            if (!is_null($absenceTypes)){
-                foreach($absenceTypes as $absenceType) {
 
-                    $absenceKey =  $absenceType->duration_unit.$absenceType->eligibility_begins.$absenceType->eligibility_ends.$absenceType->accrue_period;
 
-                    if($absenceKey == '0000' || $absenceKey == '0002' || $absenceKey == '0003')
-                    {
-                        $leaverule = new Rule0000($employee,$absenceType,$workYearStartVal,$workYearEndVal);
-                        $retval = $leaverule->getEligibilityValue();
-                    }
+        foreach($absenceTypes as $absenceType) {
+            $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $workYearStartVal, $workYearEndVal);
+
+            $absenceKey =  $absenceType->duration_unit.$absenceType->eligibility_begins.$absenceType->eligibility_ends.$absenceType->accrue_period;
+            if($absenceKey == '0000' || $absenceKey == '0002' || $absenceKey == '0003')
+            {
+                //$employees = Employee::employeesEligibility($durations['start_date'], $durations['end_date'])->get();
+
+                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations) {
+                    $query->where('absence_type_id', '=', $absenceType->id)
+                        ->where('end_date', '<', $durations['start_date']);
+                }])->get();
+
+                $insertarray = [];
+                foreach($employees as $employee){
+                    $leaverule = new Rule0000($employee,$absenceType,$durations['start_date'], $durations['end_date']);
+                    $retval = $leaverule->getEligibilityValue();
 
                     if(!empty($retval)){
                         if($retval['action'] == 'I'){
                             unset($retval['action']);
-                            DB::table('eligibility_employee')->insert($retval);
+                            //DB::table('eligibility_employee')->insert($retval);
+                            $insertarray[] = $retval;
                         }
                     }
-                    //die;
                 }
+
+                DB::table('eligibility_employee')->insert($insertarray);
+
+                echo("Completed...");
             }
         }
     }
-
 }

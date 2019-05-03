@@ -262,7 +262,7 @@ class Employee extends Model implements AuditableContract
     public function eligibilities()
     {
         return $this->belongsToMany('App\AbsenceType', 'eligibility_employee', 'absence_type_id', 'employee_id')
-                    ->withPivot('start_date', 'end_date', 'total', 'taken', 'is_manually_adjusted');
+                    ->withPivot('start_date', 'end_date', 'total', 'taken', 'is_manually_adjusted','id');
     }
 
     public function absences()
