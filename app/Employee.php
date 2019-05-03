@@ -89,6 +89,17 @@ class Employee extends Model implements AuditableContract
               ;
     }
 
+    public function scopeEmployeesEligibility($query, $startDate, $endDate){
+        $query->leftJoin('eligibility_employee as eligibility', function($join) use ($startDate, $endDate){
+                $join->on('employees.id','=','eligibility.employee_id')
+                     ->where('eligibility.start_date','>=',$startDate)
+                     ->where('eligibility.end_date','<=',$endDate);
+              })
+              ->select('employees.id','employees.job_title_id','employees.date_joined','employees.probation_end_date','eligibility.*')
+              ->whereNull('employees.date_terminated')
+        ;  
+    }
+
     protected function withEmployeesLite($query)
     {
         $query->select(['job_title_id','first_name','surname','id','date_joined','probation_end_date'])
