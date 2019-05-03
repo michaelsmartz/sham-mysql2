@@ -27,7 +27,7 @@ class WorkingYearRequest extends FormRequest
     public function rules()
     {
         $working_start_year = Input::get('working_year_start');
-        $valid_end_year     =  date("Y-m-d", strtotime(date("Y-m-d", strtotime($working_start_year)) . " + 365 day"));
+        $valid_end_year     =  date("Y-m-d", strtotime(date("Y-m-d", strtotime($working_start_year)) . " + 364 day"));
 
         return [
             'working_year_start' => 'required|date|before:working_year_end',
