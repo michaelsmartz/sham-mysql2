@@ -75,8 +75,10 @@ class MiscController extends Controller
         foreach($absenceTypes as $absenceType) {
             $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $workYearStartVal, $workYearEndVal);
 
-            $absenceKey =  $absenceType->duration_unit.$absenceType->eligibility_begins.$absenceType->eligibility_ends.$absenceType->accrue_period;
-            if($absenceKey == '0000' || $absenceKey == '0002' || $absenceKey == '0003')
+            $absenceKey =  $absenceType->duration_unit . $absenceType->eligibility_begins . 
+                           $absenceType->eligibility_ends /*.$absenceType->accrue_period*/;
+
+            if($absenceKey == '000' /*|| $absenceKey == '0002' || $absenceKey == '0003'*/)
             {
                 //$employees = Employee::employeesEligibility($durations['start_date'], $durations['end_date'])->get();
 
@@ -87,7 +89,7 @@ class MiscController extends Controller
 
                 $insertarray = [];
                 foreach($employees as $employee){
-                    $leaverule = new Rule0000($employee,$absenceType,$durations['start_date'], $durations['end_date']);
+                    $leaverule = new Rule000($employee,$absenceType,$durations['start_date'], $durations['end_date']);
                     $retval = $leaverule->getEligibilityValue();
 
                     if(!empty($retval)){
