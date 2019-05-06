@@ -66,7 +66,8 @@ class Rule100 extends LeaveBaseClass
     {
       $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
                 $query = $this->applyEligibilityFilter($query, $durations['start_date']);
-              }])->whereNull('date_terminated');
+              }])->whereNull('date_terminated')
+               ->where('date_joined', '<=', Carbon::now()->toDateString());
 
       return $ret;
     }

@@ -72,7 +72,8 @@ class Rule001 extends LeaveBaseClass
         $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
             $query = $this->applyEligibilityFilter($query, 'probation_end_date');
         }])->whereNull('date_terminated')
-           ->where('probation_end_date', '>=', Carbon::now()->toDateString());
+           ->where('probation_end_date', '>=', Carbon::now()->toDateString())
+           ->where('date_joined', '<=', Carbon::now()->toDateString());
 
         return $ret;
     }
