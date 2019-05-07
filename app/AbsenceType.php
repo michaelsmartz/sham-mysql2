@@ -42,7 +42,7 @@ class AbsenceType extends Model
 
     public function eligibilityEmployees()
     {
-        return $this->belongsToMany('App\Employee','eligibility_employee');
+        return $this->belongsToMany('App\Employee','eligibility_employee')->withPivot('id','start_date','end_date','total','taken','is_manually_adjusted');
     }
 
     public function jobTitles()
