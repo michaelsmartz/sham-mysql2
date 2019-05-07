@@ -8,7 +8,7 @@ use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
 use Carbon\Carbon;
 
-class Rule000 extends LeaveBaseClass
+class Rule010 extends LeaveBaseClass
 {
     public $ret;
     public $retCollection;
@@ -46,7 +46,7 @@ class Rule000 extends LeaveBaseClass
             case LeaveAccruePeriodType::months_12:
             case LeaveAccruePeriodType::months_24:
             case LeaveAccruePeriodType::months_36:
-                $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->date_joined);
+                $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->probation_end_date);
                 $this->ret["start_date"] = $leaveStartDate;
                 $this->ret["end_date"] = $this->workYearEnd;
                 $this->retCollection[] = $this->ret;
@@ -54,7 +54,7 @@ class Rule000 extends LeaveBaseClass
 
             case LeaveAccruePeriodType::month_1:
             
-                $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->date_joined);
+                $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->probation_end_date);
                 $carbonLeaveStartDate = Carbon::parse($leaveStartDate);
 
                 $carbonP = CarbonPeriod($leaveStartDate, '1 month', $this->workYearEnd);
