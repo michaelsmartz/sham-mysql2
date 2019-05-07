@@ -37,7 +37,7 @@ class EntitlementsController extends CustomController
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_ENTITLEMENTS);
 
-        $entitlements = Employee::with('absenceTypes')->filtered()->paginate(10);
+        $entitlements = Employee::with('eligibilities')->filtered()->paginate(10);
 
         return view('entitlements.index', compact('entitlements','allowedActions'));
     }
