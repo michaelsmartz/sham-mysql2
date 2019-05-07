@@ -26,15 +26,15 @@ class Rule000 extends LeaveBaseClass
         $this->getEmployeeEligibilityDates();
 
         if(sizeof($this->employeeObj->eligibilities) == 0) {
-            foreach($this->retCollection as $item){
-                $item = [
+            foreach($this->retCollection as &$item){
+                $item = array_merge($item, [
                     'absence_type_id' => $this->absenceTypeObj->id,
                     'total' => $this->absenceTypeObj->amount_earns,
                     'taken' => 0,
                     'employee_id' => $this->employeeObj->id,
                     'is_manually_adjusted' => 0,
                     'action' => "I"
-                ];
+                ]);
             }
         }
         return $this->retCollection;

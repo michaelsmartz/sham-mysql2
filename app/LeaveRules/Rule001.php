@@ -31,18 +31,17 @@ class Rule001 extends LeaveBaseClass
         $this->getEmployeeEligibilityDates();
 
         if (sizeof($this->employeeObj->eligibilities) == 0) {
-            foreach ($this->retCollection as $item) {
-                $item = [
+            foreach($this->retCollection as &$item){
+                $item = array_merge($item, [
                     'absence_type_id' => $this->absenceTypeObj->id,
                     'total' => $this->absenceTypeObj->amount_earns,
                     'taken' => 0,
                     'employee_id' => $this->employeeObj->id,
                     'is_manually_adjusted' => 0,
                     'action' => "I"
-                ];
+                ]);
             }
         }
-
         return $this->retCollection;
     }
 
@@ -51,7 +50,7 @@ class Rule001 extends LeaveBaseClass
         // we are in the rule "when probation ends", accrue period is irrelevant
         $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->date_joined);
         $this->ret["start_date"] = $leaveStartDate;
-        $this->ret["end_date"] = $this->$this->employeeObj->probation_end_date;
+        $this->ret["end_date"] = $this->employeeObj->probation_end_date;
         $this->retCollection[] = $this->ret;
     }
 }
