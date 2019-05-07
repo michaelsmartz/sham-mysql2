@@ -11,6 +11,7 @@ use Carbon\Carbon;
 class Rule000 extends LeaveBaseClass
 {
     public $ret;
+    public $retCollection;
 
     protected $carbonProbationEndDate;
 
@@ -20,7 +21,26 @@ class Rule000 extends LeaveBaseClass
 
     }
 
-    private function getEmployeeEligibilityDates($start_date) {
+    public function getEligibilityValue()
+    {
+        $this->getEmployeeEligibilityDates();
+
+        if(sizeof($this->employeeObj->eligibilities) == 0) {
+            foreach($this->retCollection as $item){
+                $item = [
+                    'absence_type_id' => $this->absenceTypeObj->id,
+                    'total' => $this->absenceTypeObj->amount_earns,
+                    'taken' => 0,
+                    'employee_id' => $this->employeeObj->id,
+                    'is_manually_adjusted' => 0,
+                    'action' => "I"
+                ];
+            }
+        }
+        return $this->retCollection;
+    }
+
+    private function getEmployeeEligibilityDates($start_date = null) {
 
         switch($this->absenceTypeObj->accrue_period) {
             case LeaveAccruePeriodType::months_12:
@@ -28,7 +48,8 @@ class Rule000 extends LeaveBaseClass
             case LeaveAccruePeriodType::months_36:
                 $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->date_joined);
                 $ret["start_date"] = $leaveStartDate;
-                $ret["end_date"] = $this->workYearEnd; 
+                $ret["end_date"] = $this->workYearEnd;
+                $retCollection[] = $ret;
             break;
 
             case LeaveAccruePeriodType::month_1:
@@ -41,10 +62,7 @@ class Rule000 extends LeaveBaseClass
                     $carbonDStart = $date->copy()->startOfMonth();
                     $carbonDEnd = $carbonDStart->copy()->endOfMonth();
                 }
-                
             break;
-
         }
-
     }
 }
