@@ -9,6 +9,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         @include('entitlements.form', [
+                            'mode' => 'create',
                             'entitlement' => null,
                         ])
                     </div>
