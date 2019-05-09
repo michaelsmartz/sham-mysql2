@@ -73,16 +73,16 @@ class MiscController extends Controller
             $workYearEndVal = $workYearEnd->value;
         }
 
-        
+        /*
         $durations = $this->getDurationUnitPeriods(0, $workYearStartVal, $workYearEndVal);
 
-        /*
+        
         $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
             $query->where('absence_type_id', '=', 1)
                   ->where('end_date', '>=', $durations['end_date']);
         }])->whereNull('date_terminated')
             ->where('employees.id','<',5)->get();
-        */
+        
 
         $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
             $query->where('absence_type_id', '=', 1)
@@ -93,76 +93,59 @@ class MiscController extends Controller
 
          dd($employees);
 
+         */
+
         foreach($absenceTypes as $absenceType) {
             $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $workYearStartVal, $workYearEndVal);
 
             $absenceKey =  $absenceType->duration_unit . $absenceType->eligibility_begins . 
                            $absenceType->eligibility_ends /*.$absenceType->accrue_period*/;
 
+            $classAbsenceKey = 'App\LeaveRules\Rule'. $absenceKey;
+
             if($absenceKey == '000')
             {
-                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations) {
-                    /*$query->where('absence_type_id', '=', $absenceType->id)
-                        ->where('end_date', '<', $durations['start_date']);
-                    */
-                    $query = Rule000::applyEligibilityFilter($query, $absenceType->id, $durations['start_date']);
+                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
+                    $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, $durations['start_date']);
                 }])->whereNull('date_terminated')
                     ->where('employees.id','<',5)->get();
-
-                $insertarray = [];
-                foreach($employees as $employee){
-                    $leaverule = new Rule000($employee,$absenceType,$durations['start_date'], $durations['end_date']);
-                    if ($leaverule->shouldAddNew()) {
-                        $retvals = $leaverule->getEligibilityValue();
-                    
-                        if(!empty($retvals)){
-    
-                            foreach ($retvals as $item)
-                            {
-                                if(isset($item['action']) && $item['action'] == 'I'){
-                                    unset($item['action']);
-                                    $insertarray[] = $item;
-                                }
-                            }
-                        }
-                    }
-
-                }
-                dd($insertarray);
-                DB::table('eligibility_employee')->insert($insertarray);
-                echo("Completed...");
             }
 
-            die;
             if($absenceKey == '001')
             {
-                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations) {
-                    $query->where('absence_type_id', '=', $absenceType->id)
-                        ->where('end_date', '<=', 'employees.probation_end_date');
+                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
+                    $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, 'probation_end_date');
+
                 }])->whereNull('date_terminated')
-                   ->where('probation_end_date','>=',$workYearStartVal)
-                   ->where('employees.id','<',5)->toSql();
-                dump($employees);die;
-                $insertarray = [];
-                foreach($employees as $employee){
-                    $leaverule = new Rule001($employee,$absenceType,$durations['start_date'], $durations['end_date']);
+                   ->where('probation_end_date', '>=', $durations['start_date'])
+                   ->where('employees.id','<',6)->get();
+            }
+
+            $insertarray = [];
+            foreach($employees as $employee){
+                $leaverule = new $classAbsenceKey($employee,$absenceType,$durations['start_date'], $durations['end_date']);
+                
+                if ($leaverule->shouldAddNew()) {
+
                     $retvals = $leaverule->getEligibilityValue();
 
-                    if(!empty($retvals)){
+                    if(!empty($retvals)) {
 
                         foreach ($retvals as $item)
                         {
-                            if($item['action'] == 'I'){
+                            if($item['action'] == 'I') {
                                 unset($item['action']);
                                 $insertarray[] = $item;
                             }
                         }
                     }
                 }
-                //dd($insertarray);
-                DB::table('eligibility_employee')->insert($insertarray);
-                echo("Completed...");
             }
+
+            dd($insertarray);
+            DB::table('eligibility_employee')->insert($insertarray);
+            echo("Completed...");
         }
+
     }
 }

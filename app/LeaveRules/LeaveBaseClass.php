@@ -39,8 +39,8 @@ class LeaveBaseClass
             $ret = true;
         } else {
             foreach($this->employeeObj->eligibilities as $eligibility) {
-                if ($eligibility->pivot->start_date >= $this->workYearStart ||
-                    $eligibility->pivot->end_date >= $this->workYearStart ) {
+                if ($this->workYearStart >= $eligibility->pivot->start_date &&
+                    $this->workYearStart <= $eligibility->pivot->end_date ) {
                         $ret = false;
                         break;
                 }

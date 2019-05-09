@@ -28,6 +28,34 @@ class Rule001 extends LeaveBaseClass
         }
     }
 
+    public function shouldAddNew()
+    {
+        $ret = true;
+
+        if (sizeof($this->employeeObj->eligibilities) == 0 && 
+            $this->employeeObj->probation_end_date >= $this->workYearStart) {
+            $ret = true;
+        } else {
+            foreach($this->employeeObj->eligibilities as $eligibility) {
+                if ($this->workYearStart >= $eligibility->pivot->start_date &&
+                    $this->workYearStart <= $eligibility->pivot->end_date ) {
+                        $ret = false;
+                        break;
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    public static function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
+    {
+
+        $query->where('absence_type_id', '=', $absenceTypeId);
+
+        return $query;
+    }
+
     public function getEligibilityValue()
     {
         $this->getEmployeeEligibilityDates();
