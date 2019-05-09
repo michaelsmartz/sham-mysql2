@@ -6,7 +6,10 @@
             @if(!is_null($current_employee) && optional($current_employee->jobTitle)->is_manager)
             <form class="search_employee_entitlements" action="{{ route('entitlements.index') }}">
                 <div class="row">
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-xs-3">
+                        <input class="form-control datepicker" name="valid_until_date" type="text" id="end_date" value="" placeholder="Enter valid until date here...">
+                    </div>
+                    <div class="form-group col-xs-4">
                         <select class="form-control" id="employee" name="employee">
                             <option value="" style="display: none;" disabled selected>Select Employee</option>
                             @foreach ($employees as $key => $employee)
@@ -23,6 +26,7 @@
                         </a>
                     </div>
                 </div>
+                <div id="date-picker"></div>
             </form>
             @endif
             <div class="table-responsive">
@@ -59,7 +63,9 @@
 
                                 <td data-html2canvas-ignore="true">
                                     <div class="btn-group btn-group-xs" role="group">
-                                        @if($allowedActions->contains('Write'))
+                                        @if(!is_null($current_employee)
+                                         && optional($current_employee->id) != optional($entitlement->id)
+                                         && $allowedActions->contains('Write'))
                                             <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$absenceType->pivot->id}}', event)">
                                                 <i class="glyphicon glyphicon-edit text-primary"></i>
                                             </a>
@@ -88,7 +94,8 @@
             padding-top: 10px;
         }
 
-        form.search_employee_entitlements select {
+        form.search_employee_entitlements select
+        {
             float: left;
             width: 80%;
             border-bottom-right-radius: 0;

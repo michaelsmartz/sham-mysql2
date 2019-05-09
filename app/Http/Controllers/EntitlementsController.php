@@ -53,10 +53,41 @@ class EntitlementsController extends CustomController
         //if search button is clicked employee will not be null
         $employee_id_entitlement_search = $request->get('employee', null);
 
-        if(!is_null($employee_id_entitlement_search)){
-            $entitlements = Employee::with('eligibilities')->where(['id'=>$employee_id_entitlement_search])->filtered()->paginate(10);
-        }else{
-            $entitlements = Employee::with('eligibilities')->where(['id'=>$employee_id])->filtered()->paginate(10);
+        $valid_until = $request->get('valid_until_date', null);
+
+        //Display only employee entitlements for current year
+        try {
+            if (!is_null($employee_id_entitlement_search) && is_null($valid_until)) {
+                $entitlements = Employee::with(['eligibilities'=> function ($query){
+                        $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?',[date('Y')]);
+                    }])
+                    ->where(['id' => $employee_id_entitlement_search])
+                    ->filtered()->paginate(10);
+            }
+            elseif (is_null($employee_id_entitlement_search) && !is_null($valid_until)){
+                $entitlements = Employee::with(['eligibilities'=> function ($query) use($valid_until){
+                    $query->whereRaw('`eligibility_employee`.`end_date` >= ?',[$valid_until]);
+                }])
+                    ->where(['id' => $employee_id])
+                    ->filtered()->paginate(10);
+            }
+            elseif (!is_null($employee_id_entitlement_search) && !is_null($valid_until)){
+                $entitlements = Employee::with(['eligibilities'=> function ($query) use($valid_until){
+                    $query->whereRaw('`eligibility_employee`.`end_date` >= ?',[$valid_until]);
+                }])
+                    ->where(['id' => $employee_id_entitlement_search])
+                    ->filtered()->paginate(10);
+            }
+            else {
+                $entitlements = Employee::with(['eligibilities'=> function ($query){
+                        $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?',[date('Y')]);
+                     }])
+                    ->where(['id' => $employee_id])
+                    ->filtered()->paginate(10);
+            }
+
+        }catch (Exception $exception){
+            dd($exception->getMessage());
         }
 
         //find if connected employee is a manager to display button search other employee's entitlements
