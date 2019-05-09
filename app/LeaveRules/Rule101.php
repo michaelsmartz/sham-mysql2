@@ -2,17 +2,10 @@
 
 namespace App\LeaveRules;
 
-use App\Enums\LeaveAccruePeriodType;
-use App\Enums\LeaveDurationUnitType;
-use App\Enums\LeaveEmployeeGainEligibilityType;
-use App\Enums\LeaveEmployeeLossEligibilityType;
-use Carbon\Carbon;
-
-class Rule001 extends LeaveBaseClass
+class Rule101 extends LeaveBaseClass
 {
     public $ret;
     public $retCollection;
-
 
     protected $carbonProbationEndDate;
 
@@ -26,6 +19,21 @@ class Rule001 extends LeaveBaseClass
         if (is_null($this->employeeObj->probation_end_date)) {
             $this->carbonProbationEndDate = Carbon::parse($this->employeeObj->probation_end_date);
         }
+    }
+
+    public static function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
+    {
+        $query->where('absence_type_id', '=', $absenceTypeId)
+            ->where('end_date', '>=', $dateValue);
+
+        return $query;
+    }
+
+    public function shouldAddNew()
+    {
+        $ret = false;
+
+        return $ret;
     }
 
     public function getEligibilityValue()
@@ -46,7 +54,7 @@ class Rule001 extends LeaveBaseClass
         }
         return $this->retCollection;
     }
-
+    
     private function getEmployeeEligibilityDates()
     {
         // we are in the rule "when probation ends", accrue period is irrelevant
@@ -55,4 +63,5 @@ class Rule001 extends LeaveBaseClass
         $this->ret["end_date"] = $this->employeeObj->probation_end_date;
         $this->retCollection[] = $this->ret;
     }
+
 }
