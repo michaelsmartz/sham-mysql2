@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\LeaveRules\Rule0000;
 use App\LeaveRules\Rule000;
 use App\LeaveRules\Rule001;
+use App\LeaveRules\Rule010;
 
 use Carbon\Carbon;
 
@@ -73,28 +74,6 @@ class MiscController extends Controller
             $workYearEndVal = $workYearEnd->value;
         }
 
-        /*
-        $durations = $this->getDurationUnitPeriods(0, $workYearStartVal, $workYearEndVal);
-
-        
-        $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
-            $query->where('absence_type_id', '=', 1)
-                  ->where('end_date', '>=', $durations['end_date']);
-        }])->whereNull('date_terminated')
-            ->where('employees.id','<',5)->get();
-        
-
-        $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
-            $query->where('absence_type_id', '=', 1)
-                ->where('end_date', '<=', 'employees.probation_end_date');
-        }])->whereNull('date_terminated')
-           ->where('probation_end_date', '>=', $workYearStart)
-           ->where('employees.id', '<', 5)->get();
-
-         dd($employees);
-
-         */
-
         foreach($absenceTypes as $absenceType) {
             $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $workYearStartVal, $workYearEndVal);
 
@@ -112,6 +91,16 @@ class MiscController extends Controller
             }
 
             if($absenceKey == '001')
+            {
+                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
+                    $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, 'probation_end_date');
+
+                }])->whereNull('date_terminated')
+                   ->where('probation_end_date', '>=', $durations['start_date'])
+                   ->where('employees.id','<',6)->get();
+            }
+
+            if($absenceKey == '010')
             {
                 $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
                     $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, 'probation_end_date');

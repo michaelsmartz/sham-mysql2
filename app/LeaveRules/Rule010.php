@@ -20,6 +20,10 @@ class Rule010 extends LeaveBaseClass
         parent::__construct($employeeObj, $absenceTypeObj, $workYearStart, $workYearEnd);
 
         $this->retCollection = [];
+
+        if (is_null($this->employeeObj->probation_end_date)) {
+            $this->carbonProbationEndDate = Carbon::parse($this->employeeObj->probation_end_date);
+        }
     }
 
     public static function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
@@ -35,15 +39,15 @@ class Rule010 extends LeaveBaseClass
         $this->getEmployeeEligibilityDates();
 
         if(sizeof($this->employeeObj->eligibilities) == 0) {
-            foreach($this->retCollection as $item){
-                $item = [
+            foreach($this->retCollection as &$item){
+                $item = array_merge($item, [
                     'absence_type_id' => $this->absenceTypeObj->id,
                     'total' => $this->absenceTypeObj->amount_earns,
                     'taken' => 0,
                     'employee_id' => $this->employeeObj->id,
                     'is_manually_adjusted' => 0,
                     'action' => "I"
-                ];
+                ]);
             }
         }
         return $this->retCollection;
@@ -51,10 +55,22 @@ class Rule010 extends LeaveBaseClass
 
     public function shouldAddNew()
     {
-        $ret = false;
+        $ret = true;
+
+        if (sizeof($this->employeeObj->eligibilities) == 0) {
+            $ret = true;
+        } else {
+            foreach($this->employeeObj->eligibilities as $eligibility) {
+                if ($eligibility->pivot->end_date <= $this->workYearEnd ) {
+                        $ret = true;
+                        break;
+                }
+            }
+        }
 
         return $ret;
     }
+    
 
     private function getEmployeeEligibilityDates() {
 

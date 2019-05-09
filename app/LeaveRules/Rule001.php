@@ -13,7 +13,6 @@ class Rule001 extends LeaveBaseClass
     public $ret;
     public $retCollection;
 
-
     protected $carbonProbationEndDate;
 
     public function __construct($employeeObj, $absenceTypeObj, $workYearStart, $workYearEnd)
