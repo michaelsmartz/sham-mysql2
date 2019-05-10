@@ -90,3 +90,10 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 
 ALTER TABLE `eligibility_employee`
 	ADD INDEX `IXELIGIBILITY_EMPLOYEE_START_END` (`start_date`, `end_date`);
+
+ALTER TABLE `absence_types`
+	CHANGE COLUMN `amount_earns` `amount_earns` DECIMAL(4,2) NULL DEFAULT NULL COMMENT 'either days or hours' AFTER `eligibility_ends`;
+
+ALTER TABLE `eligibility_employee`
+	CHANGE COLUMN `total` `total` DECIMAL(4,2) NULL DEFAULT '0' AFTER `end_date`,
+	CHANGE COLUMN `taken` `taken` DECIMAL(4,2) NULL DEFAULT '0' AFTER `total`;	
