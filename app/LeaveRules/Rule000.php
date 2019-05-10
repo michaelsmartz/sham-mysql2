@@ -19,8 +19,17 @@ class Rule000 extends LeaveBaseClass
 
         parent::__construct($employeeObj, $absenceTypeObj, $workYearStart, $workYearEnd);
 
+        $this->retCollection = [];
     }
 
+    public static function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
+    {
+        $query->where('absence_type_id', '=', $absenceTypeId)
+              ->where('end_date', '>=', $dateValue);
+
+        return $query;
+    }
+    
     public function getEligibilityValue()
     {
         $this->getEmployeeEligibilityDates();
