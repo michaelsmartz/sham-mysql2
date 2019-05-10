@@ -4,7 +4,9 @@
 @section('modalTitle', 'Edit Entitlement')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+    @if(!is_null($employee_id) && $employee_id != optional($data)->employee_id)
+        <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
+    @endif
 @endsection
 
 @section('postModalUrl', route('entitlements.update', $data->id))
@@ -15,6 +17,7 @@
             @include ('entitlements.form', [
                 'mode' => 'edit',
                 'entitlement' => $data,
+                'employee_id' => $employee_id,
             ])
         </div>
     </div>

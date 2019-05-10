@@ -79,26 +79,36 @@ class EntitlementsController extends CustomController
                     ->filtered()->paginate(10);
             }
             else {
-                $entitlements = Employee::with(['eligibilities'=> function ($query){
-                        $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?',[date('Y')]);
-                     }])
+                $entitlements = Employee::with(['eligibilities' => function ($query) {
+                    $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?', [date('Y')]);
+                }])
                     ->where(['id' => $employee_id])
                     ->filtered()->paginate(10);
             }
+
+
+            //find if connected employee is a manager to display button search other employee's entitlements
+            $current_employee = Employee::with('jobTitle')
+                ->where('id', '=', $employee_id)
+                ->first();
+
+
+            if(!is_null($employee_id_entitlement_search))
+                $selected_employee = Employee::where('id','=', $employee_id_entitlement_search)->first();
+            elseif(!is_null($employee_id))
+                $selected_employee = Employee::where('id','=', $employee_id)->first();
+            else
+                $selected_employee = null;
+
+            //employee list to exclude the employee connected in the list
+            $employees = Employee::where('id','!=',$employee_id)->pluck('full_name', 'id');
 
         }catch (Exception $exception){
             dd($exception->getMessage());
         }
 
-        //find if connected employee is a manager to display button search other employee's entitlements
-        $current_employee = Employee::with('jobTitle')
-            ->where('id','=',$employee_id)
-            ->first();
-
-        //employee list to exclude the employee connected in the list
-        $employees = Employee::where('id','!=',$employee_id)->pluck('full_name', 'id');
-
-        return view('entitlements.index', compact('entitlements', 'current_employee', 'employees', 'allowedActions'));
+        return view('entitlements.index',
+            compact('entitlements', 'selected_employee', 'current_employee', 'employees', 'allowedActions'));
     }
 
     /**
@@ -142,6 +152,8 @@ class EntitlementsController extends CustomController
     public function edit(Request $request)
     {
         try{
+            $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : null;
+
             $data = null;
             $id = Route::current()->parameter('entitlement');
             if(!empty($id)) {
@@ -151,9 +163,12 @@ class EntitlementsController extends CustomController
                 $leave_policies = AbsenceType::pluck('description', 'id');
             }
 
+//            dump($data->employee_id);
+//            dd($employee_id);
+
             if($request->ajax()) {
                 $view = view('entitlements.edit',
-                    compact('data','leave_policies'))
+                    compact('data','leave_policies', 'employee_id'))
                     ->renderSections();
 
                 return response()->json([
@@ -167,7 +182,7 @@ class EntitlementsController extends CustomController
            dd($exception->getMessage());
         }
 
-        return view('entitlements.edit', compact('data','leave_policies'));
+        return view('entitlements.edit', compact('data','leave_policies', 'employee_id'));
     }
 
     /**
