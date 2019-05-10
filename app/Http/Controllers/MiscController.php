@@ -82,6 +82,8 @@ class MiscController extends Controller
 
             $classAbsenceKey = 'App\LeaveRules\Rule'. $absenceKey;
 
+            echo $absenceKey, ' ', $classAbsenceKey, '<br>';
+
             if($absenceKey == '000')
             {
                 $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
@@ -111,10 +113,13 @@ class MiscController extends Controller
             }
 
             $insertarray = [];
+            //dump($employees);
             foreach($employees as $employee){
                 $leaverule = new $classAbsenceKey($employee,$absenceType,$durations['start_date'], $durations['end_date']);
-                
-                if ($leaverule->shouldAddNew()) {
+                $fAddNew = $leaverule->shouldAddNew();
+                //echo $employee->id, ' ', (bool) $fAddNew, '<br>';
+
+                if ($fAddNew) {
 
                     $retvals = $leaverule->getEligibilityValue();
 
@@ -122,7 +127,7 @@ class MiscController extends Controller
 
                         foreach ($retvals as $item)
                         {
-                            if($item['action'] == 'I') {
+                            if(isset($item['action']) && $item['action'] == 'I') {
                                 unset($item['action']);
                                 $insertarray[] = $item;
                             }
@@ -131,9 +136,9 @@ class MiscController extends Controller
                 }
             }
 
-            dd($insertarray);
+            //dd($insertarray);
             DB::table('eligibility_employee')->insert($insertarray);
-            echo("Completed...");
+            echo("Completed...<br>");
         }
 
     }

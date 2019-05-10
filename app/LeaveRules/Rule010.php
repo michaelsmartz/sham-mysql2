@@ -7,6 +7,7 @@ use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class Rule010 extends LeaveBaseClass
 {

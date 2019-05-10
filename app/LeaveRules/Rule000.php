@@ -7,6 +7,7 @@ use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class Rule000 extends LeaveBaseClass
 {
@@ -29,7 +30,30 @@ class Rule000 extends LeaveBaseClass
 
         return $query;
     }
-    
+
+    public function shouldAddNew()
+    {
+        $ret = false;
+
+        //dump($this->employeeObj->eligibilities);
+        if (sizeof($this->employeeObj->eligibilities) == 0) {
+            $ret = true;
+        } else {
+            foreach($this->employeeObj->eligibilities as $eligibility) {
+                if ($eligibility->pivot->start_date <= $this->workYearStart &&
+                    $eligibility->pivot->end_date >= $this->workYearEnd) {
+                        $ret = false;
+
+                } else {
+                    $ret = true;
+                }
+                break;
+            }
+        }
+
+        return $ret;
+    }
+
     public function getEligibilityValue()
     {
         $this->getEmployeeEligibilityDates();
@@ -66,12 +90,13 @@ class Rule000 extends LeaveBaseClass
                 $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->date_joined);
                 $carbonLeaveStartDate = Carbon::parse($leaveStartDate);
 
-                $carbonP = CarbonPeriod($leaveStartDate, '1 month', $this->workYearEnd);
+                $carbonP = CarbonPeriod::create($leaveStartDate, '1 month', $this->workYearEnd);
                 foreach($carbonP as $key => $date) {
                     $carbonDStart = $date->copy()->startOfMonth();
                     $carbonDEnd = $carbonDStart->copy()->endOfMonth();
-                    $this->retCollection[] = ["start_date" => $carbonDStart->toDateString(), 
-                                              "end_date" => $carbonDEnd->toDateString()];
+                    $this->ret["start_date"] = $carbonDStart->toDateString();
+                    $this->ret["end_date"] = $carbonDEnd->toDateString();
+                    $this->retCollection[] = $this->ret;
                 }
             break;
         }
