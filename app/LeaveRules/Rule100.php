@@ -32,7 +32,19 @@ class Rule100 extends LeaveBaseClass
 
     public function shouldAddNew()
     {
-        $ret = false;
+        $ret = true;
+
+        if (sizeof($this->employeeObj->eligibilities) == 0) {
+            $ret = true;
+        } else {
+            foreach($this->employeeObj->eligibilities as $eligibility) {
+                if ($this->workYearStart >= $eligibility->pivot->start_date &&
+                    $this->workYearStart <= $eligibility->pivot->end_date ) {
+                        $ret = false;
+                        break;
+                }
+            }
+        }
 
         return $ret;
     }
