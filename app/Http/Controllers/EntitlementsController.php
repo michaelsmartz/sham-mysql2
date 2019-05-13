@@ -14,6 +14,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class EntitlementsController extends CustomController
@@ -39,6 +40,15 @@ class EntitlementsController extends CustomController
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
         $employee_name = $request->get('full_name', null);
 
+        // get the employee
+        $employee = Employee::find($employee_id);
+
+        if (empty($employee)) {
+            return View('not-allowed')
+                ->with('title', 'Entitlements')
+                ->with('warnings', array('Please check whether your profile is associated to an employee!'));
+        }
+
         if(!empty($employee_name)){
             $request->merge(['full_name' => '%'.$employee_name.'%']);
         }
@@ -57,35 +67,7 @@ class EntitlementsController extends CustomController
 
         //Display only employee entitlements for current year
         try {
-            if (!is_null($employee_id_entitlement_search) && is_null($valid_until)) {
-                $entitlements = Employee::with(['eligibilities'=> function ($query){
-                        $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?',[date('Y')]);
-                    }])
-                    ->where(['id' => $employee_id_entitlement_search])
-                    ->filtered()->paginate(10);
-            }
-            elseif (is_null($employee_id_entitlement_search) && !is_null($valid_until)){
-                $entitlements = Employee::with(['eligibilities'=> function ($query) use($valid_until){
-                    $query->whereRaw('`eligibility_employee`.`end_date` >= ?',[$valid_until]);
-                }])
-                    ->where(['id' => $employee_id])
-                    ->filtered()->paginate(10);
-            }
-            elseif (!is_null($employee_id_entitlement_search) && !is_null($valid_until)){
-                $entitlements = Employee::with(['eligibilities'=> function ($query) use($valid_until){
-                    $query->whereRaw('`eligibility_employee`.`end_date` >= ?',[$valid_until]);
-                }])
-                    ->where(['id' => $employee_id_entitlement_search])
-                    ->filtered()->paginate(10);
-            }
-            else {
-                $entitlements = Employee::with(['eligibilities' => function ($query) {
-                    $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?', [date('Y')]);
-                }])
-                    ->where(['id' => $employee_id])
-                    ->filtered()->paginate(10);
-            }
-
+            $entitlements = $this->getEntitlements($employee_id_entitlement_search, $valid_until, $employee_id);
 
             //find if connected employee is a manager to display button search other employee's entitlements
             $current_employee = Employee::with('jobTitle')
@@ -109,6 +91,38 @@ class EntitlementsController extends CustomController
 
         return view('entitlements.index',
             compact('entitlements', 'selected_employee', 'current_employee', 'employees', 'allowedActions'));
+    }
+
+    private function getEntitlements($employee_id_entitlement_search, $valid_until, $employee_id){
+        if (!is_null($employee_id_entitlement_search) && is_null($valid_until)) {
+            $entitlements = Employee::with(['eligibilities'=> function ($query){
+                $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?',[date('Y')]);
+            }])
+                ->where(['id' => $employee_id_entitlement_search])
+                ->filtered()->paginate(10);
+        }
+        elseif (is_null($employee_id_entitlement_search) && !is_null($valid_until)){
+            $entitlements = Employee::with(['eligibilities'=> function ($query) use($valid_until){
+                $query->whereRaw('`eligibility_employee`.`end_date` >= ?',[$valid_until]);
+            }])
+                ->where(['id' => $employee_id])
+                ->filtered()->paginate(10);
+        }
+        elseif (!is_null($employee_id_entitlement_search) && !is_null($valid_until)){
+            $entitlements = Employee::with(['eligibilities'=> function ($query) use($valid_until){
+                $query->whereRaw('`eligibility_employee`.`end_date` >= ?',[$valid_until]);
+            }])
+                ->where(['id' => $employee_id_entitlement_search])
+                ->filtered()->paginate(10);
+        }
+        else {
+            $entitlements = Employee::with(['eligibilities' => function ($query) {
+                $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?', [date('Y')]);
+            }])
+                ->where(['id' => $employee_id])
+                ->filtered()->paginate(10);
+        }
+        return $entitlements;
     }
 
     /**
@@ -154,6 +168,8 @@ class EntitlementsController extends CustomController
         try{
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : null;
 
+            Session::put('redirectsTo', \URL::previous());
+
             $data = null;
             $id = Route::current()->parameter('entitlement');
             if(!empty($id)) {
@@ -163,12 +179,9 @@ class EntitlementsController extends CustomController
                 $leave_policies = AbsenceType::pluck('description', 'id');
             }
 
-//            dump($data->employee_id);
-//            dd($employee_id);
-
             if($request->ajax()) {
                 $view = view('entitlements.edit',
-                    compact('data','leave_policies', 'employee_id'))
+                    compact('data','leave_policies', 'employee_id', 'employee_id_entitlement_search', 'valid_until'))
                     ->renderSections();
 
                 return response()->json([
@@ -182,7 +195,7 @@ class EntitlementsController extends CustomController
            dd($exception->getMessage());
         }
 
-        return view('entitlements.edit', compact('data','leave_policies', 'employee_id'));
+        return view('entitlements.edit', compact('data','leave_policies', 'employee_id', 'employee_id_entitlement_search', 'valid_until'));
     }
 
     /**
@@ -205,7 +218,8 @@ class EntitlementsController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route('entitlements.index');
+       // return redirect()->route('entitlements.index');
+        return redirect(Session::get('redirectsTo'));
     }
 
     /**

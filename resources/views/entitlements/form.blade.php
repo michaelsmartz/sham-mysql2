@@ -27,13 +27,13 @@
 
 <div class="form-group col-xs-6 {{ $errors->has('total') ? 'has-error' : '' }}">
     <label for="total">Total</label>
-        <input class="form-control" name="total" type="number" id="total" {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ?'disabled':'' !!} value="{{ old('total', optional($entitlement)->total) }}" placeholder="Enter total here..." required="true">
+        <input class="form-control" name="total" type="number" id="total" min="0" {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ?'disabled':'' !!} value="{{ old('total', optional($entitlement)->total) }}" placeholder="Enter total here..." required="true">
         {!! $errors->first('total', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group col-xs-6 {{ $errors->has('taken') ? 'has-error' : '' }}">
     <label for="taken">Taken</label>
-        <input class="form-control" name="taken" type="number" id="taken"  {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ?'disabled':'' !!} value="{{ old('taken', optional($entitlement)->taken) }}" minlength="1" placeholder="Enter taken here...">
+        <input class="form-control" name="taken" type="number" id="taken" min="0" {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ?'disabled':'' !!} value="{{ old('taken', optional($entitlement)->taken) }}" placeholder="Enter taken here..."  required="true">
         {!! $errors->first('taken', '<p class="help-block">:message</p>') !!}
 </div>
 

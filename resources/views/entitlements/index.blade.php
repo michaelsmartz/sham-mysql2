@@ -9,12 +9,12 @@
        <div id="table-container">
            @if(!is_null($current_employee) && optional($current_employee->jobTitle)->is_manager)
            <div class="form-group col-xs-6">
-               <div class="h4 text-info">List of entitlement until and after selected date</div>
-               <div class="text-info">NOTE: If no date and no employee dropdown selected, table will list entitlements for the login employee</div>
+               <div class="h4 text-info">List of entitlements until and after selected date</div>
                <div class="text-danger">NOTE:</div>
-               <div class="text-danger">1. If only date selected search will display entitlements for current employee that is login</div>
+               <div class="text-danger">1. If no date and no employee selected, table will list entitlements for the current associated employee</div>
+               <div class="text-danger">2. If only date selected, search will display entitlements for current associated employee</div>
                <div class="text-danger">for that particular date</div>
-               <div class="text-danger">2. If date and dropdown employee selected search will display entitlements for selected employee</div>
+               <div class="text-danger">3. If date and employee selected, search will display entitlements for selected employee</div>
                <div class="text-danger">for that particular date</div>
            </div>
            <form class="search_employee_entitlements" action="{{ route('entitlements.index') }}">
@@ -77,7 +77,7 @@
                                <td data-html2canvas-ignore="true">
                                    <div class="btn-group btn-group-xs" role="group">
                                        @if($allowedActions->contains('Write'))
-                                           <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$absenceType->pivot->id}}', event)">
+                                           <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$absenceType->pivot->id}}',event)">
                                                <i class="glyphicon glyphicon-edit text-primary"></i>
                                            </a>
                                        @endif

@@ -8,8 +8,7 @@ final class LeaveEmployeeGainEligibilityType extends Enum
 {
     
     const first_working_day = 0;
-    const probation_start = 1;
-    const probation_end = 2;
+    const probation_end = 1;
 
     /**
      * Get the description for an enum value
@@ -23,9 +22,6 @@ final class LeaveEmployeeGainEligibilityType extends Enum
         switch ($value) {
             case self::first_working_day:
                 return 'From the first day at work';
-                break;
-            case self::probation_start:
-                return 'When probation starts';
                 break;
             case self::probation_end:
                 return 'After probation period';

@@ -73,7 +73,7 @@ end of probation period">
     </div>
 
     <div class="form-group col-xs-6 {{ $errors->has('eligibility_ends') ? 'has-error' : '' }}">
-        <label for="eligibility_ends">Employee Gains Eligibility
+        <label for="eligibility_ends">Employee Loses Eligibility
             <span >
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="left"
                data-wenk="Is the day when the employee is
@@ -102,13 +102,13 @@ date following the end of probation period">
     </div>
 
     <div class="form-group col-xs-12" style="margin-bottom: 0px;!important;">
-        <div class="col-xs-3 center-block text-center" style="margin-top: 15px;">Employee earns</div>
-        <div class="form-group col-xs-4 {{ $errors->has('amount_earns') ? 'has-error' : '' }}" style="margin-top: 10px;">
+        <div class="col-xs-3" style="margin-top: 15px;  padding-left: 0;">Employee earns</div>
+        <div class="form-group col-xs-3 {{ $errors->has('amount_earns') ? 'has-error' : '' }}" style="margin-top: 10px;">
 
-            <input class="form-control" name="amount_earns" type="text" id="amount_earns" value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}" placeholder="Enter amount earns" required="true">
+            <input class="form-control" name="amount_earns" type="number" id="amount_earns" min="0" style="" value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}" placeholder="Enter amount earns" required="true">
             {!! $errors->first('amount_earns', '<p class="help-block">:message</p>') !!}
         </div>
-        <div class="col-xs-4 center-block text-center" style="margin-top: 15px;">{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!} when the period begins</div>
+        <div class="col-xs-6" style="margin-top: 15px;">{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!} when the period begins</div class="col-xs-4 center-block text-center">
     </div>
 
     <div class="form-group col-xs-12 {{ $errors->has('accrue_period') ? 'has-error' : '' }}">
@@ -145,7 +145,15 @@ over more than a year.">
     </div>
 
     <div class="form-group col-xs-12">
-        <label for="jobTitles">Apply To</label>
+        <label for="jobTitles">Apply To
+            <span>
+            <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
+               data-wenk="If no employee selected it
+
+will apply to all employee">
+            </i>
+            </span>
+        </label>
         {!! Form::select('jobTitles[]', $jobTitles,
             old('jobTitles', isset($absenceTypeJobTitles) ? $absenceTypeJobTitles : null),
             ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
