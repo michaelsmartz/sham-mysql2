@@ -11,6 +11,11 @@ class LeaveBaseClass
     protected $workYearStart;
     protected $workYearEnd;
     protected $absenceTypeObj;
+    protected $carbonWorkYearStart;
+    protected $carbonWorkYearEnd;
+    protected $carbonWorkYearStartBeginOfMonth; // not necessarily defined as 1st January
+    protected $carbonFirstDayCurrentMonth;
+    protected $carbonLastDayCurrentMonth;
 
     public function __construct($employeeObj, $absenceTypeObj, $workYearStart, $workYearEnd)
     {
@@ -18,6 +23,12 @@ class LeaveBaseClass
         $this->workYearStart = $workYearStart;
         $this->workYearEnd = $workYearEnd;
         $this->absenceTypeObj = $absenceTypeObj;
+
+        $this->carbonWorkYearStart = Carbon::parse($this->workYearStart);
+        $this->carbonWorkYearEnd = Carbon::parse($this->workYearEnd);
+        $this->carbonFirstDayCurrentMonth = Carbon::today()->startOfMonth();
+        $this->carbonLastDayCurrentMonth = $this->carbonFirstDayCurrentMonth->copy()->endOfMonth();
+
     }
 
     protected function checkIfEmployeeHasAbsenceType($start_date, $end_date)
@@ -36,6 +47,16 @@ class LeaveBaseClass
         }
     }
 
+    protected function getEmployeeLeaveStartDate($startDate){
+
+        if( $this->workYearStart >= $startDate){
+            return $this->workYearStart;
+        }
+        else{
+            return $startDate;
+        }
+
+    }
 
 
 }

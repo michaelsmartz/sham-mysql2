@@ -419,5 +419,9 @@
         "model-name": "AbsenceType",
         "resource-file": "absence_types.json",
         "table-name": "absence_types"
+    },
+    {
+        "model-name": "Entitlement",
+        "resource-file": "entitlements.json"
     }
 ]

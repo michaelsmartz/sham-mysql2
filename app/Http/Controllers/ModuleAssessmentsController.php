@@ -270,7 +270,7 @@ class ModuleAssessmentsController extends CustomController
             }
             
             $context->data = json_encode($formDataJson);
-            $employeeId = intval(optional(\Auth::user())->employee_id);
+            $employeeId = (\Auth::check()) ? \Auth::user()->employee_id : 0;
             $context->trainer_id = $employeeId;
 
             $context->save();

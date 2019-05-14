@@ -256,6 +256,7 @@ Auth::routes();
 
         #region Leaves
             Route::resource('absence_types', 'AbsenceTypesController');
+            Route::resource('entitlements', 'EntitlementsController');
         #endregion
     });
 #endregion

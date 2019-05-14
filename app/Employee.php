@@ -9,6 +9,8 @@ use Plank\Mediable\Mediable;
 use Jedrzej\Searchable\Constraint;
 use App\Traits\MyAuditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use San4io\EloquentFilter\Filters\LikeFilter;
+use San4io\EloquentFilter\Filters\WhereFilter;
 
 class Employee extends Model implements AuditableContract
 {
@@ -62,6 +64,12 @@ class Employee extends Model implements AuditableContract
         'deleted', 'restored'
     ];
     protected $auditRelatedProperties = ['mobilePhone', 'homePhone', 'workPhone'];
+
+    protected $filterable = [
+        'full_name' => LikeFilter::class,
+        'is_manually_adjusted' => WhereFilter::class,
+    ];
+
 
     public static function boot()
     {
@@ -262,9 +270,8 @@ class Employee extends Model implements AuditableContract
     public function eligibilities()
     {
         return $this->belongsToMany('App\AbsenceType', 'eligibility_employee')
-                    ->withPivot('start_date', 'end_date', 'total', 'taken', 'is_manually_adjusted','id');
+            ->withPivot('start_date', 'end_date', 'total', 'taken', 'is_manually_adjusted','id');
     }
-
     public function absences()
     {
         return $this->belongsToMany(AbsenceType::class, 'absence_type_employee')->withPivot('starts_at', 'ends_at', 'status', 'approved_by_employee_id');

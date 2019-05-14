@@ -74,6 +74,7 @@ ADD COLUMN `probation_end_date` DATE NULL AFTER `deleted_at`;
 
 INSERT INTO `system_modules` (`description`, `is_active`) VALUES ('Leave', '1');
 INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Absence Types', '14', '1');
+INSERT INTO `system_sub_modules` (`description`, `system_module_id`, `is_active`) VALUES ('Entitlements', '14', '1');
 
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '134');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '134');
@@ -81,5 +82,18 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '134');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '134');
 
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '135');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '135');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '135');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '135');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '135');
+
 ALTER TABLE `eligibility_employee`
 	ADD INDEX `IXELIGIBILITY_EMPLOYEE_START_END` (`start_date`, `end_date`);
+
+ALTER TABLE `absence_types`
+	CHANGE COLUMN `amount_earns` `amount_earns` DECIMAL(4,2) NULL DEFAULT NULL COMMENT 'either days or hours' AFTER `eligibility_ends`;
+
+ALTER TABLE `eligibility_employee`
+	CHANGE COLUMN `total` `total` DECIMAL(4,2) NULL DEFAULT '0' AFTER `end_date`,
+	CHANGE COLUMN `taken` `taken` DECIMAL(4,2) NULL DEFAULT '0' AFTER `total`;	
