@@ -185,6 +185,13 @@ Auth::routes();
             Route::resource('course_training_sessions', 'CourseTrainingSessionsController' );
         #endregion
 
+        #region Absences and leaves
+        Route::resource('leaves', 'EmployeeLeavesController' );
+        Route::get('/leaves/create/{leave_id}/{leave_desc}', 'EmployeeLeavesController@create');
+        Route::get('/leaves/status/{leave_id}/{status}', 'EmployeeLeavesController@changeStatus');
+        Route::post('/leaves/filter', 'EmployeeLeavesController@filterLeave')->name('leaves.filter');
+        #endregion
+
         #region Quality
             Route::any('assessments/assessment/{assessment}/clone', 'AssessmentsController@clone')->name('assessment.clone');
             Route::get('assessments/assessment/{assessment}/cloneForm', 'AssessmentsController@cloneForm')->name('assessments.clone-assessment-form');

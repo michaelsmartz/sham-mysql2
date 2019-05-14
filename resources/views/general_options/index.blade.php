@@ -35,7 +35,7 @@
         <label class="control-label">Working Year End</label>
         <div class="">
                    <span class="field">
-                        {!! Form::text('working_year_end', old('date_joined', $working_year_end), ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'Working Year End', 'id'=>'working_year_end']) !!}
+                        {!! Form::text('working_year_end', old('date_joined', $working_year_end), ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'Working Year End', 'id'=>'working_year_end','data-max-date'=> $working_year_end]) !!}
                     </span>
         </div>
     </div>

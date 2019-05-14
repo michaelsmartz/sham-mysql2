@@ -63,12 +63,11 @@ class SSPController extends CustomController
 
         $allowedActionsAnnouncements = getAllowedActions(SystemSubModule::CONST_ANNOUNCEMENTS);
         $allowedActionsAssets = getAllowedActions(SystemSubModule::CONST_ASSETS_MANAGEMENT);
-        $leaves = $this->getEmployeeLeaves($employee_id);
 
 
         // load the view and pass the parameters
         return view($this->baseViewPath .'.index',
-            compact('warnings', 'announcements', 'assets','workingHours', 'allowedActionsAssets', 'allowedActionsAnnouncements','leaves'));
+            compact('warnings', 'announcements', 'assets','workingHours', 'allowedActionsAssets', 'allowedActionsAnnouncements'));
     }
 
     private function getWorkingHours($employee){
@@ -216,21 +215,5 @@ class SSPController extends CustomController
         return $assets;
     }
 
-
-    private function getEmployeeLeaves($employee_id){
-
-        $employee_leave= DB::select(
-            "SELECT abs.description as absence_description,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status,CONCAT(emp.first_name,\" \",emp.surname) as validator
-            FROM absence_type_employee abe
-            LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
-            LEFT JOIN eligibility_employee ele ON ele.absence_type_id =abs.id
-            LEFT JOIN employees emp ON abe.approved_by_employee_id = emp.id
-            WHERE abe.employee_id = $employee_id;"
-        );
-
-        return $employee_leave;
-
-
-    }
 }
 

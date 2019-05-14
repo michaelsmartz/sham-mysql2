@@ -42,6 +42,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Redirect;
 
@@ -694,4 +695,11 @@ class EmployeesController extends CustomController
         $employee = Employee::select(['id','department_id'])->find($id);
         return Response()->json($employee);
     }
+
+
+    public static function getManagerEmployees($manager_id){
+        $employees_ids  = DB::table('employees')->select('id','first_name','surname')->where('line_manager_id', $manager_id)->get();
+        return $employees_ids;
+    }
+
 }
