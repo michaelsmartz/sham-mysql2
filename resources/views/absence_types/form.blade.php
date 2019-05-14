@@ -2,7 +2,10 @@
 
 <div class="form-group col-xs-12 {{ $errors->has('description') ? 'has-error' : '' }}">
     <label for="description">Description</label>
-    <input class="form-control" name="description" type="text" id="description" value="{{ old('description', optional($absenceType)->description) }}" minlength="1" maxlength="100" required="true" placeholder="Enter description">
+    <input class="form-control" name="description" type="text" id="description" value="{{ old('description', optional($absenceType)->description) }}"
+           minlength="1" maxlength="100" required="true" placeholder="Enter description"
+           pattern = '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$'
+    >
     {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
 </div>
 
@@ -62,7 +65,6 @@ end of probation period">
             </span>
         </label>
         <select class="form-control" id="eligibility_begins" name="eligibility_begins" required="true">
-            <option value="" style="display: none;" {{ old('eligibility_begins', optional($absenceType)->eligibility_begins ?: '') == '' ? 'selected' : '' }} disabled selected>Select Start Of Eligibility</option>
             @foreach ($start_eligibilities as $key => $start_eligibility)
                 <option value="{{ $key }}" {{ old('eligibility_begins', optional($absenceType)->eligibility_begins) == $key ? 'selected' : '' }}>
                     {{ $start_eligibility }}
@@ -91,9 +93,8 @@ date following the end of probation period">
             </span>
         </label>
         <select class="form-control" id="eligibility_ends" name="eligibility_ends" required="true">
-            <option value="" style="display: none;" {{ old('eligibility_ends', optional($absenceType)->eligibility_ends ?: '') == '' ? 'selected' : '' }} disabled selected>Select End Of Eligibility</option>
             @foreach ($end_eligibilities as $key => $end_eligibility)
-                <option value="{{ $key }}" {{ old('eligibility_ends', optional($absenceType)->eligibility_ends) == $key ? 'selected' : '' }}>
+                <option value="{{ $key }}" {{ old('eligibility_ends', optional($absenceType)->eligibility_ends) == $key ? 'selected' : '' }}  {{($hideEndProbation)?"hidden=true":""}}>
                     {{ $end_eligibility }}
                 </option>
             @endforeach
@@ -102,16 +103,18 @@ date following the end of probation period">
     </div>
 
     <div class="form-group col-xs-12" style="margin-bottom: 0px;!important;">
-        <div class="col-xs-3" style="margin-top: 15px;  padding-left: 0;">Employee earns</div>
-        <div class="form-group col-xs-3 {{ $errors->has('amount_earns') ? 'has-error' : '' }}" style="margin-top: 10px;">
+        <div class="col-xs-4" style="margin-top: 15px;  padding-left: 0;padding-right: 0;">Employee earns a <b>total</b> of</div>
+        <div class="form-group col-xs-2 {{ $errors->has('amount_earns') ? 'has-error' : '' }}" style="margin-top: 10px;padding-left: 0;">
 
-            <input class="form-control" name="amount_earns" type="number" id="amount_earns" min="0" style="" value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}" placeholder="Enter amount earns" required="true">
+            <input class="form-control" name="amount_earns" type="number" id="amount_earns" min="0" style="" value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}" placeholder="Enter amount earns" required="true" pattern="[0-9]*" onkeypress="return validateDigitQty(event)">
             {!! $errors->first('amount_earns', '<p class="help-block">:message</p>') !!}
         </div>
-        <div class="col-xs-6" style="margin-top: 15px;">{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!} when the period begins</div class="col-xs-4 center-block text-center">
+        <div class="col-xs-6" style="margin-top: 15px;"><b>{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!}</b> at the start of accrue period below</div>
     </div>
 
-    <div class="form-group col-xs-12 {{ $errors->has('accrue_period') ? 'has-error' : '' }}">
+    <div id="accrue_period"
+         class="form-group col-xs-12
+                {{ $errors->has('accrue_period') ? 'has-error' : '' }}" {{($hideAccrue)?"hidden=true":""}}>
         <label for="accrue_period">Accrue Period
             <span>
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
@@ -144,7 +147,7 @@ over more than a year.">
         {!! $errors->first('accrue_period', '<p class="help-block">:message</p>') !!}
     </div>
 
-    <div class="form-group col-xs-12">
+    <div class="form-group col-xs-12 job_titles">
         <label for="jobTitles">Apply To
             <span>
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
@@ -160,15 +163,4 @@ will apply to all employee">
         ) !!}
     </div>
 @endif
-
 </div>
-
-@section('post-body')
-    <link href="{{URL::to('/')}}/plugins/sumoselect/sumoselect.css" rel="stylesheet">
-    <script src="{{URL::to('/')}}/plugins/sumoselect/jquery.sumoselect.min.js"></script>
-    <script>
-        $('document').ready(function() {
-            $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
-        });
-    </script>
-@endsection

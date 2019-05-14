@@ -125,6 +125,22 @@ class AbsenceTypesController extends CustomController
             $duration_units = LeaveDurationUnitType::ddList();
             $start_eligibilities = LeaveEmployeeGainEligibilityType::ddList();
             $end_eligibilities = LeaveEmployeeLossEligibilityType::ddList();
+
+            if(isset($data->eligibility_ends) && !is_null($data->eligibility_ends)
+                && $data->eligibility_ends === 1
+            )
+                $hideAccrue = true;
+            else
+                $hideAccrue = false;
+
+
+            if(isset($data->eligibility_begins) && !is_null($data->eligibility_begins)
+                && $data->eligibility_begins === 1
+            )
+                $hideEndProbation = true;
+            else
+                $hideEndProbation = false;
+
             $accrue_periods = LeaveAccruePeriodType::ddList();
             $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
 
@@ -133,7 +149,7 @@ class AbsenceTypesController extends CustomController
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit',
-                compact('data', 'absenceTypeJobTitles', 'jobTitles', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'))
+                compact('data', 'absenceTypeJobTitles', 'jobTitles', 'hideAccrue', 'hideEndProbation', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'))
                     ->renderSections();
 
             return response()->json([
@@ -145,7 +161,7 @@ class AbsenceTypesController extends CustomController
         }
 
         return view($this->baseViewPath . '.edit',
-            compact('data', 'absenceTypeJobTitles', 'jobTitles', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'));
+            compact('data', 'absenceTypeJobTitles', 'jobTitles', 'hideAccrue', 'hideEndProbation', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'));
     }
 
     /**
@@ -189,10 +205,15 @@ class AbsenceTypesController extends CustomController
         if ($id == null) { // Create
             $this->contextObj->addData($input);
         } else { // Update
+            //case when employee losses equals to "When probation ends" set Accrue_period to 0 (default 12 months)
+            if(!is_null($input['eligibility_ends']) && $input['eligibility_ends'] == 1){
+                $input['accrue_period'] = "0";
+            }
             $this->contextObj->updateData($id, $input);
             $data = AbsenceType::find($id);
             $data->jobTitles()->sync($jobTitles);
         }
+
     }
 
     /**

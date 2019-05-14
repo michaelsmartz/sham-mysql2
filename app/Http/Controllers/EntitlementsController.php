@@ -181,7 +181,7 @@ class EntitlementsController extends CustomController
 
             if($request->ajax()) {
                 $view = view('entitlements.edit',
-                    compact('data','leave_policies', 'employee_id', 'employee_id_entitlement_search', 'valid_until'))
+                    compact('data','leave_policies', 'employee_id'))
                     ->renderSections();
 
                 return response()->json([
@@ -195,7 +195,7 @@ class EntitlementsController extends CustomController
            dd($exception->getMessage());
         }
 
-        return view('entitlements.edit', compact('data','leave_policies', 'employee_id', 'employee_id_entitlement_search', 'valid_until'));
+        return view('entitlements.edit', compact('data','leave_policies', 'employee_id'));
     }
 
     /**

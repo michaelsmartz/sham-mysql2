@@ -61,6 +61,7 @@ mix.js('resources/assets/js/parsley.js', 'public/js');
 mix.js('resources/assets/js/recruitment.js', 'public/js');
 mix.js('resources/assets/js/recruitment-request.js', 'public/js');
 mix.js('resources/assets/js/candidates.js', 'public/js');
+mix.js('resources/assets/js/absence_type.js', 'public/js');
 mix.js('resources/assets/js/vue-component-test.js', 'public/js');
 mix.js('resources/assets/js/tinymce.js', 'public/js');
 mix.js('resources/assets/js/app2.js', 'public/js');
@@ -119,6 +120,7 @@ mix.minify('public/js/uploader.js');
 mix.minify('public/js/recruitment.js');
 mix.minify('public/js/recruitment-request.js');
 mix.minify('public/js/candidates.js');
+mix.minify('public/js/absence_type.js');
 //mix.minify('public/js/vue-component-test.js');
 mix.minify('public/js/tinymce.js');
 
@@ -154,6 +156,7 @@ mix.then(() => {
     minifier.minify('public/js/recruitment.js');
     minifier.minify('public/js/recruitment-request.js');
     minifier.minify('public/js/candidates.js');
+    minifier.minify('public/js/absence_type.js');
     minifier.minify('public/js/app2.js');
     //minifier.minify('public/js/vue-component-test.js');
 

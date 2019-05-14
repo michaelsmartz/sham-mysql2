@@ -87,7 +87,7 @@
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
                                     @if($allowedActions->contains('Write'))
-                                        <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" onclick="editForm('{{$absenceType->id}}', event)">
+                                        <a href="#light-modal" data-wenk="Edit" class="b-n b-n-r bg-transparent item-edit" id="absence_type" onclick="editForm('{{$absenceType->id}}', event)">
                                             <i class="glyphicon glyphicon-edit text-primary"></i>
                                         </a>
                                     @endif
@@ -111,4 +111,16 @@
             @endcomponent
         </div>
     </div>
+@endsection
+
+@section('post-body')
+    <link href="{{URL::to('/')}}/plugins/sumoselect/sumoselect.css" rel="stylesheet">
+    <script src="{{URL::to('/')}}/js/parsley.min.js"></script>
+    <script src="{{URL::to('/')}}/plugins/sumoselect/jquery.sumoselect.min.js"></script>
+    <script>
+        $('document').ready(function() {
+            $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
+        });
+    </script>
+    <script src="{{URL::to('/')}}/js/absence_type.min.js"></script>
 @endsection
