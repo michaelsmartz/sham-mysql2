@@ -60,39 +60,4 @@ class GeneralOptionsController extends Controller
 
 
 
-//        $validator = Validator::make($request->all(),[
-//            'working_year_start' => 'required',
-//            'working_year_end'   => 'required',
-//        ]);
-//        $errors = array();
-//
-//        if($request->input('working_year_end') <= $request->input('working_year_start')){
-//            $validator->errors()->add('working_year_start','Working Year End must be greater than Working Year Start');
-//        }
-//
-//
-//
-//
-//        if($year_diff !== 1){
-//            $validator->errors()->add('working_year_start','Working Year End and Working Year Start must be 1 year inclusive');
-//        }
-//
-//
-//        $this->validate(request(), [
-//            'greater_end_date' => [function ($attribute, $value, $fail) {
-//                if ($value <= 10) {
-//                    $fail('Working Year End must be greater than Working Year Start');
-//                }
-//            }],
-//            'one_year_interval' => [function ($attribute, $value, $fail) {
-//                $interval = date_diff(date_create($request->input('working_year_start')), date_create($request->input('working_year_end')));
-//                $year_diff = (int)$interval->format('%y');
-//                if($year_diff !== 1){
-//                    $fail('Working Year End must be greater than Working Year Start');
-//                }
-//            }]
-//        ]);
-//
-
-
 }
