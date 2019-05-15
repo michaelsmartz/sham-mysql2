@@ -702,4 +702,9 @@ class EmployeesController extends CustomController
         return $employees_ids;
     }
 
+    public static function getManagerEmployeeIds($manager_id){
+        $employees_ids  = Employee::where('line_manager_id', $manager_id)->pluck('id')->toArray();
+        return $employees_ids;
+    }
+
 }

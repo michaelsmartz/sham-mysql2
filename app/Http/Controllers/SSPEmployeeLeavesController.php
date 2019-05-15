@@ -35,12 +35,13 @@ class SSPEmployeeLeavesController extends Controller
     public function index()
     {
 
-        $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-        $employees   = EmployeesController::getManagerEmployees($employee_id);
-        $leaves      = $this->getEmployeeLeavesHistory($employee_id);
-        $eligibility = $this->getEmployeeLeavesStatus($employee_id);
+        $employee_id     = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+        $employees       = EmployeesController::getManagerEmployees($employee_id);
+        $leaves          = $this->getEmployeeLeavesHistory($employee_id);
+        $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
+        $pending_request = $this->getPendingRequests($employee_id);
 
-        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees'));
+        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees','pending_request'));
     }
 
     /**
@@ -216,5 +217,22 @@ class SSPEmployeeLeavesController extends Controller
         }
 
         return redirect()->route($this->baseRoute .'.index');
+    }
+
+
+    private function getPendingRequests($manager_id){
+        $employee_ids = EmployeesController::getManagerEmployeeIds($manager_id);
+
+        $sql_request = "SELECT abe.id,abs.description as absence_description,abe.employee_id,CONCAT(emp.first_name,\" \",emp.surname) as employee,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status
+            FROM absence_type_employee abe
+            LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
+            LEFT JOIN eligibility_employee ele ON ele.absence_type_id =abs.id
+            LEFT JOIN employees emp ON abe.approved_by_employee_id = emp.id
+            WHERE abe.employee_id IN (".implode(',',$employee_ids).") AND abe.status =".LeaveStatusType::status_pending."
+            ORDER BY abe.starts_at DESC;";
+
+        $pending_requests = DB::select($sql_request);
+
+        return $pending_requests;
     }
 }
