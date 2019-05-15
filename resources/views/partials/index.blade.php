@@ -129,6 +129,17 @@
                loadUrl(route + 'create');
             };
 
+            window.addFormType = function(event,type_id,desc, baseUrl) {
+                var route;
+                if (baseUrl === void 0) {
+                    route = '<?php echo e(url()->current()); ?>/';
+                } else {
+                    route = '<?php echo e(URL::to('/')); ?>/' + baseUrl + '/';
+                }
+
+                loadUrl(route + 'create/'+ type_id +'/'+ desc);
+            };
+
 
             window.editFormAssessment = function(id, event, emp_id) {
                 var route;
