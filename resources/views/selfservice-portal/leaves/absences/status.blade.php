@@ -2,7 +2,7 @@
     @foreach($eligibility as $eligible)
         <div class="col-md-2 chart-container">
             <div class="leave-label"><h4>{{$eligible->absence_description}}</h4></div>
-            <canvas id="progress_leave_{{$eligible->id}}" width="400" height="400">{{number_format($eligible->remaining, 1)}}/{{number_format($eligible->total, 1)}}</canvas>
+            <canvas id="progress_leave_{{$eligible->id}}" width="400" height="400"></canvas>
             {{--                <div class="pie_progress" role="progressbar" data-goal="{{($eligible->remaining/$eligible->total)*100}}">--}}
             {{--                    <div class="pie_progress__number">{{number_format($eligible->remaining, 1)}}/{{number_format($eligible->total, 1)}}</div>--}}
             {{--                    <div class="pie_progress__label"><b>{{$eligible->absence_description}}</b></div>--}}

@@ -127,7 +127,7 @@ class SSPEmployeeLeavesController extends Controller
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->route($this->baseRoute .'.index');
     }
 
 
