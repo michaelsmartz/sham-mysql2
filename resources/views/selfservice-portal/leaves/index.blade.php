@@ -7,19 +7,19 @@
         <div class="row">
             <div class="col-sm-@if(count($employees)>0)8 @else 12 @endif">
                 <div class="row">
-                    @include('leaves.absences.status')
+                    @include('selfservice-portal.leaves.absences.status')
                 </div>
                 <br>
                 <div class="row panel">
                     <br>
-                    @include('leaves.absences.absence')
+                    @include('selfservice-portal.leaves.absences.absence')
                 </div>
 
                 <br>
             </div>
             @if(count($employees)>0)
                 <div class="col-sm-4">
-                    @include('leaves.absences.notification')
+                    @include('selfservice-portal.leaves.absences.notification')
                 </div>
             @endif
         </div>

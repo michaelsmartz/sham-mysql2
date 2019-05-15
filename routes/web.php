@@ -186,10 +186,10 @@ Auth::routes();
         #endregion
 
         #region Absences and leaves
-        Route::resource('leaves', 'EmployeeLeavesController' );
-        Route::get('/leaves/create/{leave_id}/{leave_desc}', 'EmployeeLeavesController@create');
-        Route::get('/leaves/status/{leave_id}/{status}', 'EmployeeLeavesController@changeStatus');
-        Route::post('/leaves/filter', 'EmployeeLeavesController@filterLeave')->name('leaves.filter');
+        Route::resource('leaves', 'SSPEmployeeLeavesController' );
+        Route::get('/leaves/create/{leave_id}/{leave_desc}', 'SSPEmployeeLeavesController@create');
+        Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
+        Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
         #endregion
 
         #region Quality

@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use App\EmployeeLeave;
+use App\Enums\LeaveStatusType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use DateInterval;
+use DateTime;
+use DatePeriod;
 
-class EmployeeLeavesController extends Controller
+class SSPEmployeeLeavesController extends Controller
 {
 
     /**
@@ -19,8 +23,9 @@ class EmployeeLeavesController extends Controller
     public function __construct()
     {
         $this->contextObj = new Employee();
-        $this->baseViewPath = 'leaves';
-        $this->baseFlash = "Employee's leave details ";
+        $this->baseViewPath = 'selfservice-portal.leaves';
+        $this->baseRoute = "leaves";
+        $this->baseFlash = "Employee's leave(s) ";
     }
     /**
      * Display a listing of the employee's leaves.
@@ -95,14 +100,28 @@ class EmployeeLeavesController extends Controller
         try {
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
-            $leave_request = new EmployeeLeave();
-            $leave_request->absence_type_id = $request->input('absence_type_id');
-            $leave_request->employee_id = $employee_id;
-            $leave_request->status = 0;
-            $leave_request->starts_at = $request->input('leave_from');
-            $leave_request->ends_at = $request->input('leave_to');
-            $leave_request->save();
+            $start    = (new DateTime($request->input('leave_from')));
+            $end      = (new DateTime($request->input('leave_to')))->modify('next day');;
+            $interval = DateInterval::createFromDateString('1 day');
+            $period   = new DatePeriod($start,$interval, $end);
 
+            foreach ($period as $day) {
+                $curr = $day->format('D');
+
+                // exclude if Saturday or Sunday
+                if ($curr == 'Sat' || $curr == 'Sun') {
+                    continue;
+                }else{
+                    $leave_request = new EmployeeLeave();
+                    $leave_request->absence_type_id = $request->input('absence_type_id');
+                    $leave_request->employee_id = $employee_id;
+                    $leave_request->status = 0;
+                    $leave_request->starts_at = $day->format("Y-m-d h:i");
+                    $leave_request->ends_at = $day->format("Y-m-d h:i");
+                    $leave_request->save();
+                }
+
+            }
             \Session::put('success', $this->baseFlash . 'updated!!');
         } catch (Exception $exception) {
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
@@ -196,6 +215,6 @@ class EmployeeLeavesController extends Controller
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        return redirect()->route($this->baseRoute .'.index');
     }
 }
