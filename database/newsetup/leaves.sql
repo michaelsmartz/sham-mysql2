@@ -103,4 +103,8 @@ ALTER TABLE `absence_types`
 
 ALTER TABLE `eligibility_employee`
 	CHANGE COLUMN `total` `total` DECIMAL(4,2) NULL DEFAULT '0' AFTER `end_date`,
-	CHANGE COLUMN `taken` `taken` DECIMAL(4,2) NULL DEFAULT '0' AFTER `total`;	
+	CHANGE COLUMN `taken` `taken` DECIMAL(4,2) NULL DEFAULT '0' AFTER `total`;
+
+ALTER TABLE `absence_type_employee`
+    CHANGE COLUMN `starts_at` `starts_at` DATETIME NOT NULL ,
+    CHANGE COLUMN `ends_at` `ends_at` DATETIME NOT NULL ;

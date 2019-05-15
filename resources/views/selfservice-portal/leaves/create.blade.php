@@ -11,7 +11,7 @@
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            @include ('leaves.form')
+            @include ('selfservice-portal.leaves.form')
         </div>
     </div>
 @endsection

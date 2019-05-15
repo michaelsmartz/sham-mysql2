@@ -1,6 +1,6 @@
 <section>
     <br>
-    @include('leaves.absences.filter')
+    @include('selfservice-portal.leaves.absences.filter')
     @if(count($leaves)>0)
         <div class="container-fluid panel">
             <legend><i class="glyphicon glyphicon-list"></i>  History</legend>
@@ -20,24 +20,32 @@
                 @foreach($leaves as $leave)
                     <tr class="data-history">
                         <td>{{$leave->absence_description}}</td>
-                        <td>{{$leave->starts_at}}</td>
-                        <td>{{$leave->ends_at}}</td>
+                        <td>{{\Carbon\Carbon::parse($leave->starts_at)->format('Y-m-d H:i')}}</td>
+                        <td>{{\Carbon\Carbon::parse($leave->ends_at)->format('Y-m-d H:i')}}</td>
                         <td class="center">
                             @switch($leave->status)
-                                @case(3)
-                                <span class="badge badge-status badge-secondary">Cancelled</span>
+                                @case(App\Enums\LeaveStatusType::status_cancelled)
+                                <span class="badge badge-status badge-secondary">
+                                    {{App\Enums\LeaveStatusType::getDescription(App\Enums\LeaveStatusType::status_cancelled)}}
+                                </span>
                                 @break
 
-                                @case(2)
-                                <span class="badge badge-status badge-danger">Denied</span>
+                                @case(App\Enums\LeaveStatusType::status_denied)
+                                <span class="badge badge-status badge-danger">
+                                    {{App\Enums\LeaveStatusType::getDescription(App\Enums\LeaveStatusType::status_denied)}}
+                                </span>
                                 @break
 
-                                @case(1)
-                                <span class="badge badge-status badge-success">Approved</span>
+                                @case(App\Enums\LeaveStatusType::status_approved)
+                                <span class="badge badge-status badge-success">
+                                    {{App\Enums\LeaveStatusType::getDescription(App\Enums\LeaveStatusType::status_approved)}}
+                                </span>
                                 @break
 
                                 @default
-                                <span class="badge badge-status badge-warning">Pending</span>
+                                <span class="badge badge-status badge-warning">
+                                    {{App\Enums\LeaveStatusType::getDescription(App\Enums\LeaveStatusType::status_pending)}}
+                                </span>
                             @endswitch
                         </td>
                         <td>{{number_format($leave->taken,1)}}</td>
