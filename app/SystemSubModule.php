@@ -145,6 +145,7 @@ class SystemSubModule extends Model
     const CONST_RECRUITMENT_QUALIFICATIONS= 133;
     const CONST_ABSENCE_TYPES= 134;
     const CONST_ENTITLEMENTS= 135;
+    const CONST_LEAVES= 136;
 
 
     protected $casts = [

@@ -157,7 +157,7 @@ class SSPEmployeeLeavesController extends Controller
         return view($this->baseViewPath .'.edit',compact('leave_type'));
     }
 
-    private function getEmployeeLeavesHistory($employee_id,$date_from = null,$date_to = null){
+    public static function getEmployeeLeavesHistory($employee_id,$date_from = null,$date_to = null){
         $sql_request = "SELECT abe.id,abs.description as absence_description,abe.employee_id,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status,CONCAT(emp.first_name,\" \",emp.surname) as validator
             FROM absence_type_employee abe
             LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
@@ -179,7 +179,7 @@ class SSPEmployeeLeavesController extends Controller
     }
 
 
-    private function getEmployeeLeavesStatus($employee_id){
+    public static function getEmployeeLeavesStatus($employee_id){
 
         $employee_leave= DB::select(
             "SELECT abs.id,abs.description as absence_description,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date
@@ -194,7 +194,7 @@ class SSPEmployeeLeavesController extends Controller
     }
 
 
-    private function getEligibleAbsencesTypes($employee_id){
+    public static function getEligibleAbsencesTypes($employee_id){
         $eligible_leave= DB::select(
             "SELECT abt.id,abt.description,(ele.total - ele.taken) as remaining 
             FROM eligibility_employee ele
