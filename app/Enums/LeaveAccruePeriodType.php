@@ -6,7 +6,7 @@ use BenSampo\Enum\Enum;
 
 final class LeaveAccruePeriodType extends Enum
 {
-    
+    const not_applicable = -1;
     const months_12 = 0;
     const month_1  = 1;
     const months_24 = 2;
@@ -22,6 +22,9 @@ final class LeaveAccruePeriodType extends Enum
     public static function getDescription($value): string
     {
         switch ($value) {
+            case self::not_applicable:
+                return 'Not Applicable';
+                break;
             case self::months_12:
                 return 'Every 12 months';
                 break;

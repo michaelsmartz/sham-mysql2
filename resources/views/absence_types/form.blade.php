@@ -138,6 +138,7 @@ over more than a year.">
         </label>
         <select class="form-control" id="accrue_period" name="accrue_period" required="true">
             <option value="" style="display: none;" {{ old('accrue_period', optional($absenceType)->accrue_period ?: '') == '' ? 'selected' : '' }} disabled selected>Select Accrue Period</option>
+            <option value="{{ -1 }}" {{ old('accrue_period', optional($absenceType)->accrue_period) == -1 ? 'selected' : '' }} hidden="true">{{ $notApplicable }}</option>
             @foreach ($accrue_periods as $key => $accrue_period)
                 <option value="{{ $key }}" {{ old('accrue_period', optional($absenceType)->accrue_period) == $key ? 'selected' : '' }}>
                     {{ $accrue_period }}
