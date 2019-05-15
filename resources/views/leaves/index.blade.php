@@ -8,9 +8,22 @@
     <div class="flex-wrapper">
         <div id="table-container">
             @if(!is_null($current_employee) && optional($current_employee->jobTitle)->is_manager)
+                <div class="form-group col-xs-5">
+                    <div class="h4 text-info">List of leaves from and to selected date</div>
+                    <div class="text-danger">NOTE:</div>
+                    <div class="text-danger">1. If no date and no employee selected, table will list leaves for the current associated employee</div>
+                    <div class="text-danger">2. If only date selected, search will display leaves for current associated employee</div>
+                    <div class="text-danger">for that particular date</div>
+                    <div class="text-danger">3. If date and employee selected, search will display leaves for selected employee</div>
+                    <div class="text-danger">for that particular date</div>
+                </div>
                 <form action="{{ route('history_leaves.index') }}" class="search_employee_leaves">
                     <div class="row">
-                        <div class="form-group col-xs-3">
+                        <div class="form-group col-xs-2">
+                            {!! Form::text('from','', ['class'=>'form-control datepicker', 'autocomplete'=>'off',  'placeholder'=>'From', 'id'=>'from' ]) !!}
+                        </div>
+
+                        <div class="form-group col-xs-3 absence_type">
                             <select class="form-control" id="absence_type" name="absence_type">
                                 <option value="0">Select leave type</option>
                                 @foreach ($eligibility as $leave)
@@ -21,9 +34,6 @@
                             </select>
                         </div>
 
-                        <div class="form-group col-xs-2">
-                            {!! Form::text('from','', ['class'=>'form-control datepicker', 'autocomplete'=>'off',  'placeholder'=>'From', 'id'=>'from' ]) !!}
-                        </div>
                         <div class="form-group col-xs-2">
                             {!! Form::text('to','', ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'To', 'id'=>'to']) !!}
                         </div>

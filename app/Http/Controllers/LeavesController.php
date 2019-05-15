@@ -6,7 +6,7 @@ use App\Employee;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Request;
 
-class HistoryLeavesController extends CustomController
+class LeavesController extends CustomController
 {
 
     /**
@@ -17,8 +17,7 @@ class HistoryLeavesController extends CustomController
     {
         try {
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-            $leaves = EmployeeLeavesController::getEmployeeLeavesHistory($employee_id);
-            $eligibility = EmployeeLeavesController::getEmployeeLeavesStatus($employee_id);
+            $eligibility = SSPEmployeeLeavesController::getEmployeeLeavesStatus($employee_id);
 
             //find if connected employee is a manager to display button search other employee's entitlements
             $current_employee = Employee::with('jobTitle')
@@ -27,6 +26,11 @@ class HistoryLeavesController extends CustomController
 
             //if search button is clicked employee will not be null
             $employee_id_search = $request->get('employee', null);
+
+            $from = $request->get('from', null);
+            $to = $request->get('to', null);
+
+            $leaves = SSPEmployeeLeavesController::getEmployeeLeavesHistory($employee_id, $from, $to);
 
             if (!is_null($employee_id_search))
                 $selected_employee = Employee::where('id', '=', $employee_id_search)->first();
@@ -44,6 +48,6 @@ class HistoryLeavesController extends CustomController
         }catch (\Exception $exception){
             dd($exception->getMessage());
         }
-        return view('history_leaves.index', compact('leaves','eligibility','employees', 'selected_employee', 'current_employee'));
+        return view('leaves.index', compact('leaves','eligibility','employees', 'selected_employee', 'current_employee'));
     }
 }

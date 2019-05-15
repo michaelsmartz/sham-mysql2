@@ -257,7 +257,7 @@ Auth::routes();
         #region Leaves
             Route::resource('absence_types', 'AbsenceTypesController');
             Route::resource('entitlements', 'EntitlementsController');
-            Route::resource('history_leaves', 'HistoryLeavesController', [ 'only' => ['index'] ]);
+            Route::resource('history_leaves', 'LeavesController', [ 'only' => ['index'] ]);
         #endregion
     });
 #endregion
