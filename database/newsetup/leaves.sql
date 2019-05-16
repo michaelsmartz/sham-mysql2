@@ -108,3 +108,17 @@ ALTER TABLE `eligibility_employee`
 ALTER TABLE `absence_type_employee`
     CHANGE COLUMN `starts_at` `starts_at` DATETIME NOT NULL ,
     CHANGE COLUMN `ends_at` `ends_at` DATETIME NOT NULL ;
+
+CREATE TABLE `jobs` (
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`queue` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`payload` LONGTEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`attempts` TINYINT(3) UNSIGNED NOT NULL,
+	`reserved_at` INT(10) UNSIGNED NULL DEFAULT NULL,
+	`available_at` INT(10) UNSIGNED NOT NULL,
+	`created_at` INT(10) UNSIGNED NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `jobs_queue_index` (`queue`)
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB;
