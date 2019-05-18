@@ -10510,12 +10510,8 @@ function eligibility_error() {
         $("#eligibility_ends option[value='1']").hide();
         $('#eligibility_ends>option:eq(0)').prop('selected', true);
         $("#accrue_period").show();
-        //$(".eligibility_error").removeAttr('hidden');
-        //$(".update_absence_type").attr("disabled", true);
     } else {
         $("#eligibility_ends option[value='1']").show();
-        //$(".eligibility_error").attr("hidden", true);;
-        //$('.update_absence_type').attr("disabled", false);
     }
 }
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(1)))

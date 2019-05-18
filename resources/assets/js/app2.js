@@ -21,7 +21,7 @@ flatpickr.setDefaults({
 });
 window.flatpickr = flatpickr;
 
-window.specialTitleCaseFormat = function() {
+window.specialTitleCaseFormat = function(e) {
     //var s = "mcdonald mack macdonald macleod elizabeth mchenry-phipps";
     var s = $(this).val();
     s = s.replace(/\b(m(a)?c)?(\w)(?=\w)/ig, function($1, $2, $3, $4) {
@@ -82,7 +82,7 @@ $.fn.clickToggle = function (f1, f2) {
     });
 };
 
-on('change keyup input', 'input.fix-case', specialTitleCaseFormat);
+$("body").delegate("input.fix-case", "change keyup input", specialTitleCaseFormat);
 
 window.$ = window.jQuery = global.$ = global.jQuery = $;
 window.on = global.on = on;
@@ -100,7 +100,6 @@ on('focusin', 'input.datepicker', function(event) {
         elFlatpickr.open();
     } else {
         elFlatpickr = flatpickr(el, {defaultDate: val});
-        //el._flatpickr.defaultDate = val;
     }
 
     if(typeof toPickerId !== "undefined") {
@@ -111,60 +110,10 @@ on('focusin', 'input.datepicker', function(event) {
             toPicker.set('minDate', selectedDates[0]);
         };
         toPicker.onChange = function(selectedDates, dateStr, instance) {
-            console.log('to picker close', selectedDates, dateStr, instance);
             elFlatpickr.set('maxDate', selectedDates[0]);
         };
 
     }
-
-    /*
-    var picker = $(this).pickadate('picker'),
-        toPickerId = $(this).data('pairElementId'),
-        toPicker = $(`#${toPickerId}`).pickadate('picker');
-
-    if(picker === undefined) {
-
-        if($(this).attr('id') == 'birth_date'){
-            picker = $("#birth_date").pickadate({min: -65*365, max:-18*365}).pickadate('picker');
-        } else {
-            picker = $(this).pickadate().pickadate('picker');
-        }
-    }
-
-    if(toPickerId !== undefined){
-
-        toPicker = $(`#${toPickerId}`).pickadate().pickadate('picker');
-
-        if(toPicker !== undefined){
-            // When something is selected, update the “from” and “to” limits.
-            picker.on('set', function(event) {
-                if ( event.select ) {
-                    toPicker.set('min', picker.get('select'));
-                }
-                else if ( 'clear' in event ) {
-                    toPicker.set('min', false);
-                }
-            });
-            toPicker.on('set', function(event) {
-                if ( event.select ) {
-                    picker.set('max', toPicker.get('select'));
-                }
-                else if ( 'clear' in event ) {
-                    picker.set('max', false);
-                }
-            });
-            
-            // Check if there’s a “from” or “to” date to start with.
-            if ( picker.get('value') ) {
-                toPicker.set('min', picker.get('select'));
-            }
-            if ( toPicker.get('value') ) {
-                picker.set('max', toPicker.get('select'));
-            }
-        }
-
-    }
-    */
 
 });
 
