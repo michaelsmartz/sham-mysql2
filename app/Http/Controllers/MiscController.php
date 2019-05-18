@@ -75,6 +75,7 @@ class MiscController extends Controller
         }
 
         foreach($absenceTypes as $absenceType) {
+            //dump($absenceType); continue;
             $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $workYearStartVal, $workYearEndVal);
 
             $absenceKey =  $absenceType->duration_unit . $absenceType->eligibility_begins . 
@@ -89,7 +90,7 @@ class MiscController extends Controller
                 $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
                     $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, $durations['start_date']);
                 }])->whereNull('date_terminated')
-                    ->where('employees.id','<',5)->get();
+                    /*->where('employees.id','<',5)*/->get();
             }
 
             if($absenceKey == '001')
@@ -112,8 +113,43 @@ class MiscController extends Controller
                    ->where('employees.id','<',6)->get();
             }
 
+            if($absenceKey == '100')
+            {
+                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
+                    $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, $durations['start_date']);
+                }])->whereNull('date_terminated')
+                    ->where('employees.id','<',5)->get();
+            }
+
+            if($absenceKey == '101')
+            {
+                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
+                    $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, 'probation_end_date');
+
+                }])->whereNull('date_terminated')
+                   ->where('probation_end_date', '>=', $durations['start_date'])
+                   ->where('employees.id','<',6)->get();
+            }
+
+            if($absenceKey == '110')
+            {
+                $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
+                    $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, 'probation_end_date');
+
+                }])->whereNull('date_terminated')
+                   ->where('probation_end_date', '>=', $durations['start_date'])
+                   ->where('employees.id','<',6)->get();
+            }
+
             $insertarray = [];
-            //dump($employees);
+
+            dump(sizeof($employees));
+            if(sizeof($absenceType->jobTitles) > 0) {
+                $jobIds = $absenceType->jobTitles->flatten()->pluck('id');
+                $employees = $employees->whereIn('job_title_id', $jobIds)->all();
+            }
+            dd($employees);
+
             foreach($employees as $employee){
                 $leaverule = new $classAbsenceKey($employee,$absenceType,$durations['start_date'], $durations['end_date']);
                 $fAddNew = $leaverule->shouldAddNew();
@@ -137,7 +173,7 @@ class MiscController extends Controller
             }
 
             //dd($insertarray);
-            DB::table('eligibility_employee')->insert($insertarray);
+            //DB::table('eligibility_employee')->insert($insertarray);
             echo("Completed...<br>");
         }
 
