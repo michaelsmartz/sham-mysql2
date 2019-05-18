@@ -200,7 +200,7 @@ class CourseTrainingSessionsController extends CustomController
             $selectedParticipants = collect($temp)->pluck('full_name', 'id')->all();
         }
 
-        $employees = Employee::pluck('first_name, surname as full_name', 'id');
+        $employees = Employee::whereNull('date_terminated')->pluck('first_name, surname as full_name', 'id');
 
         return array($courses, $employees, $selectedParticipants);
     }
