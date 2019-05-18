@@ -20,6 +20,7 @@ class ShamServiceProvider extends ServiceProvider
      */
     protected $devOnlyProviders = [
         \Barryvdh\Debugbar\ServiceProvider::class,
+        \AlternativeLaravelCache\Provider\AlternativeCacheStoresServiceProvider::class,
     ];
 
     /**

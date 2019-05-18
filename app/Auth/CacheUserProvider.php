@@ -28,8 +28,24 @@ class CacheUserProvider extends EloquentUserProvider
      */
     public function retrieveById($identifier)
     {
-        return Cache::remember('user.' . $identifier, 360, function () use ($identifier) {
-            return parent::retrieveById($identifier);
-        });
+        $ret = Cache::get("user.$identifier");
+
+        if ($ret == null) {
+            return Cache::remember('user.' . $identifier, 360, function () use ($identifier) {
+
+                //return parent::retrieveById($identifier);
+    
+                // code copied from EloquentUserProvider::retrieveById
+                $model = $this->createModel();
+                $ret = $model->newQuery()
+                       ->where($model->getAuthIdentifierName(), $identifier)->get();
+    
+                return $ret->first();
+                
+            });
+        } else {
+            return $ret;
+        }
+
     }
 }

@@ -27,7 +27,8 @@
         "plank/laravel-mediable": "^2.7",
         "san4io/eloquent-filter": "^0.2.0",
         "tightenco/ziggy": "^0.6.9",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "^2.5",
+        "swayok/alternative-laravel-cache": "5.4.*"
     },
     "require-dev": {
         "crestapps/laravel-code-generator": "^2.2",
