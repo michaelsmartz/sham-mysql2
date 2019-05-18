@@ -1,7 +1,7 @@
 <div class="row">
     <div class="form-group col-xs-6 {{ $errors->has('username') ? 'has-error' : '' }}">
         <label for="username">Username</label>
-            <input class="form-control" name="username" type="text" id="username" value="{{ old('username', optional($data)->username) }}" minlength="1" required="true" placeholder="Enter username">
+            <input class="form-control" name="username" type="text" id="username" value="{{ old('username', optional($data)->username) }}" minlength="1" required="true" placeholder="Enter username" {!! ($mode =='edit')?'disabled':'' !!}>
             {!! $errors->first('username', '<p class="help-block">:message</p>') !!}
     </div>
 
@@ -13,7 +13,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('email') ? 'has-error' : '' }}">
         <label for="email">Email</label>
-            <input class="form-control" name="email" type="email" id="email" value="{{ old('email', optional($data)->email) }}" placeholder="Enter email">
+            <input class="form-control" name="email" type="email" id="email" value="{{ old('email', optional($data)->email) }}" placeholder="Enter email" {!! ($mode =='edit')?'disabled':'' !!}>
             {!! $errors->first('email', '<p class="help-block">:message</p>') !!}
     </div>
 

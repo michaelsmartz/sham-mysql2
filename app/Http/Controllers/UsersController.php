@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class UsersController extends CustomController
@@ -55,7 +56,7 @@ class UsersController extends CustomController
     public function store(Request $request)
     {
         try {
-            $this->validator($request);
+            $this->createValidator($request);
 
             $password = ['password' => bcrypt($request->get('password'))];
 
@@ -82,6 +83,9 @@ class UsersController extends CustomController
     public function edit(Request $request)
     {
         $id = Route::current()->parameter('user');
+        if($id == 0){
+            $id = \Auth::user()->id;
+        }
         $data = $this->contextObj->findData($id);
 
         $sham_user_profile_ids = ShamUserProfile::pluck('name', 'id');
@@ -110,7 +114,7 @@ class UsersController extends CustomController
     public function update(Request $request, $id)
     {
         try {
-            $this->validator($request);
+            $this->editValidator($request);
 
             $password = ['password' => bcrypt($request->get('password'))];
 
@@ -123,6 +127,7 @@ class UsersController extends CustomController
             \Session::put('success', $this->baseFlash . 'updated Successfully!!');
 
         } catch (Exception $exception) {
+            dd($exception);
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
@@ -156,18 +161,44 @@ class UsersController extends CustomController
      *
      * @param Request $request
      */
-    protected function validator(Request $request)
+    private function validator(Request $request, $validateFields)
+    {
+        $validator = Validator::make($request->all(), $validateFields);
+        if($validator->fails()) {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors($validator);
+        }
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function createValidator(Request $request)
     {
         $validateFields = [
             'username' => 'required|string|min:1|max:100',
+            'password' => 'required|string|min:1|max:100',
+            'email' => 'required|string|min:1|max:512',
+        ];
+
+       $this->validator($request, $validateFields);
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function editValidator(Request $request)
+    {
+        $validateFields = [
+            'username' => 'nullable',
+            'email' => 'nullable',
             'password' => 'nullable|string|min:1|max:100',
-            'email' => 'nullable|string|min:1|max:512',
             'cell_number' => 'nullable|string|min:1|max:20',
             'silence_start' => 'nullable',
             'silence_end' => 'nullable',
         ];
 
-        $this->validate($request, $validateFields);
+        $this->validator($request, $validateFields);
     }
-    
 }

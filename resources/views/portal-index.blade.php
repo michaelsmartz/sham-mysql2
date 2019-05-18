@@ -29,7 +29,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a href="#light-modal" class="user-profile item-edit" onclick="editForm('2', event, 'users')">
+                                        <a href="#light-modal" class="user-profile item-edit" onclick="editForm('0', event, 'users')">
                                             <i class="fa fa-user fa-fw"></i> User Profile
                                         </a>
                                     </li>
