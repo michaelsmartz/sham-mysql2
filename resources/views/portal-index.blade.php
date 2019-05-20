@@ -222,6 +222,61 @@
                 }
             };
 
+            window.cleanUrlHash = function(){
+                window.history.pushState(null, "", window.location.href.replace("#light-modal", ""));
+                //history.replaceState(null, "", window.location.pathname);
+                return window.location.hash.replace(/^#/, '');
+            };
+
+            window.loadUrl = function(url) {
+                $(".light-modal-heading").empty().html('');
+                $(".light-modal-footer .buttons").empty().html('');
+                $(".light-modal-body").empty().html('Loading...please wait...');
+                $.get(url).done(function(data) {
+                    $(".light-modal-heading").empty().html(data.title);
+                    $(".light-modal-body").empty().html(data.content);
+                    $(".light-modal-footer .buttons").empty().html(data.footer);
+                    $("#modalForm").attr('action',data.url);
+
+                    cleanUrlHash();
+
+                    $('.multipleSelect').each(function(){
+                        $(this).multiselect({
+                            submitAllLeft:false,
+                            sort: false,
+                            keepRenderingSort: false,
+                            search: {
+                                left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                                right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                            },
+                            fireSearch: function(value) {
+                                return value.length > 3;
+                            }
+                        });
+                    });
+                }).fail(function() {
+                    alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
+                });
+            };
+
+            window.editForm = function(id, event, baseUrl) {
+                var route; 
+                if (baseUrl === void 0) {
+                    route = '{{url()->current()}}/';
+                } else {
+                    route = '{{URL::to('/')}}/' + baseUrl + '/';
+                }
+
+                if (id) {
+                    @if (isset($fullPageEdit) && $fullPageEdit == TRUE)
+                        window.location = route + id + '/edit';
+                    @else
+                        //$mainButton = $('.buttons button[type="submit"]');
+                        loadUrl(route + id + '/edit');
+                    @endif
+                }
+            };
+
             $(document).ready(function() {
                 //setInterval(keepTokenAlive, 1000 * 60 * 15); // every 15 mins
                 handleSidebarMenu();
