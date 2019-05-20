@@ -5,10 +5,18 @@ namespace App\Jobs;
 use App\AbsenceType;
 use App\Employee;
 use App\SysConfigValue;
+
 use App\Enums\LeaveAccruePeriodType;
 use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
+
+use App\LeaveRules\Rule000;
+use App\LeaveRules\Rule001;
+use App\LeaveRules\Rule010;
+use App\LeaveRules\Rule100;
+use App\LeaveRules\Rule101;
+use App\LeaveRules\Rule110;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -24,6 +32,7 @@ class ProcessLeaves implements ShouldQueue
     protected $employeeId;
     protected $workYearStart;
     protected $workYearEnd;
+    protected $absenceTypes;
 
     /**
      * Create a new job instance.
@@ -33,20 +42,9 @@ class ProcessLeaves implements ShouldQueue
     public function __construct($employeeId = null)
     {
         $this->employeeId = $employeeId;
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-
         $workYearStart = SysConfigValue::where('key','=', 'WORKING_YEAR_START')->first();
         $workYearEnd = SysConfigValue::where('key','=', 'WORKING_YEAR_END')->first();
-        $absenceTypes = AbsenceType::with('jobTitles')->get();
-        $employees = Employee::employeesLite()->whereNull('date_terminated')->get();
+        $this->absenceTypes = AbsenceType::with('jobTitles')->get();
 
         if ( !is_null($workYearStart) ) {
             $this->workYearStart = $workYearStart->value;
@@ -57,9 +55,53 @@ class ProcessLeaves implements ShouldQueue
 
         echo $this->employeeId, ' ', $this->workYearStart, ' ', $this->workYearEnd;
 
-        if ( !is_null($absenceTypes) ){
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+
+        if ( !is_null($workYearStart) ) {
+            $this->workYearStart = $workYearStart->value;
+        }
+        if ( !is_null($workYearEnd) ) {
+            $this->workYearEnd = $workYearEnd->value;
+        }
+
+        if ( !is_null($this->absenceTypes) ){
             // looping each AbsenceType
-            foreach($absenceTypes as $absenceType) {
+
+            foreach($this->absenceTypes as $absenceType) {
+                //dump($absenceType); continue;
+                $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $workYearStartVal, $workYearEndVal);
+
+                $absenceKey =  $absenceType->duration_unit . $absenceType->eligibility_begins . 
+                               $absenceType->eligibility_ends;
+
+                $classAbsenceKey = 'App\LeaveRules\Rule'. $absenceKey;
+
+                echo $absenceKey, ' ', $classAbsenceKey, '<br>';
+
+                if($absenceKey == '000')
+                {
+                    $employees = Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations, $classAbsenceKey) {
+                        $query = $classAbsenceKey::applyEligibilityFilter($query, $absenceType->id, $durations['start_date']);
+                    }])->whereNull('date_terminated')
+                        /*->where('employees.id','<',5)*/->get();
+                }
+
+                $insertarray = [];
+
+                dump(sizeof($employees));
+                if(sizeof($absenceType->jobTitles) > 0) {
+                    $jobIds = $absenceType->jobTitles->flatten()->pluck('id');
+                    $employees = $employees->whereIn('job_title_id', $jobIds)->all();
+                }
+                dd($employees);
 
                 $ret = $this->getEligibilityValues($absenceType);
                 // for 1 employee only
@@ -76,6 +118,28 @@ class ProcessLeaves implements ShouldQueue
             }
         }
 
+    }
+
+    private function getDurationUnitPeriods($accrue_period, $workYearStart, $workYearEnd)
+    {
+        $ret = [];
+
+        // TODO: accrue_period value to be changed to LeaveAccruePeriodType ennum
+        if($accrue_period == 0 || $accrue_period == 1){
+            $ret["start_date"] = $workYearStart;
+            $ret["end_date"] = $workYearEnd;
+        }
+        else if($accrue_period == 2){
+            $ret["start_date"] = $workYearStart;
+            $ret["end_date"] =   Carbon::parse($workYearEnd)->addMonths(12)->toDateString();
+        }
+
+        else if($accrue_period == 3){
+            $ret["start_date"] = $workYearStart;
+            $ret["end_date"] =   Carbon::parse($workYearEnd)->addMonths(24)->toDateString();
+        }
+
+        return $ret;
     }
 
     private function getEligibilityValues($absenceType) {
