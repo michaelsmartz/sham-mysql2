@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use App\EmployeeLeave;
+use App\Enums\DayType;
 use App\Enums\LeaveStatusType;
+use App\TimeGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -46,8 +48,11 @@ class SSPEmployeeLeavesController extends Controller
             $pending_request = null;
         }
 
-
-        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees','pending_request'));
+        $selected = array(
+            'employee_id' => $employee_id
+        );
+        
+        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees', 'selected', 'pending_request'));
     }
 
     /**
@@ -100,14 +105,29 @@ class SSPEmployeeLeavesController extends Controller
     /**
      * Show the form for creating a new employee leave request.
      *
-     * @return Illuminate\View\View
+     * @param $leave_id
+     * @param $employee_id
+     * @param $leave_description
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function create($leave_id,$leave_description)
+    public function create()
     {
-        $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+        $leave_id = Route::current()->parameter('leave_id');
+        $employee_id = Route::current()->parameter('employee_id');
+        $leave_description = Route::current()->parameter('leave_desc');
+
+        if($employee_id)
+            $employee =  Employee::find($employee_id);
+        else
+            $employee = null;
+
         $leave_type = $this->getEligibleAbsencesTypes($employee_id);
 
-        $view = view($this->baseViewPath .'.create',compact('leave_type','leave_id','leave_description'))->renderSections();
+        $time_period = $this->getTimePeriod($employee);
+        //dd($time_period['Monday']['start_time']);
+        //dd($time_period);
+
+        $view = view($this->baseViewPath .'.create',compact('leave_type', 'leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
         return response()->json([
             'title' => $view['modalTitle'],
             'content' => $view['modalContent'],
@@ -296,5 +316,65 @@ class SSPEmployeeLeavesController extends Controller
         $pending_request = DB::select($sql_request);
 
         return $pending_request[0];
+    }
+
+    private function getTimePeriod($employee){
+        $time_period = [];
+        $tg= [];
+
+        if (empty($employee)) {
+            return $time_period;
+        }
+
+        if ($employee != null && $employee->team() != null && $employee->timeGroup() != null) {
+            $team = $employee->team()->get(['description','time_group_id'])->first();
+            $tg = TimeGroup::find($team['time_group_id']);
+        }
+
+        if(sizeof($tg) > 0) {
+            $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time', 'time_period_type'])->all();
+
+            if ($tgTimePeriods != null) {
+                $counter_days = 0;
+                foreach ($tgTimePeriods as $tgTimePeriod) {
+                    $day = DayType::getDescription($tgTimePeriods[$counter_days]->pivot->day_id);
+                    //if TimePeriodType 1:  is for working hours
+                    if ($tgTimePeriod->time_period_type == 1) {
+                        $time_period[$day]['start_time']
+                            = self::getOfficeHours($tgTimePeriod)['start_time'];
+
+                        $time_period[$day]['end_time']
+                            = self::getOfficeHours($tgTimePeriod)['end_time'];
+                    }
+                    $counter_days++;
+                }
+            }
+        }
+
+        return $time_period;
+    }
+
+    private function timeIntervalReadable($value) {
+        if ($value != null) {
+            $interval = new DateTime($value);
+            return $interval->format('G:i');
+        }
+        return '00:00';
+    }
+
+
+    private function getOfficeHours($tgTimePeriod){
+        $officeTime = [];
+        if (!empty($tgTimePeriod->start_time)) {
+            $objStartTime = self::timeIntervalReadable($tgTimePeriod->start_time);
+            $officeTime['start_time'] = $objStartTime;
+        }
+
+        if (!empty($tgTimePeriod->end_time)) {
+            $objEndTime = self::timeIntervalReadable($tgTimePeriod->end_time);
+            $officeTime['end_time'] = $objEndTime;
+        }
+
+        return $officeTime;
     }
 }

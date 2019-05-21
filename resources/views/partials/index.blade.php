@@ -76,7 +76,7 @@
                loadUrl(route + 'create');
             };
 
-            window.addFormType = function(event,type_id,desc, baseUrl) {
+            window.addFormType = function(event ,type_id, desc, emp_id, baseUrl) {
                 var route;
                 if (baseUrl === void 0) {
                     route = '<?php echo e(url()->current()); ?>/';
@@ -84,7 +84,7 @@
                     route = '<?php echo e(URL::to('/')); ?>/' + baseUrl + '/';
                 }
 
-                loadUrl(route + 'create/'+ type_id +'/'+ desc);
+                loadUrl(route + 'create/'+ type_id +'/'+ desc +'/'+ emp_id);
             };
 
 
