@@ -1,34 +1,68 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Leave request : ')
-@section('modalTitle', 'Leave request : ')
+@section('title', 'Leave request from '.$leave->employee)
+@section('modalTitle', 'Leave request from '.$leave->employee)
 
 
 @section('modalFooter')
-    <a href="#!" class="btn btn-danger" data-close="Close" data-dismiss="modal">Deny</a>
-    <button class="btn btn-success" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Approve</button>
+    <a href="/leaves/status/{{$id}}/{{App\Enums\LeaveStatusType::status_denied}}" data-wenk="Deny leave request" class="btn btn-danger">
+       Deny
+    </a>
+    <a href="/leaves/status/{{$id}}/{{App\Enums\LeaveStatusType::status_approved}}" data-wenk="Approve leave request" class="btn btn-success">
+       Approve
+    </a>
 @endsection
 
-@section('postModalUrl', route('leaves.update',$id))
 
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            @include ('leaves.form')
+            <div class="row container-fluid">
+                <legend><i class="glyphicon glyphicon-stats"></i> {{$leave->absence_description}}</legend>
+                <div class="form-group col-sm-4">
+                    <label class="control-label">Total</label>
+                    <div class="">
+                        <span class="field">{{$leave->total}}</span>
+                    </div>
+                </div>
+                <div class="form-group col-sm-4">
+                    <label class="control-label">Taken</label>
+                    <div class="">
+                        <span class="field">{{$leave->taken}}</span>
+                    </div>
+                </div>
+                <div class="form-group col-sm-4">
+                    <label class="control-label">Remaining</label>
+                    <div class="">
+                        <span class="field">{{$leave->remaining}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row container-fluid">
+                <legend><i class="glyphicon glyphicon-calendar"></i> Date</legend>
+                <div class="form-group col-sm-4">
+                    <label class="control-label">From</label>
+                    <div class="">
+                        <span class="field">{{\Carbon\Carbon::parse($leave->starts_at)->format('l Y-m-d H:i')}}</span>
+                    </div>
+                </div>
+                <div class="form-group col-sm-4">
+                    <label class="control-label">To</label>
+                    <div class="">
+                        <span class="field">{{\Carbon\Carbon::parse($leave->ends_at)->format('l Y-m-d H:i')}}</span>
+                    </div>
+                </div>
+</div>
         </div>
     </div>
 @endsection
 
 @section('content')
-    <form method="POST" action="{{route('leaves.update',$id)}}" id="leave_request_form" name="leave_request_form" accept-charset="UTF-8" class="form-horizontal">
-        {{ csrf_field() }}
-        <input name="_method" type="hidden" value="PATCH">
-        <div class="box box-primary">
-            <div class="box-body">
-                @yield('modalContent')
-            </div>
-            <div class="box-footer">
-                @yield('modalFooter')
-            </div>
+    <div class="box box-primary">
+        <div class="box-body">
+            @yield('modalContent')
         </div>
-    </form>
+        <div class="box-footer">
+            @yield('modalFooter')
+        </div>
+    </div>
 @endsection

@@ -28,7 +28,7 @@
 
 .employee-filter{
     top: 7px;
-    min-width: 290px;
+    min-width: 300px;
 }
 
 .btn-filter{
@@ -46,4 +46,21 @@ span.badge-status {
     text-align: center;
     width: 105px;
     padding: 5px;
+}
+
+#bundle_submit{
+    top: 23px;
+    right:5px;
+    position: relative;
+}
+
+.btn-cancel{
+    color: #fff;
+    background-color: grey;
+    border-color: grey;
+}
+
+.btn-cancel:hover{
+    background-color: white;
+    border-color: grey;
 }

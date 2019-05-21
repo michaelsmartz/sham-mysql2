@@ -7,7 +7,7 @@
                 <select class="form-control" id="employee_id" name="employee_id">
                     <option value="0">Select employee</option>
                     @foreach ($employees as $employee)
-                        <option value="{{ $employee->id }}">
+                        <option value="{{ $employee->id }}" @if(!empty($selected['employee_id']) && $selected['employee_id'] == $employee->id) selected @endif>
                             {{ $employee->first_name }} {{ $employee->surname }}
                         </option>
                     @endforeach
@@ -19,7 +19,7 @@
             <select class="form-control" id="absence_type" name="absence_type">
                 <option value="0">Select leave type</option>
                 @foreach ($eligibility as $leave)
-                    <option value="{{ $leave->absence_description }}">
+                    <option value="{{ $leave->id }}"  @if(!empty($selected['absence_id']) && $selected['absence_id'] == $leave->id) selected @endif>
                         {{ $leave->absence_description }}
                     </option>
                 @endforeach
@@ -42,7 +42,7 @@
             </div>
         </div>
         <div class="form-group col-lg-4 pull-right">
-            <a id="btn-filter-date" class="btn btn-primary btn-filter" href="javascript:void(0)" onclick="filter()"><i class="glyphicon glyphicon-sort"></i> Filter</a>
+            <button id="btn-filter-date" class="btn btn-primary btn-filter" type="submit"><i class="glyphicon glyphicon-sort"></i> Filter</button>
             <a href="{{route('leaves.index')}}" class="btn btn-primary btn-filter"><i class="glyphicon glyphicon-refresh"></i> Reset</a>
         </div>
     </form>

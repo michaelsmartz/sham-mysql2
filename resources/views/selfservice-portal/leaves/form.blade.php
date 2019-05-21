@@ -1,4 +1,7 @@
-<input type="hidden" value="{{$leave_id}}" id="absence_type_id" name="absence_type_id">
+@if(isset($leave_id))
+    <input type="hidden" value="{{$leave_id}}" id="absence_type_id" name="absence_type_id">
+@endif
+
 <div class="row">
     <div class="form-group col-sm-6">
         <label class="control-label">From</label>
@@ -10,7 +13,7 @@
     </div>
 
     <div class="form-group col-sm-6">
-        <label class="control-label">to</label>
+        <label class="control-label">To</label>
         <div class="">
            <span class="field">
                 {!! Form::text('leave_to', '', ['class'=>'form-control datepicker','data-date-format'=> "Y-m-d H:i", 'data-enable-time'=> "true",'autocomplete'=>'off', 'placeholder'=>'Ends at', 'id'=>'leave_to']) !!}

@@ -72,6 +72,9 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_SURVEYS]))
                 <li class="{{ (Request::is('my-surveys') || Request::is('my-feedback')  ? 'active' : '') }}"> <a href="{{URL::to('/')}}/my-surveys">Surveys</a></li>
             @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_SURVEYS]))
+                <li class="{{ (Request::is('leaves') || Request::is('leaves/filter')  ? 'active' : '') }}"> <a href="{{URL::to('/')}}/leaves">Absences and leaves</a></li>
+            @endif
             {{--
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_DISCIPLINARY_RECORDS]))
                 <li> <a href="{{URL::to('/')}}/my-timeline">Timeline</a></li>

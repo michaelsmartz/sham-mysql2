@@ -11,8 +11,6 @@
                     <th scope="col">Starts on</th>
                     <th scope="col">Ends on</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Taken</th>
-                    <th scope="col">Balance</th>
                     <th scope="col">&nbsp;</th>
                 </tr>
                 </thead>
@@ -48,18 +46,14 @@
                                 </span>
                             @endswitch
                         </td>
-                        <td>{{number_format($leave->taken,1)}}</td>
-                        <td>{{number_format($leave->remaining,1)}}</td>
                         <td>
-                            <a href="/leaves/status/{{$leave->id}}/3" data-wenk="Cancel leave request" class="btn btn-secondary">
-                                Cancel
-                            </a>
-                            <a href="/leaves/status/{{$leave->id}}/2" data-wenk="Deny leave request" class="btn btn-danger">
-                                Denny
-                            </a>
-                            <a href="/leaves/status/{{$leave->id}}/1" data-wenk="Approve leave request" class="btn btn-success">
-                               Approve
-                            </a>
+                            @if((date($leave->starts_at) >= date("Y-m-d H:i")) && ($leave->status == App\Enums\LeaveStatusType::status_pending || $leave->status == App\Enums\LeaveStatusType::status_approved))
+                                <a href="/leaves/status/{{$leave->id}}/{{App\Enums\LeaveStatusType::status_cancelled}}" data-wenk="Cancel leave request" class="btn btn-cancel">
+                                    Cancel
+                                </a>
+                            @else
+                                <span class="col-md-offset-3"></span>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

@@ -1,14 +1,10 @@
 <section>
     @foreach($eligibility as $eligible)
-        <div class="col-md-2 chart-container">
+        <div class="col-md-3 chart-container">
             <div class="leave-label"><h4>{{$eligible->absence_description}}</h4></div>
-            <canvas id="progress_leave_{{$eligible->id}}" width="400" height="400"></canvas>
-            {{--                <div class="pie_progress" role="progressbar" data-goal="{{($eligible->remaining/$eligible->total)*100}}">--}}
-            {{--                    <div class="pie_progress__number">{{number_format($eligible->remaining, 1)}}/{{number_format($eligible->total, 1)}}</div>--}}
-            {{--                    <div class="pie_progress__label"><b>{{$eligible->absence_description}}</b></div>--}}
-            {{--                </div>--}}
+            <canvas id="progress_leave_{{$eligible->id}}" width="150" height="150"></canvas>
             <div class="row">
-                <a id="request_leave_{{$eligible->id}}" href="#light-modal" data-wenk="{{$eligible->absence_description}} application form" data-description="{{$eligible->absence_description}}" data-type-id="{{$eligible->id}}" class="btn btn-primary btn-apply" onclick="addFormType(event,{{$eligible->id }},'{{ $eligible->absence_description }}')">
+                <a id="request_leave_{{$eligible->id}}" href="#light-modal" data-wenk="{{$eligible->absence_description}} application form" data-description="{{$eligible->absence_description}}" data-type-id="{{$eligible->id}}" class="btn btn-primary btn-apply" onclick="addFormType(event,{{$eligible->id }},'{{ $eligible->absence_description }}','leaves')">
                     <i class="glyphicon glyphicon-plane"></i>  Apply
                 </a>
             </div>
@@ -23,12 +19,14 @@
                     type: 'doughnut',
                     data: {
                         datasets: [{
-                            data: [JSON.parse({!! $eligible->taken !!}),JSON.parse({!! $eligible->remaining !!})],
+                            data: [JSON.parse({!! $eligible->taken !!}),JSON.parse({!! $eligible->remaining !!}),JSON.parse({!! $eligible->pending !!})],
                             backgroundColor: [
-                                'rgba(17,121,203,0.8)',
-                                'rgba(18,199,206,0.14)'
+                                '#2ab27b',
+                                'rgba(18,199,206,0.14)',
+                                '#cbb956'
                             ],
                             borderColor: [
+                                '#f8f8f8',
                                 '#f8f8f8',
                                 '#f8f8f8',
                             ],
@@ -38,7 +36,8 @@
                         // These labels appear in the legend and in the tooltips when hovering different arcs
                         labels: [
                             'Taken',
-                            'Remaining'
+                            'Remaining',
+                            'Pending'
                         ]
 
                     },

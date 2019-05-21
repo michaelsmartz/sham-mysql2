@@ -1,5 +1,22 @@
 $( document ).ready(function() {
+    $('.pending_box').on('change',function(){
+        if(this.checked) {
+            var checked =  $('#leave_list').val() + $(this).val() + ',';
+            $('#leave_list').val(checked);
+        }else{
+            var unchecked = $('#leave_list').val()
+            $('#leave_list').val(unchecked.replace($(this).val() + ',',''));
+        }
+       
+    });
 
+    $('#bundle_submit').on('click',function(){
+        var leave_ids = $('#leave_list').val().slice(0,-1);
+        var status = $('#batch_operation').find(":selected").val();
+        
+        window.location = "/leaves/batch/"+leave_ids+"/"+status;
+       
+    });
 });
 
 
@@ -53,15 +70,3 @@ function filter_absence_type(){
     });
 
 }
-
-
-window.addForm = function(event, baseUrl) {
-    var route;
-    if (baseUrl === void 0) {
-        route = '<?php echo e(url()->current()); ?>/';
-    } else {
-        route = '<?php echo e(URL::to('/')); ?>/' + baseUrl + '/';
-    }
-
-    loadUrl(route + 'create');
-};
