@@ -123,8 +123,8 @@ CREATE TABLE `jobs` (
 COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB;
 
-UPDATE `sham_dev`.`system_sub_modules` SET `is_active` = '1' WHERE (`id` = '26');
-UPDATE `sham_dev`.`system_sub_modules` SET `deleted_at` = null WHERE (`id` = '26');
+UPDATE `system_sub_modules` SET `is_active` = '1' WHERE (`id` = '26');
+UPDATE `system_sub_modules` SET `deleted_at` = null WHERE (`id` = '26');
 
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '26');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '26');
