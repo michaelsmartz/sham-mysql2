@@ -22,7 +22,8 @@ class AbsenceType extends Model
                   'description',
                   'duration_unit',
                   'eligibility_ends',
-                  'eligibility_begins'
+                  'eligibility_begins',
+                  'non_working_days'
               ];
 
     public $searchable = [ 'accrue_period',

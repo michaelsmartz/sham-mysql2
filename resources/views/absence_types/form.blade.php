@@ -163,5 +163,17 @@ will apply to all employee">
             ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
         ) !!}
     </div>
+    <div class="form-group col-xs-12 {{ $errors->has('non_working_days') ? 'has-error' : '' }}">
+        <label for="non_working_days">Include none working days</label>
+        <div class="checkbox">
+            <label for="non_working_days_1">
+                <input id="non_working_days_1" class="" name="non_working_days" type="hidden" value="0" />
+                <input id="non_working_days_1" class="" name="non_working_days" type="checkbox" value="1" {{ old('is_weekend', optional($absenceType)->non_working_days) == '1' ? 'checked' : '' }}>
+                Yes
+            </label>
+        </div>
+
+        {!! $errors->first('non_working_days', '<p class="help-block">:message</p>') !!}
+    </div>
 @endif
 </div>

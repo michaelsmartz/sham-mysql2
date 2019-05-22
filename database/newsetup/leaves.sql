@@ -147,3 +147,5 @@ CREATE TABLE `job_logs` (
 COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;
+ALTER TABLE `absence_types`
+ADD COLUMN `non_working_days` TINYINT(1) NOT NULL AFTER `accrue_period`;

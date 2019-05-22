@@ -121,6 +121,8 @@ class SSPEmployeeLeavesController extends Controller
         else
             $employee = null;
 
+        //Note if non_working_days flag set to 1 remove non working days from flatpickr
+        //non_working_days flag is send in $leave_type array
         $leave_type = $this->getEligibleAbsencesTypes($employee_id);
 
         $time_period = $this->getTimePeriod($employee);
@@ -252,7 +254,9 @@ class SSPEmployeeLeavesController extends Controller
 
     public static function getEligibleAbsencesTypes($employee_id){
         $eligible_leave= DB::select(
-            "SELECT abt.id,abt.description,(ele.total - ele.taken) as remaining 
+            "SELECT abt.id, 
+            abt.non_working_days as non_working_days, 
+            abt.description,(ele.total - ele.taken) as remaining 
             FROM eligibility_employee ele
             LEFT JOIN absence_types abt ON abt.id = ele.absence_type_id
             WHERE ele.start_date <= NOW() AND ele.employee_id = $employee_id;"
