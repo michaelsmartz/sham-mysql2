@@ -91,11 +91,11 @@
                                             <i class="glyphicon glyphicon-edit text-primary"></i>
                                         </a>
                                     @endif
-                                    @if($allowedActions->contains('Delete'))
-                                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}')">
-                                            <i class="glyphicon glyphicon-remove text-danger"></i>
-                                        </button>
-                                    @endif
+                                    {{--@if($allowedActions->contains('Delete'))--}}
+                                        {{--<button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}')">--}}
+                                            {{--<i class="glyphicon glyphicon-remove text-danger"></i>--}}
+                                        {{--</button>--}}
+                                    {{--@endif--}}
                                 </div>
                             </td>
                         </tr>
