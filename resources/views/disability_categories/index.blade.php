@@ -1,5 +1,6 @@
 @extends('portal-index')
 @section('title','Disability Categories')
+@section('subtitle','Disability Categories drop-down values for employees')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
