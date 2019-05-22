@@ -16,38 +16,39 @@ class LeavesController extends CustomController
     public function index(Request $request)
     {
         try {
-            $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+            //Filter by employee
+            if(!empty($request->input('employee')) && $request->input('employee') != 0)
+                $employee_id = $request->input('employee');
+            elseif ($request->input('employee_id') == 0)
+                $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+            else
+                $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+
+            //Filter by leave type
+            if(!empty($request->input('absence_type')) && $request->input('absence_type') != 0){
+                $absence_type = $request->input('absence_type');
+            }else{
+                $absence_type = null;
+            }
+
             $eligibility = SSPEmployeeLeavesController::getEmployeeLeavesStatus($employee_id);
 
             //find if connected employee is a manager to display button search other employee's entitlements
             $current_employee = Employee::with('jobTitle')
-                ->where('id', '=', $employee_id)
+                ->where('id', '=', (\Auth::check()) ? \Auth::user()->employee_id : 0)
                 ->first();
-
-            //if search button is clicked employee will not be null
-            $employee_id_search = $request->get('employee', null);
 
             $from = $request->get('from', null);
             $to = $request->get('to', null);
 
-            $leaves = SSPEmployeeLeavesController::getEmployeeLeavesHistory($employee_id, $from, $to);
+            $leaves = SSPEmployeeLeavesController::getEmployeeLeavesHistory($employee_id, $from, $to, $absence_type);
 
-            if (!is_null($employee_id_search))
-                $selected_employee = Employee::where('id', '=', $employee_id_search)->first();
-            elseif (!is_null($employee_id))
-                $selected_employee = Employee::where('id', '=', $employee_id)->first();
-            else
-                $selected_employee = null;
+            $selected_employee = Employee::where('id', '=', $employee_id)->first();
 
-            //employee list to exclude the employee connected in the list
-            $employees = Employee::where('id', '!=', $employee_id)->pluck('full_name', 'id');
-
-//        dump($employees);
-//        dump($leaves);
-//        dd($eligibility);
+            $employees = Employee::pluck('full_name', 'id');
         }catch (\Exception $exception){
             dd($exception->getMessage());
         }
-        return view('leaves.index', compact('leaves','eligibility','employees', 'selected_employee', 'current_employee'));
+        return view('leaves.index', compact('leaves','eligibility','employees', 'selected_employee', 'current_employee', 'absence_type'));
     }
 }

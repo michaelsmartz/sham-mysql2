@@ -27,7 +27,7 @@
                             <select class="form-control" id="absence_type" name="absence_type">
                                 <option value="0">Select leave type</option>
                                 @foreach ($eligibility as $leave)
-                                    <option value="{{ $leave->absence_description }}">
+                                    <option value="{{ $leave->id }}"  @if(!empty($absence_type) && $absence_type == $leave->id) selected @endif>
                                         {{ $leave->absence_description }}
                                     </option>
                                 @endforeach
