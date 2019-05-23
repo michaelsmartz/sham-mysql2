@@ -68,7 +68,7 @@ class AbsenceTypesController extends CustomController
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_ABSENCE_TYPES);
 
-        $absenceTypes = $this->contextObj->filtered()->paginate(10);
+        $absenceTypes = $this->contextObj::with(['eligibilityEmployees','jobTitles','absenceTypeEmployees'])->filtered()->paginate(10);
 
         return view($this->baseViewPath .'.index', compact('absenceTypes','allowedActions'));
     }

@@ -92,9 +92,11 @@
                                         </a>
                                     @endif
                                     {{--@if($allowedActions->contains('Delete'))--}}
-                                        {{--<button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}')">--}}
-                                            {{--<i class="glyphicon glyphicon-remove text-danger"></i>--}}
-                                        {{--</button>--}}
+                                    @if($absenceType->eligibilityEmployees->count() == 0 && $absenceType->jobTitles->count() == 0 && $absenceType->absenceTypeEmployees->count() == 0)
+                                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}')">
+                                            <i class="glyphicon glyphicon-remove text-danger"></i>
+                                        </button>
+                                    @endif
                                     {{--@endif--}}
                                 </div>
                             </td>
