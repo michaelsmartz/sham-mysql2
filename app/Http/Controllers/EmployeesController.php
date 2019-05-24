@@ -34,6 +34,7 @@ use App\Skill;
 use App\SystemSubModule;
 use App\SysConfigValue;
 use App\TimelineManager;
+use App\Jobs\FlushDashboardCachedQueries;
 use App\Traits\MediaFiles;
 use Illuminate\Support\Facades\Session;
 use OwenIt\Auditing\Facades\Auditor;
@@ -378,6 +379,9 @@ class EmployeesController extends CustomController
         $this->contextObj->destroyData($id);
 
         \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+        
+        //clear the cache for dashboard
+        FlushDashboardCachedQueries::dispatch();
 
         return redirect()->route($this->baseViewPath .'.index');
     }
@@ -686,6 +690,9 @@ class EmployeesController extends CustomController
 
         $data->skills()->sync($skills);
         $data->disabilities()->sync($disabilities);
+
+        //clear the cache for dashboard
+        FlushDashboardCachedQueries::dispatch();
         
     }
 
