@@ -131,3 +131,19 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '26');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '26');
 INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '26');
+
+CREATE TABLE `job_logs` (
+	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`loggable_id` INT(10) UNSIGNED NULL DEFAULT NULL,
+	`loggable_type` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`level` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`message` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`context` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`extra` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`created_at` DATETIME NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `job_logs_loggable_id_loggable_type_index` (`loggable_id`, `loggable_type`)
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+;
