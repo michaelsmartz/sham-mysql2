@@ -12,6 +12,7 @@ use App\DisciplinaryAction;
 use App\Reward;
 use App\QAEvaluationScoresView;
 use App\QAEvaluationsView;
+use App\Jobs\FlushDashboardCachedQueries;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -43,7 +44,7 @@ class HomeController extends Controller
 
     public function getHeadcountData()
     {
-        $temp = Cache::remember('EmployeeHeadcountView', 1 * 60, function () {
+        $temp = Cache::tags('dashboard')->remember('EmployeeHeadcountView', 1 * 15, function () {
             return EmployeeHeadcountView::all();
         });
 
@@ -52,7 +53,7 @@ class HomeController extends Controller
 
     public function getHeadcountDeptData()
     {
-        $temp = Cache::remember('EmployeeHeadcountDeptView', 1 * 60, function () {
+        $temp = Cache::tags('dashboard')->remember('EmployeeHeadcountDeptView', 1 * 15, function () {
             return EmployeeHeadcountDeptView::all();
         });
 
@@ -109,7 +110,7 @@ class HomeController extends Controller
 
     public function getCourseData()
     {
-        $temp = Cache::remember('getCourseData', 1 * 60, function () {
+        $temp =Cache::tags('dashboard')->remember('getCourseData', 1 * 15, function () {
             return Course::select('description as Description')->withCount('employees')->get();
         });
 
@@ -126,7 +127,7 @@ class HomeController extends Controller
 
     public function getRewardCount()
     {
-        $temp = Cache::remember('getRewardCount', 1*60, function() {
+        $temp = Cache::tags('dashboard')->tags('dashboard')->remember('getRewardCount', 1 * 15, function() {
             return Reward::count();
         });
 
@@ -144,7 +145,7 @@ class HomeController extends Controller
     public function getQALastFiveDaysData() {
 
         $ret = array();
-        $qarecords = Cache::remember('getQALastFiveDaysData', 1*60, function() {
+        $qarecords = Cache::tags('dashboard')->remember('getQALastFiveDaysData', 1 * 15, function() {
             $startdate = self::getStartDate();
             return QAEvaluationsView::where('TotalPoints', '>', 0)
             ->where('Feedbackdate', '>=', $startdate->format('Y-m-d'))->get();
@@ -169,7 +170,7 @@ class HomeController extends Controller
     public function getQAEvaluationScoresData() 
     {
         $ret = array();
-        $qarecords = Cache::remember('getQAEvaluationScoresData', 1*60, function() {
+        $qarecords = Cache::tags('dashboard')->remember('getQAEvaluationScoresData', 1 * 15, function() {
 
             $elapsedays = 370;
             $date = new Carbon;
@@ -206,7 +207,7 @@ class HomeController extends Controller
 
     public function getTotalAssessmentData() 
     {
-        $temp = Cache::remember('getTotalAssessmentData', 1*60, function() {
+        $temp = Cache::tags('dashboard')->remember('getTotalAssessmentData', 1 * 15, function() {
             $elapsedays = self::CONST_ELAPSE_DAYS;
             $date = new Carbon;
             $startdate =  $date->subDays($elapsedays);
