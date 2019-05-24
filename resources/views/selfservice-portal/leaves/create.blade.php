@@ -13,6 +13,10 @@
     <div class="row">
         <div class="col-sm-12">
             @include ('selfservice-portal.leaves.form')
+            <input type='hidden' id='monday' value="9:00-17:00">
+            <input type='hidden' id='tuesday' value="9:00-17:00">
+            <input type='hidden' id='thursday' value="8:30-16:30">
+            <input type='hidden' id='friday' value="8:00-16:00">
         </div>
     </div>
 @endsection

@@ -1,7 +1,7 @@
 <section>
     @foreach($eligibility as $eligible)
         <div class="col-md-3 chart-container">
-            <div class="leave-label"><h4>{{$eligible->absence_description}}</h4></div>
+            <div class="leave-label" data-wenk="Total : {{$eligible->total}}"><h4>{{$eligible->absence_description}}</h4></div>
             <canvas id="progress_leave_{{$eligible->id}}" width="150" height="150"></canvas>
             <div class="row">
                 <a id="request_leave_{{$eligible->id}}" href="#light-modal" data-wenk="{{$eligible->absence_description}} application form" data-description="{{$eligible->absence_description}}" data-type-id="{{$eligible->id}}" class="btn btn-primary btn-apply" onclick="addFormType(event, '{{$eligible->id }}','{{ $eligible->absence_description }}', '{{ $selected['employee_id']}}', 'leaves')">

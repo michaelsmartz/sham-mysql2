@@ -1,11 +1,11 @@
 <link rel="stylesheet" href="{{asset('css/leave.css')}}">
 @extends('portal-index')
-@section('title','Absences and leaves')
+@section('title','My Absences and leaves')
 @section('subtitle', 'Keep track and manage your absences and leaves')
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-@if(count($employees)>0)8 @else 12 @endif">
+            <div class="col-sm-@if(count($employees)>0)8 space-margin @else 12 @endif">
                 <div class="row">
                     @include('selfservice-portal.leaves.absences.status')
                 </div>
@@ -29,5 +29,5 @@
 @endsection
 @section('scripts')
     <script src="{{url('/')}}/plugins/chartjs/dist/Chart.js"></script>
-    <script src="{{asset('js/leaves.js')}}"></script>
+    <script src="{{URL::to('/')}}/js/leaves.min.js"></script>
 @endsection
