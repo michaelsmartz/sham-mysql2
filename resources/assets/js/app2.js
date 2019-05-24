@@ -95,11 +95,20 @@ on('focusin', 'input.datepicker', function(event) {
         toPickerId = $(this).data('pairElementId'),
         elFlatpickr = el._flatpickr;
 
+
+    var options = {
+        defaultDate: val,
+        locale: {
+            "firstDayOfWeek": 1 // start week on Monday
+        }
+        
+    }
+
     if(typeof el._flatpickr === "undefined") {
-        elFlatpickr = flatpickr(el, {defaultDate: val});
+        elFlatpickr = flatpickr(el, options);
         elFlatpickr.open();
     } else {
-        elFlatpickr = flatpickr(el, {defaultDate: val});
+        elFlatpickr = flatpickr(el, options);
     }
 
     if(typeof toPickerId !== "undefined") {

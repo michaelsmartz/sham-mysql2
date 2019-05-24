@@ -9,8 +9,8 @@
 
 .leave-label{
     margin-top: 8%;
-    left: 50%;
     text-align: center;
+    cursor: pointer;
 }
 
 .chart-container{
@@ -63,4 +63,8 @@ span.badge-status {
 .btn-cancel:hover{
     background-color: white;
     border-color: grey;
+}
+
+.space-margin{
+    padding-right:3% !important;
 }
