@@ -7,7 +7,7 @@ use Carbon\Carbon;
 class LeaveBaseClass
 {
 
-    protected $employeeObj;
+    public $employeeObj;
     protected $workYearStart;
     protected $workYearEnd;
     protected $absenceTypeObj;

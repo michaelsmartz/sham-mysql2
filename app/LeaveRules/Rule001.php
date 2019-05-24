@@ -2,6 +2,7 @@
 
 namespace App\LeaveRules;
 
+use App\Employee;
 use App\Enums\LeaveAccruePeriodType;
 use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
@@ -47,14 +48,6 @@ class Rule001 extends LeaveBaseClass
         return $ret;
     }
 
-    public static function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
-    {
-
-        $query->where('absence_type_id', '=', $absenceTypeId);
-
-        return $query;
-    }
-
     public function getEligibilityValue()
     {
         $this->getEmployeeEligibilityDates();
@@ -74,6 +67,16 @@ class Rule001 extends LeaveBaseClass
         return $this->retCollection;
     }
 
+    public function employeesQuery($durations, $classAbsenceKey)
+    {
+        $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
+            $query = $this->applyEligibilityFilter($query, 'probation_end_date');
+        }])->whereNull('date_terminated')
+           ->where('probation_end_date', '>=', $durations['start_date']);
+
+        return $ret;
+    }
+
     private function getEmployeeEligibilityDates()
     {
         // we are in the rule "when probation ends", accrue period is irrelevant
@@ -82,4 +85,12 @@ class Rule001 extends LeaveBaseClass
         $this->ret["end_date"] = $this->employeeObj->probation_end_date;
         $this->retCollection[] = $this->ret;
     }
+
+    private function applyEligibilityFilter($query, $dateValue)
+    {
+        $query->where('absence_type_id', '=', $this->absenceTypeObj->id);
+
+        return $query;
+    }
+
 }

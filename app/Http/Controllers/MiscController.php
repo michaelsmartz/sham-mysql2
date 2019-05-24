@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\AbsenceType;
 use App\Employee;
@@ -11,8 +12,7 @@ use App\Enums\LeaveAccruePeriodType;
 use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
-use Illuminate\Support\Facades\DB;
-
+use App\Jobs\ProcessLeaves;
 use App\LeaveRules\Rule0000;
 use App\LeaveRules\Rule000;
 use App\LeaveRules\Rule001;
@@ -58,6 +58,10 @@ class MiscController extends Controller
     }
 
     public function testleave(){
+
+        dispatch( new ProcessLeaves());
+
+        die;
 
         ini_set('max_execution_time', 180);
         $workYearStartVal = "";

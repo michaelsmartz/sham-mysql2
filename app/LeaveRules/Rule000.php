@@ -2,6 +2,7 @@
 
 namespace App\LeaveRules;
 
+use App\Employee;
 use App\Enums\LeaveAccruePeriodType;
 use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
@@ -21,14 +22,6 @@ class Rule000 extends LeaveBaseClass
         parent::__construct($employeeObj, $absenceTypeObj, $workYearStart, $workYearEnd);
 
         $this->retCollection = [];
-    }
-
-    public static function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
-    {
-        $query->where('absence_type_id', '=', $absenceTypeId)
-              ->where('end_date', '>=', $dateValue);
-
-        return $query;
     }
 
     public function shouldAddNew()
@@ -73,6 +66,15 @@ class Rule000 extends LeaveBaseClass
         return $this->retCollection;
     }
 
+    public function employeesQuery($durations, $classAbsenceKey)
+    {
+      $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ( $durations) {
+                $query = $this->applyEligibilityFilter($query, $durations['start_date']);
+              }])->whereNull('date_terminated');
+
+      return $ret;
+    }
+
     private function getEmployeeEligibilityDates() {
 
         switch($this->absenceTypeObj->accrue_period) {
@@ -101,4 +103,13 @@ class Rule000 extends LeaveBaseClass
             break;
         }
     }
+
+    private function applyEligibilityFilter($query, $dateValue)
+    {
+        $query->where('absence_type_id', '=', $this->absenceTypeObj->id)
+              ->where('end_date', '>=', $dateValue);
+
+        return $query;
+    }
+
 }

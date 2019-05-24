@@ -2,6 +2,7 @@
 
 namespace App\LeaveRules;
 
+use App\Employee;
 use App\Enums\LeaveAccruePeriodType;
 use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
@@ -25,14 +26,6 @@ class Rule010 extends LeaveBaseClass
         if (is_null($this->employeeObj->probation_end_date)) {
             $this->carbonProbationEndDate = Carbon::parse($this->employeeObj->probation_end_date);
         }
-    }
-
-    public static function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
-    {
-        $query->where('absence_type_id', '=', $absenceTypeId)
-              ->where('end_date', '>=', $dateValue);
-
-        return $query;
     }
 
     public function getEligibilityValue()
@@ -72,7 +65,24 @@ class Rule010 extends LeaveBaseClass
         return $ret;
     }
     
+    public function employeesQuery($durations, $classAbsenceKey)
+    {
+        $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
+            $query = $this->applyEligibilityFilter($query, 'probation_end_date');
+        }])->whereNull('date_terminated')
+           ->where('probation_end_date', '>=', $durations['start_date']);
 
+        return $ret;
+    }
+
+    private function applyEligibilityFilter($query, $dateValue)
+    {
+        $query->where('absence_type_id', '=', $this->absenceTypeObj->id)
+              ->where('end_date', '>=', $dateValue);
+
+        return $query;
+    }
+    
     private function getEmployeeEligibilityDates() {
 
         switch($this->absenceTypeObj->accrue_period) {
