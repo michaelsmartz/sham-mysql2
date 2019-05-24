@@ -89,7 +89,7 @@ class UsersController extends CustomController
         $data = $this->contextObj->findData($id);
 
         $sham_user_profile_ids = ShamUserProfile::pluck('name', 'id');
-        $employee_ids = Employee::pluck('first_name, surname as full_name', 'id');
+        $employee_ids = Employee::employeesLite()->whereNull('date_terminated')->pluck('first_name, surname as full_name', 'id');
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit', compact('data', 'sham_user_profile_ids', 'employee_ids'))->renderSections();
