@@ -74,7 +74,9 @@ class ProcessLeaves implements ShouldQueue
                 // looping each AbsenceType
     
                 foreach($this->absenceTypes as $absenceType) {
-                    //dump($absenceType); continue;
+                    // empty at start of each iteration
+                    $insertArray = [];
+
                     $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $this->workYearStart, $this->workYearEnd);
     
                     $absenceKey =  $absenceType->duration_unit . $absenceType->eligibility_begins . 
@@ -83,9 +85,9 @@ class ProcessLeaves implements ShouldQueue
                     //prepare for dynamic instantiation of the class rule name
                     $classAbsenceKey = 'App\LeaveRules\Rule'. $absenceKey;
     
-                    echo $absenceKey, ' ', $classAbsenceKey, '<br>';
+                    echo ' ', $absenceKey, ' ', $classAbsenceKey, '<br>';
 
-                    $insertarray = [];
+                    $insertArray = [];
 
                     // for 1 employee only
                     if(!is_null($this->employeeId)) {
@@ -98,15 +100,42 @@ class ProcessLeaves implements ShouldQueue
                         $employees = $leaveRule->employeesQuery($durations, $classAbsenceKey)->get();
                         dump($leaveRule);
 
-                        dump(sizeof($employees));
-                        if(sizeof($absenceType->jobTitles) > 0) {
-                            $jobIds = $absenceType->jobTitles->flatten()->pluck('id');
-                            $employees = $employees->whereIn('job_title_id', $jobIds)->all();
-                        }
-                        dd($employees);
                     }
 
-                    die;
+                    dump(sizeof($employees));
+                    //filter job title
+                    if(sizeof($absenceType->jobTitles) > 0) {
+                        $jobIds = $absenceType->jobTitles->flatten()->pluck('id');
+                        $employees = $employees->whereIn('job_title_id', $jobIds)->all();
+                    }
+                    dump(sizeof($employees));
+
+                    // from here, process 1 or all employees
+                    foreach($employees as $employee) {
+                        $leaverule = new $classAbsenceKey($employee,$absenceType,$durations['start_date'], $durations['end_date']);
+                        $fAddNew = $leaverule->shouldAddNew();
+
+                        if ($fAddNew) {
+    
+                            $retvals = $leaverule->getEligibilityValue();
+        
+                            if(!empty($retvals)) {
+        
+                                foreach ($retvals as $item) {
+                                    if(isset($item['action']) && $item['action'] == 'I') {
+                                        unset($item['action']);
+                                        $insertArray[] = $item;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    dump($insertArray);
+                    //DB::table('eligibility_employee')->insert($insertArray);
+                    echo "Completed...", $absenceType->description, "<br>";
+
+                    continue;
 
                     if($absenceKey == '000')
                     {
@@ -159,9 +188,7 @@ class ProcessLeaves implements ShouldQueue
                            ->where('probation_end_date', '>=', $durations['start_date'])
                            ->get();
                     }
-        
 
-    
                     $ret = $this->getEligibilityValues($absenceType);
                     // for 1 employee only
                     if(!is_null($this->employeeId)) {
@@ -180,7 +207,7 @@ class ProcessLeaves implements ShouldQueue
                                 {
                                     if(isset($item['action']) && $item['action'] == 'I') {
                                         unset($item['action']);
-                                        $insertarray[] = $item;
+                                        $insertArray[] = $item;
                                     }
                                 }
                             }
