@@ -197,18 +197,22 @@ class TimeGroupsController extends CustomController
             if(!empty($days) && !empty($timeShiftIds) && !empty($breakIds)) {
                 foreach ($days as $day => $value) {
                     if ($value == "true") {
-                        $time_group_pivot[] = [
-                            'time_group_id' => $id,
-                            'day_id' => $day,
-                            'time_period_id' => $timeShiftIds[$day],
-                        ];
-
-                        foreach ($breakIds[$day] as $breakId) {
+                        if(isset($timeShiftIds[$day])) {
                             $time_group_pivot[] = [
                                 'time_group_id' => $id,
                                 'day_id' => $day,
-                                'time_period_id' => $breakId
+                                'time_period_id' => $timeShiftIds[$day],
                             ];
+                        }
+
+                        if(isset($breakIds[$day])) {
+                            foreach ($breakIds[$day] as $breakId) {
+                                $time_group_pivot[] = [
+                                    'time_group_id' => $id,
+                                    'day_id' => $day,
+                                    'time_period_id' => $breakId
+                                ];
+                            }
                         }
                     }
                 }
