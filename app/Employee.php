@@ -80,13 +80,22 @@ class Employee extends Model implements AuditableContract
         $this->withEmployeesLite($query);
     }
 
-    public function scopeEmployeesList($query)
+    public function scopeEmployeesList($query, $is_terminated, $search_term)
     {
-        $query->leftJoin('departments','departments.id','=','employees.department_id')
-              ->leftJoin('job_titles','job_titles.id','=','employees.job_title_id')
-              ->select('employees.id','employees.first_name','employees.surname',
-                       'job_titles.description as job_title','departments.description as department')
-              ;
+        $query->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
+            ->leftJoin('job_titles', 'job_titles.id', '=', 'employees.job_title_id')
+            ->select('employees.id', 'employees.first_name', 'employees.surname',
+                'job_titles.description as job_title',
+                'departments.description as department',
+                'employees.date_terminated'
+            );
+
+        if (is_null($search_term)) {
+            if ($is_terminated)
+                $query->where('employees.date_terminated', '!=', null);
+            else
+                $query->where('employees.date_terminated', '=', null);
+        }
     }
 
     protected function withEmployeesLite($query)

@@ -5,7 +5,7 @@
 @section('content')
     <div class="flex-wrapper">
         @if($allowedActions->contains('List'))
-        <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation" style="height:170px">
+        <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
             <form action="" class="">
                 <ul style="margin-left:0;padding-left:0" class="list-unstyled">
                     <li>
@@ -35,6 +35,14 @@
                             <li data-filter-column="jobtitle:description">By Job Title</li>
                         </ul>
                     </li>
+                <hr>
+                <li>
+                    <ul class="nav">
+                        <li><p class="menu-label">Show Terminated Employees</p></li>
+                        <li><a href="{{route('employees.index')}}?is_terminated=1"><span class="icon circle info"></span>Yes</a></li>
+                        <li><a href="{{route('employees.index')}}?is_terminated=0"><span class="icon circle default"></span>No</a></li>
+                    </ul>
+                </li>
                 </ul>
             </form>
         </div>
@@ -73,6 +81,7 @@
                             <th data-sortable="true">Surname</th>
                             <th data-sortable="true">Department</th>
                             <th data-sortable="true">Job Title</th>
+                            <th data-sortable="true">Date Terminated</th>
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
@@ -84,6 +93,10 @@
                             <td>{{ $employee->surname }}</td>
                             <td>{{ optional($employee)->department }}</td>
                             <td>{{ optional($employee)->job_title }}</td>
+
+                            {{--@if(!is_null($employee->date_terminated))--}}
+                                <td>{{ (optional($employee)->date_terminated)?$employee->date_terminated:'' }}</td>
+                            {{--@endif--}}
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
