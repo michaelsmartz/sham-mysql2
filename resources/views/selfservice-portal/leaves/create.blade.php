@@ -23,6 +23,7 @@
 @section('content')
     <form method="POST" action="{{ route('leaves.store') }}" id="leave_form" name="leave_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
+        {!! method_field('post') !!}
         <div class="box box-primary">
             <div class="box-body">
                 @yield('modalContent')

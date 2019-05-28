@@ -122,7 +122,7 @@ class SSPEmployeeLeavesController extends Controller
         $employee_id = Route::current()->parameter('employee_id');
         $leave_description = Route::current()->parameter('leave_desc');
 
-        $employee      =  Employee::find($employee_id);
+        $employee      = Employee::find($employee_id);
         $leave_type    = $this->getEligibleAbsencesTypes($employee_id,$leave_id);
         $remaining     = $leave_type[0]->remaining;
         $duration_unit = $leave_type[0]->duration_unit;

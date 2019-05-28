@@ -24,6 +24,7 @@
         </div>
     @endif
 </div>
+
 @section('content')
     <div class="container-fluid">
         <div class="row">

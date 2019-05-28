@@ -1,6 +1,7 @@
 import {on} from "delegated-events";
 
 window.on = global.on = on;
+$("input[name='_method']").val('POST');
 
 on('change','.pending_box',function(event){
     if(this.checked) {
@@ -20,6 +21,10 @@ on('click','#bundle_submit',function(event){
         window.location = "/leaves/batch/"+leave_ids+"/"+status;
 });
 
+on('click','#bundle_check',function(event){
+    $('.pending_box').trigger('click');
+});
+
 
 // Listen for browser-generated events.
 on('focusin', 'input.datepicker-leave', function(event) {
@@ -27,7 +32,7 @@ on('focusin', 'input.datepicker-leave', function(event) {
         val = el.val(),
         elFlatpickr = el._flatpickr;
 
-    var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
     var disable_date = new Array();
     var time_slot    = new Array();
    
@@ -44,18 +49,17 @@ on('focusin', 'input.datepicker-leave', function(event) {
     if(typeof el._flatpickr === "undefined") {
         elFlatpickr = flatpickr(el, {
             defaultDate: val,
+            time_24hr: true,
             disable: [function(date) {
                 var day = date.getDay();
                 if($.inArray(day,disable_date) !== -1){
                     return true;
                 }
-    
             }],
             locale: {
                 "firstDayOfWeek": 1 // start week on Monday
             },
             onChange: function(selectedDates, dateStr, instance) {
-                console.log(selectedDates[0].getDay());
                 elFlatpickr.set('minTime', time_slot[selectedDates[0].getDay()][0]); //minTime
                 elFlatpickr.set('maxTime', time_slot[selectedDates[0].getDay()][1]); //maxTime
             }
@@ -63,25 +67,7 @@ on('focusin', 'input.datepicker-leave', function(event) {
         });
         elFlatpickr.open();
     } else {
-        elFlatpickr = flatpickr(el, {
-            defaultDate: val,
-            disable: [function(date) {
-                var day = date.getDay();
-                if($.inArray(day,disable_date) !== -1){
-                    return true;
-                }
-    
-            }],
-            locale: {
-                "firstDayOfWeek": 1 // start week on Monday
-            },
-            onChange: function(selectedDates, dateStr, instance) {
-                console.log(selectedDates[0].getDay());
-                elFlatpickr.set('minTime', '8:00');
-                elFlatpickr.set('maxTime', '11:00');
-            }
-    
-        });
+        elFlatpickr = flatpickr(el, {defaultDate: val});
     }
 
     

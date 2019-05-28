@@ -1,6 +1,7 @@
 <form id="modalForm" method="POST" action="@yield('postModalUrl')" accept-charset="UTF-8" enctype="multipart/form-data">
     {{ csrf_field() }}
     {!! method_field('patch') !!}
+
     <div class="light-modal" id="light-modal" role="dialog" aria-labelledby="light-modal-label" aria-hidden="false">
         <div class="light-modal-content large-content animated fadeIn">
             <div class="light-modal-header">
