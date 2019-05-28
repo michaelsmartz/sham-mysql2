@@ -34,7 +34,7 @@
             <select class="form-control" id="employee_id" name="employee_id">
                 <option value="0">Select employee</option>
                 @foreach ($employees as $employee)
-                    <option value="{{ $employee->id }}" @if(!empty($selected['employee_id']) && $selected['employee_id'] == $employee->id) selected @endif>
+                    <option value="{{ $employee->id }}" @if(!empty($selected['employee']->id) && $selected['employee']->id == $employee->id) selected @endif>
                         {{ $employee->first_name }} {{ $employee->surname }}
                     </option>
                 @endforeach

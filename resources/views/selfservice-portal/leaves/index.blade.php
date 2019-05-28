@@ -1,7 +1,29 @@
 <link rel="stylesheet" href="{{asset('css/leave.css')}}">
 @extends('portal-index')
-@section('title','My Absences and leaves')
+@if(!empty($selected['employee']->id) && $selected['employee']->id !== \Auth::user()->employee_id)
+    @section('title',"My Absences and leaves : ".$selected['employee']->first_name." ".$selected['employee']->surname)
+    @section('subtitle', "Manage associated employee's absences and leaves")
+@else
+    @section('title','My Absences and leaves')
+    @section('subtitle', 'Keep track and manage your absences and leaves')
+@endif
 @section('subtitle', 'Keep track and manage your absences and leaves')
+
+
+<div class="alert-container">
+    @if ($errors->any())
+        <div class="alert error" role="alert">
+            <input type="checkbox" id="alert1"/>
+            <label class="close" title="close" for="alert1">
+                <i class="fa fa-times"></i>
+            </label>
+
+            @foreach ($errors->all() as $error)
+                <p class="inner">{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+</div>
 @section('content')
     <div class="container-fluid">
         <div class="row">

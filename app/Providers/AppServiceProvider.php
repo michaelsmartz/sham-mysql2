@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Collective\Html\FormBuilder as Form;
 use App\Macros\Routing\Router;
 use App\User;
+use Validator;
 use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Queue\Events\JobProcessing;
@@ -56,6 +57,12 @@ class AppServiceProvider extends ServiceProvider
             });
         }
         */
+
+        Validator::extend('greater_or_equal', function($attribute, $value, $parameters, $validator) {
+            $min_field = $parameters[0];
+            return (float)$value >= (float)$min_field;
+        }); 
+
 
     }
 

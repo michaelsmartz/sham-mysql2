@@ -2,6 +2,15 @@
     <input type="hidden" value="{{$leave_id}}" id="absence_type_id" name="absence_type_id">
 @endif
 
+@if(isset($employee_id))
+   <input type="hidden" id="employee_id" name="employee_id" value="{{$employee_id}}">
+@endif
+
+@if(isset($remaining))
+    <input id="remaining_balance" name="remaining_balance" type="hidden" value="{{$remaining}}">
+    <input id="duration_unit" name="duration_unit" type="hidden" value="{{$duration_unit}}">
+@endif
+
 <div class="row">
     <div class="form-group col-sm-6">
         <label class="control-label">From</label>

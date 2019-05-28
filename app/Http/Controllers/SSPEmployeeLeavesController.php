@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use App\EmployeeLeave;
+use App\EmployeeEligibility;
 use App\Enums\DayType;
 use App\Enums\LeaveStatusType;
+use App\Enums\LeaveDurationUnitType;
 use App\TimeGroup;
 use Illuminate\Http\Request;
+use App\Http\Requests\LeaveRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use DateInterval;
@@ -49,7 +52,7 @@ class SSPEmployeeLeavesController extends Controller
         }
 
         $selected = array(
-            'employee_id' => $employee_id
+            'employee' => Employee::find($employee_id)
         );
         
         return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees', 'selected', 'pending_request'));
@@ -67,14 +70,17 @@ class SSPEmployeeLeavesController extends Controller
             //employee's leave viewed from manager
             $employee_id = $request->input('employee_id');
             $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
+            $selected    = $employee_id;
         }elseif ($request->input('employee_id') == 0){
             //manager's leave
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
             $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
+            $selected    = null;
         }else{
             //employee's leave
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
             $employees   = null;
+            $selected    = null;
         }
 
         //Filter by leave type
@@ -85,7 +91,7 @@ class SSPEmployeeLeavesController extends Controller
         }
 
         if(count($employees) > 0){
-            $pending_request = $this->getPendingRequests(\Auth::user()->employee_id);
+            $pending_request = $this->getPendingRequests(\Auth::user()->employee_id,$selected);
         }else{
             $pending_request = null;
         }
@@ -94,7 +100,7 @@ class SSPEmployeeLeavesController extends Controller
         $eligibility = $this->getEmployeeLeavesStatus($employee_id);
 
         $selected = array(
-            'employee_id' => $employee_id,
+            'employee'    => Employee::find($employee_id),
             'absence_id'  => $absence_type
         );
 
@@ -116,10 +122,11 @@ class SSPEmployeeLeavesController extends Controller
         $employee_id = Route::current()->parameter('employee_id');
         $leave_description = Route::current()->parameter('leave_desc');
 
-        if($employee_id)
-            $employee =  Employee::find($employee_id);
-        else
-            $employee = null;
+        $employee      =  Employee::find($employee_id);
+        $leave_type    = $this->getEligibleAbsencesTypes($employee_id,$leave_id);
+        $remaining     = $leave_type[0]->remaining;
+        $duration_unit = $leave_type[0]->duration_unit;
+        $time_period   = self::getTimePeriod($employee);
 
         //Note if non_working_days flag set to 1 remove non working days from flatpickr
         //non_working_days flag is send in $leave_type array
@@ -147,39 +154,74 @@ class SSPEmployeeLeavesController extends Controller
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function store(LeaveRequest $request)
     {
         try {
-            $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-
-            $start    = (new DateTime($request->input('leave_from')));
-            $end      = (new DateTime($request->input('leave_to')))->modify('next day');
-            $interval = DateInterval::createFromDateString('1 day');
-            $period   = new DatePeriod($start,$interval, $end);
-
-            foreach ($period as $day) {
-                $curr = $day->format('D');
-
-                // exclude if Saturday or Sunday
-                if ($curr == 'Sat' || $curr == 'Sun') {
-                    continue;
-                }else{
-                    $leave_request = new EmployeeLeave();
-                    $leave_request->absence_type_id = $request->input('absence_type_id');
-                    $leave_request->employee_id = $employee_id;
-                    $leave_request->status = 0;
-                    $leave_request->starts_at = $day->format("Y-m-d h:i");
-                    $leave_request->ends_at = $day->format("Y-m-d h:i");
-                    $leave_request->save();
-                }
-
+            //filtered by employee 
+            if(!empty($request->input('employee_id'))){
+                $employee_id = (int)$request->input('employee_id');
+            }else{
+                $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
             }
+           
+            $employee    =  Employee::find($employee_id);
+            $time_period =  self::getTimePeriod($employee);
+
+            $request_from = date_create($request->input('leave_from'))->format("Y-m-d");
+            $request_to   = date_create($request->input('leave_to'))->format("Y-m-d");
+            
+            if($request_from == $request_to){
+                //single day
+                $leave_request = new EmployeeLeave();
+                $leave_request->absence_type_id = $request->input('absence_type_id');
+                $leave_request->employee_id = $employee_id;
+                $leave_request->status = LeaveStatusType::status_pending; 
+                $leave_request->starts_at = $request->input('leave_from');
+                $leave_request->ends_at   = $request->input('leave_to');
+                $leave_request->save();
+            }else{
+                //multiple days
+                $start    = (new DateTime($request->input('leave_from')));
+                $end      = (new DateTime($request->input('leave_to')))->modify('next day');
+                $interval = DateInterval::createFromDateString('1 day');
+                $period   = new DatePeriod($start,$interval, $end);
+
+                foreach ($period as $day) {
+                    $curr = $day->format('l');
+                    // exclude non working days
+                    if (!isset($time_period[$curr])) {
+                        continue;
+                    }else{
+                        $leave_request = new EmployeeLeave();
+                        $leave_request->absence_type_id = $request->input('absence_type_id');
+                        $leave_request->employee_id = $employee_id;
+                        $leave_request->status = LeaveStatusType::status_pending; 
+                        //first absence date
+                        if($day->format("Y-m-d") == $request_from){
+                            $leave_request->starts_at = $request->input('leave_from');
+                            $leave_request->ends_at   = $day->format("Y-m-d").' '.$time_period[$curr]['end_time'];
+                        //last absence date
+                        }elseif($day->format("Y-m-d") == $request_to){
+                            $leave_request->starts_at = $day->format("Y-m-d").' '.$time_period[$curr]['start_time'];
+                            $leave_request->ends_at   = $request->input('leave_to');
+                        //absence date(s) between
+                        }else{
+                            $leave_request->starts_at = $day->format("Y-m-d").' '.$time_period[$curr]['start_time'];
+                            $leave_request->ends_at   = $day->format("Y-m-d").' '.$time_period[$curr]['end_time'];
+                        }
+                    
+                        $leave_request->save();
+                    }
+                    
+                }
+            }
+            
             \Session::put('success', $this->baseFlash . 'updated!!');
         } catch (Exception $exception) {
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
-
-        return redirect()->route($this->baseRoute .'.index');
+       
+        return redirect()->back();
     }
 
 
@@ -240,7 +282,7 @@ class SSPEmployeeLeavesController extends Controller
     public static function getEmployeeLeavesStatus($employee_id){
 
         $employee_leave= DB::select(
-            "SELECT abs.id,abs.description as absence_description,(SELECT COUNT(id) FROM absence_type_employee ate WHERE ate.employee_id = 2126 AND abs.id = ate.absence_type_id) as pending,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date
+            "SELECT abs.id,abs.description as absence_description,abs.duration_unit,(SELECT COUNT(id) FROM absence_type_employee ate WHERE ate.employee_id = $employee_id AND abs.id = ate.absence_type_id AND ate.status = ".LeaveStatusType::status_pending.") as pending,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date
             FROM eligibility_employee ele
             LEFT JOIN absence_types abs ON abs.id = ele.absence_type_id
             WHERE ele.start_date <= NOW() AND ele.employee_id = $employee_id ;"
@@ -252,26 +294,52 @@ class SSPEmployeeLeavesController extends Controller
     }
 
 
-    public static function getEligibleAbsencesTypes($employee_id){
+    public static function getEligibleAbsencesTypes($employee_id,$absence_type_id = null){
         $eligible_leave= DB::select(
             "SELECT abt.id, 
             abt.non_working_days as non_working_days, 
             abt.description,(ele.total - ele.taken) as remaining 
             FROM eligibility_employee ele
             LEFT JOIN absence_types abt ON abt.id = ele.absence_type_id
-            WHERE ele.start_date <= NOW() AND ele.employee_id = $employee_id;"
-        );
+            WHERE ele.start_date <= NOW() AND ele.employee_id = $employee_id";
+       
 
+        if(!empty($absence_type_id)){
+            $sql .= " AND abt.id =".$absence_type_id;
+        }
+
+        $eligible_leave = DB::select($sql);
         return $eligible_leave;
     }
 
-    function changeStatus($leave_id,$status){
+    function changeStatus($leave_id,$status,$mode = 'default'){
         try {
             $leave_request = EmployeeLeave::findOrFail($leave_id);
             $leave_request->status = $status;
+            $duration_unit = $leave_request->AbsenceType->duration_unit;
+            if($status != LeaveStatusType::status_cancelled){
+                $leave_request->approved_by_employee_id = \Auth::user()->employee_id;
+            }
+            //date diff, 1 day = 8 hours
+            $date_from = strtotime($leave_request->starts_at);
+            $date_to   = strtotime($leave_request->ends_at);
+            if($duration_unit == LeaveDurationUnitType::Days){
+                $date_diff = round((($date_to - $date_from) / (60 * 60 * 8)),2);
+            }else{
+                $date_diff = round((($date_to - $date_from) / (60 * 60)),2);
+            }
+            
+
+            $taken = self::getAbsenceTypeTaken($leave_request->employee_id,$leave_request->absence_type_id);
+            $update_taken = EmployeeEligibility::where('employee_id',$leave_request->employee_id)
+                                        ->where('absence_type_id',$leave_request->absence_type_id)
+                                        ->update(['taken' => ($taken + $date_diff)]);
             $leave_request->save();
 
-            \Session::put('success', $this->baseFlash . 'updated!!');
+            if($mode == 'default'){
+                \Session::put('success', $this->baseFlash . 'updated!!');
+            }
+            
         } catch (Exception $exception) {
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
@@ -282,8 +350,10 @@ class SSPEmployeeLeavesController extends Controller
     function batchChangeStatus($leave_ids,$status){
         try {
             $ids = explode(',',$leave_ids);
-            $leave_request = EmployeeLeave::whereIn('id',$ids)->update(['status' => $status]);
-
+            foreach($ids as $id){
+                $this->changeStatus($id,$status,'batch');
+            }
+           
             \Session::put('success', $this->baseFlash . 'updated!!');
         } catch (Exception $exception) {
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
@@ -292,17 +362,33 @@ class SSPEmployeeLeavesController extends Controller
         return redirect()->route($this->baseRoute .'.index');
     }
 
+    public static function getAbsenceTypeTaken($employee_id,$absence_type_id){
+        $taken = DB::table('eligibility_employee')
+        ->select('taken')
+        ->where('employee_id','=',$employee_id)
+        ->where('absence_type_id','=',$absence_type_id)
+        ->pluck('taken')->toArray();
 
-    private function getPendingRequests($manager_id){
+        return $taken[0];
+    }
+
+
+    private function getPendingRequests($manager_id,$selected = null){
         $employee_ids = EmployeesController::getManagerEmployeeIds($manager_id);
 
         $sql_request = "SELECT abe.id,abs.description as absence_description,abe.employee_id,CONCAT(emp.first_name,\" \",emp.surname) as employee,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status
             FROM absence_type_employee abe
             LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
             LEFT JOIN eligibility_employee ele ON (ele.absence_type_id =abs.id AND ele.employee_id =abe.employee_id)
-            LEFT JOIN employees emp ON abe.employee_id = emp.id
-            WHERE abe.employee_id IN (".implode(',',$employee_ids).") AND abe.status =".LeaveStatusType::status_pending."
-            ORDER BY abe.starts_at DESC;";
+            LEFT JOIN employees emp ON abe.employee_id = emp.id";
+         
+        if(!empty($selected)){
+            $sql_request .=" WHERE abe.employee_id = $selected AND abe.status =".LeaveStatusType::status_pending;
+        }else{
+            $sql_request .=" WHERE abe.employee_id IN (".implode(',',$employee_ids).") AND abe.status =".LeaveStatusType::status_pending;
+        }
+        $sql_request .= " ORDER BY abe.starts_at DESC;";
+        
 
         $pending_requests = DB::select($sql_request);
 
@@ -322,7 +408,7 @@ class SSPEmployeeLeavesController extends Controller
         return $pending_request[0];
     }
 
-    private function getTimePeriod($employee){
+    public static function getTimePeriod($employee){
         $time_period = [];
         $tg= [];
 
@@ -358,7 +444,7 @@ class SSPEmployeeLeavesController extends Controller
         return $time_period;
     }
 
-    private function timeIntervalReadable($value) {
+    private static function timeIntervalReadable($value) {
         if ($value != null) {
             $interval = new DateTime($value);
             return $interval->format('G:i');
@@ -367,7 +453,7 @@ class SSPEmployeeLeavesController extends Controller
     }
 
 
-    private function getOfficeHours($tgTimePeriod){
+    private static function getOfficeHours($tgTimePeriod){
         $officeTime = [];
         if (!empty($tgTimePeriod->start_time)) {
             $objStartTime = self::timeIntervalReadable($tgTimePeriod->start_time);

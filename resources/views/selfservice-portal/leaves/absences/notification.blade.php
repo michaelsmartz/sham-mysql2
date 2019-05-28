@@ -22,7 +22,7 @@
     @endforeach
     <div class="form-group batch_status container-fluid">
         <div class="col-md-9">
-            <label for="batch_operation"><span class="glyphicon glyphicon-check"></span> Batch operation</label>
+            <label for="batch_operation"><input type="checkbox" id="bundle_check" value="0">  <span class="glyphicon glyphicon-check"></span> Batch operation</label>
             <select class="form-control" id="batch_operation" name="batch_operatione">
                 <option value="0">Select batch operation</option>
                 <option value="{{App\Enums\LeaveStatusType::status_approved}}">Approve selected</option>

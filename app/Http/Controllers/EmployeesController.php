@@ -707,12 +707,24 @@ class EmployeesController extends CustomController
 
 
     public static function getManagerEmployees($manager_id){
-        $employees_ids  = DB::table('employees')->select('id','first_name','surname')->where('line_manager_id', $manager_id)->get();
+        $employees_ids  = DB::table('employees')->select('id','first_name','surname')
+        ->where(function($q){
+            $q->where('date_terminated','<=','NOW()')
+              ->orWhereNull('date_terminated');
+        })
+        ->where('line_manager_id', $manager_id)
+        ->get();
         return $employees_ids;
     }
 
     public static function getManagerEmployeeIds($manager_id){
-        $employees_ids  = Employee::where('line_manager_id', $manager_id)->pluck('id')->toArray();
+        $employees_ids  = Employee::where('line_manager_id', $manager_id)
+        ->where(function($q){
+            $q->where('date_terminated','<=','NOW()')
+              ->orWhereNull('date_terminated');
+        })
+        ->pluck('id')
+        ->toArray();
         return $employees_ids;
     }
 
