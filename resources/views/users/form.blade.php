@@ -7,7 +7,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('password') ? 'has-error' : '' }}">
         <label for="password">Password <span class="text-info">(Leave blank for no change)</span></label>
-            <input class="form-control" name="password" type="password" id="password" value="{{ old('password', optional($data)->password) }}" placeholder="Enter password">
+            <input class="form-control" name="password" type="password" id="password" value="" placeholder="Enter password" autocomplete="new-password">
             {!! $errors->first('password', '<p class="help-block">:message</p>') !!}
     </div>
 

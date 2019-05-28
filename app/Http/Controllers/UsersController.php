@@ -116,7 +116,11 @@ class UsersController extends CustomController
         try {
             $this->editValidator($request);
 
-            $password = ['password' => bcrypt($request->get('password'))];
+            if(!is_null($request->get('password'))) {
+                $password = ['password' => bcrypt($request->get('password'))];
+            }else{
+                $password['password'] = User::select('password')->where('id', $id)->get()->first()->password;
+            }
 
             $input = array_except($request->all(),array('_token','_method', 'password'));
 
