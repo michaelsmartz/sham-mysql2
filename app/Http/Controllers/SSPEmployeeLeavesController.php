@@ -136,7 +136,7 @@ class SSPEmployeeLeavesController extends Controller
         //dd($time_period['Monday']['start_time']);
         //dd($time_period);
 
-        $view = view($this->baseViewPath .'.create',compact('leave_type', 'leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
+        $view = view($this->baseViewPath .'.create',compact('remaining','duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
         return response()->json([
             'title' => $view['modalTitle'],
             'content' => $view['modalContent'],
@@ -295,9 +295,9 @@ class SSPEmployeeLeavesController extends Controller
 
 
     public static function getEligibleAbsencesTypes($employee_id,$absence_type_id = null){
-        $eligible_leave= DB::select(
+        $sql= 
             "SELECT abt.id, 
-            abt.non_working_days as non_working_days, 
+            abt.non_working_days as non_working_days,abt.duration_unit, 
             abt.description,(ele.total - ele.taken) as remaining 
             FROM eligibility_employee ele
             LEFT JOIN absence_types abt ON abt.id = ele.absence_type_id
