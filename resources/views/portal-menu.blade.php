@@ -226,7 +226,7 @@
                 <li class="{{ (Request::is('entitlements/*') || Request::is('entitlements') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/entitlements">Entitlements</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_LEAVE][App\SystemSubModule::CONST_LEAVES]))
-                <li class="{{ (Request::is('history_leaves/*') || Request::is('history_leaves') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/history_leaves">Leaves</a></li>
+                <li class="{{ (Request::is('history_leaves/*') || Request::is('history_leaves') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/history_leaves">Histories</a></li>
             @endif
         </ul>
     </li>

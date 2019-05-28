@@ -1,8 +1,8 @@
 @extends('portal-index')
 @if(is_null($selected_employee))
-    @section('title','Leaves')
+    @section('title','Leaves Histories')
 @else
-    @section('title','Leaves for '. optional($selected_employee)->full_name)
+    @section('title','Leaves Histories for '. optional($selected_employee)->full_name)
 @endif
 @section('content')
     <div class="flex-wrapper">
@@ -73,8 +73,8 @@
                     @foreach($leaves as $leave)
                         <tr class="data-history">
                             <td>{{$leave->absence_description}}</td>
-                            <td>{{$leave->starts_at}}</td>
-                            <td>{{$leave->ends_at}}</td>
+                            <td>{{ (new DateTime($leave->starts_at))->format('Y-m-d')}}</td>
+                            <td>{{ (new DateTime($leave->ends_at))->format('Y-m-d')}}</td>
                             <td class="center">
                                 @switch($leave->status)
                                     @case(3)
