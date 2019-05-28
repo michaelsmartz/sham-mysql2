@@ -73,7 +73,8 @@ class EmployeesController extends CustomController
         $department = $request->get('department:description', null);
         $jobTitle = $request->get('jobtitle:description', null);
         $is_terminated = $request->get('is_terminated', null);
-        
+        $search_term = $request->get('search-term', null);
+
         $allowedActions = getAllowedActions(SystemSubModule::CONST_EMPLOYEE_DATABASE);
 
         if(!empty($fullName)){
@@ -87,7 +88,7 @@ class EmployeesController extends CustomController
         }
 
         //$employees = $this->contextObj::with('department','jobTitle')->filtered()->paginate(10);
-        $employees = $this->contextObj::employeesList($is_terminated)->filtered()->paginate(10);
+        $employees = $this->contextObj::employeesList($is_terminated, $search_term)->filtered()->paginate(10);
 
         // handle empty result bug
         if (Input::has('page') && $employees->isEmpty()) {
