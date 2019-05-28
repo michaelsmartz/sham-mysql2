@@ -10346,6 +10346,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 window.on = global.on = __WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */];
+$("input[name='_method']").val('POST');
 
 Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('change', '.pending_box', function (event) {
     if (this.checked) {
@@ -10364,13 +10365,17 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#
     window.location = "/leaves/batch/" + leave_ids + "/" + status;
 });
 
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#bundle_check', function (event) {
+    $('.pending_box').trigger('click');
+});
+
 // Listen for browser-generated events.
 Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.datepicker-leave', function (event) {
     var el = $(this),
         val = el.val(),
         elFlatpickr = el._flatpickr;
 
-    var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     var disable_date = new Array();
     var time_slot = new Array();
 
@@ -10385,6 +10390,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
     if (typeof el._flatpickr === "undefined") {
         elFlatpickr = flatpickr(el, {
             defaultDate: val,
+            time_24hr: true,
             disable: [function (date) {
                 var day = date.getDay();
                 if ($.inArray(day, disable_date) !== -1) {
@@ -10395,7 +10401,6 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
                 "firstDayOfWeek": 1 // start week on Monday
             },
             onChange: function onChange(selectedDates, dateStr, instance) {
-                console.log(selectedDates[0].getDay());
                 elFlatpickr.set('minTime', time_slot[selectedDates[0].getDay()][0]); //minTime
                 elFlatpickr.set('maxTime', time_slot[selectedDates[0].getDay()][1]); //maxTime
             }
@@ -10403,24 +10408,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
         });
         elFlatpickr.open();
     } else {
-        elFlatpickr = flatpickr(el, {
-            defaultDate: val,
-            disable: [function (date) {
-                var day = date.getDay();
-                if ($.inArray(day, disable_date) !== -1) {
-                    return true;
-                }
-            }],
-            locale: {
-                "firstDayOfWeek": 1 // start week on Monday
-            },
-            onChange: function onChange(selectedDates, dateStr, instance) {
-                console.log(selectedDates[0].getDay());
-                elFlatpickr.set('minTime', '8:00');
-                elFlatpickr.set('maxTime', '11:00');
-            }
-
-        });
+        elFlatpickr = flatpickr(el, { defaultDate: val });
     }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(1)))
