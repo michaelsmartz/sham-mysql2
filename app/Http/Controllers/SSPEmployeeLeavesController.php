@@ -322,27 +322,34 @@ class SSPEmployeeLeavesController extends Controller
     function changeStatus($leave_id,$status,$mode = 'default'){
         try {
             $leave_request = EmployeeLeave::findOrFail($leave_id);
-            $leave_request->status = $status;
             $duration_unit = $leave_request->AbsenceType->duration_unit;
             if($status != LeaveStatusType::status_cancelled){
                 $leave_request->approved_by_employee_id = \Auth::user()->employee_id;
-            }
-            //date diff, 1 day = 8 hours
-            $date_from = strtotime($leave_request->starts_at);
-            $date_to   = strtotime($leave_request->ends_at);
-            if($duration_unit == LeaveDurationUnitType::Days){
-                $date_diff = round((($date_to - $date_from) / (60 * 60 * 8)),2);
-            }else{
-                $date_diff = round((($date_to - $date_from) / (60 * 60)),2);
-            }
-            
+            }elseif($status != LeaveStatusType::status_denied){
+                //date diff, 1 day = 8 hours
+                $date_from = strtotime($leave_request->starts_at);
+                $date_to   = strtotime($leave_request->ends_at);
+                if($duration_unit == LeaveDurationUnitType::Days){
+                    $date_diff = round((($date_to - $date_from) / (60 * 60 * 8)),2);
+                }else{
+                    $date_diff = round((($date_to - $date_from) / (60 * 60)),2);
+                }
+                
+                $taken = self::getAbsenceTypeTaken($leave_request->employee_id,$leave_request->absence_type_id);
+                if(($status == LeaveStatusType::status_cancelled) && ($leave_request->status == LeaveStatusType::status_approved)){
+                    $new_taken = $taken - $date_diff;
+                }else{
+                    $new_taken = $taken + $date_diff;
+                }
 
-            $taken = self::getAbsenceTypeTaken($leave_request->employee_id,$leave_request->absence_type_id);
-            $update_taken = EmployeeEligibility::where('employee_id',$leave_request->employee_id)
+                $update_taken = EmployeeEligibility::where('employee_id',$leave_request->employee_id)
                                         ->where('absence_type_id',$leave_request->absence_type_id)
-                                        ->update(['taken' => ($taken + $date_diff)]);
+                                        ->update(['taken' => ($new_taken)]);
+            }
+           
+            $leave_request->status = $status;
             $leave_request->save();
-
+            
             if($mode == 'default'){
                 \Session::put('success', $this->baseFlash . 'updated!!');
             }
