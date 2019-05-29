@@ -103,6 +103,9 @@ mix.sass('resources/assets/sass/tinymce-custom.scss', 'public/css', {
 mix.sass('resources/assets/sass/flatpickr.scss', 'public/css', {
   outputStyle: 'nested'
 });
+mix.sass('resources/assets/sass/leaves.scss', 'public/css', {
+  outputStyle: 'nested'
+});
 
 mix/*.webpackConfig({
     externals:{
@@ -135,6 +138,7 @@ mix.minify('public/css/nav-wizard.css');
 mix.minify('public/css/recruitment-request.css');
 mix.minify('public/css/candidates.css');
 mix.minify('public/css/flatpickr.css');
+mix.minify('public/css/leaves.css');
 
 mix.then(() => {
     minifier.minify('public/css/app.css');
@@ -148,6 +152,7 @@ mix.then(() => {
     minifier.minify('public/css/candidates.css');
     minifier.minify('public/css/tinymce-custom.css');
     minifier.minify('public/css/flatpickr.css');
+    minifier.minify('public/css/leaves.css');
 
     minifier.minify('public/js/tables.js');
     minifier.minify('public/js/uploader.js');

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 392);
+/******/ 	return __webpack_require__(__webpack_require__.s = 393);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -93,36 +93,36 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 392:
+/***/ 393:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(393);
+module.exports = __webpack_require__(394);
 
 
 /***/ }),
 
-/***/ 393:
+/***/ 394:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce__ = __webpack_require__(394);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce__ = __webpack_require__(395);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tinymce_tinymce__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme__ = __webpack_require__(395);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme__ = __webpack_require__(396);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_tinymce_themes_silver_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme__ = __webpack_require__(396);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme__ = __webpack_require__(397);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_tinymce_themes_mobile_theme__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave__ = __webpack_require__(397);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave__ = __webpack_require__(398);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_tinymce_plugins_autosave__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists__ = __webpack_require__(399);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists__ = __webpack_require__(400);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_tinymce_plugins_lists__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__ = __webpack_require__(401);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__ = __webpack_require__(402);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_tinymce_plugins_paste__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__ = __webpack_require__(403);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__ = __webpack_require__(404);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_tinymce_plugins_fullscreen__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__ = __webpack_require__(405);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__ = __webpack_require__(406);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_tinymce_plugins_textpattern__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_noneditable__ = __webpack_require__(407);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_noneditable__ = __webpack_require__(408);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_noneditable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_tinymce_plugins_noneditable__);
 // Import TinyMCE
 
@@ -173,7 +173,7 @@ window.insertPlaceHolder = function (val) {
 
 /***/ }),
 
-/***/ 394:
+/***/ 395:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {/**
@@ -27225,7 +27225,7 @@ window.insertPlaceHolder = function (val) {
 
 /***/ }),
 
-/***/ 395:
+/***/ 396:
 /***/ (function(module, exports) {
 
 /**
@@ -55256,7 +55256,7 @@ var silver = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 396:
+/***/ 397:
 /***/ (function(module, exports) {
 
 /**
@@ -68837,7 +68837,7 @@ var mobile = (function (exports, domGlobals) {
 
 /***/ }),
 
-/***/ 397:
+/***/ 398:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "autosave" plugin for usage with module loaders
@@ -68846,11 +68846,11 @@ var mobile = (function (exports, domGlobals) {
 //     require('tinymce/plugins/autosave')
 //   ES2015:
 //     import 'tinymce/plugins/autosave'
-__webpack_require__(398);
+__webpack_require__(399);
 
 /***/ }),
 
-/***/ 398:
+/***/ 399:
 /***/ (function(module, exports) {
 
 /**
@@ -69085,19 +69085,6 @@ var autosave = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 399:
-/***/ (function(module, exports, __webpack_require__) {
-
-// Exports the "lists" plugin for usage with module loaders
-// Usage:
-//   CommonJS:
-//     require('tinymce/plugins/lists')
-//   ES2015:
-//     import 'tinymce/plugins/lists'
-__webpack_require__(400);
-
-/***/ }),
-
 /***/ 4:
 /***/ (function(module, exports) {
 
@@ -69290,6 +69277,19 @@ process.umask = function() { return 0; };
 /***/ }),
 
 /***/ 400:
+/***/ (function(module, exports, __webpack_require__) {
+
+// Exports the "lists" plugin for usage with module loaders
+// Usage:
+//   CommonJS:
+//     require('tinymce/plugins/lists')
+//   ES2015:
+//     import 'tinymce/plugins/lists'
+__webpack_require__(401);
+
+/***/ }),
+
+/***/ 401:
 /***/ (function(module, exports) {
 
 /**
@@ -71499,7 +71499,7 @@ var lists = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 401:
+/***/ 402:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "paste" plugin for usage with module loaders
@@ -71508,11 +71508,11 @@ var lists = (function (domGlobals) {
 //     require('tinymce/plugins/paste')
 //   ES2015:
 //     import 'tinymce/plugins/paste'
-__webpack_require__(402);
+__webpack_require__(403);
 
 /***/ }),
 
-/***/ 402:
+/***/ 403:
 /***/ (function(module, exports) {
 
 /**
@@ -73359,7 +73359,7 @@ var paste = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 403:
+/***/ 404:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "fullscreen" plugin for usage with module loaders
@@ -73368,11 +73368,11 @@ var paste = (function (domGlobals) {
 //     require('tinymce/plugins/fullscreen')
 //   ES2015:
 //     import 'tinymce/plugins/fullscreen'
-__webpack_require__(404);
+__webpack_require__(405);
 
 /***/ }),
 
-/***/ 404:
+/***/ 405:
 /***/ (function(module, exports) {
 
 /**
@@ -73570,7 +73570,7 @@ var fullscreen = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 405:
+/***/ 406:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "textpattern" plugin for usage with module loaders
@@ -73579,11 +73579,11 @@ var fullscreen = (function (domGlobals) {
 //     require('tinymce/plugins/textpattern')
 //   ES2015:
 //     import 'tinymce/plugins/textpattern'
-__webpack_require__(406);
+__webpack_require__(407);
 
 /***/ }),
 
-/***/ 406:
+/***/ 407:
 /***/ (function(module, exports) {
 
 /**
@@ -74863,7 +74863,7 @@ var textpattern = (function (domGlobals) {
 
 /***/ }),
 
-/***/ 407:
+/***/ 408:
 /***/ (function(module, exports, __webpack_require__) {
 
 // Exports the "noneditable" plugin for usage with module loaders
@@ -74872,11 +74872,11 @@ var textpattern = (function (domGlobals) {
 //     require('tinymce/plugins/noneditable')
 //   ES2015:
 //     import 'tinymce/plugins/noneditable'
-__webpack_require__(408);
+__webpack_require__(409);
 
 /***/ }),
 
-/***/ 408:
+/***/ 409:
 /***/ (function(module, exports) {
 
 /**
