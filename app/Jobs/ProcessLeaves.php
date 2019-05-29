@@ -241,7 +241,7 @@ class ProcessLeaves implements ShouldQueue
         $ret = [];
 
         // TODO: accrue_period value to be changed to LeaveAccruePeriodType ennum
-        if($accrue_period == 0 || $accrue_period == 1){
+        if($accrue_period == 0 || $accrue_period == 1 || $accrue_period == -1){
             $ret["start_date"] = $workYearStart;
             $ret["end_date"] = $workYearEnd;
         }
