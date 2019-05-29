@@ -136,7 +136,11 @@ class SSPEmployeeLeavesController extends Controller
         //dd($time_period['Monday']['start_time']);
         //dd($time_period);
 
-        $view = view($this->baseViewPath .'.create',compact('remaining','duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
+        $data = DB::table('absence_types')->where(['id' => $leave_id])->first();
+
+        $monthly_allowance = $this->calculateAccruePeriod($data);
+
+        $view = view($this->baseViewPath .'.create',compact('remaining', 'monthly_allowance', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
         return response()->json([
             'title' => $view['modalTitle'],
             'content' => $view['modalContent'],
@@ -466,5 +470,39 @@ class SSPEmployeeLeavesController extends Controller
         }
 
         return $officeTime;
+    }
+
+    /**
+     * monthly_allowance can be in hours or days
+     *
+     * @param $data
+     * @return float|int
+     */
+    private function calculateAccruePeriod($data){
+
+        if($data) {
+            $amountEarns = $data->amount_earns;
+            $accruePeriod = $data->accrue_period;
+
+            switch ($accruePeriod) {
+                case 0: //12 months
+                    $monthly_allowance = $amountEarns / 12;
+                    break;
+                case 1: //1 month
+                    $monthly_allowance = $amountEarns;
+                    break;
+                case 2: //24 months
+                    $monthly_allowance = $amountEarns / 24;
+                    break;
+                case 3: //36 months
+                    $monthly_allowance = $amountEarns / 36;
+                    break;
+                default: //not applicable
+                    $monthly_allowance = $amountEarns;
+                    break;
+            }
+
+            return $monthly_allowance;
+        }
     }
 }

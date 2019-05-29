@@ -13,6 +13,7 @@ use App\Http\Requests\LeaveRequest;
 use DateInterval;
 use DateTime;
 use DatePeriod;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -36,9 +37,11 @@ class LeaveRequest extends FormRequest
     public function rules()
     {
         $remaining     = Input::get('remaining_balance');
+        $monthly_allowance    = Input::get('monthly_allowance');
         $duration_unit = Input::get('duration_unit');
         $employee      = Employee::find(Input::get('employee_id'));
-        
+        $absence_type_id    = Input::get('absence_type_id');
+
         $request_from = date_create(Input::get('leave_from'))->format("Y-m-d");
         $request_to   = date_create(Input::get('leave_to'))->format("Y-m-d");
 
@@ -91,17 +94,19 @@ class LeaveRequest extends FormRequest
             }
         }
 
-    
+        //if apply count greater than monthly_allowance to return an error message
+
         return [
-            'remaining_balance' => 'greater_or_equal:'.$count
+            'remaining_balance' => 'greater_or_equal:'.$count,
+            'monthly_allowance' => 'less_or_equal:'. $count
         ];
     }
 
     public function messages()
     {
         return [
-            'remaining_balance.greater_or_equal' => 'Amount of leave(s) requested exceeds remaining!'
+            'remaining_balance.greater_or_equal' => 'Amount of leave(s) requested exceeds remaining!',
+            'monthly_allowance.less_or_equal' => 'Amount of leave(s) requested exceeds monthly allowance!'
         ];
-
     }
 }

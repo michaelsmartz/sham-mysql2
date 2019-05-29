@@ -152,9 +152,9 @@ over more than a year.">
         <label for="jobTitles">Apply To
             <span>
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
-               data-wenk="If no employee selected it
+               data-wenk="If no job title selected it
 
-will apply to all employee">
+will apply to all job titles">
             </i>
             </span>
         </label>
