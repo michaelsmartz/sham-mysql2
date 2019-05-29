@@ -6,6 +6,10 @@
     <input type="hidden" value="{{$monthly_allowance}}" id="monthly_allowance" name="monthly_allowance">
 @endif
 
+@if(isset($non_working))
+    <input type="hidden" value="{{$non_working}}" id="non_working" name="non_working">
+@endif
+
 @if(isset($employee_id))
    <input type="hidden" id="employee_id" name="employee_id" value="{{$employee_id}}">
 @endif

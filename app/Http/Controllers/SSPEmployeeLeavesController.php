@@ -126,7 +126,9 @@ class SSPEmployeeLeavesController extends Controller
         $leave_type    = $this->getEligibleAbsencesTypes($employee_id,$leave_id);
         $remaining     = $leave_type[0]->remaining;
         $duration_unit = $leave_type[0]->duration_unit;
+        $non_working   = $leave_type[0]->non_working_days;
         $time_period   = self::getTimePeriod($employee);
+        
 
         //Note if non_working_days flag set to 1 remove non working days from flatpickr
         //non_working_days flag is send in $leave_type array
@@ -140,7 +142,7 @@ class SSPEmployeeLeavesController extends Controller
 
         $monthly_allowance = $this->calculateAccruePeriod($data);
 
-        $view = view($this->baseViewPath .'.create',compact('remaining', 'monthly_allowance', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
+        $view = view($this->baseViewPath .'.create',compact('remaining', 'non_working','monthly_allowance', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
         return response()->json([
             'title' => $view['modalTitle'],
             'content' => $view['modalContent'],
@@ -185,15 +187,16 @@ class SSPEmployeeLeavesController extends Controller
                 $leave_request->save();
             }else{
                 //multiple days
-                $start    = (new DateTime($request->input('leave_from')));
-                $end      = (new DateTime($request->input('leave_to')))->modify('next day');
-                $interval = DateInterval::createFromDateString('1 day');
-                $period   = new DatePeriod($start,$interval, $end);
+                $start      = (new DateTime($request->input('leave_from')));
+                $end        = (new DateTime($request->input('leave_to')))->modify('next day');
+                $interval   = DateInterval::createFromDateString('1 day');
+                $period     = new DatePeriod($start,$interval, $end);
+                $non_woking = $request->input('non_working');
 
                 foreach ($period as $day) {
                     $curr = $day->format('l');
                     // exclude non working days
-                    if (!isset($time_period[$curr])) {
+                    if ((!isset($time_period[$curr])) && ($non_woking == 0)){
                         continue;
                     }else{
                         $leave_request = new EmployeeLeave();

@@ -10378,6 +10378,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     var disable_date = new Array();
     var time_slot = new Array();
+    var non_working = $('#non_working').val();
 
     $.each(days, function (index, value) {
         if ($('#' + value).length) {
@@ -10393,7 +10394,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
             time_24hr: true,
             disable: [function (date) {
                 var day = date.getDay();
-                if ($.inArray(day, disable_date) !== -1) {
+                if ($.inArray(day, disable_date) !== -1 && non_working === 0) {
                     return true;
                 }
             }],

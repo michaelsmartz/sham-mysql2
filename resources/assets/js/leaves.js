@@ -35,8 +35,8 @@ on('focusin', 'input.datepicker-leave', function(event) {
     var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
     var disable_date = new Array();
     var time_slot    = new Array();
+    var non_working  = $('#non_working').val();
    
-
     $.each(days, function( index, value ) {
         if($('#'+value).length){
             time_slot[index] = $('#'+value).val().split('-');
@@ -52,7 +52,7 @@ on('focusin', 'input.datepicker-leave', function(event) {
             time_24hr: true,
             disable: [function(date) {
                 var day = date.getDay();
-                if($.inArray(day,disable_date) !== -1){
+                if(($.inArray(day,disable_date) !== -1) && (non_working === 0)){
                     return true;
                 }
             }],
