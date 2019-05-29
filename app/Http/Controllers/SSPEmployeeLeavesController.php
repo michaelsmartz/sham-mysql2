@@ -265,7 +265,7 @@ class SSPEmployeeLeavesController extends Controller
             LEFT JOIN employees emp ON abe.approved_by_employee_id = emp.id";
 
         if(empty($date_from) && empty($date_to)){
-            $sql_request .= " WHERE abe.employee_id = $employee_id AND ele.employee_id = $employee_id";
+            $sql_request .= " WHERE abe.employee_id = $employee_id AND YEAR(abe.starts_at) = YEAR(CURDATE()) AND ele.employee_id = $employee_id";
         }else{
             $sql_request .= " WHERE abe.employee_id = $employee_id AND ele.employee_id = $employee_id AND abe.starts_at BETWEEN '$date_from' AND '$date_to'";;
         }
@@ -289,7 +289,7 @@ class SSPEmployeeLeavesController extends Controller
             "SELECT abs.id,abs.description as absence_description,abs.duration_unit,(SELECT COUNT(id) FROM absence_type_employee ate WHERE ate.employee_id = $employee_id AND abs.id = ate.absence_type_id AND ate.status = ".LeaveStatusType::status_pending.") as pending,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date
             FROM eligibility_employee ele
             LEFT JOIN absence_types abs ON abs.id = ele.absence_type_id
-            WHERE ele.start_date <= NOW() AND ele.employee_id = $employee_id ;"
+            WHERE ele.start_date <= NOW() AND YEAR(ele.start_date) = YEAR(CURDATE()) AND ele.employee_id = $employee_id ;"
         );
 
         return $employee_leave;
