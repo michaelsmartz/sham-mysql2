@@ -24,7 +24,7 @@ class Rule110 extends LeaveBaseClass
 
         $this->retCollection = [];
 
-        if (is_null($this->employeeObj->probation_end_date)) {
+        if (!is_null($this->employeeObj) && optional($this->employeeObj->probation_end_date)) {
             $this->carbonProbationEndDate = Carbon::parse($this->employeeObj->probation_end_date);
         }        
     }
