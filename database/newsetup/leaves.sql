@@ -151,6 +151,13 @@ ENGINE=InnoDB
 ALTER TABLE `absence_types`
 ADD COLUMN `non_working_days` TINYINT(1) NOT NULL DEFAULT '0' AFTER `accrue_period`;
 
+ALTER TABLE `eligibility_employee` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `eligibility_employee` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `eligibility_employee` ADD `deleted_at` DATETIME NULL;
+
+ALTER TABLE `absence_type_employee` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `absence_type_employee` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `absence_type_employee` ADD `deleted_at` DATETIME NULL;
 ALTER TABLE `eligibility_employee`
 	CHANGE COLUMN `total` `total` DECIMAL(6,2) NULL DEFAULT '0.00' AFTER `end_date`,
 	CHANGE COLUMN `taken` `taken` DECIMAL(6,2) NULL DEFAULT '0.00' AFTER `total`;
