@@ -101,7 +101,6 @@ class ProcessLeaves implements ShouldQueue
                         $leaveRule = new $classAbsenceKey(null,$absenceType,$durations['start_date'], $durations['end_date']);
                         $employees = $leaveRule->employeesQuery($durations, $classAbsenceKey)->get();
                         dump($leaveRule);
-
                     }
 
                     dump(sizeof($employees));
@@ -134,7 +133,7 @@ class ProcessLeaves implements ShouldQueue
                     }
 
                     dump($insertArray);
-                    //DB::table('eligibility_employee')->insert($insertArray);
+                    DB::table('eligibility_employee')->insert($insertArray);
                     echo "Completed...", $absenceType->description, "<br>";
 
                     continue;

@@ -50,16 +50,20 @@ class Rule110 extends LeaveBaseClass
 
     public function shouldAddNew()
     {
-        $ret = true;
+        $ret = false;
 
         if (sizeof($this->employeeObj->eligibilities) == 0) {
             $ret = true;
         } else {
             foreach($this->employeeObj->eligibilities as $eligibility) {
-                if ($eligibility->pivot->end_date <= $this->workYearEnd ) {
-                        $ret = true;
-                        break;
+                if ($eligibility->pivot->start_date <= $this->employeeObj->probation_end_date &&
+                    $eligibility->pivot->end_date >= $this->workYearEnd) {
+                    $ret = false;
+
+                } else {
+                    $ret = true;
                 }
+                break;
             }
         }
 
@@ -71,15 +75,15 @@ class Rule110 extends LeaveBaseClass
         $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ($durations) {
             $query = $this->applyEligibilityFilter($query, 'probation_end_date');
         }])->whereNull('date_terminated')
-           ->where('probation_end_date', '>=', $durations['start_date']);
+           ->where('probation_end_date', '<=', Carbon::now()->toDateString());
 
         return $ret;
     }
 
     private function applyEligibilityFilter($query, $dateValue)
     {
-        $query->where('absence_type_id', '=', $this->absenceTypeObj->id)
-            ->where('end_date', '>=', $dateValue);
+        $query->where('absence_type_id', '=', $this->absenceTypeObj->id);
+            //->where('end_date', '>=', $dateValue);
 
         return $query;
     }
