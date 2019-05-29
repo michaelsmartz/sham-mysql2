@@ -161,3 +161,6 @@ ALTER TABLE `absence_type_employee` ADD `deleted_at` DATETIME NULL;
 ALTER TABLE `eligibility_employee`
 	CHANGE COLUMN `total` `total` DECIMAL(6,2) NULL DEFAULT '0.00' AFTER `end_date`,
 	CHANGE COLUMN `taken` `taken` DECIMAL(6,2) NULL DEFAULT '0.00' AFTER `total`;
+
+	ALTER TABLE `absence_types`
+CHANGE COLUMN `amount_earns` `amount_earns` DECIMAL(6,2) NULL DEFAULT NULL COMMENT 'either days or hours';

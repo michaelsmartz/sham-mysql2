@@ -54,7 +54,7 @@
                    <thead>
                        <tr>
                            <th data-sortable="true">Employee Name</th>
-                           <th data-sortable="true">Leave Policy</th>
+                           <th data-sortable="true">Absence Type</th>
                            <th data-sortable="true">Valid From</th>
                            <th data-sortable="true">Valid To</th>
                            <th data-sortable="true">Total</th>

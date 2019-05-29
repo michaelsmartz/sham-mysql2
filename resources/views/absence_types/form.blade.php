@@ -105,8 +105,8 @@ date following the end of probation period">
     <div class="form-group col-xs-12" style="margin-bottom: 0px;!important;">
         <div class="col-xs-4" style="margin-top: 15px;  padding-left: 0;padding-right: 0;">Employee earns a <b>total</b> of</div>
         <div class="form-group col-xs-2 {{ $errors->has('amount_earns') ? 'has-error' : '' }}" style="margin-top: 10px;padding-left: 0;">
-
-            <input class="form-control" name="amount_earns" type="number" id="amount_earns" min="0"  step="0.01" style="" value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}" placeholder="Enter amount earns" required="true" pattern="[0-9]*" onkeypress="return validateDigitQty(event)">
+            {{-- 2 years in hours is equal to 17520 so value cannot exceed this max value --}}
+            <input class="form-control" name="amount_earns" type="number" id="amount_earns" min="0"  step="0.01" max="17520" style="" value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}" placeholder="Enter amount earns" required="true" pattern="[0-9]*" onkeypress="return validateDigitQty(event)">
             {!! $errors->first('amount_earns', '<p class="help-block">:message</p>') !!}
         </div>
         <div class="col-xs-6" style="margin-top: 15px;"><b>{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!}</b> at the start of accrue period below</div>
@@ -164,7 +164,7 @@ will apply to all job titles">
         ) !!}
     </div>
     <div class="form-group col-xs-12 {{ $errors->has('non_working_days') ? 'has-error' : '' }}">
-        <label for="non_working_days">Include none working days</label>
+        <label for="non_working_days">Include non-working days</label>
         <div class="checkbox">
             <label for="non_working_days_1">
                 <input id="non_working_days_1" class="" name="non_working_days" type="hidden" value="0" />
