@@ -67,10 +67,10 @@ class Rule101 extends LeaveBaseClass
         return $this->retCollection;
     }
 
-    public function employeesQuery()
+    public function employeesQuery($durations, $classAbsenceKey)
     {
-        $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ($absenceType, $durations) {
-            $query = $this->applyEligibilityFilter($query, $absenceType->id, 'probation_end_date');
+        $ret =  Employee::employeesLite()->with(['eligibilities' => function ($query) use ( $durations) {
+            $query = $this->applyEligibilityFilter($query, 'probation_end_date');
         }])->whereNull('date_terminated')
            ->where('probation_end_date', '>=', $durations['start_date']);
 
@@ -86,9 +86,9 @@ class Rule101 extends LeaveBaseClass
         $this->retCollection[] = $this->ret;
     }
 
-    private function applyEligibilityFilter($query, $absenceTypeId, $dateValue)
+    private function applyEligibilityFilter($query, $dateValue)
     {
-        $query->where('absence_type_id', '=', $absenceTypeId)
+        $query->where('absence_type_id', '=', $this->absenceTypeObj->id)
             ->where('end_date', '>=', $dateValue);
 
         return $query;

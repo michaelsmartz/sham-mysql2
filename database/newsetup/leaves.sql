@@ -147,5 +147,10 @@ CREATE TABLE `job_logs` (
 COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;
+
 ALTER TABLE `absence_types`
 ADD COLUMN `non_working_days` TINYINT(1) NOT NULL DEFAULT '0' AFTER `accrue_period`;
+
+ALTER TABLE `eligibility_employee`
+	CHANGE COLUMN `total` `total` DECIMAL(6,2) NULL DEFAULT '0.00' AFTER `end_date`,
+	CHANGE COLUMN `taken` `taken` DECIMAL(6,2) NULL DEFAULT '0.00' AFTER `total`;
