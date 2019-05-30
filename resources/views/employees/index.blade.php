@@ -79,8 +79,10 @@
                             <th data-sortable="true">Id</th>
                             <th data-sortable="true">First Name</th>
                             <th data-sortable="true">Surname</th>
+                            <th data-sortable="true" data-tableexport-display="always" data-visible="false">Id Number</th>
                             <th data-sortable="true">Department</th>
                             <th data-sortable="true">Job Title</th>
+                            <th data-sortable="true" data-tableexport-display="always" data-visible="false">Employee Number</th>
                             <th data-sortable="true">Date Terminated</th>
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -91,9 +93,10 @@
                             <td>{{ $employee->id }}</td>
                             <td>{{ $employee->first_name }}</td>
                             <td>{{ $employee->surname }}</td>
+                            <td>{{ $employee->id_number }}</td>
                             <td>{{ optional($employee)->department }}</td>
                             <td>{{ optional($employee)->job_title }}</td>
-
+                            <td>{{ $employee->employee_no }}</td>
                             {{--@if(!is_null($employee->date_terminated))--}}
                                 <td>{{ (optional($employee)->date_terminated)?$employee->date_terminated:'' }}</td>
                             {{--@endif--}}
