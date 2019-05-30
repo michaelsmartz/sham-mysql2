@@ -90,8 +90,8 @@ class EntitlementsController extends CustomController
 
             $eligibility = SSPEmployeeLeavesController::getEmployeeLeavesStatus($selected_employee->id);
 
-            //employee list to exclude the employee connected in the list
-            $employees = Employee::where('id','!=',$employee_id)->pluck('full_name', 'id');
+            //employee list to exclude the employee connected in the list and exclude terminated employees
+            $employees = Employee::whereNull('date_terminated')->where('id','!=',$employee_id)->pluck('full_name', 'id');
 
         }catch (Exception $exception){
             dd($exception->getMessage());

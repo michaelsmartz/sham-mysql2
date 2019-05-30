@@ -45,7 +45,7 @@ class LeavesController extends CustomController
 
             $selected_employee = Employee::where('id', '=', $employee_id)->first();
 
-            $employees = Employee::pluck('full_name', 'id');
+            $employees = Employee::whereNull('date_terminated')->pluck('full_name', 'id');
         }catch (\Exception $exception){
             dd($exception->getMessage());
         }

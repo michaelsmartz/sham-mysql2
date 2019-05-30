@@ -96,7 +96,9 @@ class Employee extends Model implements AuditableContract
                 'job_titles.description as job_title',
                 'departments.description as department',
                 'employees.date_terminated'
-            );
+            )
+            ->orderBy('employees.id', 'DESC');
+        ;
 
         if (is_null($search_term)) {
             if ($is_terminated)
