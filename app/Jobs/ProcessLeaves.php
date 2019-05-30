@@ -25,11 +25,12 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\DB;
 
 class ProcessLeaves implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    protected $summary;
 
     protected $employeeId;
     protected $workYearStart;
@@ -56,7 +57,9 @@ class ProcessLeaves implements ShouldQueue
             $this->workYearEnd = $workYearEnd->value;
         }
 
-        echo $this->employeeId, ' ', $this->workYearStart, ' ', $this->workYearEnd;
+        $this->summary = [];
+
+        //echo $this->employeeId, ' ', $this->workYearStart, ' ', $this->workYearEnd;
 
     }
 
@@ -76,6 +79,25 @@ class ProcessLeaves implements ShouldQueue
                 // looping each AbsenceType
     
                 foreach($this->absenceTypes as $absenceType) {
+
+                    if(is_null($absenceType->amount_earns)){
+
+                        \DB::table('job_logs')->insert([
+                            'loggable_id' => $absenceType->id,
+                            'loggable_type' => get_class($absenceType),
+                            'message' => 'Missing amount_earns value',
+                            'level' => 1000,
+                            'context' => $this->displayName(),
+                            'extra' => '',
+                            'created_at' => date('Y-m-d H:i:s'),
+                        ]);
+                        
+                        $this->summary['absenceType'][$absenceType->id] = [
+                            'skipped' => 'yes', 
+                            'inserted' => 'no' 
+                        ];
+                        continue;
+                    }
                     // empty at start of each iteration
                     $insertArray = [];
 
@@ -87,7 +109,7 @@ class ProcessLeaves implements ShouldQueue
                     //prepare for dynamic instantiation of the class rule name
                     $classAbsenceKey = 'App\LeaveRules\Rule'. $absenceKey;
     
-                    echo ' ', $absenceKey, ' ', $classAbsenceKey, '<br>';
+                    //echo ' ', $absenceKey, ' ', $classAbsenceKey, '<br>';
 
                     $insertArray = [];
 
@@ -100,16 +122,16 @@ class ProcessLeaves implements ShouldQueue
                         // for all employees
                         $leaveRule = new $classAbsenceKey(null,$absenceType,$durations['start_date'], $durations['end_date']);
                         $employees = $leaveRule->employeesQuery($durations, $classAbsenceKey)->get();
-                        dump($leaveRule);
+                        //dump($leaveRule);
                     }
 
-                    dump(sizeof($employees));
+                    //dump(sizeof($employees));
                     //filter job title
                     if(sizeof($absenceType->jobTitles) > 0) {
                         $jobIds = $absenceType->jobTitles->flatten()->pluck('id');
                         $employees = $employees->whereIn('job_title_id', $jobIds)->all();
                     }
-                    dump(sizeof($employees));
+                    //dump(sizeof($employees));
 
                     // from here, process 1 or all employees
                     foreach($employees as $employee) {
@@ -132,9 +154,24 @@ class ProcessLeaves implements ShouldQueue
                         }
                     }
 
-                    dump($insertArray);
-                    DB::table('eligibility_employee')->insert($insertArray);
-                    echo "Completed...", $absenceType->description, "<br>";
+                    //dump($insertArray);
+                    try {
+                        \DB::table('eligibility_employee')->insert($insertArray);
+                        $colInsert = collect($insertArray);
+
+                        $this->summary = [
+                            'skipped' => 'no', 
+                            'inserted' => $colInsert->implode('employee_id', ', ') 
+                        ];
+
+                        $this->logToDb($absenceType->id, get_class($absenceType));
+
+                    } catch(Exception $e) {
+                        //var_dump($e);
+                    }
+                    
+                    //echo "Completed...", $absenceType->description, "<br>";
+                    var_dump($this->summary);
 
                     continue;
 
@@ -235,6 +272,11 @@ class ProcessLeaves implements ShouldQueue
         return 'App\\Jobs\\ProcessLeaves';
     }
 
+    public function getSummary() 
+    {
+        return $this->summary;
+    }
+
     private function getDurationUnitPeriods($accrue_period, $workYearStart, $workYearEnd)
     {
         $ret = [];
@@ -307,6 +349,19 @@ class ProcessLeaves implements ShouldQueue
     private function insertEmployee($employee){
         $toInsert = array_merge($ret, ['employee_id' => $employee->id]);
         DB::table('eligibility_employee')->insert($toInsert);
+    }
+
+    private function logToDb($id, $type, $level = 900)
+    {
+        \DB::table('job_logs')->insert([
+            'loggable_id' => $id,
+            'loggable_type' => $type,
+            'message' => json_encode($this->summary),
+            'level' => $level,
+            'context' => $this->displayName(),
+            'extra' => '',
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
     }
 
 }
