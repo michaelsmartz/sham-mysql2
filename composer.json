@@ -28,7 +28,8 @@
         "san4io/eloquent-filter": "^0.2.0",
         "swayok/alternative-laravel-cache": "5.4.*",
         "tightenco/ziggy": "^0.6.9",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "^2.5",
+        "nesbot/carbon": "1.29.0 as 1.25.0"
     },
     "require-dev": {
         "crestapps/laravel-code-generator": "^2.2",

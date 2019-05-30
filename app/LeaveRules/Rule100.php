@@ -88,7 +88,7 @@ class Rule100 extends LeaveBaseClass
                 $leaveStartDate = $this->getEmployeeLeaveStartDate($this->employeeObj->date_joined);
                 $carbonLeaveStartDate = Carbon::parse($leaveStartDate);
 
-                $carbonP = CarbonPeriod($leaveStartDate, '1 month', $this->workYearEnd);
+                $carbonP = CarbonPeriod::create($leaveStartDate, '1 month', $this->workYearEnd);
                 foreach($carbonP as $key => $date) {
                     $carbonDStart = $date->copy()->startOfMonth();
                     $carbonDEnd = $carbonDStart->copy()->endOfMonth();
