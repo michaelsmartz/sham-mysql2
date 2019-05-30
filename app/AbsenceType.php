@@ -2,14 +2,15 @@
 
 namespace App;
 
+use App\Traits\MyAuditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use San4io\EloquentFilter\Filters\LikeFilter;
 use San4io\EloquentFilter\Filters\WhereFilter;
 
-class AbsenceType extends Model
+class AbsenceType extends Model implements AuditableContract
 {
-
-    use SoftDeletes;
+    use SoftDeletes, MyAuditable;
 
     /**
      * Attributes that should be mass-assignable.
@@ -40,6 +41,21 @@ class AbsenceType extends Model
                 'eligibility_ends' => LikeFilter::class,
                 'duration_unit' => WhereFilter::class,
             ];
+
+    protected $auditInclude = [
+        'accrue_period',
+        'amount_earns',
+        'description',
+        'duration_unit',
+        'eligibility_ends',
+        'eligibility_begins',
+        'non_working_days'
+    ];
+
+    protected $auditableEvents = [
+        'created', 'updated',
+        'deleted', 'restored'
+    ];
 
     public function eligibilityEmployees()
     {
