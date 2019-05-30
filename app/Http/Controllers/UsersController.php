@@ -119,7 +119,7 @@ class UsersController extends CustomController
             if(!is_null($request->get('password'))) {
                 $password = ['password' => bcrypt($request->get('password'))];
             }else{
-                $password['password'] = User::select('password')->where('id', $id)->get()->first()->password;
+                $password['password'] = User::select(['id','password'])->where('id', $id)->get()->first()->password;
             }
 
             $input = array_except($request->all(),array('_token','_method', 'password'));
