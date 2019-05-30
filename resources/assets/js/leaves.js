@@ -41,6 +41,10 @@ on('focusin', 'input.datepicker-leave', function(event) {
         if($('#'+value).length){
             time_slot[index] = $('#'+value).val().split('-');
         }else{
+            if(non_working == 1){
+                var default_time = "08:00-17:00";
+                time_slot[index] = default_time.split('-');
+            }
             disable_date.push(index);
         }
     });

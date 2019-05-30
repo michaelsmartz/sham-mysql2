@@ -203,18 +203,27 @@ class SSPEmployeeLeavesController extends Controller
                         $leave_request->absence_type_id = $request->input('absence_type_id');
                         $leave_request->employee_id = $employee_id;
                         $leave_request->status = LeaveStatusType::status_pending; 
+                        
+                        if(($non_woking == 1) && (!isset($time_period[$curr]['end_time']) && !isset($time_period[$curr]['start_time']))){
+                            $start_time = "08:00";
+                            $end_time   = "17:00";
+                        }else{
+                            $start_time = $time_period[$curr]['start_time'];
+                            $end_time   = $time_period[$curr]['end_time'];
+                        }
+
                         //first absence date
                         if($day->format("Y-m-d") == $request_from){
                             $leave_request->starts_at = $request->input('leave_from');
-                            $leave_request->ends_at   = $day->format("Y-m-d").' '.$time_period[$curr]['end_time'];
+                            $leave_request->ends_at   = $day->format("Y-m-d").' '.$end_time;
                         //last absence date
                         }elseif($day->format("Y-m-d") == $request_to){
-                            $leave_request->starts_at = $day->format("Y-m-d").' '.$time_period[$curr]['start_time'];
+                            $leave_request->starts_at = $day->format("Y-m-d").' '.$start_time;
                             $leave_request->ends_at   = $request->input('leave_to');
                         //absence date(s) between
                         }else{
-                            $leave_request->starts_at = $day->format("Y-m-d").' '.$time_period[$curr]['start_time'];
-                            $leave_request->ends_at   = $day->format("Y-m-d").' '.$time_period[$curr]['end_time'];
+                            $leave_request->starts_at = $day->format("Y-m-d").' '.$start_time;
+                            $leave_request->ends_at   = $day->format("Y-m-d").' '.$end_time;
                         }
                     
                         $leave_request->save();
