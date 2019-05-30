@@ -19,10 +19,20 @@
            </div>
            <form class="search_employee_entitlements" action="{{ route('entitlements.index') }}">
                <div class="row">
-                   <div class="form-group col-xs-3">
+                   <div class="form-group col-xs-2">
                        <input class="form-control datepicker" name="valid_until_date" type="text" id="end_date" value="" placeholder="Enter valid until date here...">
                    </div>
-                   <div class="form-group col-xs-4">
+                   <div class="form-group col-xs-3 absence_type">
+                       <select class="form-control" id="absence_type" name="absence_type">
+                           <option value="0">Select leave type</option>
+                           @foreach ($eligibility as $leave)
+                               <option value="{{ $leave->id }}"  @if(!empty($absence_type) && $absence_type == $leave->id) selected @endif>
+                                   {{ $leave->absence_description }}
+                               </option>
+                           @endforeach
+                       </select>
+                   </div>
+                   <div class="form-group col-xs-5">
                        <select class="form-control" id="employee" name="employee">
                            <option value="" style="display: none;" disabled selected>Select Employee</option>
                            @foreach ($employees as $key => $employee)
