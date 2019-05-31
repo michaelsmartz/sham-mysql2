@@ -116,19 +116,17 @@ class ProcessLeaves implements ShouldQueue
                     // for 1 employee only
                     if(!is_null($this->employeeId)) {
                         $employee = Employee::find($this->employeeId);
-                        $employees[] = $employee;
+                        $employees = collect([$employee]);
                     } else {
-
                         // for all employees
                         $leaveRule = new $classAbsenceKey(null,$absenceType,$durations['start_date'], $durations['end_date']);
                         $employees = $leaveRule->employeesQuery($durations, $classAbsenceKey)->get();
-                        //dump($leaveRule);
                     }
 
-                    //dump(sizeof($employees));
                     //filter job title
                     if(sizeof($absenceType->jobTitles) > 0) {
                         $jobIds = $absenceType->jobTitles->flatten()->pluck('id');
+                        //dump($jobIds);
                         $employees = $employees->whereIn('job_title_id', $jobIds)->all();
                     }
                     //dump(sizeof($employees));

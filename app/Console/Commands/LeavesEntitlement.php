@@ -12,14 +12,14 @@ class LeavesEntitlement extends Command
      *
      * @var string
      */
-    protected $signature = 'leaves:entitlement';
+    protected $signature = 'leaves:entitlement {employee=<id>}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Allocate absence types for employee(s)';
 
     /**
      * Create a new command instance.
@@ -38,6 +38,20 @@ class LeavesEntitlement extends Command
      */
     public function handle()
     {
-        dispatch( new ProcessLeaves());
+        // set color support explicitly
+        $this->getOutput()->setDecorated(true);
+
+        // Retrieve a specific option...
+        $employeeId = $this->argument('employee');
+
+        if(!$employeeId || $employeeId == '<id>'){
+            $employeeId = null;
+        }
+        $this->info("<fg=blue;bg=black> Start\nEmployee supplied</>");
+        $this->warn(is_null($employeeId) ? "<fg=red;bg=black>No" : "<fg=green;bg=black>Yes" ."\n</>");
+
+        dispatch( new ProcessLeaves($employeeId));
+
+        $this->info("<fg=blue;bg=black> Done\n</>");
     }
 }
