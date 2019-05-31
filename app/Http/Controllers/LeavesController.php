@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\AbsenceType;
 use App\Employee;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class LeavesController extends CustomController
                 $absence_type = null;
             }
 
-            $eligibility = SSPEmployeeLeavesController::getEmployeeLeavesStatus($employee_id);
+            $absence_types = AbsenceType::pluck('description','id');
 
             //find if connected employee is a manager to display button search other employee's entitlements
             $current_employee = Employee::with('jobTitle')
@@ -49,6 +50,6 @@ class LeavesController extends CustomController
         }catch (\Exception $exception){
             dd($exception->getMessage());
         }
-        return view('leaves.index', compact('leaves','eligibility','employees', 'selected_employee', 'current_employee', 'absence_type'));
+        return view('leaves.index', compact('leaves','absence_types','employees', 'selected_employee', 'current_employee', 'absence_type'));
     }
 }

@@ -88,7 +88,7 @@ class EntitlementsController extends CustomController
             else
                 $selected_employee = null;
 
-            $eligibility = SSPEmployeeLeavesController::getEmployeeLeavesStatus($selected_employee->id);
+            $absence_types = AbsenceType::pluck('description','id');
 
             //employee list to exclude the employee connected in the list and exclude terminated employees
             $employees = Employee::whereNull('date_terminated')->where('id','!=',$employee_id)->pluck('full_name', 'id');
@@ -98,7 +98,7 @@ class EntitlementsController extends CustomController
         }
 
         return view('entitlements.index',
-            compact('eligibility', 'entitlements', 'selected_employee', 'current_employee', 'employees', 'absence_type', 'allowedActions'));
+            compact('absence_types', 'entitlements', 'selected_employee', 'current_employee', 'employees', 'absence_type', 'allowedActions'));
     }
 
     /**
@@ -109,6 +109,7 @@ class EntitlementsController extends CustomController
      * @return mixed
      */
     private function getEntitlements($employee_id_entitlement_search, $valid_until, $employee_id, $absence_type){
+
         if (!is_null($employee_id_entitlement_search) && is_null($valid_until) && is_null($absence_type)) {
             $entitlements = Employee::with(['eligibilities'=> function ($query){
                 $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?',[date('Y')]);
@@ -152,6 +153,21 @@ class EntitlementsController extends CustomController
                 $query->whereRaw('absence_type_id= ?', $absence_type);
             }])
                 ->where(['id' => $employee_id_entitlement_search])
+                ->filtered()->paginate(10);
+        }
+        elseif (is_null($employee_id_entitlement_search) && is_null($valid_until) && is_null($absence_type)){
+            $entitlements = Employee::with(['eligibilities' => function ($query) {
+                $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?', [date('Y')]);
+            }])
+                ->where(['id' => $employee_id])
+                ->filtered()->paginate(10);
+        }
+        elseif (is_null($employee_id_entitlement_search) && is_null($valid_until) && !is_null($absence_type)){
+            $entitlements = Employee::with(['eligibilities' => function ($query) use($absence_type){
+                $query->whereRaw('year(`eligibility_employee`.`end_date`) = ?', [date('Y')]);
+                $query->whereRaw('absence_type_id= ?', $absence_type);
+            }])
+                ->where(['id' => $employee_id])
                 ->filtered()->paginate(10);
         }
         else {
