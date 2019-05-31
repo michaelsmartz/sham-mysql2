@@ -10384,7 +10384,12 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
         if ($('#' + value).length) {
             time_slot[index] = $('#' + value).val().split('-');
         } else {
-            disable_date.push(index);
+            if (non_working !== '0') {
+                var default_time = "08:00-17:00";
+                time_slot[index] = default_time.split('-');
+            } else {
+                disable_date.push(index);
+            }
         }
     });
 
@@ -10394,7 +10399,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
             time_24hr: true,
             disable: [function (date) {
                 var day = date.getDay();
-                if ($.inArray(day, disable_date) !== -1 && non_working === 0) {
+                if ($.inArray(day, disable_date) !== -1 && non_working === '0') {
                     return true;
                 }
             }],
