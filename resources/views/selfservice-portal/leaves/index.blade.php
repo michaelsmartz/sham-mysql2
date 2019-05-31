@@ -19,7 +19,7 @@
             </label>
 
             @foreach ($errors->all() as $error)
-                <p class="inner">{{ $error }}</p>
+                <p class="inner"><strong>Error!</strong> {{ $error }}</p>
             @endforeach
         </div>
     @endif

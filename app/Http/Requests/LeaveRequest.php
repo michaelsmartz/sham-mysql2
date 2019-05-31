@@ -10,12 +10,14 @@ use App\Enums\DayType;
 use App\Enums\LeaveDurationUnitType;
 use App\TimeGroup;
 use App\Http\Requests\LeaveRequest;
+use Illuminate\Support\Facades\Route;
 use DateInterval;
 use DateTime;
 use DatePeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
 
 class LeaveRequest extends FormRequest
 {
@@ -108,5 +110,16 @@ class LeaveRequest extends FormRequest
             'remaining_balance.greater_or_equal' => 'Amount of leave(s) requested exceeds remaining!',
             'monthly_allowance.less_or_equal' => 'Amount of leave(s) requested exceeds monthly allowance!'
         ];
+    }
+
+    public function withValidator($validator) {
+        if ($validator->fails() && (\Auth::user()->employee_id !== (int)Input::get('employee_id'))) {
+            $errors = $validator->errors();
+            $alerts = array();
+            foreach ($errors->messages() as $message) {
+                array_push($alerts,$message);
+            }
+            \Session::put('error', $alerts);
+        }
     }
 }
