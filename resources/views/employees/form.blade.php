@@ -1,5 +1,5 @@
 @php
-    $minDate = date("Y-m-d", strtotime("-65 years"));
+    $minDate = date("Y-m-d", strtotime("-75 years"));
     $maxDate = date("Y-m-d", strtotime("-18 years"));
 @endphp
 
