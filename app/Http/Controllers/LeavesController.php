@@ -27,9 +27,9 @@ class LeavesController extends CustomController
 
             //Filter by leave type
             if(!empty($request->input('absence_type')) && $request->input('absence_type') != 0){
-                $absence_type = $request->input('absence_type');
+                $selected_absence_type = $request->input('absence_type');
             }else{
-                $absence_type = null;
+                $selected_absence_type = null;
             }
 
             $absence_types = AbsenceType::pluck('description','id');
@@ -42,7 +42,7 @@ class LeavesController extends CustomController
             $from = $request->get('from', null);
             $to = $request->get('to', null);
 
-            $leaves = SSPEmployeeLeavesController::getEmployeeLeavesHistory($employee_id, $from, $to, $absence_type);
+            $leaves = SSPEmployeeLeavesController::getEmployeeLeavesHistory($employee_id, $from, $to, $selected_absence_type);
 
             $selected_employee = Employee::where('id', '=', $employee_id)->first();
 
@@ -50,6 +50,6 @@ class LeavesController extends CustomController
         }catch (\Exception $exception){
             dd($exception->getMessage());
         }
-        return view('leaves.index', compact('leaves','absence_types','employees', 'selected_employee', 'current_employee', 'absence_type'));
+        return view('leaves.index', compact('leaves','absence_types','employees', 'from', 'to', 'selected_employee', 'current_employee', 'selected_absence_type'));
     }
 }

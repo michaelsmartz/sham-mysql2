@@ -67,14 +67,14 @@ class EntitlementsController extends CustomController
 
         //Filter by leave type
         if(!empty($request->input('absence_type')) && $request->input('absence_type') != 0){
-            $absence_type = $request->input('absence_type');
+            $selected_absence_type = $request->input('absence_type');
         }else{
-            $absence_type = null;
+            $selected_absence_type = null;
         }
 
         //Display only employee entitlements for current year
         try {
-            $entitlements = $this->getEntitlements($employee_id_entitlement_search, $valid_until, $employee_id, $absence_type);
+            $entitlements = $this->getEntitlements($employee_id_entitlement_search, $valid_until, $employee_id, $selected_absence_type);
 
             //find if connected employee is a manager to display button search other employee's entitlements
             $current_employee = Employee::with('jobTitle')
@@ -97,8 +97,11 @@ class EntitlementsController extends CustomController
             dd($exception->getMessage());
         }
 
+//        dump($valid_until);
+//        dump($selected_absence_type);
+//        dd($selected_employee->id);
         return view('entitlements.index',
-            compact('absence_types', 'entitlements', 'selected_employee', 'current_employee', 'employees', 'absence_type', 'allowedActions'));
+            compact('absence_types', 'entitlements', 'selected_employee', 'valid_until', 'current_employee', 'employees', 'selected_absence_type', 'allowedActions'));
     }
 
     /**

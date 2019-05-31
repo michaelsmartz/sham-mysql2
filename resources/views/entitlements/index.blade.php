@@ -20,13 +20,13 @@
            <form class="search_employee_entitlements" action="{{ route('entitlements.index') }}">
                <div class="row">
                    <div class="form-group col-xs-2">
-                       <input class="form-control datepicker" name="valid_until_date" type="text" id="end_date" value="" placeholder="Enter valid until date here...">
+                       <input class="form-control datepicker" name="valid_until_date" type="text" id="end_date" value="{{ ($valid_until)?$valid_until:'' }}" placeholder="Enter valid until date here...">
                    </div>
                    <div class="form-group col-xs-3 absence_type">
                        <select class="form-control" id="absence_type" name="absence_type">
                            <option value="0">Select leave type</option>
                            @foreach ($absence_types as $key=>$absence_type)
-                               <option value="{{$key}}">
+                               <option value="{{$key}}" {{ $selected_absence_type == $key ? 'selected' : '' }}>
                                    {{ $absence_type }}
                                </option>
                            @endforeach
@@ -36,7 +36,7 @@
                        <select class="form-control" id="employee" name="employee">
                            <option value="" style="display: none;" disabled selected>Select Employee</option>
                            @foreach ($employees as $key => $employee)
-                               <option class="select-items" value="{{ $key }}">
+                               <option class="select-items" value="{{ $key }}" {{ $selected_employee->id == $key ? 'selected' : '' }}>
                                    {{ $employee }}
                                </option>
                            @endforeach

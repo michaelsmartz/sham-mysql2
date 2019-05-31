@@ -20,14 +20,14 @@
                 <form action="{{ route('history_leaves.index') }}" class="search_employee_leaves">
                     <div class="row">
                         <div class="form-group col-xs-2">
-                            {!! Form::text('from','', ['class'=>'form-control datepicker', 'autocomplete'=>'off',  'placeholder'=>'From', 'id'=>'from' ]) !!}
+                            {!! Form::text('from','', ['class'=>'form-control datepicker', 'autocomplete'=>'off',  'placeholder'=>'From', 'id'=>'from', 'value'=> ($from)?$from:'' ]) !!}
                         </div>
 
                         <div class="form-group col-xs-3 absence_type">
                             <select class="form-control" id="absence_type" name="absence_type">
                                 <option value="0">Select leave type</option>
                                 @foreach ($absence_types as $key=>$absence_type)
-                                    <option value="{{$key}}">
+                                    <option value="{{$key}}" {{ $selected_absence_type == $key ? 'selected' : '' }}>
                                         {{ $absence_type }}
                                     </option>
                                 @endforeach
@@ -35,13 +35,13 @@
                         </div>
 
                         <div class="form-group col-xs-2">
-                            {!! Form::text('to','', ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'To', 'id'=>'to']) !!}
+                            {!! Form::text('to','', ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'To', 'id'=>'to', 'value'=> ($to)?$to:'' ]) !!}
                         </div>
                         <div class="form-group col-xs-4">
                             <select class="form-control" id="employee" name="employee">
                                 <option value="" style="display: none;" disabled selected>Select Employee</option>
                                 @foreach ($employees as $key => $employee)
-                                    <option class="select-items" value="{{ $key }}">
+                                    <option class="select-items" value="{{ $key }}" {{ $selected_employee->id == $key ? 'selected' : '' }}>
                                         {{ $employee }}
                                     </option>
                                 @endforeach
