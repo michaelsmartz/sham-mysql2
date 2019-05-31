@@ -43,7 +43,8 @@ class Asset extends Model
         'comments',
         'is_available'
         ];
-
+    
+    /*
     protected $filterable = [
         'name' => LikeFilter::class,
         'tag' => LikeFilter::class,
@@ -54,7 +55,7 @@ class Asset extends Model
         'comments' => LikeFilter::class,
         'is_available' => WhereFilter::class
     ];
-
+    */
 
     public function assetGroup()
     {

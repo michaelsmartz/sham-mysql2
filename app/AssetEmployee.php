@@ -34,15 +34,23 @@ class AssetEmployee extends Model
                   'comment'
               ];
 
-    public $searchable = ['asset:name', 'asset:tag', 'name', 'date_out', 'date_in'];
-
+    public $searchable = [
+            'asset:name', 
+            'asset:tag', 
+            'asset:serial_no', 
+            'name', 'date_out', 'date_in'
+    ];
+    
+    /*
     protected $filterable = [
         'asset:name' => LikeFilter::class,
         'asset:tag' => LikeFilter::class,
+        'asset:serial_no' => LikeFilter::class,
         'employee:full_name' => LikeFilter::class,
         'date_out' => LikeFilter::class,
         'date_in' => LikeFilter::class
     ];
+    */
 
     public function asset()
     {

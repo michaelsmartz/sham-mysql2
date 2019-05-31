@@ -44,6 +44,12 @@ class AssetAllocationsController extends CustomController
             $request->merge(['asset:tag' => '%'.$tag.'%']);
         }
 
+        $serialNo = $request->get('asset:serial_no', null);
+
+        if(!empty($serialNo)){
+            $request->merge(['asset:serial_no' => '%'.$serialNo.'%']);
+        }
+
         $full_name = $request->get('full_name', null);
 
         if(!empty($full_name)){
