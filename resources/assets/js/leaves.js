@@ -36,16 +36,17 @@ on('focusin', 'input.datepicker-leave', function(event) {
     var disable_date = new Array();
     var time_slot    = new Array();
     var non_working  = $('#non_working').val();
-   
+
     $.each(days, function( index, value ) {
         if($('#'+value).length){
             time_slot[index] = $('#'+value).val().split('-');
         }else{
-            if(non_working == 1){
+            if(non_working !== '0'){
                 var default_time = "08:00-17:00";
                 time_slot[index] = default_time.split('-');
+            }else{
+                disable_date.push(index);
             }
-            disable_date.push(index);
         }
     });
 
@@ -56,7 +57,7 @@ on('focusin', 'input.datepicker-leave', function(event) {
             time_24hr: true,
             disable: [function(date) {
                 var day = date.getDay();
-                if(($.inArray(day,disable_date) !== -1) && (non_working === 0)){
+                if(($.inArray(day,disable_date) !== -1) && (non_working === '0')){
                     return true;
                 }
             }],
