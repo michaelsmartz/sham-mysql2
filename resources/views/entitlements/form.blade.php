@@ -27,7 +27,12 @@
 
 <div class="form-group col-xs-6 {{ $errors->has('total') ? 'has-error' : '' }}">
     <label for="total">Total</label>
-        <input class="form-control" name="total" type="number" id="total" min="0" {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ?'disabled':'' !!} value="{{ old('total', optional($entitlement)->total) }}" placeholder="Enter total here..." step="0.01" {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ? '' : 'required' !!}>
+        <input class="form-control" name="total" type="number" id="total" min="0"
+               {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ?'disabled':'' !!}
+               value="{{ old('total', optional($entitlement)->total) }}" placeholder="Enter total here..."
+               step="0.01" {!! (!is_null($employee_id) && $employee_id == optional($data)->employee_id) ? '' : 'required' !!}
+               oninput="(this.value == 0)?this.setCustomValidity('Total cannot be zero.'):this.setCustomValidity('')"
+        >
         {!! $errors->first('total', '<p class="help-block">:message</p>') !!}
 </div>
 
