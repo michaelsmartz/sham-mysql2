@@ -29,7 +29,7 @@
         "swayok/alternative-laravel-cache": "5.4.*",
         "tightenco/ziggy": "^0.6.9",
         "vlucas/phpdotenv": "^2.5",
-        "nesbot/carbon": "1.29.0 as 1.25.0"
+        "yadahan/laravel-authentication-log": "^1.1"
     },
     "require-dev": {
         "crestapps/laravel-code-generator": "^2.2",
