@@ -24,7 +24,7 @@
         <label class="control-label">From</label>
         <div class="">
             <span class="field">
-                {!! Form::text('leave_from', '', ['class'=>'form-control datepicker-leave', 'autocomplete'=>'off','data-date-format'=> "Y-m-d H:i", 'data-enable-time'=> "true",  'placeholder'=>'Starts at', 'id'=>'leave_from','required' ]) !!}
+                {!! Form::text('leave_from', '', ['class'=>'form-control datepicker-leave', 'autocomplete'=>'off','data-min-date'=> $working_year_start,'data-max-date'=> $working_year_end,'data-date-format'=> "Y-m-d H:i", 'data-enable-time'=> "true",  'placeholder'=>'Starts at', 'id'=>'leave_from','required' ]) !!}
             </span>
         </div>
     </div>
@@ -33,7 +33,7 @@
         <label class="control-label">To</label>
         <div class="">
            <span class="field">
-                {!! Form::text('leave_to', '', ['class'=>'form-control datepicker-leave','data-date-format'=> "Y-m-d H:i", 'data-enable-time'=> "true", 'autocomplete'=>'off', 'placeholder'=>'Ends at', 'id'=>'leave_to','required']) !!}
+                {!! Form::text('leave_to', '', ['class'=>'form-control datepicker-leave','data-date-format'=> "Y-m-d H:i",'data-min-date'=> $working_year_start,'data-max-date'=> $working_year_end, 'data-enable-time'=> "true", 'autocomplete'=>'off', 'placeholder'=>'Ends at', 'id'=>'leave_to','required']) !!}
             </span>
         </div>
     </div>
