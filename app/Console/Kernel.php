@@ -28,7 +28,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('leaves:entitlement')->daily();
+        $schedule->command('leaves:entitlement')->daily()->appendOutputTo(storage_path() .'logs/jobs.recent');
+        File::append(storage_path() . "/logs/jobs.log", File::get(storage_path() . "/logs/jobs.recent"));
     }
 
     /**
