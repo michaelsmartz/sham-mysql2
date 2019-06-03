@@ -100,7 +100,8 @@ class LeaveRequest extends FormRequest
 
         return [
             'remaining_balance' => 'greater_or_equal:'.$count,
-            'monthly_allowance' => 'less_or_equal:'. $count
+            'monthly_allowance' => 'less_or_equal:'. $count,
+            'leave_to'          => 'after:'.Input::get('leave_from')
         ];
     }
 
@@ -108,7 +109,8 @@ class LeaveRequest extends FormRequest
     {
         return [
             'remaining_balance.greater_or_equal' => 'Amount of leave(s) requested exceeds remaining!',
-            'monthly_allowance.less_or_equal' => 'Amount of leave(s) requested exceeds monthly allowance!'
+            'monthly_allowance.less_or_equal'    => 'Amount of leave(s) requested exceeds monthly allowance!',
+            'leave_to.after'                     => "'Date to' must be after 'Date from"
         ];
     }
 

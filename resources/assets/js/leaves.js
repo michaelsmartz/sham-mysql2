@@ -25,6 +25,11 @@ on('click','#bundle_check',function(event){
     $('.pending_box').trigger('click');
 });
 
+on('click','#btn-leave-apply',function(event){
+    if(($("#leave_from").val() === "") || ($("#leave_to").val() === "")){
+        event.preventDefault();
+    }
+});
 
 // Listen for browser-generated events.
 on('focusin', 'input.datepicker-leave', function(event) {

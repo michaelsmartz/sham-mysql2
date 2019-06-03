@@ -4,7 +4,7 @@
 @section('modalTitle', 'Leave Request : '.$leave_description)
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Apply</button>
+    <button id="btn-leave-apply" class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Apply</button>
 @endsection
 
 @section('postModalUrl', route('leaves.store'))
