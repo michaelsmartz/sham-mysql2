@@ -62,7 +62,7 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
 
                 $processedIds = [];
                 foreach($this->absenceTypes as $absenceType) {
-                    $employees = $this->employeesQuery($absenceType)->where('employees.id', '=',4)->get();
+                    $employees = $this->employeesQuery($absenceType)->get();
                     if(! is_null($employees)){
                         foreach($employees as $employee){
                             if($this->updateEligibilities($employee)) {
@@ -106,6 +106,8 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
     private function updateEligibilities($employee)
     {
         $unclaimedTotal = 0;
+        $grandTotal = 0;
+        $grandTaken = 0;
         $ret = false;
 
         if (sizeof($employee->eligibilities) > 1) {
@@ -117,16 +119,25 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
             $lastColItem = $employee->eligibilities->last();
 
             foreach($workCol as $eligibility) {
-                //echo $eligibility->start_date, ' - ', $eligibility->end_date,' ',($eligibility->pivot->total - $eligibility->pivot->taken), '<br>';
-                $unclaimedTotal += ($eligibility->pivot->total - $eligibility->pivot->taken);
+
+                $grandTotal += $eligibility->pivot->total;
+                $grandTaken += $eligibility->pivot->taken;
+
+                if($eligibility->pivot->taken == 0){
+                    $eligibility->pivot->total = 0;
+                }
+                else{
+                    $eligibility->pivot->total = $eligibility->pivot->taken;
+                }
+
                 $eligibility->pivot->is_processed = 1;
                 $eligibility->pivot->save();
             }
 
-            echo $unclaimedTotal, ' ',$lastColItem->pivot->total,'<br>';
+            echo $grandTotal, ' ',$lastColItem->pivot->total,'<br>';
 
             if(!is_null($lastColItem)) {
-                $lastColItem->pivot->total += $unclaimedTotal;
+                $lastColItem->pivot->total = ($grandTotal - $grandTaken) + $lastColItem->pivot->total;
                 dump($lastColItem);
                 $lastColItem->pivot->save();
             }
