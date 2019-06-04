@@ -60,17 +60,20 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
             if ( !is_null($this->absenceTypes) ){
                 // looping each AbsenceType
 
+                $processedIds = [];
                 foreach($this->absenceTypes as $absenceType) {
                     $employees = $this->employeesQuery($absenceType)->where('employees.id', '=',4)->get();
                     if(! is_null($employees)){
                         foreach($employees as $employee){
-                            $this->updateEligibilities($employee);
+                            if($this->updateEligibilities($employee)) {
+                                $processedIds[] = $employee->id;
+                            }
                         }
                     }
 
                     $this->summary = [
                         'skipped' => 'no', 
-                        'inserted' => $colInsert->implode('employee_id', ', ') 
+                        'inserted' => implode($processedIds, ', ') 
                     ];
 
                     $this->logToDb($absenceType->id, get_class($absenceType));
@@ -103,7 +106,11 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
     private function updateEligibilities($employee)
     {
         $unclaimedTotal = 0;
+        $ret = false;
+
         if (sizeof($employee->eligibilities) > 1) {
+            $ret = true;
+
             // all items before last
             $workCol = $employee->eligibilities->slice(0, -1);
             // last item
@@ -118,12 +125,14 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
 
             echo $unclaimedTotal, ' ',$lastColItem->pivot->total,'<br>';
 
-            if(!is_null($lastColItem)){
+            if(!is_null($lastColItem)) {
                 $lastColItem->pivot->total += $unclaimedTotal;
                 dump($lastColItem);
                 $lastColItem->pivot->save();
             }
         }
+
+        return $ret;
     }
 
     private function logToDb($id, $type, $level = 900)
