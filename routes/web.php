@@ -15,6 +15,7 @@ Route::get('/', 'MiscController@welcome');
 Route::get('test', 'MiscController@test');
 Route::get('vue-test', 'MiscController@vueTest');
 Route::get('testleave', 'MiscController@testleave');
+Route::get('testunclaimedmonthly', 'MiscController@testunclaimedmonthly');
 
 Auth::routes();
 

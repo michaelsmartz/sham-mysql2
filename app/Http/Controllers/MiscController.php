@@ -13,6 +13,7 @@ use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
 use App\Jobs\ProcessLeaves;
+use App\Jobs\UpdateUnclaimedMonthlyLeaves;
 use App\LeaveRules\Rule0000;
 use App\LeaveRules\Rule000;
 use App\LeaveRules\Rule001;
@@ -60,6 +61,12 @@ class MiscController extends Controller
     public function testleave(){
 
         dispatch( new ProcessLeaves());
+
+    }
+
+    public function testunclaimedmonthly(){
+
+        dispatch( new UpdateUnclaimedMonthlyLeaves());
 
     }
 }
