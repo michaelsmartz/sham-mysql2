@@ -10369,6 +10369,12 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#
     $('.pending_box').trigger('click');
 });
 
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#btn-leave-apply', function (event) {
+    if ($("#leave_from").val() === "" || $("#leave_to").val() === "") {
+        event.preventDefault();
+    }
+});
+
 // Listen for browser-generated events.
 Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 'input.datepicker-leave', function (event) {
     var el = $(this),
