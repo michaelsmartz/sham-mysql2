@@ -92,7 +92,7 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
     private function updateEligibilities($employee)
     {
         $unclaimedTotal = 0;
-        if (sizeof($employee->eligibilities) > 0) {
+        if (sizeof($employee->eligibilities) > 1) {
             // all items before last
             $workCol = $employee->eligibilities->slice(0, -1);
             // last item
