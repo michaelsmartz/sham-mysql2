@@ -20,6 +20,8 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $summary;
+    protected $employeeId;
     protected $workYearStart;
     protected $workYearEnd;
     protected $absenceTypes;
@@ -29,8 +31,9 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($employeeId = null)
     {
+        $this->employeeId = $employeeId;
         $workYearStart = SysConfigValue::where('key','=', 'WORKING_YEAR_START')->first();
         $workYearEnd = SysConfigValue::where('key','=', 'WORKING_YEAR_END')->first();
         $this->absenceTypes = AbsenceType::where('accrue_period','=',LeaveAccruePeriodType::month_1)->get();
@@ -64,9 +67,16 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
                             $this->updateEligibilities($employee);
                         }
                     }
-                }
 
+                    $this->summary = [
+                        'skipped' => 'no', 
+                        'inserted' => $colInsert->implode('employee_id', ', ') 
+                    ];
+
+                    $this->logToDb($absenceType->id, get_class($absenceType));
+                }
             }
+
         } catch(Exception $e) {
 
         }
@@ -105,12 +115,27 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
                 $eligibility->pivot->is_processed = 1;
                 $eligibility->pivot->save();
             }
+
             echo $unclaimedTotal, ' ',$lastColItem->pivot->total,'<br>';
+
             if(!is_null($lastColItem)){
                 $lastColItem->pivot->total += $unclaimedTotal;
                 dump($lastColItem);
                 $lastColItem->pivot->save();
             }
         }
+    }
+
+    private function logToDb($id, $type, $level = 900)
+    {
+        \DB::table('job_logs')->insert([
+            'loggable_id' => $id,
+            'loggable_type' => $type,
+            'message' => json_encode($this->summary),
+            'level' => $level,
+            'context' => $this->displayName(),
+            'extra' => '',
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
     }
 }
