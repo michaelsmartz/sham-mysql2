@@ -164,3 +164,6 @@ ALTER TABLE `eligibility_employee`
 
 	ALTER TABLE `absence_types`
 CHANGE COLUMN `amount_earns` `amount_earns` DECIMAL(6,2) NULL DEFAULT NULL COMMENT 'either days or hours';
+
+ALTER TABLE `eligibility_employee`
+ADD COLUMN `is_processed` TINYINT(1) NULL DEFAULT 0 AFTER `is_manually_adjusted`;

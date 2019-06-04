@@ -83,6 +83,7 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
                 $query = $query->where('absence_type_id', '=', $absenceType->id)
                                ->where('start_date', '>=', $this->workYearStart)
                                ->where('end_date', '<=', Carbon::now()->endOfMonth()->toDateString())
+                                ->where('is_processed',0)
                                ->orderBy('start_date');
               }])->whereNull('date_terminated');
 
@@ -101,6 +102,8 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
             foreach($workCol as $eligibility) {
                 //echo $eligibility->start_date, ' - ', $eligibility->end_date,' ',($eligibility->pivot->total - $eligibility->pivot->taken), '<br>';
                 $unclaimedTotal += ($eligibility->pivot->total - $eligibility->pivot->taken);
+                $eligibility->pivot->is_processed = 1;
+                $eligibility->pivot->save();
             }
             echo $unclaimedTotal, ' ',$lastColItem->pivot->total,'<br>';
             if(!is_null($lastColItem)){
