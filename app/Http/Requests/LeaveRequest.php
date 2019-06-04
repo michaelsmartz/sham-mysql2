@@ -110,7 +110,7 @@ class LeaveRequest extends FormRequest
         return [
             'remaining_balance.greater_or_equal' => 'Amount of leave(s) requested exceeds remaining!',
             //'monthly_allowance.less_or_equal'    => 'Amount of leave(s) requested exceeds monthly allowance!',
-            'leave_to.after'                     => "'Date to' must be after 'Date from"
+            'leave_to.after'                     => "'Date to' must be after 'Date from'"
         ];
     }
 

@@ -2,10 +2,6 @@
     <input type="hidden" value="{{$leave_id}}" id="absence_type_id" name="absence_type_id">
 @endif
 
-@if(isset($monthly_allowance))
-    <input type="hidden" value="{{$monthly_allowance}}" id="monthly_allowance" name="monthly_allowance">
-@endif
-
 @if(isset($non_working))
     <input type="hidden" value="{{$non_working}}" id="non_working" name="non_working">
 @endif

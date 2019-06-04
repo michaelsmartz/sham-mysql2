@@ -9,7 +9,9 @@
                 </a>
             </div>
         </div>
-
+        @if($eligible->duration_unit == \App\Enums\LeaveDurationUnitType::Days)
+            <div style="display:none;">{!! $eligible->pending = number_format((float)($eligible->pending/9), 2, '.', '');; !!}</div>
+        @endif
         <script>
             document.addEventListener('DOMContentLoaded', function(event) {
                 var id = JSON.parse("{!! json_encode($eligible->id) !!}");

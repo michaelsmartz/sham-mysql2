@@ -142,11 +142,7 @@ class SSPEmployeeLeavesController extends Controller
         //dd($time_period['Monday']['start_time']);
         //dd($time_period);
 
-        $data = DB::table('absence_types')->where(['id' => $leave_id])->first();
-
-        $monthly_allowance = $this->calculateAccruePeriod($data);
-
-        $view = view($this->baseViewPath .'.create',compact('remaining', 'non_working','monthly_allowance','working_year_start','working_year_end', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
+        $view = view($this->baseViewPath .'.create',compact('remaining', 'non_working','working_year_start','working_year_end', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
         return response()->json([
             'title' => $view['modalTitle'],
             'content' => $view['modalContent'],
@@ -192,7 +188,7 @@ class SSPEmployeeLeavesController extends Controller
             }else{
                 //multiple days
                 $start      = (new DateTime($request->input('leave_from')));
-                $end        = (new DateTime($request->input('leave_to')))->modify('next day');
+                $end        = (new DateTime($request->input('leave_to')));
                 $interval   = DateInterval::createFromDateString('1 day');
                 $period     = new DatePeriod($start,$interval, $end);
                 $non_woking = $request->input('non_working');
@@ -302,10 +298,10 @@ class SSPEmployeeLeavesController extends Controller
     public static function getEmployeeLeavesStatus($employee_id){
 
         $employee_leave= DB::select(
-            "SELECT abs.id,abs.description as absence_description,abs.duration_unit,(SELECT COUNT(id) FROM absence_type_employee ate WHERE ate.employee_id = $employee_id AND abs.id = ate.absence_type_id AND ate.status = ".LeaveStatusType::status_pending.") as pending,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date
+            "SELECT abs.id,abs.description as absence_description,abs.duration_unit,(SELECT COALESCE(SUM(TIMESTAMPDIFF(second,ate.starts_at,ate.ends_at)/3600),0) FROM absence_type_employee ate WHERE ate.employee_id = $employee_id AND abs.id = ate.absence_type_id AND ate.status = ".LeaveStatusType::status_pending.") as pending,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date
             FROM eligibility_employee ele
             LEFT JOIN absence_types abs ON abs.id = ele.absence_type_id
-            WHERE ele.start_date <= NOW() AND YEAR(ele.start_date) = YEAR(CURDATE()) AND ele.employee_id = $employee_id ;"
+            WHERE ele.start_date <= NOW() AND CURDATE() BETWEEN ele.start_date AND ele.end_date AND ele.employee_id = $employee_id ;"
         );
 
         return $employee_leave;
@@ -338,12 +334,14 @@ class SSPEmployeeLeavesController extends Controller
             $duration_unit = $leave_request->AbsenceType->duration_unit;
             if($status != LeaveStatusType::status_cancelled){
                 $leave_request->approved_by_employee_id = \Auth::user()->employee_id;
-            }elseif($status != LeaveStatusType::status_denied){
-                //date diff, 1 day = 8 hours
+            }
+            
+            if($status != LeaveStatusType::status_denied){
+                //date diff, 1 day = 9 hours
                 $date_from = strtotime($leave_request->starts_at);
                 $date_to   = strtotime($leave_request->ends_at);
                 if($duration_unit == LeaveDurationUnitType::Days){
-                    $date_diff = round((($date_to - $date_from) / (60 * 60 * 8)),2);
+                    $date_diff = round((($date_to - $date_from) / (60 * 60 * 9)),2);
                 }else{
                     $date_diff = round((($date_to - $date_from) / (60 * 60)),2);
                 }
@@ -495,37 +493,4 @@ class SSPEmployeeLeavesController extends Controller
         return $officeTime;
     }
 
-    /**
-     * monthly_allowance can be in hours or days
-     *
-     * @param $data
-     * @return float|int
-     */
-    private function calculateAccruePeriod($data){
-
-        if($data) {
-            $amountEarns = $data->amount_earns;
-            $accruePeriod = $data->accrue_period;
-
-            switch ($accruePeriod) {
-                case 0: //12 months
-                    $monthly_allowance = $amountEarns / 12;
-                    break;
-                case 1: //1 month
-                    $monthly_allowance = $amountEarns;
-                    break;
-                case 2: //24 months
-                    $monthly_allowance = $amountEarns / 24;
-                    break;
-                case 3: //36 months
-                    $monthly_allowance = $amountEarns / 36;
-                    break;
-                default: //not applicable
-                    $monthly_allowance = $amountEarns;
-                    break;
-            }
-
-            return $monthly_allowance;
-        }
-    }
 }
