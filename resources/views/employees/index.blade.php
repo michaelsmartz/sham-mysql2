@@ -84,7 +84,7 @@
                             <th data-sortable="true">Job Title</th>
                             <th data-sortable="true" data-tableexport-display="always" data-visible="false">Employee Number</th>
                             <th data-sortable="true" data-tableexport-display="always" data-visible="false">Probation End Date</th>
-                            <th data-sortable="true">Date Terminated</th>
+                            <th data-sortable="true" data-tableexport-display="always" data-visible="{{$is_terminated}}">Date Terminated</th>
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
