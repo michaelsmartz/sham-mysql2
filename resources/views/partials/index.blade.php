@@ -34,6 +34,22 @@
             window.showResponses = function(id, event) {
                 window.location = '{{url()->to("module_assessments")}}/' + id + '/responses';
             };
+
+            window.pipelines =  function (id, event) {
+                window.location.href = '{{url()->to("recruitment_requests")}}/' + id + '/stages';
+            };
+
+            window.updateStatus = function (id, status){
+                //console.log('{{url()->to("recruitment_requests")}}/'+ id + '/'+ status + '/update-status');
+                window.location.href = '{{url()->to("recruitment_requests")}}/'+ id + '/'+ status + '/update-status';
+            }
+
+            window.manageCandidate = function (id, event) {
+                var route;
+                route = '{{url()->current()}}/';
+
+                loadUrl(route + id + '/manage-candidate');
+            }
             
             window.pipelineSwitchState = function (id, event, candidate, newState) {
                 var route = '{{url()->current()}}/';
@@ -60,7 +76,7 @@
                loadUrl(route + 'create');
             };
 
-            window.addFormType = function(event,type_id,desc, baseUrl) {
+            window.addFormType = function(event ,type_id, desc, emp_id, baseUrl) {
                 var route;
                 if (baseUrl === void 0) {
                     route = '<?php echo e(url()->current()); ?>/';
@@ -68,7 +84,7 @@
                     route = '<?php echo e(URL::to('/')); ?>/' + baseUrl + '/';
                 }
 
-                loadUrl(route + 'create/'+ type_id +'/'+ desc);
+                loadUrl(route + 'create/'+ type_id +'/'+ desc +'/'+ emp_id);
             };
 
 

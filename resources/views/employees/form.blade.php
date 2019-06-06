@@ -1,3 +1,8 @@
+@php
+    $minDate = date("Y-m-d", strtotime("-75 years"));
+    $maxDate = date("Y-m-d", strtotime("-18 years"));
+@endphp
+
 {!! Form::hidden('redirectsTo', URL::previous()) !!}
 
 <div class="position-center" id="accordion-app">
@@ -20,7 +25,7 @@
                     </div>
                     <div class="col-sm-3">
                     <span class="field">
-                        {!! Form::text('birth_date', old('birth_date', isset($employee->birth_date) ? $employee->birth_date : null), ['class'=>'form-control datepicker field-required', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
+                        {!! Form::text('birth_date', old('birth_date', isset($employee->birth_date) ? $employee->birth_date : null), ['class'=>'form-control datepicker field-required', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date', 'data-min-date'=>$minDate, 'data-max-date'=>$maxDate]) !!}
                         <label for="birth_date">Date of birth</label>
                     </span>
                     </div>
@@ -38,14 +43,14 @@
                     <label class="col-xs-2 control-label"></label>
                     <div class="col-sm-3">
                         <span class="field">
-                            {!! Form::text('first_name', old('first_name', isset($employee->first_name) ? $employee->first_name : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'First Name', 'required', 'title'=>'Required','id'=>'first_name', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
+                            {!! Form::text('first_name', old('first_name', isset($employee->first_name) ? $employee->first_name : null), ['class'=>'fix-case form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'First Name', 'required', 'title'=>'Required','id'=>'first_name', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
                             <label for="first_name">First Name</label>
                         </span>
                         {!! $errors->first('first_name', '<p class="help-block">:message</p>') !!}
                     </div>
                     <div class="col-sm-3">
                         <span class="field">
-                            {!! Form::text('known_as', old('known_as', isset($employee->known_as) ? $employee->known_as : null), ['class'=>'form-control fix-case title-case', 'autocomplete'=>'off', 'placeholder'=>'Second/Other Names', 'pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50']) !!}
+                            {!! Form::text('known_as', old('known_as', isset($employee->known_as) ? $employee->known_as : null), ['class'=>'fix-case form-control title-case', 'autocomplete'=>'off', 'placeholder'=>'Second/Other Names', 'pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50']) !!}
                             <label for="first_name">Second/Other Names</label>
                         </span>
                     </div>
@@ -320,16 +325,22 @@
                 </div>
                 <div class="form-group">
                     <label class="col-xs-2 control-label">Join/Termination Dates</label>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <span class="field">
                             {!! Form::text('date_joined', old('date_joined', isset($employee->date_joined) ? $employee->date_joined : null), ['class'=>'form-control datepicker', 'placeholder'=>'Joined Date', 'id'=>'JoinedDate', 'data-pair-element-id'=>'TerminationDate' ]) !!}
                             <label for="date_joined">Date Joined</label>
                         </span>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <span class="field">
                             {!! Form::text('date_terminated', old('date_terminated', isset($employee->date_terminated) ? $employee->date_terminated : null), ($_mode=='view' || $_mode=='create')?['class'=>'form-control','disabled', 'placeholder'=>'Termination Date']:['class'=>'form-control datepicker', 'placeholder'=>'Termination Date', 'id'=>'TerminationDate']) !!}
                             <label for="date_terminated">Termination Date</label>
+                        </span>
+                    </div>
+                    <div class="col-sm-2">
+                        <span class="field">
+                            {!! Form::text('probation_end_date', old('probation_end_date', isset($employee->probation_end_date) ? $employee->probation_end_date : null), ($_mode=='view' || $_mode=='create')?['class'=>'form-control','disabled', 'placeholder'=>'Probation End Date']:['class'=>'form-control datepicker', 'placeholder'=>'Probation End Date', 'id'=>'ProbationEndDate']) !!}
+                            <label for="probation_end_date">Probation end date</label>
                         </span>
                     </div>
                     <div class="col-sm-4">
@@ -389,6 +400,7 @@
                 </div>
                 <div class="form-group">
                     <div class="row" v-for="(qual, index) in quals">
+                        <input type="hidden" :name="'qualifications[' + index + '][deleted_at]'">
                         <div class="col-xs-1">
                             <button type="button" v-on:click="removeQual(index)" class="btn btn-default" data-wenk-pos="right"
                                     data-wenk="Remove Qualification">
@@ -397,23 +409,23 @@
                         </div>
                         <div class="col-md-1">
                             <input v-model="qual.reference" type="text"
-                                   name="qualifications[][reference]" class="form-control">
+                                   :name="'qualifications[' + index + '][reference]'" class="form-control">
                         </div>
                         <div class="col-md-3">
                             <input v-model="qual.description" type="text"
-                                   name="qualifications[][description]" class="form-control">
+                                   :name="'qualifications[' + index + '][description]'" class="form-control">
                         </div>
                         <div class="col-md-3">
                             <input v-model="qual.institution" type="text"
-                                   name="qualifications[][institution]" class="form-control">
+                                   :name="'qualifications[' + index + '][institution]'" class="form-control">
                         </div>
                         <div class="col-sm-2">
                             <input v-model="qual.student_no" type="text"
-                                   name="qualifications[][student_no]" class="form-control">
+                                   :name="'qualifications[' + index + '][student_no]'" class="form-control">
                         </div>
                         <div class="col-sm-2">
                             <input v-model="qual.obtained_on" type="text" class="form-control datepicker"
-                                    name="qualifications[][obtained_on]" date-format="yy-mm-dd" change-month="true" change-year="true">
+                                   :name="'qualifications[' + index + '][obtained_on]'" date-format="yy-mm-dd" change-month="true" change-year="true">
                         </div>
                     </div>
                 </div>

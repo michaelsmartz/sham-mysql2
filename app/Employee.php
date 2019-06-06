@@ -9,6 +9,8 @@ use Plank\Mediable\Mediable;
 use Jedrzej\Searchable\Constraint;
 use App\Traits\MyAuditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use San4io\EloquentFilter\Filters\LikeFilter;
+use San4io\EloquentFilter\Filters\WhereFilter;
 
 class Employee extends Model implements AuditableContract
 {
@@ -35,7 +37,7 @@ class Employee extends Model implements AuditableContract
                   'physical_file_no', 'job_title_id',
                   'division_id', 'branch_id',
                   'picture', 'line_manager_id',
-                  'leave_balance_at_start'
+                  'leave_balance_at_start','probation_end_date'
               ];
 
     protected $dates = ['deleted_at'];
@@ -63,6 +65,12 @@ class Employee extends Model implements AuditableContract
     ];
     protected $auditRelatedProperties = ['mobilePhone', 'homePhone', 'workPhone'];
 
+    protected $filterable = [
+        'full_name' => LikeFilter::class,
+        'is_manually_adjusted' => WhereFilter::class,
+    ];
+
+
     public static function boot()
     {
         parent::boot();
@@ -89,7 +97,9 @@ class Employee extends Model implements AuditableContract
                 'job_titles.description as job_title',
                 'departments.description as department',
                 'employees.date_terminated'
-            );
+            )
+            ->orderBy('employees.id');
+        ;
 
         if (is_null($search_term)) {
             if ($is_terminated)
@@ -99,9 +109,20 @@ class Employee extends Model implements AuditableContract
         }
     }
 
+    public function scopeEmployeesEligibility($query, $startDate, $endDate){
+        $query->leftJoin('eligibility_employee as eligibility', function($join) use ($startDate, $endDate){
+                $join->on('employees.id','=','eligibility.employee_id')
+                     ->where('eligibility.start_date','>=',$startDate)
+                     ->where('eligibility.end_date','<=',$endDate);
+              })
+              ->select('employees.id','employees.job_title_id','employees.date_joined','employees.probation_end_date','eligibility.*')
+              ->whereNull('employees.date_terminated')
+        ;  
+    }
+
     protected function withEmployeesLite($query)
     {
-        $query->select(['job_title_id','first_name','surname','id'])
+        $query->select(['job_title_id','first_name','surname','id','date_joined','probation_end_date'])
               ->whereNull('deleted_at');
     }
 
@@ -256,6 +277,16 @@ class Employee extends Model implements AuditableContract
     public function skills()
     {
         return $this->belongsToMany(Skill::class);
+    }
+
+    public function eligibilities()
+    {
+        return $this->belongsToMany('App\AbsenceType', 'eligibility_employee')
+            ->withPivot('start_date', 'end_date', 'total', 'taken', 'is_manually_adjusted','id','is_processed');
+    }
+    public function absences()
+    {
+        return $this->belongsToMany(AbsenceType::class, 'absence_type_employee')->withPivot('starts_at', 'ends_at', 'status', 'approved_by_employee_id');
     }
 
     public function evaluationassessors()

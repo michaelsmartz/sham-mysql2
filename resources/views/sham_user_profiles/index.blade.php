@@ -5,6 +5,7 @@
     <ul class="nav nav-tabs">
         <li><a href="{{URL::to('/')}}/users">Users</a></li>
         <li class="active"><a href="#">User Profiles</a></li>
+        <li><a href="{{URL::to('/')}}/general_options">General Options</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">

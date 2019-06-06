@@ -34,6 +34,7 @@ use App\Skill;
 use App\SystemSubModule;
 use App\SysConfigValue;
 use App\TimelineManager;
+use App\Jobs\FlushDashboardCachedQueries;
 use App\Traits\MediaFiles;
 use Illuminate\Support\Facades\Session;
 use OwenIt\Auditing\Facades\Auditor;
@@ -42,6 +43,7 @@ use App\Http\Controllers\CustomController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Redirect;
 
@@ -379,6 +381,9 @@ class EmployeesController extends CustomController
         $this->contextObj->destroyData($id);
 
         \Session::put('success', $this->baseFlash . 'deleted Successfully!!');
+        
+        //clear the cache for dashboard
+        FlushDashboardCachedQueries::dispatch();
 
         return redirect()->route($this->baseViewPath .'.index');
     }
@@ -677,15 +682,19 @@ class EmployeesController extends CustomController
              ->updateOrCreate(['employee_id'=>$data->id, 'address_type_id'=>2],
                                 $postalAddress);
 
+        $data->qualifications()->delete();
         if(isset($qualifications)){
             foreach($qualifications as $qual){
-                $data->qualifications()
-                     ->updateOrCreate(['employee_id'=>$data->id], $qual);
+                $data->qualifications()->withTrashed()
+                     ->updateOrCreate(['employee_id'=>$data->id, 'reference'=>$qual['reference']], $qual);
             }
         }
 
         $data->skills()->sync($skills);
         $data->disabilities()->sync($disabilities);
+
+        //clear the cache for dashboard
+        FlushDashboardCachedQueries::dispatch();
         
     }
 
@@ -695,4 +704,28 @@ class EmployeesController extends CustomController
         $employee = Employee::select(['id','department_id'])->find($id);
         return Response()->json($employee);
     }
+
+
+    public static function getManagerEmployees($manager_id){
+        $employees_ids  = DB::table('employees')->select('id','first_name','surname')
+        ->where(function($q){
+            $q->where('date_terminated','<=','NOW()')
+              ->orWhereNull('date_terminated');
+        })
+        ->where('line_manager_id', $manager_id)
+        ->get();
+        return $employees_ids;
+    }
+
+    public static function getManagerEmployeeIds($manager_id){
+        $employees_ids  = Employee::where('line_manager_id', $manager_id)
+        ->where(function($q){
+            $q->where('date_terminated','<=','NOW()')
+              ->orWhereNull('date_terminated');
+        })
+        ->pluck('id')
+        ->toArray();
+        return $employees_ids;
+    }
+
 }

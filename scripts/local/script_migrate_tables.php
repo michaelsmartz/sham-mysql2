@@ -13,7 +13,8 @@ $tables = [
     //"PolicyCategories",
     //'Policies',
     //'Topics',
-    //"ShamUsers"
+    //"ShamUsers",
+    "ReportTemplates"
 ];
 
 
@@ -189,13 +190,17 @@ function insertData($conn_mysql, $datas, $table){
                 $key = 'is_active';
             if($key === 'ExpiryDate')
                 $key = 'expires_on';
+            if($key === 'Order')
+                $key = "`order`";
+            if($key === 'Source')
+                $key = "`source`";
             if($key === 'ShamUserProfileId' || $key ==='LawId') {
                 $fields .= $key.',';
             }else{
                 $fields .= ltrim(strtolower(preg_replace('/([A-Z]+)/', "_$1", $key)), '_') . ',';
             }
 
-            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' ||
+            $values .= ($key === 'UpdatedWhen' || $key === 'EmployeeId' || $key === '`order`' ||
                         $key === 'ShamUserProfileId' || $key === 'is_public')?'null'.',':"'".$value."'".',';
         }
 

@@ -2496,3 +2496,15 @@ ALTER TABLE `disability_categories` CHANGE `is_system_predefined` `is_system_pre
 #-- 09/01/2018
 ALTER TABLE `disciplinary_actions`
 CHANGE COLUMN `updated_by` `updated_by` VARCHAR(100) NULL
+
+#-- 11/03/2019
+ALTER TABLE `qualifications`
+CHANGE COLUMN `obtained_on` `obtained_on` DATE NULL DEFAULT NULL AFTER `institution`;
+
+#-- 22/05/2019
+Update system_sub_modules set `description`= 'Employees' where id = 1;
+Update system_sub_modules set `description`= 'Announcements' where id = 5;
+Update system_sub_modules set `description`= 'Assets Allocation' where id = 6;
+Update system_sub_modules set `description`= 'Organisation Charts' where id = 7;
+Update system_sub_modules set `description`= 'Surveys' where id = 11;
+Update system_sub_modules set `description`= 'Compliance' where id = 11;

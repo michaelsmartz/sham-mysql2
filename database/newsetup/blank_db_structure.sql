@@ -13,15 +13,15 @@ SET GLOBAL FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------------------------------------------------------
 -- Schema
 -- ----------------------------------------------------------------------------
-DROP SCHEMA IF EXISTS `Shamuat` ;
-CREATE SCHEMA IF NOT EXISTS `Shamuat` ;
+DROP SCHEMA IF EXISTS `Shamdev_recruitment_2` ;
+CREATE SCHEMA IF NOT EXISTS `Shamdev_recruitment_2` ;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-USE `Shamuat`;
+USE `Shamdev_recruitment_2`;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -509,7 +509,7 @@ CREATE TABLE IF NOT EXISTS `audits` (
   PRIMARY KEY (`id`),
   KEY `audits_auditable_id_auditable_type_index` (`auditable_id`,`auditable_type`),
   KEY `audits_user_id_user_type_index` (`user_id`,`user_type`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -530,7 +530,7 @@ CREATE TABLE IF NOT EXISTS `audits_pivot` (
   PRIMARY KEY (`id`),
   KEY `audits_pivot_auditable_id_auditable_type_index` (`auditable_id`,`auditable_type`),
   KEY `audits_pivot_relation_id_relation_type_index` (`relation_id`,`relation_type`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -949,7 +949,7 @@ CREATE TABLE IF NOT EXISTS `csv_data` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1054,7 +1054,7 @@ CREATE TABLE IF NOT EXISTS `disabilities` (
   PRIMARY KEY (`id`),
   KEY `FK_disability_categories_id_idx` (`disability_category_id`),
   KEY `IX_DISABILITIES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
 
 INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Full blown Aids', '1', '1');
 INSERT INTO `disabilities` (`description`, `disability_category_id`, `is_system_predefined`) VALUES ('Partially Hearing', '2', '1');
@@ -1105,7 +1105,7 @@ CREATE TABLE IF NOT EXISTS `disability_categories` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_DISABILITY_CATEGORIES_IS_SYSTEM_PREDEFINED` (`is_system_predefined`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Aids', '1');
 INSERT INTO `disability_categories` (`description`, `is_system_predefined`) VALUES ('Hearing', '1');
@@ -1128,7 +1128,7 @@ CREATE TABLE IF NOT EXISTS `disability_employee` (
   `disability_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_EMPLOYEE_DISABILITY` (`employee_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2318,7 +2318,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   UNIQUE KEY `media_disk_directory_filename_extension_unique` (`disk`,`directory`(100),`filename`(100),`extension`),
   KEY `media_disk_directory_index` (`disk`,`directory`),
   KEY `media_aggregate_type_index` (`aggregate_type`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -2337,7 +2337,7 @@ CREATE TABLE IF NOT EXISTS `mediables` (
   KEY `mediables_mediable_id_mediable_type_index` (`mediable_id`,`mediable_type`),
   KEY `mediables_tag_index` (`tag`),
   KEY `mediables_order_index` (`order`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 

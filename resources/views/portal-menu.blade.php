@@ -72,6 +72,9 @@
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_SURVEYS]))
                 <li class="{{ (Request::is('my-surveys') || Request::is('my-feedback')  ? 'active' : '') }}"> <a href="{{URL::to('/')}}/my-surveys">Surveys</a></li>
             @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_LEAVES]))
+                <li class="{{ (Request::is('leaves') || Request::is('leaves/filter')  ? 'active' : '') }}"> <a href="{{URL::to('/')}}/leaves">Absences and leaves</a></li>
+            @endif
             {{--
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_DISCIPLINARY_RECORDS]))
                 <li> <a href="{{URL::to('/')}}/my-timeline">Timeline</a></li>
@@ -85,9 +88,6 @@
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_CLAIMS]))
                 <li> <a href="{{URL::to('/')}}/my-claims">My claims</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_LEAVES]))
-                <li> <a href="{{URL::to('/')}}/myleaves">My leave</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_TIMESHEET]))
                 <li> <a href="{{URL::to('/')}}/mytimesheet">My timesheet</a></li>
@@ -193,6 +193,45 @@
     </li>
 @endif
 
+@if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT]))
+    <li class="has-sub">
+        <a href="javascript:;">
+            <b class="caret pull-right"></b>
+            <strong><i class="fa fa-user-plus fa-fw"></i></strong>
+            <span>Recruitment</span>
+        </a>
+        <ul class="sub-menu">
+            @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_CANDIDATES]))
+                <li class="{{ (Request::is('candidates/*') || Request::is('candidates') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/candidates">Candidates</a></li>
+            @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_REQUESTS]))
+                <li class="{{ (Request::is('recruitment_requests/*') || Request::is('recruitment_requests') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/recruitment_requests">Requests</a></li>
+            @endif
+        </ul>
+    </li>
+@endif
+
+@if (isset($allowedmodules[App\SystemModule::CONST_LEAVE]))
+    <li class="has-sub">
+        <a href="javascript:;">
+            <b class="caret pull-right"></b>
+            <strong><i class="fa fa-calendar fa-calendar"></i></strong>
+            <span>Leave</span>
+        </a>
+        <ul class="sub-menu">
+            @if (isset($allowedmodules[App\SystemModule::CONST_LEAVE][App\SystemSubModule::CONST_ABSENCE_TYPES]))
+                <li class="{{ (Request::is('absence_types/*') || Request::is('absence_types') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/absence_types">Absence Types</a></li>
+            @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_LEAVE][App\SystemSubModule::CONST_ENTITLEMENTS]))
+                <li class="{{ (Request::is('entitlements/*') || Request::is('entitlements') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/entitlements">Entitlements</a></li>
+            @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_LEAVE][App\SystemSubModule::CONST_LEAVES]))
+                <li class="{{ (Request::is('history_leaves/*') || Request::is('history_leaves') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/history_leaves">Histories</a></li>
+            @endif
+        </ul>
+    </li>
+@endif
+
 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS]))
     <li class="has-sub">
         <a href="javascript:;">
@@ -242,11 +281,11 @@
                     <a href="{{URL::to('/')}}/branches">Employees</a>
                 </li>
             @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_RECRUITMENT][App\SystemSubModule::CONST_RECRUITMENT_INTERVIEWS]))
+                <li class="{{ (Request::is('contracts') || Request::is('contracts/*') || Request::is('interviews') || Request::is('interviews/*') || Request::is('offers') || Request::is('offers/*')  || Request::is('qualification-recruitments') || Request::is('qualification-recruitments/*') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/contracts">Recruitment</a></li>
+            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_ASSETS_MANAGEMENT]))
                 <li> <a href="{{URL::to('/')}}/asset_conditions">Assets Allocation</a></li>
-            @endif
-            @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_LIFECYCLE_MANAGEMENT]))
-                <li> <a href="{{URL::to('/')}}/violations">Timeline</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_CENTRAL_HR][App\SystemSubModule::CONST_COMPLIANCE_MANAGEMENT]))
                 <li class="{{ (Request::is('policy_categories/*') || Request::is('policy_categories') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/law_categories">Compliance</a></li>
@@ -273,7 +312,8 @@
             @endif
                 @if (isset($allowedmodules[App\SystemModule::CONST_CONFIGURATION_PARAMETERS][App\SystemSubModule::CONST_SYSTEM_CONFIGURATION]))
                 <li class="{{ (Request::is('sham_user_profiles/*') ||
-                               Request::is('sham_user_profiles')
+                               Request::is('sham_user_profiles') ||
+                               Request::is('general_options')
                                ? 'active' : '')
                            }}"
                 > <a href="{{URL::to('/')}}/users">System Configuration</a></li>

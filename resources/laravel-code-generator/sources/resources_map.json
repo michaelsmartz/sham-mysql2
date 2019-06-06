@@ -378,7 +378,50 @@
         "table-name": "module_assessment_response_details"
     },
     {
+        "model-name": "Candidate",
+        "resource-file": "candidates.json"
+    },
+    {
+        "model-name": "RecruitmentRequest",
+        "resource-file": "recruitment_requests.json"
+    },
+    {
+        "model-name": "Position",
+        "resource-file": "positions.json"
+    },
+    {
+        "model-name": "RecruimentQualification",
+        "resource-file": "recruiment_qualifications.json"
+    },
+    {
+        "model-name": "Interview",
+        "resource-file": "interviews.json"
+    },
+    {
+        "model-name": "RecruitmentQualification",
+        "resource-file": "recruitment_qualifications.json"
+    },
+    {
+        "model-name": "Contract",
+        "resource-file": "contracts.json",
+        "table-name": "contracts"
+    },
+    {
+        "model-name": "Offer",
+        "resource-file": "offers.json",
+        "table-name": "offers"
+    },
+    {
         "model-name": "HistoryTeam",
         "resource-file": "history_teams.json"
+    },
+    {
+        "model-name": "AbsenceType",
+        "resource-file": "absence_types.json",
+        "table-name": "absence_types"
+    },
+    {
+        "model-name": "Entitlement",
+        "resource-file": "entitlements.json"
     }
 ]

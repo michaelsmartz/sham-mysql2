@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-/*
 use DB;
+use Log;
+/*
+
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Illuminate\Support\Collection;
@@ -12,7 +14,12 @@ use Illuminate\Support\Collection;
 use Collective\Html\FormBuilder as Form;
 use App\Macros\Routing\Router;
 use App\User;
+use Validator;
 use App\Observers\UserObserver;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobFailed;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +36,17 @@ class AppServiceProvider extends ServiceProvider
             return $app['auth']->user();
         });
 
+        Queue::after(function (JobProcessed $event) {
+            DB::table('job_logs')->insert([
+                'loggable_type' => $event->job->resolveName(),
+                'message' => 'Job processed',
+                'level' => 900,
+                'context' => $event->job->resolveName(),
+                'extra' => json_encode($event->job),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        });
+
         /*
         if( env('LOG_QUERIES') === true ){
             DB::listen(function($query) {
@@ -39,6 +57,16 @@ class AppServiceProvider extends ServiceProvider
             });
         }
         */
+
+        Validator::extend('greater_or_equal', function($attribute, $value, $parameters, $validator) {
+            $min_field = $parameters[0];
+            return (float)$value >= (float)$min_field;
+        });
+
+        Validator::extend('less_or_equal', function($attribute, $value, $parameters, $validator) {
+            $min_field = $parameters[0];
+            return (float)$min_field <= (float)$value;
+        });
 
     }
 

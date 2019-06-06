@@ -139,3 +139,9 @@ a[class*="item-"]:not(:last-child), button[class*="item-"]:not(:last-child) {
 	padding: 3px 20px;
 	clear: both;
 }
+
+.hiddenRow {
+    padding: 0 4px !important;
+    background-color: #eeeeee;
+    font-size: 13px;
+}

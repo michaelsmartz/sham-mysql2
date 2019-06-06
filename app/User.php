@@ -8,12 +8,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use App\Events\UserAmended;
 use Illuminate\Database\Eloquent\SoftDeletes;
+Use Carbon\Carbon;
 use Jedrzej\Searchable\SearchableTrait;
 use San4io\EloquentFilter\Traits\Filterable;
+use Yadahan\AuthenticationLog\AuthenticationLogable;
 
 class User extends Authenticatable
 {
-    use SoftDeletes, Notifiable, HasBaseModel, SearchableTrait, Filterable;
+    use SoftDeletes, Notifiable, HasBaseModel, AuthenticationLogable, SearchableTrait, Filterable;
 
     protected $dispatchesEvents = [
         'saved' => UserAmended::class,

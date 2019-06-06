@@ -98,11 +98,8 @@
                             <td>{{ optional($employee)->department }}</td>
                             <td>{{ optional($employee)->job_title }}</td>
                             <td>{{ $employee->employee_no }}</td>
-
-                            {{--@if(!is_null($employee->date_terminated))--}}
-                                <td>{{ (optional($employee)->date_terminated)?$employee->date_terminated:'' }}</td>
-                            {{--@endif--}}
                             <td>{{ (optional($employee)->probation_end_date)?$employee->probation_end_date:'' }}</td>
+                            <td>{{ (optional($employee)->date_terminated)?$employee->date_terminated:'' }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">

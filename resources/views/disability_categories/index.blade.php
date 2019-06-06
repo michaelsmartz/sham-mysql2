@@ -1,5 +1,6 @@
 @extends('portal-index')
 @section('title','Disability Categories')
+@section('subtitle','Disability Categories drop-down values for employees')
 @section('content')
     <br>
     <ul class="nav nav-tabs">
@@ -25,6 +26,7 @@
         <li><a href="{{URL::to('/')}}/titles">Title</a></li>
         <li class="active"><a href="#">Disability Categories</a></li>
         <li><a href="{{URL::to('/')}}/disabilities">Disability</a></li>
+        <li><a href="{{URL::to('/')}}/violations">Violations</a></li>
     </ul>
     <div class="flex-wrapper">
         <div id="table-container">

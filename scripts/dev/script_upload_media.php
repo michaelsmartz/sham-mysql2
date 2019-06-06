@@ -86,8 +86,7 @@ function updateCreateMedias($conn_mysql, $disk, $config, $type){
     if($type === "create"){
         //EXEC "php artisan media:import uploads" when uploads of files is completed
         //cd on project root NB: one directory back since script on same project
-		exec("cd ..");
-		exec("cd ..");
+        chdir("../..");
         $command = "php artisan media:sync uploads";
         exec($command, $output);
         print_r($output);

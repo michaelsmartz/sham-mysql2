@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\LeavesEntitlement;
 
 class Kernel extends ConsoleKernel
 {
@@ -14,6 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
+        Commands\LeavesEntitlement::class
     ];
 
     /**
@@ -26,6 +28,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        $schedule->command('leaves:entitlement')->daily()->appendOutputTo(storage_path() .'logs/jobs.recent');
+        \File::append(storage_path() . "/logs/jobs.log", \File::get(storage_path() . "/logs/jobs.recent"));
     }
 
     /**

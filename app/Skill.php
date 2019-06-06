@@ -29,4 +29,9 @@ class Skill extends Model
     }
 
 
+    public function candidates()
+    {
+        return $this->belongsToMany('App\Candidate');
+    }
+
 }

@@ -60,12 +60,12 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 35);
+/******/ 	return __webpack_require__(__webpack_require__.s = 374);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 0:
+/***/ 1:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9887,35 +9887,7 @@ return jQuery;
 
 /***/ }),
 
-/***/ 1:
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-
-/***/ 2:
+/***/ 11:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
@@ -9939,7 +9911,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
 
 (function (global, factory) {
-   true ? module.exports = factory(__webpack_require__(0)) : typeof define === 'function' && define.amd ? define(['jquery'], factory) : global.parsley = factory(global.jQuery);
+   true ? module.exports = factory(__webpack_require__(1)) : typeof define === 'function' && define.amd ? define(['jquery'], factory) : global.parsley = factory(global.jQuery);
 })(this, function ($) {
   'use strict';
 
@@ -12413,22 +12385,50 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 });
 //# sourceMappingURL=parsley.js.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(2)))
 
 /***/ }),
 
-/***/ 35:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 2:
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__(36);
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
 
 
 /***/ }),
 
-/***/ 36:
+/***/ 374:
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(jQuery) {__webpack_require__(2);
+module.exports = __webpack_require__(375);
+
+
+/***/ }),
+
+/***/ 375:
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(jQuery) {__webpack_require__(11);
 
 +function ($) {
     window.Parsley.addValidator('requiredIf', {
@@ -12510,7 +12510,7 @@ module.exports = __webpack_require__(36);
         ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
     });
 }(jQuery);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ })
 

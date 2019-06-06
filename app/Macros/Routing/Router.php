@@ -64,5 +64,16 @@ class Router
                 });
             });
         }
+
+        \Response::macro('pdf', function ($content) {
+
+            $headers = [
+                'Content-type'        => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="download.pdf"',
+            ];
+        
+            return \Response::make($content, 200, $headers);
+        
+        });
     }
 }

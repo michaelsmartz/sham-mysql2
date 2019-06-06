@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <script src="{{asset('js/alt-app.js')}}"></script>
+        <script src="{{asset('js/app2.js')}}"></script>
 
         <!-- Custom Theme JavaScript -->
         <noscript id="deferred-styles"></noscript>
@@ -324,6 +324,7 @@
                 font-size: 12px;
                 height: 28px;
             }
+
         </style>
 
         @yield('scripts')

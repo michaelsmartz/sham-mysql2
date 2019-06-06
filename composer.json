@@ -26,8 +26,10 @@
         "phpoffice/phpspreadsheet": "^1.3",
         "plank/laravel-mediable": "^2.7",
         "san4io/eloquent-filter": "^0.2.0",
+        "swayok/alternative-laravel-cache": "5.4.*",
         "tightenco/ziggy": "^0.6.9",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "^2.5",
+        "yadahan/laravel-authentication-log": "^1.1"
     },
     "require-dev": {
         "crestapps/laravel-code-generator": "^2.2",

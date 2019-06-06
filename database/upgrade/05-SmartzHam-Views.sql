@@ -4,7 +4,7 @@ CREATE  OR REPLACE VIEW `headcountbydepartment_view` AS
             IFNULL(d.description, 'Unspecified') AS Department
     FROM    employees e
             LEFT OUTER JOIN departments d ON d.id = e.department_id
-    WHERE   e.is_active = 1
+    WHERE   e.deleted_at IS NULL
             AND e.date_terminated IS NULL;
 			
 #--------Views
@@ -30,7 +30,7 @@ CREATE  OR REPLACE  VIEW `headcountbygender_view` AS
         LEFT JOIN `genders` `g` ON ((`g`.`id` = `e`.`gender_id`)))
         LEFT JOIN `ethnic_groups` `eg` ON ((`eg`.`Id` = `e`.`ethnic_group_id`)))
     WHERE
-        ((`e`.`is_active` = 1)
+        (isnull(`e`.`deleted_at`)
             AND ISNULL(`e`.`date_terminated`));
 			
 #--------Views
@@ -82,7 +82,7 @@ CREATE OR REPLACE VIEW `headcountbygender_view` AS
         left join `genders` `g` ON ((`g`.`id` = `e`.`gender_id`)))
         left join `ethnic_groups` `eg` ON ((`eg`.`Id` = `e`.`ethnic_group_id`)))
     where
-        ((`e`.`is_active` = 1)
+        (isnull(`e`.`deleted_at`)
             and isnull(`e`.`date_terminated`));
             
 #--01-Views ---------------------------------------------------------------------------------------

@@ -13,6 +13,9 @@
 
 Route::get('/', 'MiscController@welcome');
 Route::get('test', 'MiscController@test');
+Route::get('vue-test', 'MiscController@vueTest');
+Route::get('testleave', 'MiscController@testleave');
+Route::get('testunclaimedmonthly', 'MiscController@testunclaimedmonthly');
 
 Auth::routes();
 
@@ -155,8 +158,15 @@ Auth::routes();
             Route::any('sham_user_profiles/{Id}/matrix', 'ShamUserProfilesController@matrix')->name('sham_user_profiles.matrix');
             Route::resource('sham_users', 'ShamUsersController');
             Route::resource('users', 'UsersController');
+            Route::get('/general_options', 'GeneralOptionsController@index')->name('general_options.index');
+            Route::post('/general_options/store', 'GeneralOptionsController@store')->name('general_options.store');
             Route::resource('asset_conditions', 'AssetConditionsController');
             Route::resource('violations', 'ViolationsController');
+
+            Route::resource('contracts', 'ContractsController');
+            Route::resource('interviews', 'InterviewsController');
+            Route::resource('offers', 'OffersController');
+            Route::resource('qualification-recruitments', 'QualificationRecruitmentsController');
         #endregion
 
         #region E-Learning
@@ -174,6 +184,14 @@ Auth::routes();
             ]);
             Route::get('module_assessments/{response}/responses/{module_assessment}/employee/{employee_id}/editAssessment', 'ModuleAssessmentResponsesController@editAssessment');
             Route::resource('course_training_sessions', 'CourseTrainingSessionsController' );
+        #endregion
+
+        #region Absences and leaves
+        Route::resource('leaves', 'SSPEmployeeLeavesController' );
+        Route::get('/leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
+        Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
+        Route::get('/leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
+        Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
         #endregion
 
         #region Quality
@@ -205,6 +223,43 @@ Auth::routes();
 
         #region Recruitment
         Route::resource('recruitment', 'RecruitmentsController');
+
+	    Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/interview/{interview}/delete-media', 'RecruitmentRequestsController@deleteInterviewMedia')->name('recruitment_requests.delete-interview-media');
+        Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/interview/{interview}/download-media/{media}', 'RecruitmentRequestsController@downloadInterviewMedia')->name('recruitment_requests.download-interview-media');
+
+        Route::get('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/edit-interview', 'RecruitmentRequestsController@editInterview')->name('recruitment_requests.edit-interview');
+        Route::patch('recruitment_requests/{recruitment_request}/stages/{interview}/candidate/{candidate?}/update-interview', 'RecruitmentRequestsController@updateInterview')->name('recruitment_requests.update-interview');
+        Route::fileResource('recruitment_requests', 'RecruitmentRequestsController');
+        Route::get('recruitment_requests/{recruitment_request}/stages', 'RecruitmentRequestsController@showStages')->name('recruitment_requests.stages');
+        Route::get('recruitment_requests/{recruitment_request}/candidates', 'RecruitmentRequestsController@getCandidates')->name('recruitment_requests.candidates-list');
+        Route::get('recruitment_requests/{recruitment_request}/offer-letters', 'RecruitmentRequestsController@getOfferLetters')->name('recruitment_requests.offer-letters-list');
+        Route::get('recruitment_requests/{recruitment_request}/contracts', 'RecruitmentRequestsController@getContracts')->name('recruitment_requests.contracts-list');
+        Route::post('recruitment_requests/{recruitment_request}/switch/{candidate}/{state}', 'RecruitmentRequestsController@stateSwitch')->name('recruitment_requests.update-status');
+        Route::post('recruitment_requests/{recruitment_request}/interviewing/{candidate}', 'RecruitmentRequestsController@getInterviewing')->name('recruitment_requests.get-interviewing');
+        Route::post('recruitment_requests/{recruitment_request}/upload-offer', 'RecruitmentRequestsController@saveSignedOfferForm')->name('recruitment_requests.upload-offer');
+
+        Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-offer', 'RecruitmentRequestsController@downloadOffer')->name('recruitment_requests.download-offer');
+        Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-signed-offer', 'RecruitmentRequestsController@downloadSignedOffer')->name('recruitment_requests.download-signed-offer');
+        Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/offer/{offer}/upload-offer-form', 'RecruitmentRequestsController@uploadSignedOfferForm')->name('recruitment_requests.upload-offer-form');
+
+        Route::post('recruitment_requests/{recruitment_request}/upload-contract', 'RecruitmentRequestsController@saveSignedContractForm')->name('recruitment_requests.upload-contract');
+        Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-contract', 'RecruitmentRequestsController@downloadContract')->name('recruitment_requests.download-contract');
+        Route::post('recruitment_requests/{recruitment_request}/candidate/{candidate}/download-signed-contract', 'RecruitmentRequestsController@downloadSignedContract')->name('recruitment_requests.download-signed-contract');
+        Route::get('recruitment_requests/{recruitment_request}/candidate/{candidate}/contract/{contract}/upload-contract-form', 'RecruitmentRequestsController@uploadSignedContractForm')->name('recruitment_requests.upload-contract-form');
+
+        Route::any('recruitment_requests/{recruitment_request}/candidate/{candidate}/hired', 'RecruitmentRequestsController@importHiredCandidate')->name('recruitment_requests.hired');
+        Route::any('recruitment_requests/{recruitment_request}/candidate/{candidate}/update-interview-comment', 'RecruitmentRequestsController@updateInterviewComment')->name('recruitment_requests.update-interview-comment');
+        Route::get('recruitment_requests/{request?}/manage-candidate', 'RecruitmentRequestsController@manageCandidate');
+        Route::patch('recruitment_requests/{request?}/update-candidate', 'RecruitmentRequestsController@updateCandidate')->name('recruitment_requests.update-candidate');
+        Route::fileResource('candidates', 'CandidatesController');
+        Route::get('candidates/{candidate?}/candidate-qualifications', 'CandidatesController@qualifications')->name('get-candidate-qualifications');
+        Route::get('candidates/{candidate?}/previous_employments', 'CandidatesController@previousEmployments')->name('get-candidate-employments');
+        #endregion
+
+        #region Leaves
+            Route::resource('absence_types', 'AbsenceTypesController');
+            Route::resource('entitlements', 'EntitlementsController');
+            Route::resource('history_leaves', 'LeavesController', [ 'only' => ['index'] ]);
         #endregion
     });
 #endregion

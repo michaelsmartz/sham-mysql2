@@ -16,6 +16,7 @@ use App\SystemSubModule;
 use App\TimeGroup;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 
 use View;
 
@@ -62,6 +63,7 @@ class SSPController extends CustomController
 
         $allowedActionsAnnouncements = getAllowedActions(SystemSubModule::CONST_ANNOUNCEMENTS);
         $allowedActionsAssets = getAllowedActions(SystemSubModule::CONST_ASSETS_MANAGEMENT);
+
 
         // load the view and pass the parameters
         return view($this->baseViewPath .'.index',
@@ -212,5 +214,6 @@ class SSPController extends CustomController
 
         return $assets;
     }
+
 }
 
