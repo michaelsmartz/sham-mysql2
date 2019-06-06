@@ -19,9 +19,9 @@ You need to decide which unit you
 
 would like to use:
 
-Hours - it also can be displayed as days
+Hours - entitlement of this absence type
 
-according to 'Time Shift' hours grid.
+will be calculated only in hours
 
 Days - entitlement of this absence type
 
