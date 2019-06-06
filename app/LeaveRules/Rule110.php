@@ -79,6 +79,7 @@ class Rule110 extends LeaveBaseClass
            ->where('date_joined', '<=', Carbon::now()->toDateString());
 
         return $ret;
+        
     }
 
     private function applyEligibilityFilter($query, $dateValue)

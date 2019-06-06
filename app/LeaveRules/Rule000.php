@@ -74,6 +74,7 @@ class Rule000 extends LeaveBaseClass
                 ->where('date_joined', '<=', Carbon::now()->toDateString());
 
       return $ret;
+
     }
 
     private function getEmployeeEligibilityDates() {
