@@ -123,10 +123,10 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
                 $grandTotal += $eligibility->pivot->total;
                 $grandTaken += $eligibility->pivot->taken;
 
-                if($eligibility->pivot->taken == 0){
+                if ($eligibility->pivot->taken == 0) {
                     $eligibility->pivot->total = 0;
                 }
-                else{
+                else {
                     $eligibility->pivot->total = $eligibility->pivot->taken;
                 }
 
@@ -134,11 +134,11 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
                 $eligibility->pivot->save();
             }
 
-            echo $grandTotal, ' ',$lastColItem->pivot->total,'<br>';
+            //echo $grandTotal, ' ',$lastColItem->pivot->total,'<br>';
 
             if(!is_null($lastColItem)) {
                 $lastColItem->pivot->total = ($grandTotal - $grandTaken) + $lastColItem->pivot->total;
-                dump($lastColItem);
+                //dump($lastColItem);
                 $lastColItem->pivot->save();
             }
         }
