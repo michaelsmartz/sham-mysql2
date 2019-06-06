@@ -148,6 +148,7 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
 
     private function logToDb($id, $type, $level = 900)
     {
+        // Log to db.
         \DB::table('job_logs')->insert([
             'loggable_id' => $id,
             'loggable_type' => $type,
