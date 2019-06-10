@@ -72,7 +72,7 @@ class SSPController extends CustomController
 
     private function getWorkingHours($employee){
         $timeGroup = [];
-        $tg= [];
+        $tg= null;
 
         if (empty($employee)) {
             return $timeGroup;
@@ -80,33 +80,42 @@ class SSPController extends CustomController
 
         if ($employee != null && $employee->team() != null && $employee->timeGroup() != null) {
             $team = $employee->team()->get(['description','time_group_id'])->first();
-            $tg = TimeGroup::find($team['time_group_id']);
-            $timeGroup['team'] = $team->description;
-            $timeGroup['description'] = $tg->name;
+
+            if(!is_null($team['time_group_id'])){
+                $tg = TimeGroup::find($team['time_group_id']);
+                $timeGroup['team'] = $team->description;
+                $timeGroup['description'] = $tg->name;
+            }else{
+                $timeGroup['team'] = $team->description;
+                $timeGroup['description'] = "";
+            }   
         }else{
             $timeGroup['team'] = [];
         }
 
-        if(sizeof($tg) > 0) {
-            $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time', 'time_period_type'])->all();
+        if($employee->timeGroup() != null){
 
-            if (!empty($timeGroup) && $tgTimePeriods != null) {
-                $counter_days = 0;
-                foreach ($tgTimePeriods as $tgTimePeriod) {
-                    $day = DayType::getDescription($tgTimePeriods[$counter_days]->pivot->day_id);
-                        //if TimePeriodType 1:  is for working hours
-                        if ($tgTimePeriod->time_period_type == 1) {
-                        $timeGroup['time_period'][$day]['description'] = $tgTimePeriod->description;
-                        $timeGroup['time_period'][$day]['start_time'] = $tgTimePeriod->start_time;
-                        $timeGroup['time_period'][$day]['end_time'] = $tgTimePeriod->end_time;
-                        $timeGroup['time_period'][$day]['day_count'] = $counter_days;
-                        }
-                        //if TimePeriodType 2: add lunch hours to array
-                        else if ($tgTimePeriod->time_period_type == 2) {
-                            $timeGroup['time_period'][$day]['breaks'][$tgTimePeriod->description]
-                                = self::getLunchHours($tgTimePeriod);
-                        }
-                        $counter_days++;
+            if(!is_null($tg)) {
+                $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time', 'time_period_type'])->all();
+
+                if (!empty($timeGroup) && $tgTimePeriods != null) {
+                    $counter_days = 0;
+                    foreach ($tgTimePeriods as $tgTimePeriod) {
+                        $day = DayType::getDescription($tgTimePeriods[$counter_days]->pivot->day_id);
+                            //if TimePeriodType 1:  is for working hours
+                            if ($tgTimePeriod->time_period_type == 1) {
+                            $timeGroup['time_period'][$day]['description'] = $tgTimePeriod->description;
+                            $timeGroup['time_period'][$day]['start_time'] = $tgTimePeriod->start_time;
+                            $timeGroup['time_period'][$day]['end_time'] = $tgTimePeriod->end_time;
+                            $timeGroup['time_period'][$day]['day_count'] = $counter_days;
+                            }
+                            //if TimePeriodType 2: add lunch hours to array
+                            else if ($tgTimePeriod->time_period_type == 2) {
+                                $timeGroup['time_period'][$day]['breaks'][$tgTimePeriod->description]
+                                    = self::getLunchHours($tgTimePeriod);
+                            }
+                            $counter_days++;
+                    }
                 }
             }
         }
