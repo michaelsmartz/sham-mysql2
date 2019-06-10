@@ -92,10 +92,12 @@ class Employee extends Model implements AuditableContract
     {
         $query->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
             ->leftJoin('job_titles', 'job_titles.id', '=', 'employees.job_title_id')
+            ->leftJoin('employee_statuses','employee_statuses.id', '=', 'employees.employee_status_id')
             ->select('employees.id', 'employees.first_name', 'employees.surname',
                 'employees.employee_no','employees.id_number','employees.probation_end_date',
                 'job_titles.description as job_title',
                 'departments.description as department',
+                'employee_statuses.description as employee_status',
                 'employees.date_terminated'
             )
             ->orderBy('employees.id');

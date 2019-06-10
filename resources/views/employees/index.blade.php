@@ -82,6 +82,7 @@
                             <th data-sortable="true" data-tableexport-display="always" data-visible="false">Id Number</th>
                             <th data-sortable="true">Department</th>
                             <th data-sortable="true">Job Title</th>
+                            <th data-sortable="true">Status</th>
                             <th data-sortable="true" data-tableexport-display="always" data-visible="false">Employee Number</th>
                             <th data-sortable="true" data-tableexport-display="always" data-visible="false">Probation End Date</th>
                             <th data-sortable="true" data-tableexport-display="always" data-visible="{{$is_terminated}}">Date Terminated</th>
@@ -97,6 +98,7 @@
                             <td>{{ $employee->id_number }}</td>
                             <td>{{ optional($employee)->department }}</td>
                             <td>{{ optional($employee)->job_title }}</td>
+                            <td>{{ optional($employee)->employee_status }}</td>
                             <td>{{ $employee->employee_no }}</td>
                             <td>{{ (optional($employee)->probation_end_date)?$employee->probation_end_date:'' }}</td>
                             <td>{{ (optional($employee)->date_terminated)?$employee->date_terminated:'' }}</td>
