@@ -12,3 +12,4 @@ Homestead.yaml
 /.vscode
 composer.lock
 package-lock.json
+pre-deploy-compress\.js
