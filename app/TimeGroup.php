@@ -29,7 +29,7 @@ class TimeGroup extends Model
 
     public function timePeriods()
     {
-        return $this->belongsToMany('App\TimePeriod','day_time_group_time_period')->withPivot('day_id');
+        return $this->belongsToMany('App\TimePeriod','day_time_group_time_period')->withPivot('day_id')->orderBy('day_id');
     }
 
     public function days()
