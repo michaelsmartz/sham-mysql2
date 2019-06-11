@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\Commands\LeavesEntitlement;
+use App\Console\Commands\UpdateUnclaimedMonthlyLeaves;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +16,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        Commands\LeavesEntitlement::class
+        Commands\LeavesEntitlement::class,
+        Commands\UpdateUnclaimedMonthlyLeaves::class
     ];
 
     /**
@@ -29,6 +31,10 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $schedule->command('leaves:entitlement')->daily()
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path() .'/logs/jobs.recent');
+
+        $schedule->command('leaves:update-monthly-unclaimed')->monthly()
                  ->withoutOverlapping()
                  ->appendOutputTo(storage_path() .'/logs/jobs.recent');
         \File::append(storage_path() . "/logs/jobs.log", \File::get(storage_path() . "/logs/jobs.recent"));
