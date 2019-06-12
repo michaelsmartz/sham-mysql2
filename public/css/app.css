@@ -2157,7 +2157,7 @@ body {
 
 .page-sidebar-minified .sidebar {
   width: 60px;
-  position: absolute;
+  position: fixed;
 }
 
 .page-sidebar-minified .sidebar-bg {
