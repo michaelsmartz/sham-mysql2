@@ -2,7 +2,7 @@
 @if(count($pending_request)>0)
 <div>
     @foreach($pending_request as $request)
-        <div class="card text-justify">
+        <div class="card text-justify badge-notification">
             <div class="container-fluid card-body bg-info pending-request">
                 <div class="col-md-1">
                     <input type="checkbox" class="pending_box" name="pending_box[]" id="pending_box_{{$request->id}}" value={{$request->id}}>
