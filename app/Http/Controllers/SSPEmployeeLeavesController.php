@@ -273,7 +273,7 @@ class SSPEmployeeLeavesController extends Controller
     }
 
     public static function getEmployeeLeavesHistory($employee_id,$date_from = null,$date_to = null,$absence_type = null){
-        $sql_request = "SELECT abe.id,abs.description as absence_description,abe.employee_id,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status,CONCAT(emp.first_name,\" \",emp.surname) as validator
+        $sql_request = "SELECT DISTINCT(abe.id),abs.description as absence_description,abe.employee_id,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status,CONCAT(emp.first_name,\" \",emp.surname) as validator
             FROM absence_type_employee abe
             LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
             LEFT JOIN eligibility_employee ele ON ele.absence_type_id =abs.id
@@ -404,7 +404,7 @@ class SSPEmployeeLeavesController extends Controller
     private function getPendingRequests($manager_id,$selected = null){
         $employee_ids = EmployeesController::getManagerEmployeeIds($manager_id);
 
-        $sql_request = "SELECT abe.id,abs.description as absence_description,abe.employee_id,CONCAT(emp.first_name,\" \",emp.surname) as employee,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status
+        $sql_request = "SELECT DISTINCT(abe.id),abs.description as absence_description,abe.employee_id,CONCAT(emp.first_name,\" \",emp.surname) as employee,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status
             FROM absence_type_employee abe
             LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
             LEFT JOIN eligibility_employee ele ON (ele.absence_type_id =abs.id AND ele.employee_id =abe.employee_id)
