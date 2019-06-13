@@ -187,13 +187,17 @@ class SSPEmployeeLeavesController extends Controller
                 $leave_request->save();
             }else{
                 //multiple days
-                $start      = (new DateTime($request->input('leave_from')));
-                $end        = (new DateTime($request->input('leave_to')));
+                $start      = new DateTime($request->input('leave_from'));
+                $end        = (new DateTime($request->input('leave_to')))->modify('next day');
+                $end->setTime(0,0,1);  
+             
+                
                 $interval   = DateInterval::createFromDateString('1 day');
                 $period     = new DatePeriod($start,$interval, $end);
                 $non_woking = $request->input('non_working');
 
                 foreach ($period as $day) {
+                    var_dump($day);
                     $curr = $day->format('l');
                     // exclude non working days
                     if ((!isset($time_period[$curr])) && ($non_woking == 0)){
@@ -229,7 +233,7 @@ class SSPEmployeeLeavesController extends Controller
                         $leave_request->save();
                     }
                     
-                }
+                }//die();
             }
             
             \Session::put('success', $this->baseFlash . 'updated!!');
