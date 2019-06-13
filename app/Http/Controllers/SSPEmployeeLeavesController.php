@@ -197,7 +197,6 @@ class SSPEmployeeLeavesController extends Controller
                 $non_woking = $request->input('non_working');
 
                 foreach ($period as $day) {
-                    var_dump($day);
                     $curr = $day->format('l');
                     // exclude non working days
                     if ((!isset($time_period[$curr])) && ($non_woking == 0)){
@@ -233,7 +232,7 @@ class SSPEmployeeLeavesController extends Controller
                         $leave_request->save();
                     }
                     
-                }//die();
+                }
             }
             
             \Session::put('success', $this->baseFlash . 'updated!!');
