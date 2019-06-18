@@ -62,7 +62,7 @@
                         @foreach($disabilities as $disability)
                         <tr id="tr{{$disability->id}}">
                             <td>{{ optional($disability)->description }}</td>
-                            <td>{{ App\Enums\DisabilityCategoryType::getDescription($disability->disability_category_id) }}</td>
+                             <td>{{ is_null($disability->disabilityCategory)?App\Enums\DisabilityCategoryType::getDescription($disability->disability_category_id):optional($disability->disabilityCategory)->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
