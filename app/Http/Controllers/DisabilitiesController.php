@@ -165,21 +165,20 @@ class DisabilitiesController extends CustomController
 
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Validate the given request with the defined rules.
+     *
+     * @param  Request $request
+     *
+     * @return boolean
      */
     protected function validator(Request $request)
     {
-        $validateFields = [
+         $validateFields = [
             'description' => 'required|string|min:1|max:100',
-            'disability_category_id' => 'required|string|min:1|max:1'
-        ];
+            'disability_category_id' => 'required|string'
+        ];        
 
-        $validator = Validator::make($request->all(), $validateFields);
-        if($validator->fails()) {
-            return redirect()->back()
-                ->withInput($request->all())
-                ->withErrors($validator);
-        }
+        $this->validate($request, $validateFields);
     }
+
 }
