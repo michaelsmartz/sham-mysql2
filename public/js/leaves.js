@@ -10346,7 +10346,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 window.on = global.on = __WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */];
-$("input[name='_method']").val('POST');
 
 Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('change', '.pending_box', function (event) {
     if (this.checked) {
