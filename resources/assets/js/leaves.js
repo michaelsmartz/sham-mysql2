@@ -1,7 +1,6 @@
 import {on} from "delegated-events";
 
 window.on = global.on = on;
-$("input[name='_method']").val('POST');
 
 on('change','.pending_box',function(event){
     if(this.checked) {
