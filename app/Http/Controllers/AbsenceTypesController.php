@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AbsenceType;
+use App\Colour;
 use App\Enums\LeaveAccruePeriodType;
 use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
@@ -13,6 +14,7 @@ use App\SystemSubModule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomController;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
@@ -81,9 +83,13 @@ class AbsenceTypesController extends CustomController
     public function create()
     {
         $duration_units = LeaveDurationUnitType::ddList();
+        $temp = Cache::tags('colours')->remember('ColoursList', 1 * 60, function () {
+            return Colour::doesnthave('absenceTypes')->pluck('code', 'id');
+        });
+        $colours = array_keys(array_flip($temp->toArray()));
 
         return view($this->baseViewPath . '.create',
-            compact('data', 'duration_units'));
+            compact('data', 'duration_units', 'colours'));
     }
 
     /**
@@ -249,7 +255,8 @@ class AbsenceTypesController extends CustomController
     {
         $validateFields = [
             'description' => 'required|string|min:1|max:100',
-            'duration_unit' => 'required'
+            'duration_unit' => 'required',
+            'colour_code' => 'required'
         ];
 
        $this->validator($request, $validateFields);
