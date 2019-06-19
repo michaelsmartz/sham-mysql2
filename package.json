@@ -36,6 +36,7 @@
   "dependencies": {
     "@benjaminreid/ready.js": "^0.1.2",
     "@clubajax/key-nav": "^1.1.2",
+    "@simonwep/pickr": "^1.0.0",
     "air-datepicker": "^2.2.3",
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "^6.24.1",
