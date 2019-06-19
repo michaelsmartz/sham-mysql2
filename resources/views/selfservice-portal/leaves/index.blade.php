@@ -40,6 +40,11 @@
 
                 <br>
             </div>
+            <div class="pull-right">
+                <a href="#light-modal" data-wenk="Edit" style="top:5px;right:10px;" class="btn btn-primary" onclick="loadUrl('/calendar_events/{{App\Enums\EventType::Leave}}')">
+                    <i class="glyphicon glyphicon-calendar"></i> View calendar
+                </a>
+            </div>
             @if(count($employees)>0)
                 <div class="col-sm-4">
                     @include('selfservice-portal.leaves.absences.notification')
@@ -52,5 +57,7 @@
 @endsection
 @section('scripts')
     <script src="{{url('/')}}/plugins/chartjs/dist/Chart.js"></script>
+    <script src="{{url('/')}}/plugins/moment-2.9.0/moment.min.js"></script>
+    <script src="{{url('/')}}/plugins/fullcalendar-2.2.7/fullcalendar.min.js"></script>
     <script src="{{URL::to('/')}}/js/leaves.min.js"></script>
 @endsection

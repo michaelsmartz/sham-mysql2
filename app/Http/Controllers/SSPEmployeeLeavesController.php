@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CalendarEvent;
 use App\Employee;
 use App\EmployeeLeave;
 use App\EmployeeEligibility;
@@ -9,6 +10,7 @@ use App\SysConfigValue;
 use App\Enums\DayType;
 use App\Enums\LeaveStatusType;
 use App\Enums\LeaveDurationUnitType;
+use App\Enums\EventType;
 use App\TimeGroup;
 use Illuminate\Http\Request;
 use App\Http\Requests\LeaveRequest;
@@ -359,6 +361,19 @@ class SSPEmployeeLeavesController extends Controller
                 $update_taken = EmployeeEligibility::where('employee_id',$leave_request->employee_id)
                                         ->where('absence_type_id',$leave_request->absence_type_id)
                                         ->update(['taken' => ($new_taken)]);
+
+                //insert in leave calendar
+                if($status == LeaveStatusType::status_approved){
+                    $leave_calendar = new CalendarEvent();
+                    $leave_calendar->title           = $leave_request->AbsenceType->description." : ".$leave_request->Employee->first_name." ".$leave_request->Employee->surname;
+                    $leave_calendar->start_Date      = $leave_request->starts_at;
+                    $leave_calendar->end_date        = $leave_request->ends_at;
+                    $leave_calendar->event_type      = EventType::Leave;
+                    $leave_calendar->calendable_id   = $leave_id;
+                    $leave_calendar->calendable_type = EmployeeLeave::class;
+                    $leave_calendar->department_id   = $leave_request->Employee->department_id;
+                    $leave_calendar->save();
+                }
             }
            
             $leave_request->status = $status;

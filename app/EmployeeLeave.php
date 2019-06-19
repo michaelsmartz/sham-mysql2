@@ -30,4 +30,8 @@ class EmployeeLeave extends Model
         return $this->belongsTo(AbsenceType::class);
     }
 
+    public function CalendarEvents(){
+        return $this->morphMany(CalendarEvent::class,'calendable');
+    }
+
 }

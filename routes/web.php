@@ -194,6 +194,10 @@ Auth::routes();
         Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
         #endregion
 
+        #region Calendar Events
+        Route::get('/calendar_events/{event_type}', 'CalendarEventsController@render');
+        #endregion
+
         #region Quality
             Route::any('assessments/assessment/{assessment}/clone', 'AssessmentsController@clone')->name('assessment.clone');
             Route::get('assessments/assessment/{assessment}/cloneForm', 'AssessmentsController@cloneForm')->name('assessments.clone-assessment-form');
