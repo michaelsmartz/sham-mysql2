@@ -423,5 +423,10 @@
     {
         "model-name": "Entitlement",
         "resource-file": "entitlements.json"
+    },
+    {
+        "model-name": "Colour",
+        "resource-file": "colours.json",
+        "table-name": "colours"
     }
 ]
