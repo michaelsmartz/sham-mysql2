@@ -33,3 +33,20 @@ INSERT INTO colours(code) VALUES
       ('#be9b7b'), ('#926F5B'), ('#4b3832'), ('#3c2f2f'), ('#63474d'), 
 		  ('#5e5656'), ('#AF593E'), ('#A26645'), 
       ('#967BB6'), ('#B57EDC'), ('#6C3082'), ('#76395D'), ('#480656');
+
+
+ALTER TABLE `candidates`
+DROP FOREIGN KEY `FK_Candidate_JobTitles`;
+ALTER TABLE `candidates`
+DROP COLUMN `job_title_id`,
+DROP INDEX `FK_Candidates_JobTitles`;
+
+ALTER TABLE `candidates`
+ADD COLUMN `passport_no` VARCHAR(50) NULL DEFAULT NULL AFTER `id_number`,
+ADD COLUMN `passport_country_id` INT(11) NULL DEFAULT NULL AFTER `passport_no`,
+ADD COLUMN `nationality` VARCHAR(50) NULL DEFAULT NULL AFTER `passport_country_id`,
+ADD COLUMN `immigration_status_id` INT(11) NULL DEFAULT NULL AFTER `nationality`
+ADD COLUMN `notice_period` INT(2) NULL DEFAULT NULL AFTER `salary_expectation`;
+
+ALTER TABLE `candidate_previous_employments`
+ADD COLUMN `contact` INT(20) NULL DEFAULT NULL AFTER `end_date`;

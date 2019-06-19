@@ -31,7 +31,6 @@
                             <li data-filter-column="surname">By Surname</li>
                             <li data-filter-column="email">By Email</li>
                             <li data-filter-column="phone">By Phone</li>
-                            <li data-filter-column="jobTitle:job_title_id">By Job Title</li>
                         </ul>
                     </li>
                 </ul>
@@ -58,7 +57,6 @@
                             <th data-sortable="true">Surname</th>
                             <th data-sortable="true">Email</th>
                             <th data-sortable="true">Phone</th>
-                            <th data-sortable="true">Job Title</th>
 
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
@@ -70,7 +68,6 @@
                             <td>{{ $candidate->surname }}</td>
                             <td>{{ $candidate->email }}</td>
                             <td>{{ $candidate->phone }}</td>
-                            <td>{{ $candidate->jobTitle->description }}</td>
 
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
