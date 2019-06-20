@@ -1,6 +1,10 @@
 import {on} from "delegated-events";
 
+import '@simonwep/pickr/dist/pickr.nano.min.css'; // 'nano' theme
+import Pickr from '@simonwep/pickr';
+
 window.on = global.on = on;
+window.Pickr = global.Pickr = Pickr;
 
 // Listen for browser-generated events.
 on('change', '#eligibility_ends', function(event) {

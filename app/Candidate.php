@@ -43,7 +43,11 @@ class Candidate extends Model
                   'email',
                   'home_address',
                   'id_number',
-                  'job_title_id',
+                  'immigration_status_id',
+                  'passport_country_id',
+                  'passport_no',
+                  'nationality',
+                  'notice_period',
                   'date_available',
                   'salary_expectation',
                   'phone',
@@ -65,16 +69,14 @@ class Candidate extends Model
         'first_name',
         'surname',
         'email',
-        'phone',
-        'jobTitle:job_title_id'
+        'phone'
     ];
 
     protected $filterable = [
         'first_name' => LikeFilter::class,
         'surname' => LikeFilter::class,
         'email' => LikeFilter::class,
-        'phone' => LikeFilter::class,
-        'jobTitle:job_title_id' => LikeFilter::class
+        'phone' => LikeFilter::class
     ];
 
     /**

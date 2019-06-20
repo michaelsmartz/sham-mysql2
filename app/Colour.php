@@ -33,4 +33,9 @@ class Colour extends Model
                   'code'
               ];
 
+    public function absenceTypes()
+    {
+        return $this->hasMany('App\AbsenceType');
+    }
+
 }

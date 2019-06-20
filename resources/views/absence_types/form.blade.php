@@ -9,25 +9,17 @@
     {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
 </div>
 
-<div class="form-group col-xs-12 {{ $errors->has('duration_unit') ? 'has-error' : '' }}">
+<div class="form-group col-xs-7 {{ $errors->has('duration_unit') ? 'has-error' : '' }}">
     <label for="duration_unit">Duration Unit
         <span>
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
                data-wenk="The basic unit to calculate absence.
 
-You need to decide which unit you
+You need to decide which unit you would like to use:
 
-would like to use:
+Hours - entitlement of this absence type will be calculated only in hours
 
-Hours - entitlement of this absence type
-
-will be calculated only in hours
-
-Days - entitlement of this absence type
-
-will be calculated only in days
-
-(or 1/2, 1/4, of day, etc.)">
+Days - entitlement of this absence type will be calculated only in days (or 1/2, 1/4, of day, etc.)">
             </i>
         </span>
     </label>
@@ -40,6 +32,13 @@ will be calculated only in days
         @endforeach
     </select>
     {!! $errors->first('duration_unit', '<p class="help-block">:message</p>') !!}
+</div>
+
+<div class="form-group col-xs-5 {{ $errors->has('colour_code') ? 'has-error' : '' }}">
+    <label for="colour_id">Colour Code</label>
+    <input type="hidden" id="colour_code" name="colour_code">
+    <p class="color-picker"></p>
+    {!! $errors->first('colour_code', '<p class="help-block">:message</p>') !!}
 </div>
 
 @if($mode == 'edit')
