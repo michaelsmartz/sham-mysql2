@@ -274,7 +274,11 @@
                                Request::is('time_periods/*') ||
                                Request::is('time_periods') ||
                                Request::is('titles/*') ||
-                               Request::is('titles')
+                               Request::is('titles') ||
+                               Request::is('disabilities/*') ||
+                               Request::is('disabilities') ||
+                               Request::is('violations/*') ||
+                               Request::is('violations')
                                ? 'active' : '')
                            }}"
                 >
