@@ -123,7 +123,7 @@ Auth::routes();
             });
             Route::resource('disciplinary_decisions', 'DisciplinaryDecisionsController');
             Route::resource('disabilities', 'DisabilitiesController');
-            Route::resource('disability_categories', 'DisabilityCategoriesController');
+            //Route::resource('disability_categories', 'DisabilityCategoriesController');
             Route::resource('law_categories', 'LawCategoriesController');
             Route::resource('policy_categories', 'PolicyCategoriesController');
             Route::resource('genders', 'GendersController');

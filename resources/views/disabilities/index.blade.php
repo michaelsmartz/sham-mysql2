@@ -24,7 +24,7 @@
         <li><a href="{{URL::to('/')}}/time_periods">Time Periods</a></li>
         <li><a href="{{URL::to('/')}}/teams">Team</a></li>
         <li><a href="{{URL::to('/')}}/titles">Title</a></li>
-        <li><a href="{{URL::to('/')}}/disability_categories">Disability Categories</a></li>
+        
         <li class="active"><a href="#">Disability</a></li>
         <li><a href="{{URL::to('/')}}/violations">Violations</a></li>
     </ul>

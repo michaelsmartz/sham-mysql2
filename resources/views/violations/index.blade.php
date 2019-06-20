@@ -21,10 +21,9 @@
         <li><a href="{{URL::to('/')}}/skills">Skills</a></li>
         <li><a href="{{URL::to('/')}}/tax_statuses">Tax Status</a></li>
         <li><a href="{{URL::to('/')}}/time_groups">Time Group</a></li>
-        <li><a href="{{URL::to('/')}}/titime_periods">Time Periods</a></li>
+        <li><a href="{{URL::to('/')}}/time_periods">Time Periods</a></li>
         <li><a href="{{URL::to('/')}}/teams">Team</a></li>
         <li><a href="{{URL::to('/')}}/titles">Title</a></li>
-        <li><a href="{{URL::to('/')}}/disability_categories">Disability Categories</a></li>
         <li><a href="{{URL::to('/')}}/disabilities">Disability</a></li>
         <li class="active"><a href="#">Violations</a></li>
     </ul>
