@@ -16,7 +16,6 @@ CREATE TABLE `calendar_events` (
   `title` varchar(255) NOT NULL,
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
-  `event_type` tinyint(4) NOT NULL,
   `department_id` int(11) DEFAULT NULL,
   `manager_only` int(11) DEFAULT NULL,
   `calendable_id` int(11) NOT NULL,

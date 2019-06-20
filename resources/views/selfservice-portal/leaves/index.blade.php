@@ -41,7 +41,7 @@
                 <br>
             </div>
             <div class="pull-right">
-                <a href="#light-modal" data-wenk="Edit" style="top:5px;right:10px;" class="btn btn-primary" onclick="loadUrl('/calendar_events/{{App\Enums\EventType::Leave}}')">
+                <a href="#light-modal" data-wenk="Edit" style="top:5px;right:10px;" class="btn btn-primary" onclick="loadUrl('/calendar_events/{{\App\EmployeeLeave::class}}')">
                     <i class="glyphicon glyphicon-calendar"></i> View calendar
                 </a>
             </div>

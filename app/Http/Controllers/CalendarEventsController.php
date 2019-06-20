@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\CalendarEvent;
-use App\Enums\EventType;
-use Illuminate\Http\Request;
+use App\EmployeeLeave;
+use App\Interview;
 use MaddHatter\LaravelFullcalendar\Facades\Calendar;
 
 class CalendarEventsController extends Controller
@@ -39,12 +39,14 @@ class CalendarEventsController extends Controller
     public function calendar($type)
     {
         $events = [];
+        $type =  substr_replace($type,'App\\',0,3);
+        
         switch ($type){
-            case EventType::Leave :
+            case EmployeeLeave::class :
                 $data   = $this->getCalendarLeaves();
                 $title  = "Leaves Calendar";
                 break;
-            case EventType::Interview :
+            case Interview::class :
                 $data   = $this->getCalendarInterviews();
                 $title  = "Interview";
                 break;
@@ -84,13 +86,13 @@ class CalendarEventsController extends Controller
     }
 
     public static function getCalendarLeaves(){
-        $calendar_leave = CalendarEvent::where('event_type', EventType::Leave)->get();
+        $calendar_leave = CalendarEvent::where('calendable_type', EmployeeLeave::class)->get();
         return $calendar_leave;
 
     }
 
     public static function getCalendarInterviews(){
-        $calendar_interview = CalendarEvent::where('event_type', EventType::Interview)->get();
+        $calendar_interview = CalendarEvent::where('calendable_type', Interview::class)->get();
         return $calendar_interview;
     }
 
