@@ -23,7 +23,7 @@ CREATE TABLE `calendar_events` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO colours(code) VALUES 
       ('#FF6FFF'), ('#ff77aa'), ('#ff5588'), ('#ff3377'), ('#d44d5c'), 
