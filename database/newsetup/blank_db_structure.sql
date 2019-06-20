@@ -6091,9 +6091,9 @@ DROP TABLE IF EXISTS `qaevaluationscoresview`;
 
 -- Error reading structure for table shamdev.qaevaluationscoresview: #1046 - No database selected
 CREATE OR REPLACE VIEW `qaevaluationscoresview`
-as 
+as
 select data.evaluation_id AS EvaluationId,data.assessment_id AS AssessmentId,data.assessor_employee_id AS AssessorEmployeeId,data.feedback_date AS Feedbackdate,data.points AS Points,round(cast(data.points as decimal(10,3))/cast(at.total_threshold as decimal(10,3))) as Percentage
-from 
+from
 (
 select evaluation_id,assessor_employee_id,sum(points) as Points,er.assessment_id,e.feedback_date from evaluation_results er
 inner join evaluations e on e.id = er.evaluation_id
@@ -6101,11 +6101,11 @@ where er.is_active = 1 and e.feedback_date between DATE_ADD(current_timestamp,In
 group by evaluation_id,assessor_employee_id,er.assessment_id,e.feedback_date
 
 ) data
-inner join 
+inner join
 (
-select t.assessment_id,sum(t.threshold) as total_threshold from 
+select t.assessment_id,sum(t.threshold) as total_threshold from
 (
-select aac.assessment_id, aac.assessment_category_id, ac.threshold from assessments_assessment_category aac 
+select aac.assessment_id, aac.assessment_category_id, ac.threshold from assessments_assessment_category aac
 inner join assessment_categories ac on ac.id = aac.assessment_category_id
 where aac.is_active = 1 and aac.assessment_id in (
 
@@ -6925,6 +6925,18 @@ UPDATE `system_sub_modules` SET `is_active` = '0' WHERE (`id` = '87');
 UPDATE `system_sub_modules` SET `is_active` = '0' WHERE (`id` = '9');
 UPDATE `system_sub_modules` SET `deleted_at` = '2018-11-29 11:11:38' WHERE (`id` = '87');
 
+ALTER TABLE `contract_recruitment`
+	ADD COLUMN `master_copy` MEDIUMBLOB NULL DEFAULT NULL AFTER `contract_id`;
+
+ALTER TABLE `offer_recruitment`
+	ADD COLUMN `master_copy` MEDIUMBLOB NULL DEFAULT NULL AFTER `offer_id`;
+
+ALTER TABLE `offer_recruitment`
+	ADD COLUMN `starting_on` DATE NULL AFTER `master_copy`,
+	CHANGE COLUMN `signed_on` `signed_on` DATE NULL DEFAULT NULL AFTER `starting_on`;
+
+ALTER TABLE `contract_recruitment`
+	CHANGE COLUMN `signed_on` `signed_on` DATE NULL DEFAULT NULL;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -49,3 +49,23 @@ ADD COLUMN `notice_period` INT(2) NULL DEFAULT NULL AFTER `salary_expectation`;
 
 ALTER TABLE `candidate_previous_employments`
 ADD COLUMN `contact` INT(20) NULL DEFAULT NULL AFTER `end_date`;
+
+DROP TABLE IF EXISTS `candidate_interviewers`;
+CREATE TABLE `candidate_interviewers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `candidate_interview_recruitment_id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL
+  PRIMARY KEY (`id`),
+  INDEX `FK_CandidateInterviewers_CandidateInterviewRecruitmemt` (`candidate_interview_recruitment_id` ASC) INVISIBLE,
+  CONSTRAINT `FK_CandidateInterviewers_CandidateInterviewRecruitmemt`
+  FOREIGN KEY (`candidate_interview_recruitment_id`)
+  REFERENCES `candidate_interview_recruitment` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+  INDEX `FK_CandidateInterviewers_Employee` (`employee_id` ASC) INVISIBLE,
+  CONSTRAINT `FK_CandidateInterviewers_Employee`
+  FOREIGN KEY (`employee_id`)
+  REFERENCES `employees` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

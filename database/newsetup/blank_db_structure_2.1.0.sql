@@ -1116,7 +1116,7 @@ INSERT INTO `disabilities` (`id`, `description`, `disability_category_id`, `is_s
 	(33, 'Partially Hearing', 2, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
 	(34, 'Pre-lingual Loss of Hearing', 2, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
 	(35, 'Tinnitus', 2, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
-	(36, 'Asperger\'s Syndrome', 3, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
+	(36, "Asperger\'s Syndrome", 3, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
 	(37, 'Attention Deficit Hyperactivity Disorder (ADHD)', 3, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
 	(38, 'Down syndrome', 3, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
 	(39, 'Dyslexia', 3, 1, '2019-06-12 07:47:32', '2019-06-12 07:47:32', NULL),
