@@ -54,7 +54,7 @@ DROP TABLE IF EXISTS `candidate_interviewers`;
 CREATE TABLE `candidate_interviewers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `candidate_interview_recruitment_id` int(11) NOT NULL,
-  `employee_id` int(11) NOT NULL
+  `employee_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `FK_CandidateInterviewers_CandidateInterviewRecruitmemt` (`candidate_interview_recruitment_id` ASC) INVISIBLE,
   CONSTRAINT `FK_CandidateInterviewers_CandidateInterviewRecruitmemt`
