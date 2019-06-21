@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Candidate;
+use App\CandidateInterviewer;
 use App\Department;
 use App\EmailAddress;
 use App\Employee;
@@ -458,14 +459,26 @@ class RecruitmentRequestsController extends CustomController
         $candidate_id = Route::current()->parameter('candidate');
 
         $data = $this->contextObj::find($recruitment_id);
+
+        $candidateInterviewers = [];
+
         $interview = $data->interviews()
             ->where('recruitment_id', $recruitment_id)
             ->where('interview_id', $interview_id)
             ->where('candidate_id', $candidate_id)
             ->first();
 
+        $pivot_table_id = $interview->pivot->id;
+
+        $candidate_interviewers = DB::table('candidate_interviewers')->select('employee_id')->where('candidate_interview_recruitment_id', $pivot_table_id)->get()->all();
+
+        foreach ($candidate_interviewers as $candidate_interviewer){
+            $candidateInterviewers[] = $candidate_interviewer->employee_id;
+        }
+
         $status = InterviewStatusType::ddList();
         $results = InterviewResultsType::ddList();
+        $interviewers = Employee::pluck('full_name','id')->all();
 
         $uploader = [
             "fieldLabel" => "Add attachments...",
@@ -477,7 +490,7 @@ class RecruitmentRequestsController extends CustomController
         ];
 
         if($request->ajax()) {
-            $view = view('interview_requests.edit', compact('data','status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'))->renderSections();
+            $view = view('interview_requests.edit', compact('data','status','results','interview', 'interviewers', 'candidateInterviewers', 'recruitment_id', 'interview_id', 'candidate_id','uploader'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -486,7 +499,7 @@ class RecruitmentRequestsController extends CustomController
             ]);
         }
 
-        return view('interview_requests.edit', compact('data','status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'));
+        return view('interview_requests.edit', compact('data','status','results','interview', 'interviewers', 'candidateInterviewers', 'recruitment_id', 'interview_id', 'candidate_id','uploader'));
     }
 
     /**
@@ -500,7 +513,9 @@ class RecruitmentRequestsController extends CustomController
     public function updateInterview(Request $request, $id)
     {
         try {
-            $input = array_except($request->all(),array('_token','_method','attachment','schedule_at_submit'));
+            $candidate_interviewers = [];
+            $interviewers = array_only($request->all(),['interviewers']);
+            $input = array_except($request->all(),array('_token','_method','attachment','schedule_at_submit','interviewers'));
             $data = Recruitment::find($id);
 
             $interview = $data->interviews()
@@ -510,6 +525,16 @@ class RecruitmentRequestsController extends CustomController
                 ->get()->first();
 
             $pivot_table_id = $interview->pivot->id;
+
+            foreach ($interviewers['interviewers'] as $interviewer){
+                $candidate_interviewers[] = ['candidate_interview_recruitment_id' => $pivot_table_id,
+                                             'employee_id' => $interviewer
+                                            ];
+            }
+
+            DB::statement('DELETE FROM candidate_interviewers WHERE candidate_interview_recruitment_id = '.$pivot_table_id);
+
+            CandidateInterviewer::insert($candidate_interviewers);
 
             DB::table('candidate_interview_recruitment')
                 ->where('id', $pivot_table_id)
