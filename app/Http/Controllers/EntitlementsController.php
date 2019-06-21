@@ -90,8 +90,7 @@ class EntitlementsController extends CustomController
 
             $absence_types = AbsenceType::pluck('description','id');
 
-            //employee list to exclude the employee connected in the list and exclude terminated employees
-            $employees = Employee::whereNull('date_terminated')->where('id','!=',$employee_id)->pluck('full_name', 'id');
+            $employees = Employee::whereNull('date_terminated')->pluck('full_name', 'id');
 
         }catch (Exception $exception){
             dd($exception->getMessage());

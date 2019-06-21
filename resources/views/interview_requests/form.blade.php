@@ -10,7 +10,7 @@
             <div class="form-group col-md-12">
                 <span class="field">
                     <label for="schedule_on">Schedule On</label>
-                    {!! Form::text('schedule_at', old('schedule_at', isset($interview->pivot->schedule_at) ? $interview->pivot->schedule_at : null), ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Schedule On', 'required', 'title'=>'Required','id'=>'schedule_at']) !!}
+                    {!! Form::text('schedule_at', old('schedule_at', isset($interview->pivot->schedule_at) ? $interview->pivot->schedule_at : null), ['class'=>'form-control fix-case field-required datepicker', 'data-date-format'=> "Y-m-d H:i", 'data-enable-time'=> "true",'autocomplete'=>'off', 'placeholder'=>'Schedule On', 'required', 'title'=>'Required','id'=>'schedule_at']) !!}
                 </span>
             </div>
 
