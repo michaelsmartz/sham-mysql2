@@ -9,6 +9,7 @@ use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
 use App\JobTitle;
+use App\Jobs\ProcessLeaves;
 use App\Support\Helper;
 use App\SystemSubModule;
 use Illuminate\Http\Request;
@@ -83,9 +84,7 @@ class AbsenceTypesController extends CustomController
     public function create()
     {
         $duration_units = LeaveDurationUnitType::ddList();
-        $temp = Cache::tags('colours')->remember('ColoursList', 1 * 60, function () {
-            return Colour::doesnthave('absenceTypes')->pluck('code', 'id');
-        });
+        $temp = Colour::doesnthave('absenceTypes')->pluck('code', 'id');
         $colours = array_keys(array_flip($temp->toArray()));
 
         return view($this->baseViewPath . '.create',
@@ -103,6 +102,28 @@ class AbsenceTypesController extends CustomController
     {
         try {
             $this->createValidator($request);
+
+            if (Cache::has('ColoursList')) {
+                $temp = Cache::get('ColoursList');
+            } else {
+                $temp = Cache::tags('colours')->remember('ColoursList', 1 * 60, function () {
+                    return Colour::doesnthave('absenceTypes')->pluck('code', 'id');
+                });
+            }
+            // make the array as colour code => colour id
+            $colours = array_flip($temp->toArray());
+
+            $colourCode = $request->colour_code;
+
+            // array has # as the starting character
+            $replacedKeys = str_replace('#', '', array_keys($colours));
+            $colours = array_combine($replacedKeys, $colours);
+            $key = str_replace('#', '', $colourCode);
+
+            // cleaned the # in array keys and colour_code for lookup
+            $colourId = $colours[$key];
+
+            $request->merge(['colour_id' => $colourId]);
 
             $this->saveAbsenceTypes($request);
 
@@ -127,7 +148,7 @@ class AbsenceTypesController extends CustomController
         $data = null;
         $id = Route::current()->parameter('absence_type');
         if(!empty($id)) {
-            $data = $this->contextObj->findData($id);
+            $data = $this->contextObj::with('colour')->find($id);
             $duration_units = LeaveDurationUnitType::ddList();
             $start_eligibilities = LeaveEmployeeGainEligibilityType::ddList();
             $end_eligibilities = LeaveEmployeeLossEligibilityType::ddList();
@@ -154,12 +175,21 @@ class AbsenceTypesController extends CustomController
             $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
 
             $absenceTypeJobTitles = $data->jobTitles->pluck('id');
+
+            $recordComplete = !empty($data->amount_earns) && !empty($data->colour_id);
         }
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit',
+
+            if(!$recordComplete) {
+                $view = view($this->baseViewPath . '.edit',
                 compact('data', 'absenceTypeJobTitles', 'jobTitles', 'hideAccrue', 'hideEndProbation', 'notApplicable', 'duration_units','start_eligibilities','end_eligibilities', 'accrue_periods'))
                     ->renderSections();
+            } else {
+                $view = view($this->baseViewPath . '.show',
+                compact('data', 'absenceTypeJobTitles', 'jobTitles'))
+                    ->renderSections();
+            }
 
             return response()->json([
                 'title' => $view['modalTitle'],
@@ -203,7 +233,8 @@ class AbsenceTypesController extends CustomController
         $otherFields = [
             '_token',
             '_method',
-            'jobTitles'
+            'jobTitles',
+            'colour_code'
         ];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
@@ -223,6 +254,7 @@ class AbsenceTypesController extends CustomController
             $data->jobTitles()->sync($jobTitles);
         }
 
+        dispatch( new ProcessLeaves());
     }
 
     /**

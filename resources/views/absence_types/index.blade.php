@@ -80,7 +80,7 @@
                         @foreach($absenceTypes as $absenceType)
                         <tr id="tr{{$absenceType->id}}">
                             <td>{{ $absenceType->description }}</td>
-                            <td>{{ $absenceType->amount_earns > 0 ?($absenceType->amount_earns + 0 .' ') : '' }}{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!}</td>
+                            <td>{{ $absenceType->amount_earns + 0 . ' ' }}{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!}</td>
                             <td>{!! App\Enums\LeaveEmployeeGainEligibilityType::getDescription($absenceType->eligibility_begins) !!}</td>
                             <td>{!! App\Enums\LeaveEmployeeLossEligibilityType::getDescription($absenceType->eligibility_ends) !!}</td>
                             <td>{!! App\Enums\LeaveAccruePeriodType::getDescription($absenceType->accrue_period) !!}</td>

@@ -1,63 +1,76 @@
 <div class="row">
 
-<div class="form-group col-xs-12 {{ $errors->has('description') ? 'has-error' : '' }}">
-    <label for="description">Description</label>
-    <input class="form-control" name="description" type="text" id="description" value="{{ old('description', optional($absenceType)->description) }}"
-           minlength="1" maxlength="100" required="true" placeholder="Enter description"
-           pattern = '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$'
-    >
-    {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
+    <div class="form-group col-xs-12 {{ $errors->has('description') ? 'has-error' : '' }}">
+        <label for="description">Description</label>
+        <input class="form-control" name="description" type="text" id="description" value="{{ old('description', optional($absenceType)->description) }}"
+            minlength="1" maxlength="100" required="true" placeholder="Enter description"
+            pattern = '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$'
+        >
+        {!! $errors->first('description', '<p class="help-block">:message</p>') !!}
+    </div>
+
+    <div class="form-group col-xs-7 {{ $errors->has('duration_unit') ? 'has-error' : '' }}">
+        <label for="duration_unit">Duration Unit
+            <span>
+                <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
+                data-wenk="The basic unit to calculate absence.
+
+    You need to decide which unit you would like to use:
+
+    Hours - entitlement will be calculated only in hours
+
+    Days - entitlement will be calculated only in days (or 1/2, 1/4...etc of a day)">
+                </i>
+            </span>
+        </label>
+        <select class="form-control" id="duration_unit" name="duration_unit" required="true" {!! ($mode =='edit')?'disabled':'' !!}>
+            <option value="" style="display: none;" {{ old('duration_unit', optional($absenceType)->duration_unit ?: '') == '' ? 'selected' : '' }} disabled selected>Select Duration Unit</option>
+            @foreach ($duration_units as $key => $duration_unit)
+                <option value="{{ $key }}" {{ old('duration_unit', optional($absenceType)->duration_unit) == $key ? 'selected' : '' }} {!! ($mode =='edit')?'disabled':'' !!}>
+                    {{ $duration_unit }}
+                </option>
+            @endforeach
+        </select>
+        {!! $errors->first('duration_unit', '<p class="help-block">:message</p>') !!}
+    </div>
+
+    <div class="form-group col-xs-5 {{ $errors->has('colour_code') ? 'has-error' : '' }}">
+        <label for="colour_id">Colour Code 
+            <span>
+                <i class="fa fa-question-circle" aria-hidden="true" data-wenk-pos="left"
+                data-wenk="Colour codes are used in the Self-service Portal 
+
+where the absence types are shown in distinguishable colours"></i>
+            </span>
+        </label>
+        @if($mode == 'create')
+            <input type="hidden" id="colour_code" name="colour_code">
+            <p class="color-picker"></p>
+            {!! $errors->first('colour_code', '<p class="help-block">:message</p>') !!}
+        @else
+            <div class="pickr">
+                <div class="pcr-button" style="cursor:default;color: rgb(255, 51, 119);"></div>
+            </div>
+        @endif
+    </div>
 </div>
 
-<div class="form-group col-xs-7 {{ $errors->has('duration_unit') ? 'has-error' : '' }}">
-    <label for="duration_unit">Duration Unit
-        <span>
-            <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
-               data-wenk="The basic unit to calculate absence.
-
-You need to decide which unit you would like to use:
-
-Hours - entitlement of this absence type will be calculated only in hours
-
-Days - entitlement of this absence type will be calculated only in days (or 1/2, 1/4, of day, etc.)">
-            </i>
-        </span>
-    </label>
-    <select class="form-control" id="duration_unit" name="duration_unit" required="true" {!! ($mode =='edit')?'disabled':'' !!}>
-        <option value="" style="display: none;" {{ old('duration_unit', optional($absenceType)->duration_unit ?: '') == '' ? 'selected' : '' }} disabled selected>Select Duration Unit</option>
-        @foreach ($duration_units as $key => $duration_unit)
-            <option value="{{ $key }}" {{ old('duration_unit', optional($absenceType)->duration_unit) == $key ? 'selected' : '' }} {!! ($mode =='edit')?'disabled':'' !!}>
-                {{ $duration_unit }}
-            </option>
-        @endforeach
-    </select>
-    {!! $errors->first('duration_unit', '<p class="help-block">:message</p>') !!}
-</div>
-
-<div class="form-group col-xs-5 {{ $errors->has('colour_code') ? 'has-error' : '' }}">
-    <label for="colour_id">Colour Code</label>
-    <input type="hidden" id="colour_code" name="colour_code">
-    <p class="color-picker"></p>
-    {!! $errors->first('colour_code', '<p class="help-block">:message</p>') !!}
-</div>
-
+<div class="row">
 @if($mode == 'edit')
-<h3 style="margin-left:15px">Accrual Rules</h3>
+<h4 style="margin-left:15px">Accrual Rules</h4>
     <div class="form-group col-xs-6 {{ $errors->has('eligibility_begins') ? 'has-error' : '' }}">
         <label for="eligibility_begins">Employee Gains Eligibility
             <span>
             <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
-               data-wenk="Is the starting date when the employee
+               data-wenk="Is the starting date when the employee 
 
-is allowed to earn the entitlement.
+earns the entitlement.
 
-First day at work - it means from
+First day at work - it means the date joined (inclusive) 
 
-hire date (the day is included)
+or the working year start date (inclusive)
 
-After probation period - it means
-
-the first date following the
+After probation period - it means the first date following the
 
 end of probation period">
             </i>
@@ -108,7 +121,7 @@ date following the end of probation period">
             <input class="form-control" name="amount_earns" type="number"
                    id="amount_earns" min="0" step="0.01" max="17520"
                    value="{{ old('amount_earns', optional($absenceType)->amount_earns) }}"
-                   placeholder="Enter total" required="true"
+                   required="true"
                    oninput="(this.value == 0)?this.setCustomValidity('Total cannot be zero.'):this.setCustomValidity('')">
             {!! $errors->first('amount_earns', '<p class="help-block">:message</p>') !!}
         </div>
