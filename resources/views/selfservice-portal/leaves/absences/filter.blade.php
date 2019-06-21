@@ -32,7 +32,7 @@
         <div class="form-group col-lg-2 employee-filter">
             <label for="employee_id"><span class="glyphicon glyphicon-user"></span> Employee</label>
             <select class="form-control" id="employee_id" name="employee_id">
-                <option value="0">Select employee</option>
+                <option value="{{$manager['id']}}">{{$manager['fullname']}}</option>
                 @foreach ($employees as $employee)
                     <option value="{{ $employee->id }}" @if(!empty($selected['employee']->id) && $selected['employee']->id == $employee->id) selected @endif>
                         {{ $employee->first_name }} {{ $employee->surname }}

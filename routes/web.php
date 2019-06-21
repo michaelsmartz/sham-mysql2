@@ -195,7 +195,11 @@ Auth::routes();
         #endregion
 
         #region Calendar Events
-        Route::get('/calendar_events/{event_type}', 'CalendarEventsController@render');
+        Route::get('/calendar_events/{event_type}', function ($type) {
+            return app('CalendarEventService',[
+                'type'=> $type
+            ]);
+        });
         #endregion
 
         #region Quality

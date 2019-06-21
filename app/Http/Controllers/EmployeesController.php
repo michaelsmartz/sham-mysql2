@@ -717,6 +717,14 @@ class EmployeesController extends CustomController
         return $employees_ids;
     }
 
+    public static function getEmployeeFullName($employee_id){
+        $fullname = Employee::select(DB::raw("CONCAT(first_name,' ',surname) as fullname"))
+            ->where('id', $employee_id)
+            ->pluck('fullname')
+            ->first();
+        return $fullname;
+    }
+
     public static function getManagerEmployeeIds($manager_id){
         $employees_ids  = Employee::where('line_manager_id', $manager_id)
         ->where(function($q){

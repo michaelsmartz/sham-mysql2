@@ -1,34 +1,42 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Providers;
 
 use App\CalendarEvent;
 use App\EmployeeLeave;
 use App\Interview;
 use MaddHatter\LaravelFullcalendar\Facades\Calendar;
+use Illuminate\Support\ServiceProvider;
 
-class CalendarEventsController extends Controller
+class CalendarEventServiceProvider extends ServiceProvider
 {
-
     /**
-     * Create a new controller instance.
+     * Bootstrap the application services.
      *
      * @return void
      */
-    public function __construct()
+    public function boot()
     {
-        $this->contextObj = new CalendarEvent();
-        $this->baseViewPath = 'calendar_events';
-        $this->baseRoute = "calendar_events";
-        $this->baseFlash = "Calendar events : ";
+
     }
 
-    public function render($type = 'default')
+    /**
+     * Register the application services.
+     *
+     * @return void
+     */
+    public function register()
     {
-        $calendar  = $this->calendar($type);
-        $calendar->scripts = str_replace("<script>","",$calendar->script());
-        $calendar->scripts = str_replace("</script>","",$calendar->scripts);
-        $view      = view($this->baseViewPath .'.index', compact('calendar'))->renderSections();
+        $this->app->bind('CalendarEventService', function ($app,$parameters) {
+            return $this->generate($parameters);
+        });
+    }
+
+
+    public function generate($parameters)
+    {
+        $calendar  = $this->calendar($parameters['type']);
+        $view      = view('calendar_events.index', compact('calendar'))->renderSections();
         return response()->json([
             'title'   => $view['modalTitle'],
             'content' => $view['modalContent'],
@@ -40,7 +48,7 @@ class CalendarEventsController extends Controller
     {
         $events = [];
         $type =  substr_replace($type,'App\\',0,3);
-        
+
         switch ($type){
             case EmployeeLeave::class :
                 $data   = $this->getCalendarLeaves();

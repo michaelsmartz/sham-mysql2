@@ -43,6 +43,10 @@ class SSPEmployeeLeavesController extends Controller
     {
 
         $employee_id     = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+        $manager         = array(
+            'id'       => $employee_id,
+            'fullname' => EmployeesController::getEmployeeFullName($employee_id)
+        );
         $employees       = EmployeesController::getManagerEmployees($employee_id);
         $leaves          = $this->getEmployeeLeavesHistory($employee_id);
         $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
@@ -57,7 +61,7 @@ class SSPEmployeeLeavesController extends Controller
             'employee' => Employee::find($employee_id)
         );
         
-        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees', 'selected', 'pending_request'));
+        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees','manager', 'selected', 'pending_request'));
     }
 
     /**
@@ -72,17 +76,26 @@ class SSPEmployeeLeavesController extends Controller
             //employee's leave viewed from manager
             $employee_id = $request->input('employee_id');
             $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
+            $manager         = array(
+                'id'       => \Auth::user()->employee_id,
+                'fullname' => EmployeesController::getEmployeeFullName(\Auth::user()->employee_id)
+            );
             $selected    = $employee_id;
         }elseif ($request->input('employee_id') == 0){
             //manager's leave
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
             $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
+            $manager         = array(
+                'id'       => $employee_id,
+                'fullname' => EmployeesController::getEmployeeFullName($employee_id)
+            );
             $selected    = null;
         }else{
             //employee's leave
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
             $employees   = null;
             $selected    = null;
+            $manager     = null;
         }
 
         //Filter by leave type
@@ -106,7 +119,7 @@ class SSPEmployeeLeavesController extends Controller
             'absence_id'  => $absence_type
         );
 
-        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees','pending_request','selected'));
+        return view($this->baseViewPath .'.index', compact('manager','leaves','eligibility','employees','pending_request','selected'));
     }
 
 
