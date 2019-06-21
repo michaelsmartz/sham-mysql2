@@ -229,6 +229,7 @@
             };
 
             window.loadUrl = function(url) {
+                var ret = false;
                 $(".light-modal-heading").empty().html('');
                 $(".light-modal-footer .buttons").empty().html('');
                 $(".light-modal-body").empty().html('Loading...please wait...');
@@ -254,9 +255,14 @@
                             }
                         });
                     });
+
+                    ret = true;
+                    window.appEe.emit('loadUrl', 'ok');
+
                 }).fail(function() {
                     alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
                 });
+                return ret;
             };
 
             window.editForm = function(id, event, baseUrl) {

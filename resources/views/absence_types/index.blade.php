@@ -119,11 +119,5 @@
 @section('post-body')
     <link href="{{URL::to('/')}}/plugins/sumoselect/sumoselect.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/parsley.min.js"></script>
-    <script src="{{URL::to('/')}}/plugins/sumoselect/jquery.sumoselect.min.js"></script>
-    <script>
-        $('document').ready(function() {
-            $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
-        });
-    </script>
     <script src="{{URL::to('/')}}/js/absence_type.min.js"></script>
 @endsection

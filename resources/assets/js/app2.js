@@ -5,6 +5,7 @@ import asyncJS from 'async-js';
 // Need to add base css for flatpickr
 import 'flatpickr/dist/flatpickr.min.css';
 
+var EventEmitter = require('events');
 var $ = require('jquery');
 
 require('touch-dnd/touch-dnd.js');
@@ -95,13 +96,11 @@ on('focusin', 'input.datepicker', function(event) {
         toPickerId = $(this).data('pairElementId'),
         elFlatpickr = el._flatpickr;
 
-
     var options = {
         defaultDate: val,
         locale: {
             "firstDayOfWeek": 1 // start week on Monday
         }
-        
     }
 
     if(typeof el._flatpickr === "undefined") {
@@ -133,4 +132,6 @@ window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown');
 window.Tab = require('exports-loader?Tab!bootstrap/js/dist/tab'); // eslint-disable-line
 window.Collapse= require('exports-loader?Collapse!bootstrap/js/dist/collapse'); // eslint-disable-line
 
+window.EventEmitter = global.EventEmitter = EventEmitter;
+window.appEe = new EventEmitter();
 window.asyncJS = global.asyncJS = asyncJS;

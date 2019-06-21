@@ -66,7 +66,7 @@ mix.js('resources/assets/js/recruitment.js', 'public/js');
 mix.js('resources/assets/js/recruitment-request.js', 'public/js');
 mix.js('resources/assets/js/candidates.js', 'public/js');
 mix.js('resources/assets/js/leaves.js', 'public/js');
-mix.js('resources/assets/js/vue-component-test.js', 'public/js');
+//mix.js('resources/assets/js/vue-component-test.js', 'public/js');
 mix.js('resources/assets/js/tinymce.js', 'public/js');
 mix.js('resources/assets/js/app2.js', 'public/js');
 

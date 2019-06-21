@@ -3,6 +3,8 @@ import {on} from "delegated-events";
 import '@simonwep/pickr/dist/pickr.nano.min.css'; // 'nano' theme
 import Pickr from '@simonwep/pickr';
 
+require('sumoselect');
+
 window.on = global.on = on;
 window.Pickr = global.Pickr = Pickr;
 
@@ -14,6 +16,10 @@ on('change', '#eligibility_ends', function(event) {
 // Listen for browser-generated events.
 on('change', '#eligibility_begins', function(event) {
     eligibility_error();
+});
+
+window.appEe.on('loadUrl', function(text){
+    $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
 });
 
 function hideAccruePeriod(){

@@ -124,6 +124,9 @@
 
 
     <script>
+        window.appEe.on('loadUrl', function(text){
+            console.log(text);
+        });
         window.vueFileUpload = function() {
             $('#uploadSignedOffer').fileUploader({
                 lang: 'en',
