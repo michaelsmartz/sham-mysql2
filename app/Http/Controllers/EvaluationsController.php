@@ -78,8 +78,12 @@ class EvaluationsController extends CustomController
             $request->merge(['reference_no' => '%'.$referenceno.'%']);
         }
 
-        $evaluations = $this->contextObj::with('assessment','useremployee','department')->filtered()->where('is_active',1)
-            ->where('createdby_employee_id',$employeeid = \Auth::user()->employee->id)
+
+        $evaluations = $this->contextObj::with(['assessment','useremployee','department','employee'])->filtered()
+            ->where('is_active',1)
+            ->where('createdby_employee_id',\Auth::user()->employee->id)
+            ->whereHas('useremployee')
+            ->whereHas('employee')
             ->orderBy('feedback_date', 'desc')
             ->paginate(10);
 
