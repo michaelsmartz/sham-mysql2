@@ -42,6 +42,8 @@ class ShamServiceProvider extends ServiceProvider
         
         \App\Providers\ViewComposerServiceProvider::class,
         \Collective\Html\HtmlServiceProvider::class,
+        \App\Providers\CalendarEventServiceProvider::class,
+        \MaddHatter\LaravelFullcalendar\ServiceProvider::class,
     ];
 
     /**
