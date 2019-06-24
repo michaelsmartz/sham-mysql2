@@ -69,3 +69,6 @@ CREATE TABLE `candidate_interviewers` (
   ON DELETE NO ACTION
   ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+ALTER TABLE `absence_types` 
+ADD `colour_id` INT(11) NULL DEFAULT '0' AFTER `duration_unit`;
