@@ -1,6 +1,8 @@
 import {on} from 'delegated-events';
 import moment from 'moment';
 
+require('sumoselect');
+
 window.Vue = require('vue/dist/vue.common.js');
 Vue.config.productionTip = false;
 
@@ -38,6 +40,10 @@ Vue.filter('prettyBytes', function (num) {
 	unit = units[exponent];
 
 	return (neg ? '-' : '') + num + ' ' + unit;
+});
+
+window.appEe.on('loadUrl', function(text){
+	$('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
 });
 
 Vue.prototype.window = window;
@@ -176,42 +182,16 @@ var vm = new Vue({
 		},
         editInterviewForm: function(interview_id, candidate_id, e){
 			e.stopPropagation();
-            this.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
+			window.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
 		},
         uploadSignedOffer: function(candidateId){
 			var offerId = $('#offer_id option:selected').val();
-            this.loadUrl('./candidate/'+ candidateId + '/offer/' + offerId + '/upload-offer-form');
+			window.loadUrl('./candidate/'+ candidateId + '/offer/' + offerId + '/upload-offer-form');
 		},
         uploadSignedContract: function(candidateId){
 			var contractId = $('#contract_id option:selected').val();
-            this.loadUrl('./candidate/'+ candidateId + '/contract/' + contractId + '/upload-contract-form');
+            window.loadUrl('./candidate/'+ candidateId + '/contract/' + contractId + '/upload-contract-form');
 		},
-        loadUrl: function(url) {
-            $(".light-modal-body").empty().html('Loading...please wait...');
-            $.get(url).done(function(data) {
-                $(".light-modal-heading").empty().html(data.title);
-                $(".light-modal-body").empty().html(data.content);
-                $(".light-modal-footer .buttons").empty().html(data.footer);
-                $("#modalForm").attr('action',data.url);
-
-                $('.multipleSelect').each(function(){
-                    $(this).multiselect({
-                        submitAllLeft:false,
-                        sort: false,
-                        keepRenderingSort: false,
-                        search: {
-                            left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-                            right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-                        },
-                        fireSearch: function(value) {
-                            return value.length > 3;
-                        }
-                    });
-                });
-            }).fail(function() {
-                alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
-            });
-        },
 		deleteInterviewMedia: function(current, interview_id, media, e){
 			let vm = this;
 			e.stopPropagation();

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 382);
+/******/ 	return __webpack_require__(__webpack_require__.s = 209);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -10286,7 +10286,826 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 5 */
+/* 5 */,
+/* 6 */,
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * jquery.sumoselect - v3.0.3
+ * http://hemantnegi.github.io/jquery.sumoselect
+ * 2016-12-12
+ *
+ * Copyright 2015 Hemant Negi
+ * Email : hemant.frnz@gmail.com
+ * Compressor http://refresh-sf.com/
+ */
+
+(function (factory) {
+    'use strict';
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports !== 'undefined') {
+        module.exports = factory(require('jquery'));
+    } else {
+        factory(jQuery);
+    }
+
+})(function ($) {
+
+    'namespace sumo';
+    $.fn.SumoSelect = function (options) {
+
+        // This is the easiest way to have default options.
+        var settings = $.extend({
+            placeholder: 'Select Here',   // Dont change it here.
+            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
+            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
+            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
+            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
+            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
+            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
+            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
+            csvSepChar: ',',              // separation char in csv mode
+            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
+            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
+            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
+            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
+
+            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
+            searchText: 'Search...',      // placeholder for search input
+            searchFn: function(haystack, needle) { // search function
+                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
+            },
+            noMatch: 'No matches for "{0}"',
+            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
+            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
+            up: false,                    // set true to open upside.
+            showTitle: true               // set to false to prevent title (tooltip) from appearing
+        }, options);
+
+        var ret = this.each(function () {
+            var selObj = this; // the original select object.
+            if (this.sumo || !$(this).is('select')) return; //already initialized
+
+            this.sumo = {
+                E: $(selObj),   //the jquery object of original select element.
+                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
+                select: '',
+                caption: '',
+                placeholder: '',
+                optDiv: '',
+                CaptionCont: '',
+                ul: '',
+                is_floating: false,
+                is_opened: false,
+                //backdrop: '',
+                mob: false, // if to open device default select
+                Pstate: [],
+                lastUnselected: null,
+
+                createElems: function () {
+                    var O = this;
+                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
+                    O.select = O.E.parent();
+                    O.caption = $('<span>');
+                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
+                        .attr('style', O.E.attr('style'))
+                        .prepend(O.caption);
+                    O.select.append(O.CaptionCont);
+
+                    // default turn off if no multiselect
+                    if (!O.is_multi) settings.okCancelInMulti = false
+
+                    if (O.E.attr('disabled'))
+                        O.select.addClass('disabled').removeAttr('tabindex');
+
+                    //if output as csv and is a multiselect.
+                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
+                        //create a hidden field to store csv value.
+                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
+
+                        // so it can not post the original select.
+                        O.E.removeAttr('name');
+                    }
+
+                    //break for mobile rendring.. if forceCustomRendering is false
+                    if (O.isMobile() && !settings.forceCustomRendering) {
+                        O.setNativeMobile();
+                        return;
+                    }
+
+                    // if there is a name attr in select add a class to container div
+                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
+
+                    //hide original select
+                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
+
+                    //## Creating the list...
+                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
+
+                    //branch for floating list in low res devices.
+                    O.floatingList();
+
+                    //Creating the markup for the available options
+                    O.ul = $('<ul class="options">');
+                    O.optDiv.append(O.ul);
+
+                    // Select all functionality
+                    if (settings.selectAll && O.is_multi) O.SelAll();
+
+                    // search functionality
+                    if (settings.search) O.Search();
+
+                    O.ul.append(O.prepItems(O.E.children()));
+
+                    //if multiple then add the class multiple and add OK / CANCEL button
+                    if (O.is_multi) O.multiSelelect();
+
+                    O.select.append(O.optDiv);
+                    O.basicEvents();
+                    O.selAllState();
+                },
+
+                prepItems: function (opts, d) {
+                    var lis = [], O = this;
+                    $(opts).each(function (i, opt) {       // parsing options to li
+                        opt = $(opt);
+                        lis.push(opt.is('optgroup') ?
+                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
+                                .find('ul')
+                                .append(O.prepItems(opt.children(), opt[0].disabled))
+                                .end()
+                            :
+                            O.createLi(opt, d)
+                        );
+                    });
+                    return lis;
+                },
+
+                //## Creates a LI element from a given option and binds events to it
+                //## returns the jquery instance of li (not inserted in dom)
+                createLi: function (opt, d) {
+                    var O = this;
+
+                    if (!opt.attr('value')) opt.attr('value', opt.val());
+                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
+
+                    li.data('opt', opt);    // store a direct reference to option.
+                    opt.data('li', li);    // store a direct reference to list item.
+                    if (O.is_multi) li.prepend('<span><i></i></span>');
+
+                    if (opt[0].disabled || d)
+                        li = li.addClass('disabled');
+
+                    O.onOptClick(li);
+
+                    if (opt[0].selected)
+                        li.addClass('selected');
+
+                    if (opt.attr('class'))
+                        li.addClass(opt.attr('class'));
+
+                    if (opt.attr('title'))
+                        li.attr('title', opt.attr('title'));
+
+                    return li;
+                },
+
+                //## Returns the selected items as string in a Multiselect.
+                getSelStr: function () {
+                    // get the pre selected items.
+                    var sopt = [];
+                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
+                    return sopt.join(settings.csvSepChar);
+                },
+
+                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
+                multiSelelect: function () {
+                    var O = this;
+                    O.optDiv.addClass('multiple');
+                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
+                        //if combined change event is set.
+                        O._okbtn();
+                        O.hideOpts();
+                    });
+                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
+                        O._cnbtn();
+                        O.hideOpts();
+                    });
+                    var btns = O.okbtn.add(O.cancelBtn);
+                    O.optDiv.append($('<div class="MultiControls">').append(btns));
+
+                    // handling keyboard navigation on ok cancel buttons.
+                    btns.on('keydown.sumo', function (e) {
+                        var el = $(this);
+                        switch (e.which) {
+                            case 32: // space
+                            case 13: // enter
+                                el.trigger('click');
+                                break;
+
+                            case 9:  //tab
+                                if (el.hasClass('btnOk')) return;
+                            case 27: // esc
+                                O._cnbtn();
+                                O.hideOpts();
+                                return;
+                        }
+                        e.stopPropagation();
+                        e.preventDefault();
+                    });
+                },
+
+                _okbtn: function () {
+                    var O = this, cg = 0;
+                    //if combined change event is set.
+                    if (settings.triggerChangeCombined) {
+                        //check for a change in the selection.
+                        if (O.E.find('option:selected').length !== O.Pstate.length) {
+                            cg = 1;
+                        }
+                        else {
+                            O.E.find('option').each(function (i, e) {
+                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
+                            });
+                        }
+
+                        if (cg) {
+                            O.callChange();
+                            O.setText();
+                        }
+                    }
+                },
+                _cnbtn: function () {
+                    var O = this;
+                    //remove all selections
+                    O.E.find('option:selected').each(function () { this.selected = false; });
+                    O.optDiv.find('li.selected').removeClass('selected')
+
+                    //restore selections from saved state.
+                    for (var i = 0; i < O.Pstate.length; i++) {
+                        O.E.find('option')[O.Pstate[i]].selected = true;
+                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
+                    }
+                    O.selAllState();
+                },
+
+                SelAll: function () {
+                    var O = this;
+                    if (!O.is_multi) return;
+                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
+                    O.optDiv.addClass('selall');
+                    O.selAll.on('click', function () {
+                        O.selAll.toggleClass('selected');
+                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
+                        //O.selAllState();
+                    });
+
+                    O.optDiv.prepend(O.selAll);
+                },
+
+                // search module (can be removed if not required.)
+                Search: function () {
+                    var O = this,
+                        cc = O.CaptionCont.addClass('search'),
+                        P = $('<p class="no-match">'),
+                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
+
+                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
+                        .on('click', function (e) {
+                            e.stopPropagation();
+                        });
+                    cc.append(O.ftxt);
+                    O.optDiv.children('ul').after(P);
+
+                    O.ftxt.on('keyup.sumo', function () {
+                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
+                            var e = $(e),
+                                opt = e.data('opt')[0];
+                            opt.hidden = fn(e.text(), O.ftxt.val());
+                            e.toggleClass('hidden', opt.hidden);
+                        }).not('.hidden');
+
+                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
+                        P.find('em').text(O.ftxt.val());
+                        O.selAllState();
+                    });
+                },
+
+                selAllState: function () {
+                    var O = this;
+                    if (settings.selectAll && O.is_multi) {
+                        var sc = 0, vc = 0;
+                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
+                            if ($(e).hasClass('selected')) sc++;
+                            if (!$(e).hasClass('disabled')) vc++;
+                        });
+                        //select all checkbox state change.
+                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
+                        else if (sc === 0) O.selAll.removeClass('selected partial');
+                        else O.selAll.addClass('partial')//.removeClass('selected');
+                    }
+                },
+
+                showOpts: function () {
+                    var O = this;
+                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
+                    O.E.trigger('sumo:opening', O);
+                    O.is_opened = true;
+                    O.select.addClass('open').attr('aria-expanded', 'true');
+                    O.E.trigger('sumo:opened', O);
+
+                    if (O.ftxt) O.ftxt.focus();
+                    else O.select.focus();
+
+                    // hide options on click outside.
+                    $(document).on('click.sumo', function (e) {
+                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
+                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
+                            if (!O.is_opened) return;
+                            O.hideOpts();
+                            if (settings.okCancelInMulti) {
+                                if (settings.isClickAwayOk)
+                                    O._okbtn();
+                                else
+                                    O._cnbtn();
+                            }
+                        }
+                    });
+
+                    if (O.is_floating) {
+                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
+                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
+                        O.optDiv.css('height', H);
+                        $('body').addClass('sumoStopScroll');
+                    }
+
+                    O.setPstate();
+                },
+
+                //maintain state when ok/cancel buttons are available storing the indexes.
+                setPstate: function () {
+                    var O = this;
+                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
+                        O.Pstate = [];
+                        // assuming that find returns elements in tree order
+                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
+                    }
+                },
+
+                callChange: function () {
+                    this.E.trigger('change').trigger('click');
+                },
+
+                hideOpts: function () {
+                    var O = this;
+                    if (O.is_opened) {
+                        O.E.trigger('sumo:closing', O);
+                        O.is_opened = false;
+                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
+                        O.E.trigger('sumo:closed', O);
+                        $(document).off('click.sumo');
+                        O.select.focus();
+                        $('body').removeClass('sumoStopScroll');
+
+                        // clear the search
+                        if (settings.search) {
+                            O.ftxt.val('');
+                            O.ftxt.trigger('keyup.sumo');
+                        }
+                    }
+                },
+                setOnOpen: function () {
+                    var O = this,
+                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
+                    if (li.hasClass('disabled')) {
+                        li = li.next(':not(disabled)')
+                        if (!li.length) return;
+                    }
+                    O.optDiv.find('li.sel').removeClass('sel');
+                    li.addClass('sel');
+                    O.showOpts();
+                },
+                nav: function (up) {
+                    var O = this, c,
+                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
+                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
+                        idx = s.index(sel);
+                    if (O.is_opened && sel.length) {
+
+                        if (up && idx > 0)
+                            c = s.eq(idx - 1);
+                        else if (!up && idx < s.length - 1 && idx > -1)
+                            c = s.eq(idx + 1);
+                        else return; // if no items before or after
+
+                        sel.removeClass('sel');
+                        sel = c.addClass('sel');
+
+                        // setting sel item to visible view.
+                        var ul = O.ul,
+                            st = ul.scrollTop(),
+                            t = sel.position().top + st;
+                        if (t >= st + ul.height() - sel.outerHeight())
+                            ul.scrollTop(t - ul.height() + sel.outerHeight());
+                        if (t < st)
+                            ul.scrollTop(t);
+
+                    }
+                    else
+                        O.setOnOpen();
+                },
+
+                basicEvents: function () {
+                    var O = this;
+                    O.CaptionCont.click(function (evt) {
+                        O.E.trigger('click');
+                        if (O.is_opened) O.hideOpts(); else O.showOpts();
+                        evt.stopPropagation();
+                    });
+
+                    O.select.on('keydown.sumo', function (e) {
+                        switch (e.which) {
+                            case 38: // up
+                                O.nav(true);
+                                break;
+
+                            case 40: // down
+                                O.nav(false);
+                                break;
+
+                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
+                                if (O.is_multi && e.ctrlKey) {
+                                    O.toggSelAll(!e.shiftKey, 1);
+                                    break;
+                                }
+                                else
+                                    return;
+
+                            case 32: // space
+                                if (settings.search && O.ftxt.is(e.target)) return;
+                            case 13: // enter
+                                if (O.is_opened)
+                                    O.optDiv.find('ul li.sel').trigger('click');
+                                else
+                                    O.setOnOpen();
+                                break;
+                            case 9:	 //tab
+                                if (!settings.okCancelInMulti)
+                                    O.hideOpts();
+                                return;
+                            case 27: // esc
+                                if (settings.okCancelInMulti) O._cnbtn();
+                                O.hideOpts();
+                                return;
+
+                            default:
+                                return; // exit this handler for other keys
+                        }
+                        e.preventDefault(); // prevent the default action (scroll / move caret)
+                    });
+
+                    $(window).on('resize.sumo', function () {
+                        O.floatingList();
+                    });
+                },
+
+                onOptClick: function (li) {
+                    var O = this;
+                    li.click(function () {
+                        var li = $(this);
+                        if (li.hasClass('disabled')) return;
+                        var txt = "";
+                        if (O.is_multi) {
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = li.hasClass('selected');
+                            if (li.data('opt')[0].selected === false) {
+                                O.lastUnselected = li.data('opt')[0].textContent;
+                            }
+                            O.selAllState();
+                        }
+                        else {
+                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
+                            li.toggleClass('selected');
+                            li.data('opt')[0].selected = true;
+                        }
+
+                        //branch for combined change event.
+                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
+                            O.setText();
+                            O.callChange();
+                        }
+
+                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
+                    });
+                },
+
+                // fixed some variables that were not explicitly typed (michc)
+                setText: function () {
+                    var O = this;
+                    O.placeholder = "";
+                    if (O.is_multi) {
+                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
+
+                        for (var i = 0; i < sels.length; i++) {
+                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
+                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
+                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
+                                } else {
+                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
+                                }
+
+                                break;
+                            }
+                            else O.placeholder += $(sels[i]).text() + ", ";
+                        }
+                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
+                    }
+                    else {
+                        O.placeholder = O.E.find(':selected').not(':disabled').text();
+                    }
+
+                    var is_placeholder = false;
+
+                    if (!O.placeholder) {
+
+                        is_placeholder = true;
+
+                        O.placeholder = O.E.attr('placeholder');
+                        if (!O.placeholder)                  //if placeholder is there then set it
+                            O.placeholder = O.E.find('option:disabled:selected').text();
+                    }
+
+                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
+
+                    //set display text
+                    O.caption.html(O.placeholder);
+                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
+
+                    //set the hidden field if post as csv is true.
+                    var csvField = O.select.find('input.HEMANT123');
+                    if (csvField.length) csvField.val(O.getSelStr());
+
+                    //add class placeholder if its a placeholder text.
+                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
+                    return O.placeholder;
+                },
+
+                isMobile: function () {
+
+                    // Adapted from http://www.detectmobilebrowsers.com
+                    var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
+                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
+                    return false;
+                },
+
+                setNativeMobile: function () {
+                    var O = this;
+                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
+                    O.mob = true;
+                    O.E.change(function () {
+                        O.setText();
+                    });
+                },
+
+                floatingList: function () {
+                    var O = this;
+                    //called on init and also on resize.
+                    //O.is_floating = true if window width is < specified float width
+                    O.is_floating = $(window).width() <= settings.floatWidth;
+
+                    //set class isFloating
+                    O.optDiv.toggleClass('isFloating', O.is_floating);
+
+                    //remove height if not floating
+                    if (!O.is_floating) O.optDiv.css('height', '');
+
+                    //toggle class according to okCancelInMulti flag only when it is not floating
+                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
+                },
+
+                //HELPERS FOR OUTSIDERS
+                // validates range of given item operations
+                vRange: function (i) {
+                    var O = this;
+                    var opts = O.E.find('option');
+                    if (opts.length <= i || i < 0) throw "index out of bounds"
+                    return O;
+                },
+
+                //toggles selection on c as boolean.
+                toggSel: function (c, i) {
+                    var O = this;
+                    var opt;
+                    if (typeof (i) === "number") {
+                        O.vRange(i);
+                        opt = O.E.find('option')[i];
+                    }
+                    else {
+                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
+                    }
+                    if (!opt || opt.disabled)
+                        return;
+
+                    if (opt.selected !== c) {
+                        opt.selected = c;
+                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
+
+                        O.callChange();
+                        O.setPstate();
+                        O.setText();
+                        O.selAllState();
+                    }
+                },
+
+                //toggles disabled on c as boolean.
+                toggDis: function (c, i) {
+                    var O = this.vRange(i);
+                    O.E.find('option')[i].disabled = c;
+                    if (c) O.E.find('option')[i].selected = false;
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
+                    O.setText();
+                },
+
+                // toggle disable/enable on complete select control
+                toggSumo: function (val) {
+                    var O = this;
+                    O.enabled = val;
+                    O.select.toggleClass('disabled', val);
+
+                    if (val) {
+                        O.E.attr('disabled', 'disabled');
+                        O.select.removeAttr('tabindex');
+                    }
+                    else {
+                        O.E.removeAttr('disabled');
+                        O.select.attr('tabindex', '0');
+                    }
+
+                    return O;
+                },
+
+                // toggles all option on c as boolean.
+                // set direct=false/0 bypasses okCancelInMulti behaviour.
+                toggSelAll: function (c, direct) {
+                    var O = this;
+                    O.E.find('option:not(:disabled,:hidden)')
+                        .each(function (ix, e) {
+                            var is_selected = e.selected,
+                                e = $(e).data('li');
+                            if (e.hasClass('hidden')) return;
+                            if (!!c) {
+                                if (!is_selected) e.trigger('click');
+                            }
+                            else {
+                                if (is_selected) e.trigger('click');
+                            }
+                        });
+
+                    if (!direct) {
+                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
+                        O.callChange();
+                        O.setText();
+                        O.setPstate();
+                    }
+                },
+
+                /* outside accessibility options
+                 which can be accessed from the element instance.
+                 */
+                reload: function () {
+                    var elm = this.unload();
+                    return $(elm).SumoSelect(settings);
+                },
+
+                unload: function () {
+                    var O = this;
+                    O.select.before(O.E);
+                    O.E.show();
+
+                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
+                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
+                    }
+                    O.select.remove();
+                    delete selObj.sumo;
+                    return selObj;
+                },
+
+                //## add a new option to select at a given index.
+                add: function (val, txt, i) {
+                    if (typeof val === "undefined") throw "No value to add"
+
+                    var O = this;
+                    var opts = O.E.find('option')
+                    if (typeof txt === "number") { i = txt; txt = val; }
+                    if (typeof txt === "undefined") { txt = val; }
+
+                    var opt = $("<option></option>").val(val).html(txt);
+
+                    if (opts.length < i) throw "index out of bounds"
+
+                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
+                        O.E.append(opt);
+                        if (!O.mob) O.ul.append(O.createLi(opt));
+                    }
+                    else {
+                        opts.eq(i).before(opt);
+                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
+                    }
+
+                    return selObj;
+                },
+
+                //## removes an item at a given index.
+                remove: function (i) {
+                    var O = this.vRange(i);
+                    O.E.find('option').eq(i).remove();
+                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
+                    O.setText();
+                },
+
+                // removes all but the selected one
+                removeAll: function () {
+                    var O = this;
+                    var options = O.E.find('option');
+
+                    for (var x = (options.length - 1); x >= 0; x--) {
+                        if (options[x].selected !== true) {
+                            O.remove(x);
+                        }
+                    }
+
+                },
+
+
+                find: function (val) {
+                    var O = this;
+                    var options = O.E.find('option');
+                    for (var x in options) {
+                        if (options[x].value === val) {
+                            return parseInt(x);
+                        }
+                    }
+
+                    return -1;
+
+                },
+
+                //## Select an item at a given index.
+                selectItem: function (i) { this.toggSel(true, i); },
+
+                //## UnSelect an iten at a given index.
+                unSelectItem: function (i) { this.toggSel(false, i); },
+
+                //## Select all items  of the select.
+                selectAll: function () { this.toggSelAll(true); },
+
+                //## UnSelect all items of the select.
+                unSelectAll: function () { this.toggSelAll(false); },
+
+                //## Disable an iten at a given index.
+                disableItem: function (i) { this.toggDis(true, i) },
+
+                //## Removes disabled an iten at a given index.
+                enableItem: function (i) { this.toggDis(false, i) },
+
+                //## New simple methods as getter and setter are not working fine in ie8-
+                //## variable to check state of control if enabled or disabled.
+                enabled: true,
+                //## Enables the control
+                enable: function () { return this.toggSumo(false) },
+
+                //## Disables the control
+                disable: function () { return this.toggSumo(true) },
+
+
+                init: function () {
+                    var O = this;
+                    O.createElems();
+                    O.setText();
+                    return O
+                }
+
+            };
+
+            selObj.sumo.init();
+        });
+
+        return ret.length === 1 ? ret[0] : ret;
+    };
+
+
+});
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -10342,7 +11161,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(6);
+__webpack_require__(11);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -10356,200 +11175,2508 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
-    "use strict";
+/* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
+* Parsley.js
+* Version 2.8.1 - built Sat, Feb 3rd 2018, 2:27 pm
+* http://parsleyjs.org
+* Guillaume Potier - <guillaume@wisembly.com>
+* Marc-Andre Lafortune - <petroselinum@marc-andre.ca>
+* MIT Licensed
+*/
 
-    if (global.setImmediate) {
+// The source code below is generated by babel as
+// Parsley is written in ECMAScript 6
+//
+var _slice = Array.prototype.slice;
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+(function (global, factory) {
+   true ? module.exports = factory(__webpack_require__(1)) : typeof define === 'function' && define.amd ? define(['jquery'], factory) : global.parsley = factory(global.jQuery);
+})(this, function ($) {
+  'use strict';
+
+  var globalID = 1;
+  var pastWarnings = {};
+
+  var Utils = {
+    // Parsley DOM-API
+    // returns object from dom attributes and values
+    attr: function attr(element, namespace, obj) {
+      var i;
+      var attribute;
+      var attributes;
+      var regex = new RegExp('^' + namespace, 'i');
+
+      if ('undefined' === typeof obj) obj = {};else {
+        // Clear all own properties. This won't affect prototype's values
+        for (i in obj) {
+          if (obj.hasOwnProperty(i)) delete obj[i];
+        }
+      }
+
+      if (!element) return obj;
+
+      attributes = element.attributes;
+      for (i = attributes.length; i--;) {
+        attribute = attributes[i];
+
+        if (attribute && attribute.specified && regex.test(attribute.name)) {
+          obj[this.camelize(attribute.name.slice(namespace.length))] = this.deserializeValue(attribute.value);
+        }
+      }
+
+      return obj;
+    },
+
+    checkAttr: function checkAttr(element, namespace, _checkAttr) {
+      return element.hasAttribute(namespace + _checkAttr);
+    },
+
+    setAttr: function setAttr(element, namespace, attr, value) {
+      element.setAttribute(this.dasherize(namespace + attr), String(value));
+    },
+
+    getType: function getType(element) {
+      return element.getAttribute('type') || 'text';
+    },
+
+    generateID: function generateID() {
+      return '' + globalID++;
+    },
+
+    /** Third party functions **/
+    deserializeValue: function deserializeValue(value) {
+      var num;
+
+      try {
+        return value ? value == "true" || (value == "false" ? false : value == "null" ? null : !isNaN(num = Number(value)) ? num : /^[\[\{]/.test(value) ? JSON.parse(value) : value) : value;
+      } catch (e) {
+        return value;
+      }
+    },
+
+    // Zepto camelize function
+    camelize: function camelize(str) {
+      return str.replace(/-+(.)?/g, function (match, chr) {
+        return chr ? chr.toUpperCase() : '';
+      });
+    },
+
+    // Zepto dasherize function
+    dasherize: function dasherize(str) {
+      return str.replace(/::/g, '/').replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2').replace(/([a-z\d])([A-Z])/g, '$1_$2').replace(/_/g, '-').toLowerCase();
+    },
+
+    warn: function warn() {
+      var _window$console;
+
+      if (window.console && 'function' === typeof window.console.warn) (_window$console = window.console).warn.apply(_window$console, arguments);
+    },
+
+    warnOnce: function warnOnce(msg) {
+      if (!pastWarnings[msg]) {
+        pastWarnings[msg] = true;
+        this.warn.apply(this, arguments);
+      }
+    },
+
+    _resetWarnings: function _resetWarnings() {
+      pastWarnings = {};
+    },
+
+    trimString: function trimString(string) {
+      return string.replace(/^\s+|\s+$/g, '');
+    },
+
+    parse: {
+      date: function date(string) {
+        var parsed = string.match(/^(\d{4,})-(\d\d)-(\d\d)$/);
+        if (!parsed) return null;
+
+        var _parsed$map = parsed.map(function (x) {
+          return parseInt(x, 10);
+        });
+
+        var _parsed$map2 = _slicedToArray(_parsed$map, 4);
+
+        var _ = _parsed$map2[0];
+        var year = _parsed$map2[1];
+        var month = _parsed$map2[2];
+        var day = _parsed$map2[3];
+
+        var date = new Date(year, month - 1, day);
+        if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) return null;
+        return date;
+      },
+      string: function string(_string) {
+        return _string;
+      },
+      integer: function integer(string) {
+        if (isNaN(string)) return null;
+        return parseInt(string, 10);
+      },
+      number: function number(string) {
+        if (isNaN(string)) throw null;
+        return parseFloat(string);
+      },
+      'boolean': function _boolean(string) {
+        return !/^\s*false\s*$/i.test(string);
+      },
+      object: function object(string) {
+        return Utils.deserializeValue(string);
+      },
+      regexp: function regexp(_regexp) {
+        var flags = '';
+
+        // Test if RegExp is literal, if not, nothing to be done, otherwise, we need to isolate flags and pattern
+        if (/^\/.*\/(?:[gimy]*)$/.test(_regexp)) {
+          // Replace the regexp literal string with the first match group: ([gimy]*)
+          // If no flag is present, this will be a blank string
+          flags = _regexp.replace(/.*\/([gimy]*)$/, '$1');
+          // Again, replace the regexp literal string with the first match group:
+          // everything excluding the opening and closing slashes and the flags
+          _regexp = _regexp.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
+        } else {
+          // Anchor regexp:
+          _regexp = '^' + _regexp + '$';
+        }
+        return new RegExp(_regexp, flags);
+      }
+    },
+
+    parseRequirement: function parseRequirement(requirementType, string) {
+      var converter = this.parse[requirementType || 'string'];
+      if (!converter) throw 'Unknown requirement specification: "' + requirementType + '"';
+      var converted = converter(string);
+      if (converted === null) throw 'Requirement is not a ' + requirementType + ': "' + string + '"';
+      return converted;
+    },
+
+    namespaceEvents: function namespaceEvents(events, namespace) {
+      events = this.trimString(events || '').split(/\s+/);
+      if (!events[0]) return '';
+      return $.map(events, function (evt) {
+        return evt + '.' + namespace;
+      }).join(' ');
+    },
+
+    difference: function difference(array, remove) {
+      // This is O(N^2), should be optimized
+      var result = [];
+      $.each(array, function (_, elem) {
+        if (remove.indexOf(elem) == -1) result.push(elem);
+      });
+      return result;
+    },
+
+    // Alter-ego to native Promise.all, but for jQuery
+    all: function all(promises) {
+      // jQuery treats $.when() and $.when(singlePromise) differently; let's avoid that and add spurious elements
+      return $.when.apply($, _toConsumableArray(promises).concat([42, 42]));
+    },
+
+    // Object.create polyfill, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
+    objectCreate: Object.create || (function () {
+      var Object = function Object() {};
+      return function (prototype) {
+        if (arguments.length > 1) {
+          throw Error('Second argument not supported');
+        }
+        if (typeof prototype != 'object') {
+          throw TypeError('Argument must be an object');
+        }
+        Object.prototype = prototype;
+        var result = new Object();
+        Object.prototype = null;
+        return result;
+      };
+    })(),
+
+    _SubmitSelector: 'input[type="submit"], button:submit'
+  };
+
+  // All these options could be overriden and specified directly in DOM using
+  // `data-parsley-` default DOM-API
+  // eg: `inputs` can be set in DOM using `data-parsley-inputs="input, textarea"`
+  // eg: `data-parsley-stop-on-first-failing-constraint="false"`
+
+  var Defaults = {
+    // ### General
+
+    // Default data-namespace for DOM API
+    namespace: 'data-parsley-',
+
+    // Supported inputs by default
+    inputs: 'input, textarea, select',
+
+    // Excluded inputs by default
+    excluded: 'input[type=button], input[type=submit], input[type=reset], input[type=hidden]',
+
+    // Stop validating field on highest priority failing constraint
+    priorityEnabled: true,
+
+    // ### Field only
+
+    // identifier used to group together inputs (e.g. radio buttons...)
+    multiple: null,
+
+    // identifier (or array of identifiers) used to validate only a select group of inputs
+    group: null,
+
+    // ### UI
+    // Enable\Disable error messages
+    uiEnabled: true,
+
+    // Key events threshold before validation
+    validationThreshold: 3,
+
+    // Focused field on form validation error. 'first'|'last'|'none'
+    focus: 'first',
+
+    // event(s) that will trigger validation before first failure. eg: `input`...
+    trigger: false,
+
+    // event(s) that will trigger validation after first failure.
+    triggerAfterFailure: 'input',
+
+    // Class that would be added on every failing validation Parsley field
+    errorClass: 'parsley-error',
+
+    // Same for success validation
+    successClass: 'parsley-success',
+
+    // Return the `$element` that will receive these above success or error classes
+    // Could also be (and given directly from DOM) a valid selector like `'#div'`
+    classHandler: function classHandler(Field) {},
+
+    // Return the `$element` where errors will be appended
+    // Could also be (and given directly from DOM) a valid selector like `'#div'`
+    errorsContainer: function errorsContainer(Field) {},
+
+    // ul elem that would receive errors' list
+    errorsWrapper: '<ul class="parsley-errors-list"></ul>',
+
+    // li elem that would receive error message
+    errorTemplate: '<li></li>'
+  };
+
+  var Base = function Base() {
+    this.__id__ = Utils.generateID();
+  };
+
+  Base.prototype = {
+    asyncSupport: true, // Deprecated
+
+    _pipeAccordingToValidationResult: function _pipeAccordingToValidationResult() {
+      var _this = this;
+
+      var pipe = function pipe() {
+        var r = $.Deferred();
+        if (true !== _this.validationResult) r.reject();
+        return r.resolve().promise();
+      };
+      return [pipe, pipe];
+    },
+
+    actualizeOptions: function actualizeOptions() {
+      Utils.attr(this.element, this.options.namespace, this.domOptions);
+      if (this.parent && this.parent.actualizeOptions) this.parent.actualizeOptions();
+      return this;
+    },
+
+    _resetOptions: function _resetOptions(initOptions) {
+      this.domOptions = Utils.objectCreate(this.parent.options);
+      this.options = Utils.objectCreate(this.domOptions);
+      // Shallow copy of ownProperties of initOptions:
+      for (var i in initOptions) {
+        if (initOptions.hasOwnProperty(i)) this.options[i] = initOptions[i];
+      }
+      this.actualizeOptions();
+    },
+
+    _listeners: null,
+
+    // Register a callback for the given event name
+    // Callback is called with context as the first argument and the `this`
+    // The context is the current parsley instance, or window.Parsley if global
+    // A return value of `false` will interrupt the calls
+    on: function on(name, fn) {
+      this._listeners = this._listeners || {};
+      var queue = this._listeners[name] = this._listeners[name] || [];
+      queue.push(fn);
+
+      return this;
+    },
+
+    // Deprecated. Use `on` instead
+    subscribe: function subscribe(name, fn) {
+      $.listenTo(this, name.toLowerCase(), fn);
+    },
+
+    // Unregister a callback (or all if none is given) for the given event name
+    off: function off(name, fn) {
+      var queue = this._listeners && this._listeners[name];
+      if (queue) {
+        if (!fn) {
+          delete this._listeners[name];
+        } else {
+          for (var i = queue.length; i--;) if (queue[i] === fn) queue.splice(i, 1);
+        }
+      }
+      return this;
+    },
+
+    // Deprecated. Use `off`
+    unsubscribe: function unsubscribe(name, fn) {
+      $.unsubscribeTo(this, name.toLowerCase());
+    },
+
+    // Trigger an event of the given name
+    // A return value of `false` interrupts the callback chain
+    // Returns false if execution was interrupted
+    trigger: function trigger(name, target, extraArg) {
+      target = target || this;
+      var queue = this._listeners && this._listeners[name];
+      var result;
+      var parentResult;
+      if (queue) {
+        for (var i = queue.length; i--;) {
+          result = queue[i].call(target, target, extraArg);
+          if (result === false) return result;
+        }
+      }
+      if (this.parent) {
+        return this.parent.trigger(name, target, extraArg);
+      }
+      return true;
+    },
+
+    asyncIsValid: function asyncIsValid(group, force) {
+      Utils.warnOnce("asyncIsValid is deprecated; please use whenValid instead");
+      return this.whenValid({ group: group, force: force });
+    },
+
+    _findRelated: function _findRelated() {
+      return this.options.multiple ? $(this.parent.element.querySelectorAll('[' + this.options.namespace + 'multiple="' + this.options.multiple + '"]')) : this.$element;
+    }
+  };
+
+  var convertArrayRequirement = function convertArrayRequirement(string, length) {
+    var m = string.match(/^\s*\[(.*)\]\s*$/);
+    if (!m) throw 'Requirement is not an array: "' + string + '"';
+    var values = m[1].split(',').map(Utils.trimString);
+    if (values.length !== length) throw 'Requirement has ' + values.length + ' values when ' + length + ' are needed';
+    return values;
+  };
+
+  var convertExtraOptionRequirement = function convertExtraOptionRequirement(requirementSpec, string, extraOptionReader) {
+    var main = null;
+    var extra = {};
+    for (var key in requirementSpec) {
+      if (key) {
+        var value = extraOptionReader(key);
+        if ('string' === typeof value) value = Utils.parseRequirement(requirementSpec[key], value);
+        extra[key] = value;
+      } else {
+        main = Utils.parseRequirement(requirementSpec[key], string);
+      }
+    }
+    return [main, extra];
+  };
+
+  // A Validator needs to implement the methods `validate` and `parseRequirements`
+
+  var Validator = function Validator(spec) {
+    $.extend(true, this, spec);
+  };
+
+  Validator.prototype = {
+    // Returns `true` iff the given `value` is valid according the given requirements.
+    validate: function validate(value, requirementFirstArg) {
+      if (this.fn) {
+        // Legacy style validator
+
+        if (arguments.length > 3) // If more args then value, requirement, instance...
+          requirementFirstArg = [].slice.call(arguments, 1, -1); // Skip first arg (value) and last (instance), combining the rest
+        return this.fn(value, requirementFirstArg);
+      }
+
+      if (Array.isArray(value)) {
+        if (!this.validateMultiple) throw 'Validator `' + this.name + '` does not handle multiple values';
+        return this.validateMultiple.apply(this, arguments);
+      } else {
+        var instance = arguments[arguments.length - 1];
+        if (this.validateDate && instance._isDateInput()) {
+          arguments[0] = Utils.parse.date(arguments[0]);
+          if (arguments[0] === null) return false;
+          return this.validateDate.apply(this, arguments);
+        }
+        if (this.validateNumber) {
+          if (isNaN(value)) return false;
+          arguments[0] = parseFloat(arguments[0]);
+          return this.validateNumber.apply(this, arguments);
+        }
+        if (this.validateString) {
+          return this.validateString.apply(this, arguments);
+        }
+        throw 'Validator `' + this.name + '` only handles multiple values';
+      }
+    },
+
+    // Parses `requirements` into an array of arguments,
+    // according to `this.requirementType`
+    parseRequirements: function parseRequirements(requirements, extraOptionReader) {
+      if ('string' !== typeof requirements) {
+        // Assume requirement already parsed
+        // but make sure we return an array
+        return Array.isArray(requirements) ? requirements : [requirements];
+      }
+      var type = this.requirementType;
+      if (Array.isArray(type)) {
+        var values = convertArrayRequirement(requirements, type.length);
+        for (var i = 0; i < values.length; i++) values[i] = Utils.parseRequirement(type[i], values[i]);
+        return values;
+      } else if ($.isPlainObject(type)) {
+        return convertExtraOptionRequirement(type, requirements, extraOptionReader);
+      } else {
+        return [Utils.parseRequirement(type, requirements)];
+      }
+    },
+    // Defaults:
+    requirementType: 'string',
+
+    priority: 2
+
+  };
+
+  var ValidatorRegistry = function ValidatorRegistry(validators, catalog) {
+    this.__class__ = 'ValidatorRegistry';
+
+    // Default Parsley locale is en
+    this.locale = 'en';
+
+    this.init(validators || {}, catalog || {});
+  };
+
+  var typeTesters = {
+    email: /^((([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/,
+
+    // Follow https://www.w3.org/TR/html5/infrastructure.html#floating-point-numbers
+    number: /^-?(\d*\.)?\d+(e[-+]?\d+)?$/i,
+
+    integer: /^-?\d+$/,
+
+    digits: /^\d+$/,
+
+    alphanum: /^\w+$/i,
+
+    date: {
+      test: function test(value) {
+        return Utils.parse.date(value) !== null;
+      }
+    },
+
+    url: new RegExp("^" +
+    // protocol identifier
+    "(?:(?:https?|ftp)://)?" + // ** mod: make scheme optional
+    // user:pass authentication
+    "(?:\\S+(?::\\S*)?@)?" + "(?:" +
+    // IP address exclusion
+    // private & local networks
+    // "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +   // ** mod: allow local networks
+    // "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
+    // "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
+    // IP address dotted notation octets
+    // excludes loopback network 0.0.0.0
+    // excludes reserved space >= 224.0.0.0
+    // excludes network & broacast addresses
+    // (first & last IP address of each class)
+    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" + "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" + "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" + "|" +
+    // host name
+    '(?:(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)' +
+    // domain name
+    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)*' +
+    // TLD identifier
+    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff]{2,}))' + ")" +
+    // port number
+    "(?::\\d{2,5})?" +
+    // resource path
+    "(?:/\\S*)?" + "$")
+  };
+  typeTesters.range = typeTesters.number;
+
+  // See http://stackoverflow.com/a/10454560/8279
+  var decimalPlaces = function decimalPlaces(num) {
+    var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    if (!match) {
+      return 0;
+    }
+    return Math.max(0,
+    // Number of digits right of decimal point.
+    (match[1] ? match[1].length : 0) - (
+    // Adjust for scientific notation.
+    match[2] ? +match[2] : 0));
+  };
+
+  // parseArguments('number', ['1', '2']) => [1, 2]
+  var ValidatorRegistry__parseArguments = function ValidatorRegistry__parseArguments(type, args) {
+    return args.map(Utils.parse[type]);
+  };
+  // operatorToValidator returns a validating function for an operator function, applied to the given type
+  var ValidatorRegistry__operatorToValidator = function ValidatorRegistry__operatorToValidator(type, operator) {
+    return function (value) {
+      for (var _len = arguments.length, requirementsAndInput = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        requirementsAndInput[_key - 1] = arguments[_key];
+      }
+
+      requirementsAndInput.pop(); // Get rid of `input` argument
+      return operator.apply(undefined, [value].concat(_toConsumableArray(ValidatorRegistry__parseArguments(type, requirementsAndInput))));
+    };
+  };
+
+  var ValidatorRegistry__comparisonOperator = function ValidatorRegistry__comparisonOperator(operator) {
+    return {
+      validateDate: ValidatorRegistry__operatorToValidator('date', operator),
+      validateNumber: ValidatorRegistry__operatorToValidator('number', operator),
+      requirementType: operator.length <= 2 ? 'string' : ['string', 'string'], // Support operators with a 1 or 2 requirement(s)
+      priority: 30
+    };
+  };
+
+  ValidatorRegistry.prototype = {
+    init: function init(validators, catalog) {
+      this.catalog = catalog;
+      // Copy prototype's validators:
+      this.validators = _extends({}, this.validators);
+
+      for (var name in validators) this.addValidator(name, validators[name].fn, validators[name].priority);
+
+      window.Parsley.trigger('parsley:validator:init');
+    },
+
+    // Set new messages locale if we have dictionary loaded in ParsleyConfig.i18n
+    setLocale: function setLocale(locale) {
+      if ('undefined' === typeof this.catalog[locale]) throw new Error(locale + ' is not available in the catalog');
+
+      this.locale = locale;
+
+      return this;
+    },
+
+    // Add a new messages catalog for a given locale. Set locale for this catalog if set === `true`
+    addCatalog: function addCatalog(locale, messages, set) {
+      if ('object' === typeof messages) this.catalog[locale] = messages;
+
+      if (true === set) return this.setLocale(locale);
+
+      return this;
+    },
+
+    // Add a specific message for a given constraint in a given locale
+    addMessage: function addMessage(locale, name, message) {
+      if ('undefined' === typeof this.catalog[locale]) this.catalog[locale] = {};
+
+      this.catalog[locale][name] = message;
+
+      return this;
+    },
+
+    // Add messages for a given locale
+    addMessages: function addMessages(locale, nameMessageObject) {
+      for (var name in nameMessageObject) this.addMessage(locale, name, nameMessageObject[name]);
+
+      return this;
+    },
+
+    // Add a new validator
+    //
+    //    addValidator('custom', {
+    //        requirementType: ['integer', 'integer'],
+    //        validateString: function(value, from, to) {},
+    //        priority: 22,
+    //        messages: {
+    //          en: "Hey, that's no good",
+    //          fr: "Aye aye, pas bon du tout",
+    //        }
+    //    })
+    //
+    // Old API was addValidator(name, function, priority)
+    //
+    addValidator: function addValidator(name, arg1, arg2) {
+      if (this.validators[name]) Utils.warn('Validator "' + name + '" is already defined.');else if (Defaults.hasOwnProperty(name)) {
+        Utils.warn('"' + name + '" is a restricted keyword and is not a valid validator name.');
         return;
-    }
-
-    var nextHandle = 1; // Spec says greater than zero
-    var tasksByHandle = {};
-    var currentlyRunningATask = false;
-    var doc = global.document;
-    var registerImmediate;
-
-    function setImmediate(callback) {
-      // Callback can either be a function or a string
-      if (typeof callback !== "function") {
-        callback = new Function("" + callback);
       }
-      // Copy function arguments
-      var args = new Array(arguments.length - 1);
-      for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i + 1];
+      return this._setValidator.apply(this, arguments);
+    },
+
+    hasValidator: function hasValidator(name) {
+      return !!this.validators[name];
+    },
+
+    updateValidator: function updateValidator(name, arg1, arg2) {
+      if (!this.validators[name]) {
+        Utils.warn('Validator "' + name + '" is not already defined.');
+        return this.addValidator.apply(this, arguments);
       }
-      // Store and register the task
-      var task = { callback: callback, args: args };
-      tasksByHandle[nextHandle] = task;
-      registerImmediate(nextHandle);
-      return nextHandle++;
+      return this._setValidator.apply(this, arguments);
+    },
+
+    removeValidator: function removeValidator(name) {
+      if (!this.validators[name]) Utils.warn('Validator "' + name + '" is not defined.');
+
+      delete this.validators[name];
+
+      return this;
+    },
+
+    _setValidator: function _setValidator(name, validator, priority) {
+      if ('object' !== typeof validator) {
+        // Old style validator, with `fn` and `priority`
+        validator = {
+          fn: validator,
+          priority: priority
+        };
+      }
+      if (!validator.validate) {
+        validator = new Validator(validator);
+      }
+      this.validators[name] = validator;
+
+      for (var locale in validator.messages || {}) this.addMessage(locale, name, validator.messages[locale]);
+
+      return this;
+    },
+
+    getErrorMessage: function getErrorMessage(constraint) {
+      var message;
+
+      // Type constraints are a bit different, we have to match their requirements too to find right error message
+      if ('type' === constraint.name) {
+        var typeMessages = this.catalog[this.locale][constraint.name] || {};
+        message = typeMessages[constraint.requirements];
+      } else message = this.formatMessage(this.catalog[this.locale][constraint.name], constraint.requirements);
+
+      return message || this.catalog[this.locale].defaultMessage || this.catalog.en.defaultMessage;
+    },
+
+    // Kind of light `sprintf()` implementation
+    formatMessage: function formatMessage(string, parameters) {
+      if ('object' === typeof parameters) {
+        for (var i in parameters) string = this.formatMessage(string, parameters[i]);
+
+        return string;
+      }
+
+      return 'string' === typeof string ? string.replace(/%s/i, parameters) : '';
+    },
+
+    // Here is the Parsley default validators list.
+    // A validator is an object with the following key values:
+    //  - priority: an integer
+    //  - requirement: 'string' (default), 'integer', 'number', 'regexp' or an Array of these
+    //  - validateString, validateMultiple, validateNumber: functions returning `true`, `false` or a promise
+    // Alternatively, a validator can be a function that returns such an object
+    //
+    validators: {
+      notblank: {
+        validateString: function validateString(value) {
+          return (/\S/.test(value)
+          );
+        },
+        priority: 2
+      },
+      required: {
+        validateMultiple: function validateMultiple(values) {
+          return values.length > 0;
+        },
+        validateString: function validateString(value) {
+          return (/\S/.test(value)
+          );
+        },
+        priority: 512
+      },
+      type: {
+        validateString: function validateString(value, type) {
+          var _ref = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+          var _ref$step = _ref.step;
+          var step = _ref$step === undefined ? 'any' : _ref$step;
+          var _ref$base = _ref.base;
+          var base = _ref$base === undefined ? 0 : _ref$base;
+
+          var tester = typeTesters[type];
+          if (!tester) {
+            throw new Error('validator type `' + type + '` is not supported');
+          }
+          if (!tester.test(value)) return false;
+          if ('number' === type) {
+            if (!/^any$/i.test(step || '')) {
+              var nb = Number(value);
+              var decimals = Math.max(decimalPlaces(step), decimalPlaces(base));
+              if (decimalPlaces(nb) > decimals) // Value can't have too many decimals
+                return false;
+              // Be careful of rounding errors by using integers.
+              var toInt = function toInt(f) {
+                return Math.round(f * Math.pow(10, decimals));
+              };
+              if ((toInt(nb) - toInt(base)) % toInt(step) != 0) return false;
+            }
+          }
+          return true;
+        },
+        requirementType: {
+          '': 'string',
+          step: 'string',
+          base: 'number'
+        },
+        priority: 256
+      },
+      pattern: {
+        validateString: function validateString(value, regexp) {
+          return regexp.test(value);
+        },
+        requirementType: 'regexp',
+        priority: 64
+      },
+      minlength: {
+        validateString: function validateString(value, requirement) {
+          return value.length >= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      maxlength: {
+        validateString: function validateString(value, requirement) {
+          return value.length <= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      length: {
+        validateString: function validateString(value, min, max) {
+          return value.length >= min && value.length <= max;
+        },
+        requirementType: ['integer', 'integer'],
+        priority: 30
+      },
+      mincheck: {
+        validateMultiple: function validateMultiple(values, requirement) {
+          return values.length >= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      maxcheck: {
+        validateMultiple: function validateMultiple(values, requirement) {
+          return values.length <= requirement;
+        },
+        requirementType: 'integer',
+        priority: 30
+      },
+      check: {
+        validateMultiple: function validateMultiple(values, min, max) {
+          return values.length >= min && values.length <= max;
+        },
+        requirementType: ['integer', 'integer'],
+        priority: 30
+      },
+      min: ValidatorRegistry__comparisonOperator(function (value, requirement) {
+        return value >= requirement;
+      }),
+      max: ValidatorRegistry__comparisonOperator(function (value, requirement) {
+        return value <= requirement;
+      }),
+      range: ValidatorRegistry__comparisonOperator(function (value, min, max) {
+        return value >= min && value <= max;
+      }),
+      equalto: {
+        validateString: function validateString(value, refOrValue) {
+          var $reference = $(refOrValue);
+          if ($reference.length) return value === $reference.val();else return value === refOrValue;
+        },
+        priority: 256
+      }
+    }
+  };
+
+  var UI = {};
+
+  var diffResults = function diffResults(newResult, oldResult, deep) {
+    var added = [];
+    var kept = [];
+
+    for (var i = 0; i < newResult.length; i++) {
+      var found = false;
+
+      for (var j = 0; j < oldResult.length; j++) if (newResult[i].assert.name === oldResult[j].assert.name) {
+        found = true;
+        break;
+      }
+
+      if (found) kept.push(newResult[i]);else added.push(newResult[i]);
     }
 
-    function clearImmediate(handle) {
-        delete tasksByHandle[handle];
+    return {
+      kept: kept,
+      added: added,
+      removed: !deep ? diffResults(oldResult, newResult, true).added : []
+    };
+  };
+
+  UI.Form = {
+
+    _actualizeTriggers: function _actualizeTriggers() {
+      var _this2 = this;
+
+      this.$element.on('submit.Parsley', function (evt) {
+        _this2.onSubmitValidate(evt);
+      });
+      this.$element.on('click.Parsley', Utils._SubmitSelector, function (evt) {
+        _this2.onSubmitButton(evt);
+      });
+
+      // UI could be disabled
+      if (false === this.options.uiEnabled) return;
+
+      this.element.setAttribute('novalidate', '');
+    },
+
+    focus: function focus() {
+      this._focusedField = null;
+
+      if (true === this.validationResult || 'none' === this.options.focus) return null;
+
+      for (var i = 0; i < this.fields.length; i++) {
+        var field = this.fields[i];
+        if (true !== field.validationResult && field.validationResult.length > 0 && 'undefined' === typeof field.options.noFocus) {
+          this._focusedField = field.$element;
+          if ('first' === this.options.focus) break;
+        }
+      }
+
+      if (null === this._focusedField) return null;
+
+      return this._focusedField.focus();
+    },
+
+    _destroyUI: function _destroyUI() {
+      // Reset all event listeners
+      this.$element.off('.Parsley');
     }
 
-    function run(task) {
-        var callback = task.callback;
-        var args = task.args;
-        switch (args.length) {
-        case 0:
-            callback();
-            break;
-        case 1:
-            callback(args[0]);
-            break;
-        case 2:
-            callback(args[0], args[1]);
-            break;
-        case 3:
-            callback(args[0], args[1], args[2]);
-            break;
+  };
+
+  UI.Field = {
+
+    _reflowUI: function _reflowUI() {
+      this._buildUI();
+
+      // If this field doesn't have an active UI don't bother doing something
+      if (!this._ui) return;
+
+      // Diff between two validation results
+      var diff = diffResults(this.validationResult, this._ui.lastValidationResult);
+
+      // Then store current validation result for next reflow
+      this._ui.lastValidationResult = this.validationResult;
+
+      // Handle valid / invalid / none field class
+      this._manageStatusClass();
+
+      // Add, remove, updated errors messages
+      this._manageErrorsMessages(diff);
+
+      // Triggers impl
+      this._actualizeTriggers();
+
+      // If field is not valid for the first time, bind keyup trigger to ease UX and quickly inform user
+      if ((diff.kept.length || diff.added.length) && !this._failedOnce) {
+        this._failedOnce = true;
+        this._actualizeTriggers();
+      }
+    },
+
+    // Returns an array of field's error message(s)
+    getErrorsMessages: function getErrorsMessages() {
+      // No error message, field is valid
+      if (true === this.validationResult) return [];
+
+      var messages = [];
+
+      for (var i = 0; i < this.validationResult.length; i++) messages.push(this.validationResult[i].errorMessage || this._getErrorMessage(this.validationResult[i].assert));
+
+      return messages;
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    addError: function addError(name) {
+      var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var message = _ref2.message;
+      var assert = _ref2.assert;
+      var _ref2$updateClass = _ref2.updateClass;
+      var updateClass = _ref2$updateClass === undefined ? true : _ref2$updateClass;
+
+      this._buildUI();
+      this._addError(name, { message: message, assert: assert });
+
+      if (updateClass) this._errorClass();
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    updateError: function updateError(name) {
+      var _ref3 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var message = _ref3.message;
+      var assert = _ref3.assert;
+      var _ref3$updateClass = _ref3.updateClass;
+      var updateClass = _ref3$updateClass === undefined ? true : _ref3$updateClass;
+
+      this._buildUI();
+      this._updateError(name, { message: message, assert: assert });
+
+      if (updateClass) this._errorClass();
+    },
+
+    // It's a goal of Parsley that this method is no longer required [#1073]
+    removeError: function removeError(name) {
+      var _ref4 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      var _ref4$updateClass = _ref4.updateClass;
+      var updateClass = _ref4$updateClass === undefined ? true : _ref4$updateClass;
+
+      this._buildUI();
+      this._removeError(name);
+
+      // edge case possible here: remove a standard Parsley error that is still failing in this.validationResult
+      // but highly improbable cuz' manually removing a well Parsley handled error makes no sense.
+      if (updateClass) this._manageStatusClass();
+    },
+
+    _manageStatusClass: function _manageStatusClass() {
+      if (this.hasConstraints() && this.needsValidation() && true === this.validationResult) this._successClass();else if (this.validationResult.length > 0) this._errorClass();else this._resetClass();
+    },
+
+    _manageErrorsMessages: function _manageErrorsMessages(diff) {
+      if ('undefined' !== typeof this.options.errorsMessagesDisabled) return;
+
+      // Case where we have errorMessage option that configure an unique field error message, regardless failing validators
+      if ('undefined' !== typeof this.options.errorMessage) {
+        if (diff.added.length || diff.kept.length) {
+          this._insertErrorWrapper();
+
+          if (0 === this._ui.$errorsWrapper.find('.parsley-custom-error-message').length) this._ui.$errorsWrapper.append($(this.options.errorTemplate).addClass('parsley-custom-error-message'));
+
+          return this._ui.$errorsWrapper.addClass('filled').find('.parsley-custom-error-message').html(this.options.errorMessage);
+        }
+
+        return this._ui.$errorsWrapper.removeClass('filled').find('.parsley-custom-error-message').remove();
+      }
+
+      // Show, hide, update failing constraints messages
+      for (var i = 0; i < diff.removed.length; i++) this._removeError(diff.removed[i].assert.name);
+
+      for (i = 0; i < diff.added.length; i++) this._addError(diff.added[i].assert.name, { message: diff.added[i].errorMessage, assert: diff.added[i].assert });
+
+      for (i = 0; i < diff.kept.length; i++) this._updateError(diff.kept[i].assert.name, { message: diff.kept[i].errorMessage, assert: diff.kept[i].assert });
+    },
+
+    _addError: function _addError(name, _ref5) {
+      var message = _ref5.message;
+      var assert = _ref5.assert;
+
+      this._insertErrorWrapper();
+      this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
+      this._ui.$errorsWrapper.addClass('filled').append($(this.options.errorTemplate).addClass('parsley-' + name).html(message || this._getErrorMessage(assert)));
+    },
+
+    _updateError: function _updateError(name, _ref6) {
+      var message = _ref6.message;
+      var assert = _ref6.assert;
+
+      this._ui.$errorsWrapper.addClass('filled').find('.parsley-' + name).html(message || this._getErrorMessage(assert));
+    },
+
+    _removeError: function _removeError(name) {
+      this._ui.$errorClassHandler.removeAttr('aria-describedby');
+      this._ui.$errorsWrapper.removeClass('filled').find('.parsley-' + name).remove();
+    },
+
+    _getErrorMessage: function _getErrorMessage(constraint) {
+      var customConstraintErrorMessage = constraint.name + 'Message';
+
+      if ('undefined' !== typeof this.options[customConstraintErrorMessage]) return window.Parsley.formatMessage(this.options[customConstraintErrorMessage], constraint.requirements);
+
+      return window.Parsley.getErrorMessage(constraint);
+    },
+
+    _buildUI: function _buildUI() {
+      // UI could be already built or disabled
+      if (this._ui || false === this.options.uiEnabled) return;
+
+      var _ui = {};
+
+      // Give field its Parsley id in DOM
+      this.element.setAttribute(this.options.namespace + 'id', this.__id__);
+
+      /** Generate important UI elements and store them in this **/
+      // $errorClassHandler is the $element that woul have parsley-error and parsley-success classes
+      _ui.$errorClassHandler = this._manageClassHandler();
+
+      // $errorsWrapper is a div that would contain the various field errors, it will be appended into $errorsContainer
+      _ui.errorsWrapperId = 'parsley-id-' + (this.options.multiple ? 'multiple-' + this.options.multiple : this.__id__);
+      _ui.$errorsWrapper = $(this.options.errorsWrapper).attr('id', _ui.errorsWrapperId);
+
+      // ValidationResult UI storage to detect what have changed bwt two validations, and update DOM accordingly
+      _ui.lastValidationResult = [];
+      _ui.validationInformationVisible = false;
+
+      // Store it in this for later
+      this._ui = _ui;
+    },
+
+    // Determine which element will have `parsley-error` and `parsley-success` classes
+    _manageClassHandler: function _manageClassHandler() {
+      // Class handled could also be determined by function given in Parsley options
+      if ('string' === typeof this.options.classHandler && $(this.options.classHandler).length) return $(this.options.classHandler);
+
+      // Class handled could also be determined by function given in Parsley options
+      var $handlerFunction = this.options.classHandler;
+
+      // It might also be the function name of a global function
+      if ('string' === typeof this.options.classHandler && 'function' === typeof window[this.options.classHandler]) $handlerFunction = window[this.options.classHandler];
+
+      if ('function' === typeof $handlerFunction) {
+        var $handler = $handlerFunction.call(this, this);
+
+        // If this function returned a valid existing DOM element, go for it
+        if ('undefined' !== typeof $handler && $handler.length) return $handler;
+      } else if ('object' === typeof $handlerFunction && $handlerFunction instanceof jQuery && $handlerFunction.length) {
+        return $handlerFunction;
+      } else if ($handlerFunction) {
+        Utils.warn('The class handler `' + $handlerFunction + '` does not exist in DOM nor as a global JS function');
+      }
+
+      return this._inputHolder();
+    },
+
+    _inputHolder: function _inputHolder() {
+      // if simple element (input, texatrea, select...) it will perfectly host the classes and precede the error container
+      if (!this.options.multiple || this.element.nodeName === 'SELECT') return this.$element;
+
+      // But if multiple element (radio, checkbox), that would be their parent
+      return this.$element.parent();
+    },
+
+    _insertErrorWrapper: function _insertErrorWrapper() {
+      var $errorsContainer = this.options.errorsContainer;
+
+      // Nothing to do if already inserted
+      if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
+
+      if ('string' === typeof $errorsContainer) {
+        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else if ('function' === typeof window[$errorsContainer]) $errorsContainer = window[$errorsContainer];else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM nor as a global JS function');
+      }
+
+      if ('function' === typeof $errorsContainer) $errorsContainer = $errorsContainer.call(this, this);
+
+      if ('object' === typeof $errorsContainer && $errorsContainer.length) return $errorsContainer.append(this._ui.$errorsWrapper);
+
+      return this._inputHolder().after(this._ui.$errorsWrapper);
+    },
+
+    _actualizeTriggers: function _actualizeTriggers() {
+      var _this3 = this;
+
+      var $toBind = this._findRelated();
+      var trigger;
+
+      // Remove Parsley events already bound on this field
+      $toBind.off('.Parsley');
+      if (this._failedOnce) $toBind.on(Utils.namespaceEvents(this.options.triggerAfterFailure, 'Parsley'), function () {
+        _this3._validateIfNeeded();
+      });else if (trigger = Utils.namespaceEvents(this.options.trigger, 'Parsley')) {
+        $toBind.on(trigger, function (event) {
+          _this3._validateIfNeeded(event);
+        });
+      }
+    },
+
+    _validateIfNeeded: function _validateIfNeeded(event) {
+      var _this4 = this;
+
+      // For keyup, keypress, keydown, input... events that could be a little bit obstrusive
+      // do not validate if val length < min threshold on first validation. Once field have been validated once and info
+      // about success or failure have been displayed, always validate with this trigger to reflect every yalidation change.
+      if (event && /key|input/.test(event.type)) if (!(this._ui && this._ui.validationInformationVisible) && this.getValue().length <= this.options.validationThreshold) return;
+
+      if (this.options.debounce) {
+        window.clearTimeout(this._debounced);
+        this._debounced = window.setTimeout(function () {
+          return _this4.validate();
+        }, this.options.debounce);
+      } else this.validate();
+    },
+
+    _resetUI: function _resetUI() {
+      // Reset all event listeners
+      this._failedOnce = false;
+      this._actualizeTriggers();
+
+      // Nothing to do if UI never initialized for this field
+      if ('undefined' === typeof this._ui) return;
+
+      // Reset all errors' li
+      this._ui.$errorsWrapper.removeClass('filled').children().remove();
+
+      // Reset validation class
+      this._resetClass();
+
+      // Reset validation flags and last validation result
+      this._ui.lastValidationResult = [];
+      this._ui.validationInformationVisible = false;
+    },
+
+    _destroyUI: function _destroyUI() {
+      this._resetUI();
+
+      if ('undefined' !== typeof this._ui) this._ui.$errorsWrapper.remove();
+
+      delete this._ui;
+    },
+
+    _successClass: function _successClass() {
+      this._ui.validationInformationVisible = true;
+      this._ui.$errorClassHandler.removeClass(this.options.errorClass).addClass(this.options.successClass);
+    },
+    _errorClass: function _errorClass() {
+      this._ui.validationInformationVisible = true;
+      this._ui.$errorClassHandler.removeClass(this.options.successClass).addClass(this.options.errorClass);
+    },
+    _resetClass: function _resetClass() {
+      this._ui.$errorClassHandler.removeClass(this.options.successClass).removeClass(this.options.errorClass);
+    }
+  };
+
+  var Form = function Form(element, domOptions, options) {
+    this.__class__ = 'Form';
+
+    this.element = element;
+    this.$element = $(element);
+    this.domOptions = domOptions;
+    this.options = options;
+    this.parent = window.Parsley;
+
+    this.fields = [];
+    this.validationResult = null;
+  };
+
+  var Form__statusMapping = { pending: null, resolved: true, rejected: false };
+
+  Form.prototype = {
+    onSubmitValidate: function onSubmitValidate(event) {
+      var _this5 = this;
+
+      // This is a Parsley generated submit event, do not validate, do not prevent, simply exit and keep normal behavior
+      if (true === event.parsley) return;
+
+      // If we didn't come here through a submit button, use the first one in the form
+      var submitSource = this._submitSource || this.$element.find(Utils._SubmitSelector)[0];
+      this._submitSource = null;
+      this.$element.find('.parsley-synthetic-submit-button').prop('disabled', true);
+      if (submitSource && null !== submitSource.getAttribute('formnovalidate')) return;
+
+      window.Parsley._remoteCache = {};
+
+      var promise = this.whenValidate({ event: event });
+
+      if ('resolved' === promise.state() && false !== this._trigger('submit')) {
+        // All good, let event go through. We make this distinction because browsers
+        // differ in their handling of `submit` being called from inside a submit event [#1047]
+      } else {
+          // Rejected or pending: cancel this submit
+          event.stopImmediatePropagation();
+          event.preventDefault();
+          if ('pending' === promise.state()) promise.done(function () {
+            _this5._submit(submitSource);
+          });
+        }
+    },
+
+    onSubmitButton: function onSubmitButton(event) {
+      this._submitSource = event.currentTarget;
+    },
+    // internal
+    // _submit submits the form, this time without going through the validations.
+    // Care must be taken to "fake" the actual submit button being clicked.
+    _submit: function _submit(submitSource) {
+      if (false === this._trigger('submit')) return;
+      // Add submit button's data
+      if (submitSource) {
+        var $synthetic = this.$element.find('.parsley-synthetic-submit-button').prop('disabled', false);
+        if (0 === $synthetic.length) $synthetic = $('<input class="parsley-synthetic-submit-button" type="hidden">').appendTo(this.$element);
+        $synthetic.attr({
+          name: submitSource.getAttribute('name'),
+          value: submitSource.getAttribute('value')
+        });
+      }
+
+      this.$element.trigger(_extends($.Event('submit'), { parsley: true }));
+    },
+
+    // Performs validation on fields while triggering events.
+    // @returns `true` if all validations succeeds, `false`
+    // if a failure is immediately detected, or `null`
+    // if dependant on a promise.
+    // Consider using `whenValidate` instead.
+    validate: function validate(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling validate on a parsley form without passing arguments as an object is deprecated.');
+
+        var _arguments = _slice.call(arguments);
+
+        var group = _arguments[0];
+        var force = _arguments[1];
+        var event = _arguments[2];
+
+        options = { group: group, force: force, event: event };
+      }
+      return Form__statusMapping[this.whenValidate(options).state()];
+    },
+
+    whenValidate: function whenValidate() {
+      var _Utils$all$done$fail$always,
+          _this6 = this;
+
+      var _ref7 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var group = _ref7.group;
+      var force = _ref7.force;
+      var event = _ref7.event;
+
+      this.submitEvent = event;
+      if (event) {
+        this.submitEvent = _extends({}, event, { preventDefault: function preventDefault() {
+            Utils.warnOnce("Using `this.submitEvent.preventDefault()` is deprecated; instead, call `this.validationResult = false`");
+            _this6.validationResult = false;
+          } });
+      }
+      this.validationResult = true;
+
+      // fire validate event to eventually modify things before every validation
+      this._trigger('validate');
+
+      // Refresh form DOM options and form's fields that could have changed
+      this._refreshFields();
+
+      var promises = this._withoutReactualizingFormOptions(function () {
+        return $.map(_this6.fields, function (field) {
+          return field.whenValidate({ force: force, group: group });
+        });
+      });
+
+      return (_Utils$all$done$fail$always = Utils.all(promises).done(function () {
+        _this6._trigger('success');
+      }).fail(function () {
+        _this6.validationResult = false;
+        _this6.focus();
+        _this6._trigger('error');
+      }).always(function () {
+        _this6._trigger('validated');
+      })).pipe.apply(_Utils$all$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
+    },
+
+    // Iterate over refreshed fields, and stop on first failure.
+    // Returns `true` if all fields are valid, `false` if a failure is detected
+    // or `null` if the result depends on an unresolved promise.
+    // Prefer using `whenValid` instead.
+    isValid: function isValid(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling isValid on a parsley form without passing arguments as an object is deprecated.');
+
+        var _arguments2 = _slice.call(arguments);
+
+        var group = _arguments2[0];
+        var force = _arguments2[1];
+
+        options = { group: group, force: force };
+      }
+      return Form__statusMapping[this.whenValid(options).state()];
+    },
+
+    // Iterate over refreshed fields and validate them.
+    // Returns a promise.
+    // A validation that immediately fails will interrupt the validations.
+    whenValid: function whenValid() {
+      var _this7 = this;
+
+      var _ref8 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var group = _ref8.group;
+      var force = _ref8.force;
+
+      this._refreshFields();
+
+      var promises = this._withoutReactualizingFormOptions(function () {
+        return $.map(_this7.fields, function (field) {
+          return field.whenValid({ group: group, force: force });
+        });
+      });
+      return Utils.all(promises);
+    },
+
+    refresh: function refresh() {
+      this._refreshFields();
+      return this;
+    },
+
+    // Reset UI
+    reset: function reset() {
+      // Form case: emit a reset event for each field
+      for (var i = 0; i < this.fields.length; i++) this.fields[i].reset();
+
+      this._trigger('reset');
+    },
+
+    // Destroy Parsley instance (+ UI)
+    destroy: function destroy() {
+      // Field case: emit destroy event to clean UI and then destroy stored instance
+      this._destroyUI();
+
+      // Form case: destroy all its fields and then destroy stored instance
+      for (var i = 0; i < this.fields.length; i++) this.fields[i].destroy();
+
+      this.$element.removeData('Parsley');
+      this._trigger('destroy');
+    },
+
+    _refreshFields: function _refreshFields() {
+      return this.actualizeOptions()._bindFields();
+    },
+
+    _bindFields: function _bindFields() {
+      var _this8 = this;
+
+      var oldFields = this.fields;
+
+      this.fields = [];
+      this.fieldsMappedById = {};
+
+      this._withoutReactualizingFormOptions(function () {
+        _this8.$element.find(_this8.options.inputs).not(_this8.options.excluded).each(function (_, element) {
+          var fieldInstance = new window.Parsley.Factory(element, {}, _this8);
+
+          // Only add valid and not excluded `Field` and `FieldMultiple` children
+          if (('Field' === fieldInstance.__class__ || 'FieldMultiple' === fieldInstance.__class__) && true !== fieldInstance.options.excluded) {
+            var uniqueId = fieldInstance.__class__ + '-' + fieldInstance.__id__;
+            if ('undefined' === typeof _this8.fieldsMappedById[uniqueId]) {
+              _this8.fieldsMappedById[uniqueId] = fieldInstance;
+              _this8.fields.push(fieldInstance);
+            }
+          }
+        });
+
+        $.each(Utils.difference(oldFields, _this8.fields), function (_, field) {
+          field.reset();
+        });
+      });
+      return this;
+    },
+
+    // Internal only.
+    // Looping on a form's fields to do validation or similar
+    // will trigger reactualizing options on all of them, which
+    // in turn will reactualize the form's options.
+    // To avoid calling actualizeOptions so many times on the form
+    // for nothing, _withoutReactualizingFormOptions temporarily disables
+    // the method actualizeOptions on this form while `fn` is called.
+    _withoutReactualizingFormOptions: function _withoutReactualizingFormOptions(fn) {
+      var oldActualizeOptions = this.actualizeOptions;
+      this.actualizeOptions = function () {
+        return this;
+      };
+      var result = fn();
+      this.actualizeOptions = oldActualizeOptions;
+      return result;
+    },
+
+    // Internal only.
+    // Shortcut to trigger an event
+    // Returns true iff event is not interrupted and default not prevented.
+    _trigger: function _trigger(eventName) {
+      return this.trigger('form:' + eventName);
+    }
+
+  };
+
+  var Constraint = function Constraint(parsleyField, name, requirements, priority, isDomConstraint) {
+    var validatorSpec = window.Parsley._validatorRegistry.validators[name];
+    var validator = new Validator(validatorSpec);
+    priority = priority || parsleyField.options[name + 'Priority'] || validator.priority;
+    isDomConstraint = true === isDomConstraint;
+
+    _extends(this, {
+      validator: validator,
+      name: name,
+      requirements: requirements,
+      priority: priority,
+      isDomConstraint: isDomConstraint
+    });
+    this._parseRequirements(parsleyField.options);
+  };
+
+  var capitalize = function capitalize(str) {
+    var cap = str[0].toUpperCase();
+    return cap + str.slice(1);
+  };
+
+  Constraint.prototype = {
+    validate: function validate(value, instance) {
+      var _validator;
+
+      return (_validator = this.validator).validate.apply(_validator, [value].concat(_toConsumableArray(this.requirementList), [instance]));
+    },
+
+    _parseRequirements: function _parseRequirements(options) {
+      var _this9 = this;
+
+      this.requirementList = this.validator.parseRequirements(this.requirements, function (key) {
+        return options[_this9.name + capitalize(key)];
+      });
+    }
+  };
+
+  var Field = function Field(field, domOptions, options, parsleyFormInstance) {
+    this.__class__ = 'Field';
+
+    this.element = field;
+    this.$element = $(field);
+
+    // Set parent if we have one
+    if ('undefined' !== typeof parsleyFormInstance) {
+      this.parent = parsleyFormInstance;
+    }
+
+    this.options = options;
+    this.domOptions = domOptions;
+
+    // Initialize some properties
+    this.constraints = [];
+    this.constraintsByName = {};
+    this.validationResult = true;
+
+    // Bind constraints
+    this._bindConstraints();
+  };
+
+  var parsley_field__statusMapping = { pending: null, resolved: true, rejected: false };
+
+  Field.prototype = {
+    // # Public API
+    // Validate field and trigger some events for mainly `UI`
+    // @returns `true`, an array of the validators that failed, or
+    // `null` if validation is not finished. Prefer using whenValidate
+    validate: function validate(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling validate on a parsley field without passing arguments as an object is deprecated.');
+        options = { options: options };
+      }
+      var promise = this.whenValidate(options);
+      if (!promise) // If excluded with `group` option
+        return true;
+      switch (promise.state()) {
+        case 'pending':
+          return null;
+        case 'resolved':
+          return true;
+        case 'rejected':
+          return this.validationResult;
+      }
+    },
+
+    // Validate field and trigger some events for mainly `UI`
+    // @returns a promise that succeeds only when all validations do
+    // or `undefined` if field is not in the given `group`.
+    whenValidate: function whenValidate() {
+      var _whenValid$always$done$fail$always,
+          _this10 = this;
+
+      var _ref9 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var force = _ref9.force;
+      var group = _ref9.group;
+
+      // do not validate a field if not the same as given validation group
+      this.refresh();
+      if (group && !this._isInGroup(group)) return;
+
+      this.value = this.getValue();
+
+      // Field Validate event. `this.value` could be altered for custom needs
+      this._trigger('validate');
+
+      return (_whenValid$always$done$fail$always = this.whenValid({ force: force, value: this.value, _refreshed: true }).always(function () {
+        _this10._reflowUI();
+      }).done(function () {
+        _this10._trigger('success');
+      }).fail(function () {
+        _this10._trigger('error');
+      }).always(function () {
+        _this10._trigger('validated');
+      })).pipe.apply(_whenValid$always$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
+    },
+
+    hasConstraints: function hasConstraints() {
+      return 0 !== this.constraints.length;
+    },
+
+    // An empty optional field does not need validation
+    needsValidation: function needsValidation(value) {
+      if ('undefined' === typeof value) value = this.getValue();
+
+      // If a field is empty and not required, it is valid
+      // Except if `data-parsley-validate-if-empty` explicitely added, useful for some custom validators
+      if (!value.length && !this._isRequired() && 'undefined' === typeof this.options.validateIfEmpty) return false;
+
+      return true;
+    },
+
+    _isInGroup: function _isInGroup(group) {
+      if (Array.isArray(this.options.group)) return -1 !== $.inArray(group, this.options.group);
+      return this.options.group === group;
+    },
+
+    // Just validate field. Do not trigger any event.
+    // Returns `true` iff all constraints pass, `false` if there are failures,
+    // or `null` if the result can not be determined yet (depends on a promise)
+    // See also `whenValid`.
+    isValid: function isValid(options) {
+      if (arguments.length >= 1 && !$.isPlainObject(options)) {
+        Utils.warnOnce('Calling isValid on a parsley field without passing arguments as an object is deprecated.');
+
+        var _arguments3 = _slice.call(arguments);
+
+        var force = _arguments3[0];
+        var value = _arguments3[1];
+
+        options = { force: force, value: value };
+      }
+      var promise = this.whenValid(options);
+      if (!promise) // Excluded via `group`
+        return true;
+      return parsley_field__statusMapping[promise.state()];
+    },
+
+    // Just validate field. Do not trigger any event.
+    // @returns a promise that succeeds only when all validations do
+    // or `undefined` if the field is not in the given `group`.
+    // The argument `force` will force validation of empty fields.
+    // If a `value` is given, it will be validated instead of the value of the input.
+    whenValid: function whenValid() {
+      var _this11 = this;
+
+      var _ref10 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref10$force = _ref10.force;
+      var force = _ref10$force === undefined ? false : _ref10$force;
+      var value = _ref10.value;
+      var group = _ref10.group;
+      var _refreshed = _ref10._refreshed;
+
+      // Recompute options and rebind constraints to have latest changes
+      if (!_refreshed) this.refresh();
+      // do not validate a field if not the same as given validation group
+      if (group && !this._isInGroup(group)) return;
+
+      this.validationResult = true;
+
+      // A field without constraint is valid
+      if (!this.hasConstraints()) return $.when();
+
+      // Value could be passed as argument, needed to add more power to 'field:validate'
+      if ('undefined' === typeof value || null === value) value = this.getValue();
+
+      if (!this.needsValidation(value) && true !== force) return $.when();
+
+      var groupedConstraints = this._getGroupedConstraints();
+      var promises = [];
+      $.each(groupedConstraints, function (_, constraints) {
+        // Process one group of constraints at a time, we validate the constraints
+        // and combine the promises together.
+        var promise = Utils.all($.map(constraints, function (constraint) {
+          return _this11._validateConstraint(value, constraint);
+        }));
+        promises.push(promise);
+        if (promise.state() === 'rejected') return false; // Interrupt processing if a group has already failed
+      });
+      return Utils.all(promises);
+    },
+
+    // @returns a promise
+    _validateConstraint: function _validateConstraint(value, constraint) {
+      var _this12 = this;
+
+      var result = constraint.validate(value, this);
+      // Map false to a failed promise
+      if (false === result) result = $.Deferred().reject();
+      // Make sure we return a promise and that we record failures
+      return Utils.all([result]).fail(function (errorMessage) {
+        if (!(_this12.validationResult instanceof Array)) _this12.validationResult = [];
+        _this12.validationResult.push({
+          assert: constraint,
+          errorMessage: 'string' === typeof errorMessage && errorMessage
+        });
+      });
+    },
+
+    // @returns Parsley field computed value that could be overrided or configured in DOM
+    getValue: function getValue() {
+      var value;
+
+      // Value could be overriden in DOM or with explicit options
+      if ('function' === typeof this.options.value) value = this.options.value(this);else if ('undefined' !== typeof this.options.value) value = this.options.value;else value = this.$element.val();
+
+      // Handle wrong DOM or configurations
+      if ('undefined' === typeof value || null === value) return '';
+
+      return this._handleWhitespace(value);
+    },
+
+    // Reset UI
+    reset: function reset() {
+      this._resetUI();
+      return this._trigger('reset');
+    },
+
+    // Destroy Parsley instance (+ UI)
+    destroy: function destroy() {
+      // Field case: emit destroy event to clean UI and then destroy stored instance
+      this._destroyUI();
+      this.$element.removeData('Parsley');
+      this.$element.removeData('FieldMultiple');
+      this._trigger('destroy');
+    },
+
+    // Actualize options and rebind constraints
+    refresh: function refresh() {
+      this._refreshConstraints();
+      return this;
+    },
+
+    _refreshConstraints: function _refreshConstraints() {
+      return this.actualizeOptions()._bindConstraints();
+    },
+
+    refreshConstraints: function refreshConstraints() {
+      Utils.warnOnce("Parsley's refreshConstraints is deprecated. Please use refresh");
+      return this.refresh();
+    },
+
+    /**
+    * Add a new constraint to a field
+    *
+    * @param {String}   name
+    * @param {Mixed}    requirements      optional
+    * @param {Number}   priority          optional
+    * @param {Boolean}  isDomConstraint   optional
+    */
+    addConstraint: function addConstraint(name, requirements, priority, isDomConstraint) {
+
+      if (window.Parsley._validatorRegistry.validators[name]) {
+        var constraint = new Constraint(this, name, requirements, priority, isDomConstraint);
+
+        // if constraint already exist, delete it and push new version
+        if ('undefined' !== this.constraintsByName[constraint.name]) this.removeConstraint(constraint.name);
+
+        this.constraints.push(constraint);
+        this.constraintsByName[constraint.name] = constraint;
+      }
+
+      return this;
+    },
+
+    // Remove a constraint
+    removeConstraint: function removeConstraint(name) {
+      for (var i = 0; i < this.constraints.length; i++) if (name === this.constraints[i].name) {
+        this.constraints.splice(i, 1);
+        break;
+      }
+      delete this.constraintsByName[name];
+      return this;
+    },
+
+    // Update a constraint (Remove + re-add)
+    updateConstraint: function updateConstraint(name, parameters, priority) {
+      return this.removeConstraint(name).addConstraint(name, parameters, priority);
+    },
+
+    // # Internals
+
+    // Internal only.
+    // Bind constraints from config + options + DOM
+    _bindConstraints: function _bindConstraints() {
+      var constraints = [];
+      var constraintsByName = {};
+
+      // clean all existing DOM constraints to only keep javascript user constraints
+      for (var i = 0; i < this.constraints.length; i++) if (false === this.constraints[i].isDomConstraint) {
+        constraints.push(this.constraints[i]);
+        constraintsByName[this.constraints[i].name] = this.constraints[i];
+      }
+
+      this.constraints = constraints;
+      this.constraintsByName = constraintsByName;
+
+      // then re-add Parsley DOM-API constraints
+      for (var name in this.options) this.addConstraint(name, this.options[name], undefined, true);
+
+      // finally, bind special HTML5 constraints
+      return this._bindHtml5Constraints();
+    },
+
+    // Internal only.
+    // Bind specific HTML5 constraints to be HTML5 compliant
+    _bindHtml5Constraints: function _bindHtml5Constraints() {
+      // html5 required
+      if (null !== this.element.getAttribute('required')) this.addConstraint('required', true, undefined, true);
+
+      // html5 pattern
+      if (null !== this.element.getAttribute('pattern')) this.addConstraint('pattern', this.element.getAttribute('pattern'), undefined, true);
+
+      // range
+      var min = this.element.getAttribute('min');
+      var max = this.element.getAttribute('max');
+      if (null !== min && null !== max) this.addConstraint('range', [min, max], undefined, true);
+
+      // HTML5 min
+      else if (null !== min) this.addConstraint('min', min, undefined, true);
+
+        // HTML5 max
+        else if (null !== max) this.addConstraint('max', max, undefined, true);
+
+      // length
+      if (null !== this.element.getAttribute('minlength') && null !== this.element.getAttribute('maxlength')) this.addConstraint('length', [this.element.getAttribute('minlength'), this.element.getAttribute('maxlength')], undefined, true);
+
+      // HTML5 minlength
+      else if (null !== this.element.getAttribute('minlength')) this.addConstraint('minlength', this.element.getAttribute('minlength'), undefined, true);
+
+        // HTML5 maxlength
+        else if (null !== this.element.getAttribute('maxlength')) this.addConstraint('maxlength', this.element.getAttribute('maxlength'), undefined, true);
+
+      // html5 types
+      var type = Utils.getType(this.element);
+
+      // Small special case here for HTML5 number: integer validator if step attribute is undefined or an integer value, number otherwise
+      if ('number' === type) {
+        return this.addConstraint('type', ['number', {
+          step: this.element.getAttribute('step') || '1',
+          base: min || this.element.getAttribute('value')
+        }], undefined, true);
+        // Regular other HTML5 supported types
+      } else if (/^(email|url|range|date)$/i.test(type)) {
+          return this.addConstraint('type', type, undefined, true);
+        }
+      return this;
+    },
+
+    // Internal only.
+    // Field is required if have required constraint without `false` value
+    _isRequired: function _isRequired() {
+      if ('undefined' === typeof this.constraintsByName.required) return false;
+
+      return false !== this.constraintsByName.required.requirements;
+    },
+
+    // Internal only.
+    // Shortcut to trigger an event
+    _trigger: function _trigger(eventName) {
+      return this.trigger('field:' + eventName);
+    },
+
+    // Internal only
+    // Handles whitespace in a value
+    // Use `data-parsley-whitespace="squish"` to auto squish input value
+    // Use `data-parsley-whitespace="trim"` to auto trim input value
+    _handleWhitespace: function _handleWhitespace(value) {
+      if (true === this.options.trimValue) Utils.warnOnce('data-parsley-trim-value="true" is deprecated, please use data-parsley-whitespace="trim"');
+
+      if ('squish' === this.options.whitespace) value = value.replace(/\s{2,}/g, ' ');
+
+      if ('trim' === this.options.whitespace || 'squish' === this.options.whitespace || true === this.options.trimValue) value = Utils.trimString(value);
+
+      return value;
+    },
+
+    _isDateInput: function _isDateInput() {
+      var c = this.constraintsByName.type;
+      return c && c.requirements === 'date';
+    },
+
+    // Internal only.
+    // Returns the constraints, grouped by descending priority.
+    // The result is thus an array of arrays of constraints.
+    _getGroupedConstraints: function _getGroupedConstraints() {
+      if (false === this.options.priorityEnabled) return [this.constraints];
+
+      var groupedConstraints = [];
+      var index = {};
+
+      // Create array unique of priorities
+      for (var i = 0; i < this.constraints.length; i++) {
+        var p = this.constraints[i].priority;
+        if (!index[p]) groupedConstraints.push(index[p] = []);
+        index[p].push(this.constraints[i]);
+      }
+      // Sort them by priority DESC
+      groupedConstraints.sort(function (a, b) {
+        return b[0].priority - a[0].priority;
+      });
+
+      return groupedConstraints;
+    }
+
+  };
+
+  var parsley_field = Field;
+
+  var Multiple = function Multiple() {
+    this.__class__ = 'FieldMultiple';
+  };
+
+  Multiple.prototype = {
+    // Add new `$element` sibling for multiple field
+    addElement: function addElement($element) {
+      this.$elements.push($element);
+
+      return this;
+    },
+
+    // See `Field._refreshConstraints()`
+    _refreshConstraints: function _refreshConstraints() {
+      var fieldConstraints;
+
+      this.constraints = [];
+
+      // Select multiple special treatment
+      if (this.element.nodeName === 'SELECT') {
+        this.actualizeOptions()._bindConstraints();
+
+        return this;
+      }
+
+      // Gather all constraints for each input in the multiple group
+      for (var i = 0; i < this.$elements.length; i++) {
+
+        // Check if element have not been dynamically removed since last binding
+        if (!$('html').has(this.$elements[i]).length) {
+          this.$elements.splice(i, 1);
+          continue;
+        }
+
+        fieldConstraints = this.$elements[i].data('FieldMultiple')._refreshConstraints().constraints;
+
+        for (var j = 0; j < fieldConstraints.length; j++) this.addConstraint(fieldConstraints[j].name, fieldConstraints[j].requirements, fieldConstraints[j].priority, fieldConstraints[j].isDomConstraint);
+      }
+
+      return this;
+    },
+
+    // See `Field.getValue()`
+    getValue: function getValue() {
+      // Value could be overriden in DOM
+      if ('function' === typeof this.options.value) return this.options.value(this);else if ('undefined' !== typeof this.options.value) return this.options.value;
+
+      // Radio input case
+      if (this.element.nodeName === 'INPUT') {
+        var type = Utils.getType(this.element);
+        if (type === 'radio') return this._findRelated().filter(':checked').val() || '';
+
+        // checkbox input case
+        if (type === 'checkbox') {
+          var values = [];
+
+          this._findRelated().filter(':checked').each(function () {
+            values.push($(this).val());
+          });
+
+          return values;
+        }
+      }
+
+      // Select multiple case
+      if (this.element.nodeName === 'SELECT' && null === this.$element.val()) return [];
+
+      // Default case that should never happen
+      return this.$element.val();
+    },
+
+    _init: function _init() {
+      this.$elements = [this.$element];
+
+      return this;
+    }
+  };
+
+  var Factory = function Factory(element, options, parsleyFormInstance) {
+    this.element = element;
+    this.$element = $(element);
+
+    // If the element has already been bound, returns its saved Parsley instance
+    var savedparsleyFormInstance = this.$element.data('Parsley');
+    if (savedparsleyFormInstance) {
+
+      // If the saved instance has been bound without a Form parent and there is one given in this call, add it
+      if ('undefined' !== typeof parsleyFormInstance && savedparsleyFormInstance.parent === window.Parsley) {
+        savedparsleyFormInstance.parent = parsleyFormInstance;
+        savedparsleyFormInstance._resetOptions(savedparsleyFormInstance.options);
+      }
+
+      if ('object' === typeof options) {
+        _extends(savedparsleyFormInstance.options, options);
+      }
+
+      return savedparsleyFormInstance;
+    }
+
+    // Parsley must be instantiated with a DOM element or jQuery $element
+    if (!this.$element.length) throw new Error('You must bind Parsley on an existing element.');
+
+    if ('undefined' !== typeof parsleyFormInstance && 'Form' !== parsleyFormInstance.__class__) throw new Error('Parent instance must be a Form instance');
+
+    this.parent = parsleyFormInstance || window.Parsley;
+    return this.init(options);
+  };
+
+  Factory.prototype = {
+    init: function init(options) {
+      this.__class__ = 'Parsley';
+      this.__version__ = '2.8.1';
+      this.__id__ = Utils.generateID();
+
+      // Pre-compute options
+      this._resetOptions(options);
+
+      // A Form instance is obviously a `<form>` element but also every node that is not an input and has the `data-parsley-validate` attribute
+      if (this.element.nodeName === 'FORM' || Utils.checkAttr(this.element, this.options.namespace, 'validate') && !this.$element.is(this.options.inputs)) return this.bind('parsleyForm');
+
+      // Every other element is bound as a `Field` or `FieldMultiple`
+      return this.isMultiple() ? this.handleMultiple() : this.bind('parsleyField');
+    },
+
+    isMultiple: function isMultiple() {
+      var type = Utils.getType(this.element);
+      return type === 'radio' || type === 'checkbox' || this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple');
+    },
+
+    // Multiples fields are a real nightmare :(
+    // Maybe some refactoring would be appreciated here...
+    handleMultiple: function handleMultiple() {
+      var _this13 = this;
+
+      var name;
+      var multiple;
+      var parsleyMultipleInstance;
+
+      // Handle multiple name
+      this.options.multiple = this.options.multiple || (name = this.element.getAttribute('name')) || this.element.getAttribute('id');
+
+      // Special select multiple input
+      if (this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple')) {
+        this.options.multiple = this.options.multiple || this.__id__;
+        return this.bind('parsleyFieldMultiple');
+
+        // Else for radio / checkboxes, we need a `name` or `data-parsley-multiple` to properly bind it
+      } else if (!this.options.multiple) {
+          Utils.warn('To be bound by Parsley, a radio, a checkbox and a multiple select input must have either a name or a multiple option.', this.$element);
+          return this;
+        }
+
+      // Remove special chars
+      this.options.multiple = this.options.multiple.replace(/(:|\.|\[|\]|\{|\}|\$)/g, '');
+
+      // Add proper `data-parsley-multiple` to siblings if we have a valid multiple name
+      if (name) {
+        $('input[name="' + name + '"]').each(function (i, input) {
+          var type = Utils.getType(input);
+          if (type === 'radio' || type === 'checkbox') input.setAttribute(_this13.options.namespace + 'multiple', _this13.options.multiple);
+        });
+      }
+
+      // Check here if we don't already have a related multiple instance saved
+      var $previouslyRelated = this._findRelated();
+      for (var i = 0; i < $previouslyRelated.length; i++) {
+        parsleyMultipleInstance = $($previouslyRelated.get(i)).data('Parsley');
+        if ('undefined' !== typeof parsleyMultipleInstance) {
+
+          if (!this.$element.data('FieldMultiple')) {
+            parsleyMultipleInstance.addElement(this.$element);
+          }
+
+          break;
+        }
+      }
+
+      // Create a secret Field instance for every multiple field. It will be stored in `data('FieldMultiple')`
+      // And will be useful later to access classic `Field` stuff while being in a `FieldMultiple` instance
+      this.bind('parsleyField', true);
+
+      return parsleyMultipleInstance || this.bind('parsleyFieldMultiple');
+    },
+
+    // Return proper `Form`, `Field` or `FieldMultiple`
+    bind: function bind(type, doNotStore) {
+      var parsleyInstance;
+
+      switch (type) {
+        case 'parsleyForm':
+          parsleyInstance = $.extend(new Form(this.element, this.domOptions, this.options), new Base(), window.ParsleyExtend)._bindFields();
+          break;
+        case 'parsleyField':
+          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Base(), window.ParsleyExtend);
+          break;
+        case 'parsleyFieldMultiple':
+          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Multiple(), new Base(), window.ParsleyExtend)._init();
+          break;
         default:
-            callback.apply(undefined, args);
-            break;
+          throw new Error(type + 'is not a supported Parsley type');
+      }
+
+      if (this.options.multiple) Utils.setAttr(this.element, this.options.namespace, 'multiple', this.options.multiple);
+
+      if ('undefined' !== typeof doNotStore) {
+        this.$element.data('FieldMultiple', parsleyInstance);
+
+        return parsleyInstance;
+      }
+
+      // Store the freshly bound instance in a DOM element for later access using jQuery `data()`
+      this.$element.data('Parsley', parsleyInstance);
+
+      // Tell the world we have a new Form or Field instance!
+      parsleyInstance._actualizeTriggers();
+      parsleyInstance._trigger('init');
+
+      return parsleyInstance;
+    }
+  };
+
+  var vernums = $.fn.jquery.split('.');
+  if (parseInt(vernums[0]) <= 1 && parseInt(vernums[1]) < 8) {
+    throw "The loaded version of jQuery is too old. Please upgrade to 1.8.x or better.";
+  }
+  if (!vernums.forEach) {
+    Utils.warn('Parsley requires ES5 to run properly. Please include https://github.com/es-shims/es5-shim');
+  }
+  // Inherit `on`, `off` & `trigger` to Parsley:
+  var Parsley = _extends(new Base(), {
+    element: document,
+    $element: $(document),
+    actualizeOptions: null,
+    _resetOptions: null,
+    Factory: Factory,
+    version: '2.8.1'
+  });
+
+  // Supplement Field and Form with Base
+  // This way, the constructors will have access to those methods
+  _extends(parsley_field.prototype, UI.Field, Base.prototype);
+  _extends(Form.prototype, UI.Form, Base.prototype);
+  // Inherit actualizeOptions and _resetOptions:
+  _extends(Factory.prototype, Base.prototype);
+
+  // ### jQuery API
+  // `$('.elem').parsley(options)` or `$('.elem').psly(options)`
+  $.fn.parsley = $.fn.psly = function (options) {
+    if (this.length > 1) {
+      var instances = [];
+
+      this.each(function () {
+        instances.push($(this).parsley(options));
+      });
+
+      return instances;
+    }
+
+    // Return undefined if applied to non existing DOM element
+    if (this.length == 0) {
+      return;
+    }
+
+    return new Factory(this[0], options);
+  };
+
+  // ### Field and Form extension
+  // Ensure the extension is now defined if it wasn't previously
+  if ('undefined' === typeof window.ParsleyExtend) window.ParsleyExtend = {};
+
+  // ### Parsley config
+  // Inherit from ParsleyDefault, and copy over any existing values
+  Parsley.options = _extends(Utils.objectCreate(Defaults), window.ParsleyConfig);
+  window.ParsleyConfig = Parsley.options; // Old way of accessing global options
+
+  // ### Globals
+  window.Parsley = window.psly = Parsley;
+  Parsley.Utils = Utils;
+  window.ParsleyUtils = {};
+  $.each(Utils, function (key, value) {
+    if ('function' === typeof value) {
+      window.ParsleyUtils[key] = function () {
+        Utils.warnOnce('Accessing `window.ParsleyUtils` is deprecated. Use `window.Parsley.Utils` instead.');
+        return Utils[key].apply(Utils, arguments);
+      };
+    }
+  });
+
+  // ### Define methods that forward to the registry, and deprecate all access except through window.Parsley
+  var registry = window.Parsley._validatorRegistry = new ValidatorRegistry(window.ParsleyConfig.validators, window.ParsleyConfig.i18n);
+  window.ParsleyValidator = {};
+  $.each('setLocale addCatalog addMessage addMessages getErrorMessage formatMessage addValidator updateValidator removeValidator hasValidator'.split(' '), function (i, method) {
+    window.Parsley[method] = function () {
+      return registry[method].apply(registry, arguments);
+    };
+    window.ParsleyValidator[method] = function () {
+      var _window$Parsley;
+
+      Utils.warnOnce('Accessing the method \'' + method + '\' through Validator is deprecated. Simply call \'window.Parsley.' + method + '(...)\'');
+      return (_window$Parsley = window.Parsley)[method].apply(_window$Parsley, arguments);
+    };
+  });
+
+  // ### UI
+  // Deprecated global object
+  window.Parsley.UI = UI;
+  window.ParsleyUI = {
+    removeError: function removeError(instance, name, doNotUpdateClass) {
+      var updateClass = true !== doNotUpdateClass;
+      Utils.warnOnce('Accessing UI is deprecated. Call \'removeError\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
+      return instance.removeError(name, { updateClass: updateClass });
+    },
+    getErrorsMessages: function getErrorsMessages(instance) {
+      Utils.warnOnce('Accessing UI is deprecated. Call \'getErrorsMessages\' on the instance directly.');
+      return instance.getErrorsMessages();
+    }
+  };
+  $.each('addError updateError'.split(' '), function (i, method) {
+    window.ParsleyUI[method] = function (instance, name, message, assert, doNotUpdateClass) {
+      var updateClass = true !== doNotUpdateClass;
+      Utils.warnOnce('Accessing UI is deprecated. Call \'' + method + '\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
+      return instance[method](name, { message: message, assert: assert, updateClass: updateClass });
+    };
+  });
+
+  // ### PARSLEY auto-binding
+  // Prevent it by setting `ParsleyConfig.autoBind` to `false`
+  if (false !== window.ParsleyConfig.autoBind) {
+    $(function () {
+      // Works only on `data-parsley-validate`.
+      if ($('[data-parsley-validate]').length) $('[data-parsley-validate]').parsley();
+    });
+  }
+
+  var o = $({});
+  var deprecated = function deprecated() {
+    Utils.warnOnce("Parsley's pubsub module is deprecated; use the 'on' and 'off' methods on parsley instances or window.Parsley");
+  };
+
+  // Returns an event handler that calls `fn` with the arguments it expects
+  function adapt(fn, context) {
+    // Store to allow unbinding
+    if (!fn.parsleyAdaptedCallback) {
+      fn.parsleyAdaptedCallback = function () {
+        var args = Array.prototype.slice.call(arguments, 0);
+        args.unshift(this);
+        fn.apply(context || o, args);
+      };
+    }
+    return fn.parsleyAdaptedCallback;
+  }
+
+  var eventPrefix = 'parsley:';
+  // Converts 'parsley:form:validate' into 'form:validate'
+  function eventName(name) {
+    if (name.lastIndexOf(eventPrefix, 0) === 0) return name.substr(eventPrefix.length);
+    return name;
+  }
+
+  // $.listen is deprecated. Use Parsley.on instead.
+  $.listen = function (name, callback) {
+    var context;
+    deprecated();
+    if ('object' === typeof arguments[1] && 'function' === typeof arguments[2]) {
+      context = arguments[1];
+      callback = arguments[2];
+    }
+
+    if ('function' !== typeof callback) throw new Error('Wrong parameters');
+
+    window.Parsley.on(eventName(name), adapt(callback, context));
+  };
+
+  $.listenTo = function (instance, name, fn) {
+    deprecated();
+    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
+
+    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong parameters');
+
+    instance.on(eventName(name), adapt(fn));
+  };
+
+  $.unsubscribe = function (name, fn) {
+    deprecated();
+    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong arguments');
+    window.Parsley.off(eventName(name), fn.parsleyAdaptedCallback);
+  };
+
+  $.unsubscribeTo = function (instance, name) {
+    deprecated();
+    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
+    instance.off(eventName(name));
+  };
+
+  $.unsubscribeAll = function (name) {
+    deprecated();
+    window.Parsley.off(eventName(name));
+    $('form,input,textarea,select').each(function () {
+      var instance = $(this).data('Parsley');
+      if (instance) {
+        instance.off(eventName(name));
+      }
+    });
+  };
+
+  // $.emit is deprecated. Use jQuery events instead.
+  $.emit = function (name, instance) {
+    var _instance;
+
+    deprecated();
+    var instanceGiven = instance instanceof parsley_field || instance instanceof Form;
+    var args = Array.prototype.slice.call(arguments, instanceGiven ? 2 : 1);
+    args.unshift(eventName(name));
+    if (!instanceGiven) {
+      instance = window.Parsley;
+    }
+    (_instance = instance).trigger.apply(_instance, _toConsumableArray(args));
+  };
+
+  var pubsub = {};
+
+  $.extend(true, Parsley, {
+    asyncValidators: {
+      'default': {
+        fn: function fn(xhr) {
+          // By default, only status 2xx are deemed successful.
+          // Note: we use status instead of state() because responses with status 200
+          // but invalid messages (e.g. an empty body for content type set to JSON) will
+          // result in state() === 'rejected'.
+          return xhr.status >= 200 && xhr.status < 300;
+        },
+        url: false
+      },
+      reverse: {
+        fn: function fn(xhr) {
+          // If reverse option is set, a failing ajax request is considered successful
+          return xhr.status < 200 || xhr.status >= 300;
+        },
+        url: false
+      }
+    },
+
+    addAsyncValidator: function addAsyncValidator(name, fn, url, options) {
+      Parsley.asyncValidators[name] = {
+        fn: fn,
+        url: url || false,
+        options: options || {}
+      };
+
+      return this;
+    }
+
+  });
+
+  Parsley.addValidator('remote', {
+    requirementType: {
+      '': 'string',
+      'validator': 'string',
+      'reverse': 'boolean',
+      'options': 'object'
+    },
+
+    validateString: function validateString(value, url, options, instance) {
+      var data = {};
+      var ajaxOptions;
+      var csr;
+      var validator = options.validator || (true === options.reverse ? 'reverse' : 'default');
+
+      if ('undefined' === typeof Parsley.asyncValidators[validator]) throw new Error('Calling an undefined async validator: `' + validator + '`');
+
+      url = Parsley.asyncValidators[validator].url || url;
+
+      // Fill current value
+      if (url.indexOf('{value}') > -1) {
+        url = url.replace('{value}', encodeURIComponent(value));
+      } else {
+        data[instance.element.getAttribute('name') || instance.element.getAttribute('id')] = value;
+      }
+
+      // Merge options passed in from the function with the ones in the attribute
+      var remoteOptions = $.extend(true, options.options || {}, Parsley.asyncValidators[validator].options);
+
+      // All `$.ajax(options)` could be overridden or extended directly from DOM in `data-parsley-remote-options`
+      ajaxOptions = $.extend(true, {}, {
+        url: url,
+        data: data,
+        type: 'GET'
+      }, remoteOptions);
+
+      // Generate store key based on ajax options
+      instance.trigger('field:ajaxoptions', instance, ajaxOptions);
+
+      csr = $.param(ajaxOptions);
+
+      // Initialise querry cache
+      if ('undefined' === typeof Parsley._remoteCache) Parsley._remoteCache = {};
+
+      // Try to retrieve stored xhr
+      var xhr = Parsley._remoteCache[csr] = Parsley._remoteCache[csr] || $.ajax(ajaxOptions);
+
+      var handleXhr = function handleXhr() {
+        var result = Parsley.asyncValidators[validator].fn.call(instance, xhr, url, options);
+        if (!result) // Map falsy results to rejected promise
+          result = $.Deferred().reject();
+        return $.when(result);
+      };
+
+      return xhr.then(handleXhr, handleXhr);
+    },
+
+    priority: -1
+  });
+
+  Parsley.on('form:submit', function () {
+    Parsley._remoteCache = {};
+  });
+
+  Base.prototype.addAsyncValidator = function () {
+    Utils.warnOnce('Accessing the method `addAsyncValidator` through an instance is deprecated. Simply call `Parsley.addAsyncValidator(...)`');
+    return Parsley.addAsyncValidator.apply(Parsley, arguments);
+  };
+
+  // This is included with the Parsley library itself,
+  // thus there is no use in adding it to your project.
+  Parsley.addMessages('en', {
+    defaultMessage: "This value seems to be invalid.",
+    type: {
+      email: "This value should be a valid email.",
+      url: "This value should be a valid url.",
+      number: "This value should be a valid number.",
+      integer: "This value should be a valid integer.",
+      digits: "This value should be digits.",
+      alphanum: "This value should be alphanumeric."
+    },
+    notblank: "This value should not be blank.",
+    required: "This value is required.",
+    pattern: "This value seems to be invalid.",
+    min: "This value should be greater than or equal to %s.",
+    max: "This value should be lower than or equal to %s.",
+    range: "This value should be between %s and %s.",
+    minlength: "This value is too short. It should have %s characters or more.",
+    maxlength: "This value is too long. It should have %s characters or fewer.",
+    length: "This value length is invalid. It should be between %s and %s characters long.",
+    mincheck: "You must select at least %s choices.",
+    maxcheck: "You must select %s choices or fewer.",
+    check: "You must select between %s and %s choices.",
+    equalto: "This value should be the same."
+  });
+
+  Parsley.setLocale('en');
+
+  /**
+   * inputevent - Alleviate browser bugs for input events
+   * https://github.com/marcandre/inputevent
+   * @version v0.0.3 - (built Thu, Apr 14th 2016, 5:58 pm)
+   * @author Marc-Andre Lafortune <github@marc-andre.ca>
+   * @license MIT
+   */
+
+  function InputEvent() {
+    var _this14 = this;
+
+    var globals = window || global;
+
+    // Slightly odd way construct our object. This way methods are force bound.
+    // Used to test for duplicate library.
+    _extends(this, {
+
+      // For browsers that do not support isTrusted, assumes event is native.
+      isNativeEvent: function isNativeEvent(evt) {
+        return evt.originalEvent && evt.originalEvent.isTrusted !== false;
+      },
+
+      fakeInputEvent: function fakeInputEvent(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          $(evt.target).trigger('input');
         }
-    }
+      },
 
-    function runIfPresent(handle) {
-        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running a task, we'll need to delay this invocation.
-        if (currentlyRunningATask) {
-            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
-            // "too much recursion" error.
-            setTimeout(runIfPresent, 0, handle);
-        } else {
-            var task = tasksByHandle[handle];
-            if (task) {
-                currentlyRunningATask = true;
-                try {
-                    run(task);
-                } finally {
-                    clearImmediate(handle);
-                    currentlyRunningATask = false;
-                }
-            }
+      misbehaves: function misbehaves(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          _this14.behavesOk(evt);
+          $(document).on('change.inputevent', evt.data.selector, _this14.fakeInputEvent);
+          _this14.fakeInputEvent(evt);
         }
-    }
+      },
 
-    function installNextTickImplementation() {
-        registerImmediate = function(handle) {
-            process.nextTick(function () { runIfPresent(handle); });
-        };
-    }
-
-    function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
-        // where `global.postMessage` means something completely different and can't be used for this purpose.
-        if (global.postMessage && !global.importScripts) {
-            var postMessageIsAsynchronous = true;
-            var oldOnMessage = global.onmessage;
-            global.onmessage = function() {
-                postMessageIsAsynchronous = false;
-            };
-            global.postMessage("", "*");
-            global.onmessage = oldOnMessage;
-            return postMessageIsAsynchronous;
+      behavesOk: function behavesOk(evt) {
+        if (_this14.isNativeEvent(evt)) {
+          $(document) // Simply unbinds the testing handler
+          .off('input.inputevent', evt.data.selector, _this14.behavesOk).off('change.inputevent', evt.data.selector, _this14.misbehaves);
         }
-    }
+      },
 
-    function installPostMessageImplementation() {
-        // Installs an event handler on `global` for the `message` event: see
-        // * https://developer.mozilla.org/en/DOM/window.postMessage
-        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
-
-        var messagePrefix = "setImmediate$" + Math.random() + "$";
-        var onGlobalMessage = function(event) {
-            if (event.source === global &&
-                typeof event.data === "string" &&
-                event.data.indexOf(messagePrefix) === 0) {
-                runIfPresent(+event.data.slice(messagePrefix.length));
-            }
-        };
-
-        if (global.addEventListener) {
-            global.addEventListener("message", onGlobalMessage, false);
-        } else {
-            global.attachEvent("onmessage", onGlobalMessage);
+      // Bind the testing handlers
+      install: function install() {
+        if (globals.inputEventPatched) {
+          return;
         }
+        globals.inputEventPatched = '0.0.3';
+        var _arr = ['select', 'input[type="checkbox"]', 'input[type="radio"]', 'input[type="file"]'];
+        for (var _i = 0; _i < _arr.length; _i++) {
+          var selector = _arr[_i];
+          $(document).on('input.inputevent', selector, { selector: selector }, _this14.behavesOk).on('change.inputevent', selector, { selector: selector }, _this14.misbehaves);
+        }
+      },
 
-        registerImmediate = function(handle) {
-            global.postMessage(messagePrefix + handle, "*");
-        };
-    }
+      uninstall: function uninstall() {
+        delete globals.inputEventPatched;
+        $(document).off('.inputevent');
+      }
 
-    function installMessageChannelImplementation() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = function(event) {
-            var handle = event.data;
-            runIfPresent(handle);
-        };
+    });
+  };
 
-        registerImmediate = function(handle) {
-            channel.port2.postMessage(handle);
-        };
-    }
+  var inputevent = new InputEvent();
 
-    function installReadyStateChangeImplementation() {
-        var html = doc.documentElement;
-        registerImmediate = function(handle) {
-            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-            var script = doc.createElement("script");
-            script.onreadystatechange = function () {
-                runIfPresent(handle);
-                script.onreadystatechange = null;
-                html.removeChild(script);
-                script = null;
-            };
-            html.appendChild(script);
-        };
-    }
+  inputevent.install();
 
-    function installSetTimeoutImplementation() {
-        registerImmediate = function(handle) {
-            setTimeout(runIfPresent, 0, handle);
-        };
-    }
+  var parsley = Parsley;
 
-    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
-    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
-    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+  return parsley;
+});
+//# sourceMappingURL=parsley.js.map
 
-    // Don't get fooled by e.g. browserify environments.
-    if ({}.toString.call(global.process) === "[object process]") {
-        // For Node.js before 0.9
-        installNextTickImplementation();
-
-    } else if (canUsePostMessage()) {
-        // For non-IE10 modern browsers
-        installPostMessageImplementation();
-
-    } else if (global.MessageChannel) {
-        // For web workers, where supported
-        installMessageChannelImplementation();
-
-    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
-        // For IE 6–8
-        installReadyStateChangeImplementation();
-
-    } else {
-        // For older browsers
-        installSetTimeoutImplementation();
-    }
-
-    attachTo.setImmediate = setImmediate;
-    attachTo.clearImmediate = clearImmediate;
-}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(2)))
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21512,10 +24639,203 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(5).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(8).setImmediate))
 
 /***/ }),
-/* 8 */
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(4)))
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21525,7 +24845,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _vue = __webpack_require__(13);
+var _vue = __webpack_require__(19);
 
 var _vue2 = _interopRequireDefault(_vue);
 
@@ -21536,3327 +24856,40 @@ var bus = new _vue2.default();
 exports.default = bus;
 
 /***/ }),
-/* 9 */,
-/* 10 */,
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
-* Parsley.js
-* Version 2.8.1 - built Sat, Feb 3rd 2018, 2:27 pm
-* http://parsleyjs.org
-* Guillaume Potier - <guillaume@wisembly.com>
-* Marc-Andre Lafortune - <petroselinum@marc-andre.ca>
-* MIT Licensed
-*/
-
-// The source code below is generated by babel as
-// Parsley is written in ECMAScript 6
-//
-var _slice = Array.prototype.slice;
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
-(function (global, factory) {
-   true ? module.exports = factory(__webpack_require__(1)) : typeof define === 'function' && define.amd ? define(['jquery'], factory) : global.parsley = factory(global.jQuery);
-})(this, function ($) {
-  'use strict';
-
-  var globalID = 1;
-  var pastWarnings = {};
-
-  var Utils = {
-    // Parsley DOM-API
-    // returns object from dom attributes and values
-    attr: function attr(element, namespace, obj) {
-      var i;
-      var attribute;
-      var attributes;
-      var regex = new RegExp('^' + namespace, 'i');
-
-      if ('undefined' === typeof obj) obj = {};else {
-        // Clear all own properties. This won't affect prototype's values
-        for (i in obj) {
-          if (obj.hasOwnProperty(i)) delete obj[i];
-        }
-      }
-
-      if (!element) return obj;
-
-      attributes = element.attributes;
-      for (i = attributes.length; i--;) {
-        attribute = attributes[i];
-
-        if (attribute && attribute.specified && regex.test(attribute.name)) {
-          obj[this.camelize(attribute.name.slice(namespace.length))] = this.deserializeValue(attribute.value);
-        }
-      }
-
-      return obj;
-    },
-
-    checkAttr: function checkAttr(element, namespace, _checkAttr) {
-      return element.hasAttribute(namespace + _checkAttr);
-    },
-
-    setAttr: function setAttr(element, namespace, attr, value) {
-      element.setAttribute(this.dasherize(namespace + attr), String(value));
-    },
-
-    getType: function getType(element) {
-      return element.getAttribute('type') || 'text';
-    },
-
-    generateID: function generateID() {
-      return '' + globalID++;
-    },
-
-    /** Third party functions **/
-    deserializeValue: function deserializeValue(value) {
-      var num;
-
-      try {
-        return value ? value == "true" || (value == "false" ? false : value == "null" ? null : !isNaN(num = Number(value)) ? num : /^[\[\{]/.test(value) ? JSON.parse(value) : value) : value;
-      } catch (e) {
-        return value;
-      }
-    },
-
-    // Zepto camelize function
-    camelize: function camelize(str) {
-      return str.replace(/-+(.)?/g, function (match, chr) {
-        return chr ? chr.toUpperCase() : '';
-      });
-    },
-
-    // Zepto dasherize function
-    dasherize: function dasherize(str) {
-      return str.replace(/::/g, '/').replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2').replace(/([a-z\d])([A-Z])/g, '$1_$2').replace(/_/g, '-').toLowerCase();
-    },
-
-    warn: function warn() {
-      var _window$console;
-
-      if (window.console && 'function' === typeof window.console.warn) (_window$console = window.console).warn.apply(_window$console, arguments);
-    },
-
-    warnOnce: function warnOnce(msg) {
-      if (!pastWarnings[msg]) {
-        pastWarnings[msg] = true;
-        this.warn.apply(this, arguments);
-      }
-    },
-
-    _resetWarnings: function _resetWarnings() {
-      pastWarnings = {};
-    },
-
-    trimString: function trimString(string) {
-      return string.replace(/^\s+|\s+$/g, '');
-    },
-
-    parse: {
-      date: function date(string) {
-        var parsed = string.match(/^(\d{4,})-(\d\d)-(\d\d)$/);
-        if (!parsed) return null;
-
-        var _parsed$map = parsed.map(function (x) {
-          return parseInt(x, 10);
-        });
-
-        var _parsed$map2 = _slicedToArray(_parsed$map, 4);
-
-        var _ = _parsed$map2[0];
-        var year = _parsed$map2[1];
-        var month = _parsed$map2[2];
-        var day = _parsed$map2[3];
-
-        var date = new Date(year, month - 1, day);
-        if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) return null;
-        return date;
-      },
-      string: function string(_string) {
-        return _string;
-      },
-      integer: function integer(string) {
-        if (isNaN(string)) return null;
-        return parseInt(string, 10);
-      },
-      number: function number(string) {
-        if (isNaN(string)) throw null;
-        return parseFloat(string);
-      },
-      'boolean': function _boolean(string) {
-        return !/^\s*false\s*$/i.test(string);
-      },
-      object: function object(string) {
-        return Utils.deserializeValue(string);
-      },
-      regexp: function regexp(_regexp) {
-        var flags = '';
-
-        // Test if RegExp is literal, if not, nothing to be done, otherwise, we need to isolate flags and pattern
-        if (/^\/.*\/(?:[gimy]*)$/.test(_regexp)) {
-          // Replace the regexp literal string with the first match group: ([gimy]*)
-          // If no flag is present, this will be a blank string
-          flags = _regexp.replace(/.*\/([gimy]*)$/, '$1');
-          // Again, replace the regexp literal string with the first match group:
-          // everything excluding the opening and closing slashes and the flags
-          _regexp = _regexp.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
-        } else {
-          // Anchor regexp:
-          _regexp = '^' + _regexp + '$';
-        }
-        return new RegExp(_regexp, flags);
-      }
-    },
-
-    parseRequirement: function parseRequirement(requirementType, string) {
-      var converter = this.parse[requirementType || 'string'];
-      if (!converter) throw 'Unknown requirement specification: "' + requirementType + '"';
-      var converted = converter(string);
-      if (converted === null) throw 'Requirement is not a ' + requirementType + ': "' + string + '"';
-      return converted;
-    },
-
-    namespaceEvents: function namespaceEvents(events, namespace) {
-      events = this.trimString(events || '').split(/\s+/);
-      if (!events[0]) return '';
-      return $.map(events, function (evt) {
-        return evt + '.' + namespace;
-      }).join(' ');
-    },
-
-    difference: function difference(array, remove) {
-      // This is O(N^2), should be optimized
-      var result = [];
-      $.each(array, function (_, elem) {
-        if (remove.indexOf(elem) == -1) result.push(elem);
-      });
-      return result;
-    },
-
-    // Alter-ego to native Promise.all, but for jQuery
-    all: function all(promises) {
-      // jQuery treats $.when() and $.when(singlePromise) differently; let's avoid that and add spurious elements
-      return $.when.apply($, _toConsumableArray(promises).concat([42, 42]));
-    },
-
-    // Object.create polyfill, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
-    objectCreate: Object.create || (function () {
-      var Object = function Object() {};
-      return function (prototype) {
-        if (arguments.length > 1) {
-          throw Error('Second argument not supported');
-        }
-        if (typeof prototype != 'object') {
-          throw TypeError('Argument must be an object');
-        }
-        Object.prototype = prototype;
-        var result = new Object();
-        Object.prototype = null;
-        return result;
-      };
-    })(),
-
-    _SubmitSelector: 'input[type="submit"], button:submit'
-  };
-
-  // All these options could be overriden and specified directly in DOM using
-  // `data-parsley-` default DOM-API
-  // eg: `inputs` can be set in DOM using `data-parsley-inputs="input, textarea"`
-  // eg: `data-parsley-stop-on-first-failing-constraint="false"`
-
-  var Defaults = {
-    // ### General
-
-    // Default data-namespace for DOM API
-    namespace: 'data-parsley-',
-
-    // Supported inputs by default
-    inputs: 'input, textarea, select',
-
-    // Excluded inputs by default
-    excluded: 'input[type=button], input[type=submit], input[type=reset], input[type=hidden]',
-
-    // Stop validating field on highest priority failing constraint
-    priorityEnabled: true,
-
-    // ### Field only
-
-    // identifier used to group together inputs (e.g. radio buttons...)
-    multiple: null,
-
-    // identifier (or array of identifiers) used to validate only a select group of inputs
-    group: null,
-
-    // ### UI
-    // Enable\Disable error messages
-    uiEnabled: true,
-
-    // Key events threshold before validation
-    validationThreshold: 3,
-
-    // Focused field on form validation error. 'first'|'last'|'none'
-    focus: 'first',
-
-    // event(s) that will trigger validation before first failure. eg: `input`...
-    trigger: false,
-
-    // event(s) that will trigger validation after first failure.
-    triggerAfterFailure: 'input',
-
-    // Class that would be added on every failing validation Parsley field
-    errorClass: 'parsley-error',
-
-    // Same for success validation
-    successClass: 'parsley-success',
-
-    // Return the `$element` that will receive these above success or error classes
-    // Could also be (and given directly from DOM) a valid selector like `'#div'`
-    classHandler: function classHandler(Field) {},
-
-    // Return the `$element` where errors will be appended
-    // Could also be (and given directly from DOM) a valid selector like `'#div'`
-    errorsContainer: function errorsContainer(Field) {},
-
-    // ul elem that would receive errors' list
-    errorsWrapper: '<ul class="parsley-errors-list"></ul>',
-
-    // li elem that would receive error message
-    errorTemplate: '<li></li>'
-  };
-
-  var Base = function Base() {
-    this.__id__ = Utils.generateID();
-  };
-
-  Base.prototype = {
-    asyncSupport: true, // Deprecated
-
-    _pipeAccordingToValidationResult: function _pipeAccordingToValidationResult() {
-      var _this = this;
-
-      var pipe = function pipe() {
-        var r = $.Deferred();
-        if (true !== _this.validationResult) r.reject();
-        return r.resolve().promise();
-      };
-      return [pipe, pipe];
-    },
-
-    actualizeOptions: function actualizeOptions() {
-      Utils.attr(this.element, this.options.namespace, this.domOptions);
-      if (this.parent && this.parent.actualizeOptions) this.parent.actualizeOptions();
-      return this;
-    },
-
-    _resetOptions: function _resetOptions(initOptions) {
-      this.domOptions = Utils.objectCreate(this.parent.options);
-      this.options = Utils.objectCreate(this.domOptions);
-      // Shallow copy of ownProperties of initOptions:
-      for (var i in initOptions) {
-        if (initOptions.hasOwnProperty(i)) this.options[i] = initOptions[i];
-      }
-      this.actualizeOptions();
-    },
-
-    _listeners: null,
-
-    // Register a callback for the given event name
-    // Callback is called with context as the first argument and the `this`
-    // The context is the current parsley instance, or window.Parsley if global
-    // A return value of `false` will interrupt the calls
-    on: function on(name, fn) {
-      this._listeners = this._listeners || {};
-      var queue = this._listeners[name] = this._listeners[name] || [];
-      queue.push(fn);
-
-      return this;
-    },
-
-    // Deprecated. Use `on` instead
-    subscribe: function subscribe(name, fn) {
-      $.listenTo(this, name.toLowerCase(), fn);
-    },
-
-    // Unregister a callback (or all if none is given) for the given event name
-    off: function off(name, fn) {
-      var queue = this._listeners && this._listeners[name];
-      if (queue) {
-        if (!fn) {
-          delete this._listeners[name];
-        } else {
-          for (var i = queue.length; i--;) if (queue[i] === fn) queue.splice(i, 1);
-        }
-      }
-      return this;
-    },
-
-    // Deprecated. Use `off`
-    unsubscribe: function unsubscribe(name, fn) {
-      $.unsubscribeTo(this, name.toLowerCase());
-    },
-
-    // Trigger an event of the given name
-    // A return value of `false` interrupts the callback chain
-    // Returns false if execution was interrupted
-    trigger: function trigger(name, target, extraArg) {
-      target = target || this;
-      var queue = this._listeners && this._listeners[name];
-      var result;
-      var parentResult;
-      if (queue) {
-        for (var i = queue.length; i--;) {
-          result = queue[i].call(target, target, extraArg);
-          if (result === false) return result;
-        }
-      }
-      if (this.parent) {
-        return this.parent.trigger(name, target, extraArg);
-      }
-      return true;
-    },
-
-    asyncIsValid: function asyncIsValid(group, force) {
-      Utils.warnOnce("asyncIsValid is deprecated; please use whenValid instead");
-      return this.whenValid({ group: group, force: force });
-    },
-
-    _findRelated: function _findRelated() {
-      return this.options.multiple ? $(this.parent.element.querySelectorAll('[' + this.options.namespace + 'multiple="' + this.options.multiple + '"]')) : this.$element;
-    }
-  };
-
-  var convertArrayRequirement = function convertArrayRequirement(string, length) {
-    var m = string.match(/^\s*\[(.*)\]\s*$/);
-    if (!m) throw 'Requirement is not an array: "' + string + '"';
-    var values = m[1].split(',').map(Utils.trimString);
-    if (values.length !== length) throw 'Requirement has ' + values.length + ' values when ' + length + ' are needed';
-    return values;
-  };
-
-  var convertExtraOptionRequirement = function convertExtraOptionRequirement(requirementSpec, string, extraOptionReader) {
-    var main = null;
-    var extra = {};
-    for (var key in requirementSpec) {
-      if (key) {
-        var value = extraOptionReader(key);
-        if ('string' === typeof value) value = Utils.parseRequirement(requirementSpec[key], value);
-        extra[key] = value;
-      } else {
-        main = Utils.parseRequirement(requirementSpec[key], string);
-      }
-    }
-    return [main, extra];
-  };
-
-  // A Validator needs to implement the methods `validate` and `parseRequirements`
-
-  var Validator = function Validator(spec) {
-    $.extend(true, this, spec);
-  };
-
-  Validator.prototype = {
-    // Returns `true` iff the given `value` is valid according the given requirements.
-    validate: function validate(value, requirementFirstArg) {
-      if (this.fn) {
-        // Legacy style validator
-
-        if (arguments.length > 3) // If more args then value, requirement, instance...
-          requirementFirstArg = [].slice.call(arguments, 1, -1); // Skip first arg (value) and last (instance), combining the rest
-        return this.fn(value, requirementFirstArg);
-      }
-
-      if (Array.isArray(value)) {
-        if (!this.validateMultiple) throw 'Validator `' + this.name + '` does not handle multiple values';
-        return this.validateMultiple.apply(this, arguments);
-      } else {
-        var instance = arguments[arguments.length - 1];
-        if (this.validateDate && instance._isDateInput()) {
-          arguments[0] = Utils.parse.date(arguments[0]);
-          if (arguments[0] === null) return false;
-          return this.validateDate.apply(this, arguments);
-        }
-        if (this.validateNumber) {
-          if (isNaN(value)) return false;
-          arguments[0] = parseFloat(arguments[0]);
-          return this.validateNumber.apply(this, arguments);
-        }
-        if (this.validateString) {
-          return this.validateString.apply(this, arguments);
-        }
-        throw 'Validator `' + this.name + '` only handles multiple values';
-      }
-    },
-
-    // Parses `requirements` into an array of arguments,
-    // according to `this.requirementType`
-    parseRequirements: function parseRequirements(requirements, extraOptionReader) {
-      if ('string' !== typeof requirements) {
-        // Assume requirement already parsed
-        // but make sure we return an array
-        return Array.isArray(requirements) ? requirements : [requirements];
-      }
-      var type = this.requirementType;
-      if (Array.isArray(type)) {
-        var values = convertArrayRequirement(requirements, type.length);
-        for (var i = 0; i < values.length; i++) values[i] = Utils.parseRequirement(type[i], values[i]);
-        return values;
-      } else if ($.isPlainObject(type)) {
-        return convertExtraOptionRequirement(type, requirements, extraOptionReader);
-      } else {
-        return [Utils.parseRequirement(type, requirements)];
-      }
-    },
-    // Defaults:
-    requirementType: 'string',
-
-    priority: 2
-
-  };
-
-  var ValidatorRegistry = function ValidatorRegistry(validators, catalog) {
-    this.__class__ = 'ValidatorRegistry';
-
-    // Default Parsley locale is en
-    this.locale = 'en';
-
-    this.init(validators || {}, catalog || {});
-  };
-
-  var typeTesters = {
-    email: /^((([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-zA-Z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/,
-
-    // Follow https://www.w3.org/TR/html5/infrastructure.html#floating-point-numbers
-    number: /^-?(\d*\.)?\d+(e[-+]?\d+)?$/i,
-
-    integer: /^-?\d+$/,
-
-    digits: /^\d+$/,
-
-    alphanum: /^\w+$/i,
-
-    date: {
-      test: function test(value) {
-        return Utils.parse.date(value) !== null;
-      }
-    },
-
-    url: new RegExp("^" +
-    // protocol identifier
-    "(?:(?:https?|ftp)://)?" + // ** mod: make scheme optional
-    // user:pass authentication
-    "(?:\\S+(?::\\S*)?@)?" + "(?:" +
-    // IP address exclusion
-    // private & local networks
-    // "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +   // ** mod: allow local networks
-    // "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
-    // "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +  // ** mod: allow local networks
-    // IP address dotted notation octets
-    // excludes loopback network 0.0.0.0
-    // excludes reserved space >= 224.0.0.0
-    // excludes network & broacast addresses
-    // (first & last IP address of each class)
-    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" + "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" + "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" + "|" +
-    // host name
-    '(?:(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)' +
-    // domain name
-    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff0-9]-*)*[a-zA-Z\\u00a1-\\uffff0-9]+)*' +
-    // TLD identifier
-    '(?:\\.(?:[a-zA-Z\\u00a1-\\uffff]{2,}))' + ")" +
-    // port number
-    "(?::\\d{2,5})?" +
-    // resource path
-    "(?:/\\S*)?" + "$")
-  };
-  typeTesters.range = typeTesters.number;
-
-  // See http://stackoverflow.com/a/10454560/8279
-  var decimalPlaces = function decimalPlaces(num) {
-    var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-    if (!match) {
-      return 0;
-    }
-    return Math.max(0,
-    // Number of digits right of decimal point.
-    (match[1] ? match[1].length : 0) - (
-    // Adjust for scientific notation.
-    match[2] ? +match[2] : 0));
-  };
-
-  // parseArguments('number', ['1', '2']) => [1, 2]
-  var ValidatorRegistry__parseArguments = function ValidatorRegistry__parseArguments(type, args) {
-    return args.map(Utils.parse[type]);
-  };
-  // operatorToValidator returns a validating function for an operator function, applied to the given type
-  var ValidatorRegistry__operatorToValidator = function ValidatorRegistry__operatorToValidator(type, operator) {
-    return function (value) {
-      for (var _len = arguments.length, requirementsAndInput = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        requirementsAndInput[_key - 1] = arguments[_key];
-      }
-
-      requirementsAndInput.pop(); // Get rid of `input` argument
-      return operator.apply(undefined, [value].concat(_toConsumableArray(ValidatorRegistry__parseArguments(type, requirementsAndInput))));
-    };
-  };
-
-  var ValidatorRegistry__comparisonOperator = function ValidatorRegistry__comparisonOperator(operator) {
-    return {
-      validateDate: ValidatorRegistry__operatorToValidator('date', operator),
-      validateNumber: ValidatorRegistry__operatorToValidator('number', operator),
-      requirementType: operator.length <= 2 ? 'string' : ['string', 'string'], // Support operators with a 1 or 2 requirement(s)
-      priority: 30
-    };
-  };
-
-  ValidatorRegistry.prototype = {
-    init: function init(validators, catalog) {
-      this.catalog = catalog;
-      // Copy prototype's validators:
-      this.validators = _extends({}, this.validators);
-
-      for (var name in validators) this.addValidator(name, validators[name].fn, validators[name].priority);
-
-      window.Parsley.trigger('parsley:validator:init');
-    },
-
-    // Set new messages locale if we have dictionary loaded in ParsleyConfig.i18n
-    setLocale: function setLocale(locale) {
-      if ('undefined' === typeof this.catalog[locale]) throw new Error(locale + ' is not available in the catalog');
-
-      this.locale = locale;
-
-      return this;
-    },
-
-    // Add a new messages catalog for a given locale. Set locale for this catalog if set === `true`
-    addCatalog: function addCatalog(locale, messages, set) {
-      if ('object' === typeof messages) this.catalog[locale] = messages;
-
-      if (true === set) return this.setLocale(locale);
-
-      return this;
-    },
-
-    // Add a specific message for a given constraint in a given locale
-    addMessage: function addMessage(locale, name, message) {
-      if ('undefined' === typeof this.catalog[locale]) this.catalog[locale] = {};
-
-      this.catalog[locale][name] = message;
-
-      return this;
-    },
-
-    // Add messages for a given locale
-    addMessages: function addMessages(locale, nameMessageObject) {
-      for (var name in nameMessageObject) this.addMessage(locale, name, nameMessageObject[name]);
-
-      return this;
-    },
-
-    // Add a new validator
-    //
-    //    addValidator('custom', {
-    //        requirementType: ['integer', 'integer'],
-    //        validateString: function(value, from, to) {},
-    //        priority: 22,
-    //        messages: {
-    //          en: "Hey, that's no good",
-    //          fr: "Aye aye, pas bon du tout",
-    //        }
-    //    })
-    //
-    // Old API was addValidator(name, function, priority)
-    //
-    addValidator: function addValidator(name, arg1, arg2) {
-      if (this.validators[name]) Utils.warn('Validator "' + name + '" is already defined.');else if (Defaults.hasOwnProperty(name)) {
-        Utils.warn('"' + name + '" is a restricted keyword and is not a valid validator name.');
-        return;
-      }
-      return this._setValidator.apply(this, arguments);
-    },
-
-    hasValidator: function hasValidator(name) {
-      return !!this.validators[name];
-    },
-
-    updateValidator: function updateValidator(name, arg1, arg2) {
-      if (!this.validators[name]) {
-        Utils.warn('Validator "' + name + '" is not already defined.');
-        return this.addValidator.apply(this, arguments);
-      }
-      return this._setValidator.apply(this, arguments);
-    },
-
-    removeValidator: function removeValidator(name) {
-      if (!this.validators[name]) Utils.warn('Validator "' + name + '" is not defined.');
-
-      delete this.validators[name];
-
-      return this;
-    },
-
-    _setValidator: function _setValidator(name, validator, priority) {
-      if ('object' !== typeof validator) {
-        // Old style validator, with `fn` and `priority`
-        validator = {
-          fn: validator,
-          priority: priority
-        };
-      }
-      if (!validator.validate) {
-        validator = new Validator(validator);
-      }
-      this.validators[name] = validator;
-
-      for (var locale in validator.messages || {}) this.addMessage(locale, name, validator.messages[locale]);
-
-      return this;
-    },
-
-    getErrorMessage: function getErrorMessage(constraint) {
-      var message;
-
-      // Type constraints are a bit different, we have to match their requirements too to find right error message
-      if ('type' === constraint.name) {
-        var typeMessages = this.catalog[this.locale][constraint.name] || {};
-        message = typeMessages[constraint.requirements];
-      } else message = this.formatMessage(this.catalog[this.locale][constraint.name], constraint.requirements);
-
-      return message || this.catalog[this.locale].defaultMessage || this.catalog.en.defaultMessage;
-    },
-
-    // Kind of light `sprintf()` implementation
-    formatMessage: function formatMessage(string, parameters) {
-      if ('object' === typeof parameters) {
-        for (var i in parameters) string = this.formatMessage(string, parameters[i]);
-
-        return string;
-      }
-
-      return 'string' === typeof string ? string.replace(/%s/i, parameters) : '';
-    },
-
-    // Here is the Parsley default validators list.
-    // A validator is an object with the following key values:
-    //  - priority: an integer
-    //  - requirement: 'string' (default), 'integer', 'number', 'regexp' or an Array of these
-    //  - validateString, validateMultiple, validateNumber: functions returning `true`, `false` or a promise
-    // Alternatively, a validator can be a function that returns such an object
-    //
-    validators: {
-      notblank: {
-        validateString: function validateString(value) {
-          return (/\S/.test(value)
-          );
-        },
-        priority: 2
-      },
-      required: {
-        validateMultiple: function validateMultiple(values) {
-          return values.length > 0;
-        },
-        validateString: function validateString(value) {
-          return (/\S/.test(value)
-          );
-        },
-        priority: 512
-      },
-      type: {
-        validateString: function validateString(value, type) {
-          var _ref = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-          var _ref$step = _ref.step;
-          var step = _ref$step === undefined ? 'any' : _ref$step;
-          var _ref$base = _ref.base;
-          var base = _ref$base === undefined ? 0 : _ref$base;
-
-          var tester = typeTesters[type];
-          if (!tester) {
-            throw new Error('validator type `' + type + '` is not supported');
-          }
-          if (!tester.test(value)) return false;
-          if ('number' === type) {
-            if (!/^any$/i.test(step || '')) {
-              var nb = Number(value);
-              var decimals = Math.max(decimalPlaces(step), decimalPlaces(base));
-              if (decimalPlaces(nb) > decimals) // Value can't have too many decimals
-                return false;
-              // Be careful of rounding errors by using integers.
-              var toInt = function toInt(f) {
-                return Math.round(f * Math.pow(10, decimals));
-              };
-              if ((toInt(nb) - toInt(base)) % toInt(step) != 0) return false;
-            }
-          }
-          return true;
-        },
-        requirementType: {
-          '': 'string',
-          step: 'string',
-          base: 'number'
-        },
-        priority: 256
-      },
-      pattern: {
-        validateString: function validateString(value, regexp) {
-          return regexp.test(value);
-        },
-        requirementType: 'regexp',
-        priority: 64
-      },
-      minlength: {
-        validateString: function validateString(value, requirement) {
-          return value.length >= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      maxlength: {
-        validateString: function validateString(value, requirement) {
-          return value.length <= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      length: {
-        validateString: function validateString(value, min, max) {
-          return value.length >= min && value.length <= max;
-        },
-        requirementType: ['integer', 'integer'],
-        priority: 30
-      },
-      mincheck: {
-        validateMultiple: function validateMultiple(values, requirement) {
-          return values.length >= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      maxcheck: {
-        validateMultiple: function validateMultiple(values, requirement) {
-          return values.length <= requirement;
-        },
-        requirementType: 'integer',
-        priority: 30
-      },
-      check: {
-        validateMultiple: function validateMultiple(values, min, max) {
-          return values.length >= min && values.length <= max;
-        },
-        requirementType: ['integer', 'integer'],
-        priority: 30
-      },
-      min: ValidatorRegistry__comparisonOperator(function (value, requirement) {
-        return value >= requirement;
-      }),
-      max: ValidatorRegistry__comparisonOperator(function (value, requirement) {
-        return value <= requirement;
-      }),
-      range: ValidatorRegistry__comparisonOperator(function (value, min, max) {
-        return value >= min && value <= max;
-      }),
-      equalto: {
-        validateString: function validateString(value, refOrValue) {
-          var $reference = $(refOrValue);
-          if ($reference.length) return value === $reference.val();else return value === refOrValue;
-        },
-        priority: 256
-      }
-    }
-  };
-
-  var UI = {};
-
-  var diffResults = function diffResults(newResult, oldResult, deep) {
-    var added = [];
-    var kept = [];
-
-    for (var i = 0; i < newResult.length; i++) {
-      var found = false;
-
-      for (var j = 0; j < oldResult.length; j++) if (newResult[i].assert.name === oldResult[j].assert.name) {
-        found = true;
-        break;
-      }
-
-      if (found) kept.push(newResult[i]);else added.push(newResult[i]);
-    }
-
-    return {
-      kept: kept,
-      added: added,
-      removed: !deep ? diffResults(oldResult, newResult, true).added : []
-    };
-  };
-
-  UI.Form = {
-
-    _actualizeTriggers: function _actualizeTriggers() {
-      var _this2 = this;
-
-      this.$element.on('submit.Parsley', function (evt) {
-        _this2.onSubmitValidate(evt);
-      });
-      this.$element.on('click.Parsley', Utils._SubmitSelector, function (evt) {
-        _this2.onSubmitButton(evt);
-      });
-
-      // UI could be disabled
-      if (false === this.options.uiEnabled) return;
-
-      this.element.setAttribute('novalidate', '');
-    },
-
-    focus: function focus() {
-      this._focusedField = null;
-
-      if (true === this.validationResult || 'none' === this.options.focus) return null;
-
-      for (var i = 0; i < this.fields.length; i++) {
-        var field = this.fields[i];
-        if (true !== field.validationResult && field.validationResult.length > 0 && 'undefined' === typeof field.options.noFocus) {
-          this._focusedField = field.$element;
-          if ('first' === this.options.focus) break;
-        }
-      }
-
-      if (null === this._focusedField) return null;
-
-      return this._focusedField.focus();
-    },
-
-    _destroyUI: function _destroyUI() {
-      // Reset all event listeners
-      this.$element.off('.Parsley');
-    }
-
-  };
-
-  UI.Field = {
-
-    _reflowUI: function _reflowUI() {
-      this._buildUI();
-
-      // If this field doesn't have an active UI don't bother doing something
-      if (!this._ui) return;
-
-      // Diff between two validation results
-      var diff = diffResults(this.validationResult, this._ui.lastValidationResult);
-
-      // Then store current validation result for next reflow
-      this._ui.lastValidationResult = this.validationResult;
-
-      // Handle valid / invalid / none field class
-      this._manageStatusClass();
-
-      // Add, remove, updated errors messages
-      this._manageErrorsMessages(diff);
-
-      // Triggers impl
-      this._actualizeTriggers();
-
-      // If field is not valid for the first time, bind keyup trigger to ease UX and quickly inform user
-      if ((diff.kept.length || diff.added.length) && !this._failedOnce) {
-        this._failedOnce = true;
-        this._actualizeTriggers();
-      }
-    },
-
-    // Returns an array of field's error message(s)
-    getErrorsMessages: function getErrorsMessages() {
-      // No error message, field is valid
-      if (true === this.validationResult) return [];
-
-      var messages = [];
-
-      for (var i = 0; i < this.validationResult.length; i++) messages.push(this.validationResult[i].errorMessage || this._getErrorMessage(this.validationResult[i].assert));
-
-      return messages;
-    },
-
-    // It's a goal of Parsley that this method is no longer required [#1073]
-    addError: function addError(name) {
-      var _ref2 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var message = _ref2.message;
-      var assert = _ref2.assert;
-      var _ref2$updateClass = _ref2.updateClass;
-      var updateClass = _ref2$updateClass === undefined ? true : _ref2$updateClass;
-
-      this._buildUI();
-      this._addError(name, { message: message, assert: assert });
-
-      if (updateClass) this._errorClass();
-    },
-
-    // It's a goal of Parsley that this method is no longer required [#1073]
-    updateError: function updateError(name) {
-      var _ref3 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var message = _ref3.message;
-      var assert = _ref3.assert;
-      var _ref3$updateClass = _ref3.updateClass;
-      var updateClass = _ref3$updateClass === undefined ? true : _ref3$updateClass;
-
-      this._buildUI();
-      this._updateError(name, { message: message, assert: assert });
-
-      if (updateClass) this._errorClass();
-    },
-
-    // It's a goal of Parsley that this method is no longer required [#1073]
-    removeError: function removeError(name) {
-      var _ref4 = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-      var _ref4$updateClass = _ref4.updateClass;
-      var updateClass = _ref4$updateClass === undefined ? true : _ref4$updateClass;
-
-      this._buildUI();
-      this._removeError(name);
-
-      // edge case possible here: remove a standard Parsley error that is still failing in this.validationResult
-      // but highly improbable cuz' manually removing a well Parsley handled error makes no sense.
-      if (updateClass) this._manageStatusClass();
-    },
-
-    _manageStatusClass: function _manageStatusClass() {
-      if (this.hasConstraints() && this.needsValidation() && true === this.validationResult) this._successClass();else if (this.validationResult.length > 0) this._errorClass();else this._resetClass();
-    },
-
-    _manageErrorsMessages: function _manageErrorsMessages(diff) {
-      if ('undefined' !== typeof this.options.errorsMessagesDisabled) return;
-
-      // Case where we have errorMessage option that configure an unique field error message, regardless failing validators
-      if ('undefined' !== typeof this.options.errorMessage) {
-        if (diff.added.length || diff.kept.length) {
-          this._insertErrorWrapper();
-
-          if (0 === this._ui.$errorsWrapper.find('.parsley-custom-error-message').length) this._ui.$errorsWrapper.append($(this.options.errorTemplate).addClass('parsley-custom-error-message'));
-
-          return this._ui.$errorsWrapper.addClass('filled').find('.parsley-custom-error-message').html(this.options.errorMessage);
-        }
-
-        return this._ui.$errorsWrapper.removeClass('filled').find('.parsley-custom-error-message').remove();
-      }
-
-      // Show, hide, update failing constraints messages
-      for (var i = 0; i < diff.removed.length; i++) this._removeError(diff.removed[i].assert.name);
-
-      for (i = 0; i < diff.added.length; i++) this._addError(diff.added[i].assert.name, { message: diff.added[i].errorMessage, assert: diff.added[i].assert });
-
-      for (i = 0; i < diff.kept.length; i++) this._updateError(diff.kept[i].assert.name, { message: diff.kept[i].errorMessage, assert: diff.kept[i].assert });
-    },
-
-    _addError: function _addError(name, _ref5) {
-      var message = _ref5.message;
-      var assert = _ref5.assert;
-
-      this._insertErrorWrapper();
-      this._ui.$errorClassHandler.attr('aria-describedby', this._ui.errorsWrapperId);
-      this._ui.$errorsWrapper.addClass('filled').append($(this.options.errorTemplate).addClass('parsley-' + name).html(message || this._getErrorMessage(assert)));
-    },
-
-    _updateError: function _updateError(name, _ref6) {
-      var message = _ref6.message;
-      var assert = _ref6.assert;
-
-      this._ui.$errorsWrapper.addClass('filled').find('.parsley-' + name).html(message || this._getErrorMessage(assert));
-    },
-
-    _removeError: function _removeError(name) {
-      this._ui.$errorClassHandler.removeAttr('aria-describedby');
-      this._ui.$errorsWrapper.removeClass('filled').find('.parsley-' + name).remove();
-    },
-
-    _getErrorMessage: function _getErrorMessage(constraint) {
-      var customConstraintErrorMessage = constraint.name + 'Message';
-
-      if ('undefined' !== typeof this.options[customConstraintErrorMessage]) return window.Parsley.formatMessage(this.options[customConstraintErrorMessage], constraint.requirements);
-
-      return window.Parsley.getErrorMessage(constraint);
-    },
-
-    _buildUI: function _buildUI() {
-      // UI could be already built or disabled
-      if (this._ui || false === this.options.uiEnabled) return;
-
-      var _ui = {};
-
-      // Give field its Parsley id in DOM
-      this.element.setAttribute(this.options.namespace + 'id', this.__id__);
-
-      /** Generate important UI elements and store them in this **/
-      // $errorClassHandler is the $element that woul have parsley-error and parsley-success classes
-      _ui.$errorClassHandler = this._manageClassHandler();
-
-      // $errorsWrapper is a div that would contain the various field errors, it will be appended into $errorsContainer
-      _ui.errorsWrapperId = 'parsley-id-' + (this.options.multiple ? 'multiple-' + this.options.multiple : this.__id__);
-      _ui.$errorsWrapper = $(this.options.errorsWrapper).attr('id', _ui.errorsWrapperId);
-
-      // ValidationResult UI storage to detect what have changed bwt two validations, and update DOM accordingly
-      _ui.lastValidationResult = [];
-      _ui.validationInformationVisible = false;
-
-      // Store it in this for later
-      this._ui = _ui;
-    },
-
-    // Determine which element will have `parsley-error` and `parsley-success` classes
-    _manageClassHandler: function _manageClassHandler() {
-      // Class handled could also be determined by function given in Parsley options
-      if ('string' === typeof this.options.classHandler && $(this.options.classHandler).length) return $(this.options.classHandler);
-
-      // Class handled could also be determined by function given in Parsley options
-      var $handlerFunction = this.options.classHandler;
-
-      // It might also be the function name of a global function
-      if ('string' === typeof this.options.classHandler && 'function' === typeof window[this.options.classHandler]) $handlerFunction = window[this.options.classHandler];
-
-      if ('function' === typeof $handlerFunction) {
-        var $handler = $handlerFunction.call(this, this);
-
-        // If this function returned a valid existing DOM element, go for it
-        if ('undefined' !== typeof $handler && $handler.length) return $handler;
-      } else if ('object' === typeof $handlerFunction && $handlerFunction instanceof jQuery && $handlerFunction.length) {
-        return $handlerFunction;
-      } else if ($handlerFunction) {
-        Utils.warn('The class handler `' + $handlerFunction + '` does not exist in DOM nor as a global JS function');
-      }
-
-      return this._inputHolder();
-    },
-
-    _inputHolder: function _inputHolder() {
-      // if simple element (input, texatrea, select...) it will perfectly host the classes and precede the error container
-      if (!this.options.multiple || this.element.nodeName === 'SELECT') return this.$element;
-
-      // But if multiple element (radio, checkbox), that would be their parent
-      return this.$element.parent();
-    },
-
-    _insertErrorWrapper: function _insertErrorWrapper() {
-      var $errorsContainer = this.options.errorsContainer;
-
-      // Nothing to do if already inserted
-      if (0 !== this._ui.$errorsWrapper.parent().length) return this._ui.$errorsWrapper.parent();
-
-      if ('string' === typeof $errorsContainer) {
-        if ($($errorsContainer).length) return $($errorsContainer).append(this._ui.$errorsWrapper);else if ('function' === typeof window[$errorsContainer]) $errorsContainer = window[$errorsContainer];else Utils.warn('The errors container `' + $errorsContainer + '` does not exist in DOM nor as a global JS function');
-      }
-
-      if ('function' === typeof $errorsContainer) $errorsContainer = $errorsContainer.call(this, this);
-
-      if ('object' === typeof $errorsContainer && $errorsContainer.length) return $errorsContainer.append(this._ui.$errorsWrapper);
-
-      return this._inputHolder().after(this._ui.$errorsWrapper);
-    },
-
-    _actualizeTriggers: function _actualizeTriggers() {
-      var _this3 = this;
-
-      var $toBind = this._findRelated();
-      var trigger;
-
-      // Remove Parsley events already bound on this field
-      $toBind.off('.Parsley');
-      if (this._failedOnce) $toBind.on(Utils.namespaceEvents(this.options.triggerAfterFailure, 'Parsley'), function () {
-        _this3._validateIfNeeded();
-      });else if (trigger = Utils.namespaceEvents(this.options.trigger, 'Parsley')) {
-        $toBind.on(trigger, function (event) {
-          _this3._validateIfNeeded(event);
-        });
-      }
-    },
-
-    _validateIfNeeded: function _validateIfNeeded(event) {
-      var _this4 = this;
-
-      // For keyup, keypress, keydown, input... events that could be a little bit obstrusive
-      // do not validate if val length < min threshold on first validation. Once field have been validated once and info
-      // about success or failure have been displayed, always validate with this trigger to reflect every yalidation change.
-      if (event && /key|input/.test(event.type)) if (!(this._ui && this._ui.validationInformationVisible) && this.getValue().length <= this.options.validationThreshold) return;
-
-      if (this.options.debounce) {
-        window.clearTimeout(this._debounced);
-        this._debounced = window.setTimeout(function () {
-          return _this4.validate();
-        }, this.options.debounce);
-      } else this.validate();
-    },
-
-    _resetUI: function _resetUI() {
-      // Reset all event listeners
-      this._failedOnce = false;
-      this._actualizeTriggers();
-
-      // Nothing to do if UI never initialized for this field
-      if ('undefined' === typeof this._ui) return;
-
-      // Reset all errors' li
-      this._ui.$errorsWrapper.removeClass('filled').children().remove();
-
-      // Reset validation class
-      this._resetClass();
-
-      // Reset validation flags and last validation result
-      this._ui.lastValidationResult = [];
-      this._ui.validationInformationVisible = false;
-    },
-
-    _destroyUI: function _destroyUI() {
-      this._resetUI();
-
-      if ('undefined' !== typeof this._ui) this._ui.$errorsWrapper.remove();
-
-      delete this._ui;
-    },
-
-    _successClass: function _successClass() {
-      this._ui.validationInformationVisible = true;
-      this._ui.$errorClassHandler.removeClass(this.options.errorClass).addClass(this.options.successClass);
-    },
-    _errorClass: function _errorClass() {
-      this._ui.validationInformationVisible = true;
-      this._ui.$errorClassHandler.removeClass(this.options.successClass).addClass(this.options.errorClass);
-    },
-    _resetClass: function _resetClass() {
-      this._ui.$errorClassHandler.removeClass(this.options.successClass).removeClass(this.options.errorClass);
-    }
-  };
-
-  var Form = function Form(element, domOptions, options) {
-    this.__class__ = 'Form';
-
-    this.element = element;
-    this.$element = $(element);
-    this.domOptions = domOptions;
-    this.options = options;
-    this.parent = window.Parsley;
-
-    this.fields = [];
-    this.validationResult = null;
-  };
-
-  var Form__statusMapping = { pending: null, resolved: true, rejected: false };
-
-  Form.prototype = {
-    onSubmitValidate: function onSubmitValidate(event) {
-      var _this5 = this;
-
-      // This is a Parsley generated submit event, do not validate, do not prevent, simply exit and keep normal behavior
-      if (true === event.parsley) return;
-
-      // If we didn't come here through a submit button, use the first one in the form
-      var submitSource = this._submitSource || this.$element.find(Utils._SubmitSelector)[0];
-      this._submitSource = null;
-      this.$element.find('.parsley-synthetic-submit-button').prop('disabled', true);
-      if (submitSource && null !== submitSource.getAttribute('formnovalidate')) return;
-
-      window.Parsley._remoteCache = {};
-
-      var promise = this.whenValidate({ event: event });
-
-      if ('resolved' === promise.state() && false !== this._trigger('submit')) {
-        // All good, let event go through. We make this distinction because browsers
-        // differ in their handling of `submit` being called from inside a submit event [#1047]
-      } else {
-          // Rejected or pending: cancel this submit
-          event.stopImmediatePropagation();
-          event.preventDefault();
-          if ('pending' === promise.state()) promise.done(function () {
-            _this5._submit(submitSource);
-          });
-        }
-    },
-
-    onSubmitButton: function onSubmitButton(event) {
-      this._submitSource = event.currentTarget;
-    },
-    // internal
-    // _submit submits the form, this time without going through the validations.
-    // Care must be taken to "fake" the actual submit button being clicked.
-    _submit: function _submit(submitSource) {
-      if (false === this._trigger('submit')) return;
-      // Add submit button's data
-      if (submitSource) {
-        var $synthetic = this.$element.find('.parsley-synthetic-submit-button').prop('disabled', false);
-        if (0 === $synthetic.length) $synthetic = $('<input class="parsley-synthetic-submit-button" type="hidden">').appendTo(this.$element);
-        $synthetic.attr({
-          name: submitSource.getAttribute('name'),
-          value: submitSource.getAttribute('value')
-        });
-      }
-
-      this.$element.trigger(_extends($.Event('submit'), { parsley: true }));
-    },
-
-    // Performs validation on fields while triggering events.
-    // @returns `true` if all validations succeeds, `false`
-    // if a failure is immediately detected, or `null`
-    // if dependant on a promise.
-    // Consider using `whenValidate` instead.
-    validate: function validate(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling validate on a parsley form without passing arguments as an object is deprecated.');
-
-        var _arguments = _slice.call(arguments);
-
-        var group = _arguments[0];
-        var force = _arguments[1];
-        var event = _arguments[2];
-
-        options = { group: group, force: force, event: event };
-      }
-      return Form__statusMapping[this.whenValidate(options).state()];
-    },
-
-    whenValidate: function whenValidate() {
-      var _Utils$all$done$fail$always,
-          _this6 = this;
-
-      var _ref7 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var group = _ref7.group;
-      var force = _ref7.force;
-      var event = _ref7.event;
-
-      this.submitEvent = event;
-      if (event) {
-        this.submitEvent = _extends({}, event, { preventDefault: function preventDefault() {
-            Utils.warnOnce("Using `this.submitEvent.preventDefault()` is deprecated; instead, call `this.validationResult = false`");
-            _this6.validationResult = false;
-          } });
-      }
-      this.validationResult = true;
-
-      // fire validate event to eventually modify things before every validation
-      this._trigger('validate');
-
-      // Refresh form DOM options and form's fields that could have changed
-      this._refreshFields();
-
-      var promises = this._withoutReactualizingFormOptions(function () {
-        return $.map(_this6.fields, function (field) {
-          return field.whenValidate({ force: force, group: group });
-        });
-      });
-
-      return (_Utils$all$done$fail$always = Utils.all(promises).done(function () {
-        _this6._trigger('success');
-      }).fail(function () {
-        _this6.validationResult = false;
-        _this6.focus();
-        _this6._trigger('error');
-      }).always(function () {
-        _this6._trigger('validated');
-      })).pipe.apply(_Utils$all$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
-    },
-
-    // Iterate over refreshed fields, and stop on first failure.
-    // Returns `true` if all fields are valid, `false` if a failure is detected
-    // or `null` if the result depends on an unresolved promise.
-    // Prefer using `whenValid` instead.
-    isValid: function isValid(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling isValid on a parsley form without passing arguments as an object is deprecated.');
-
-        var _arguments2 = _slice.call(arguments);
-
-        var group = _arguments2[0];
-        var force = _arguments2[1];
-
-        options = { group: group, force: force };
-      }
-      return Form__statusMapping[this.whenValid(options).state()];
-    },
-
-    // Iterate over refreshed fields and validate them.
-    // Returns a promise.
-    // A validation that immediately fails will interrupt the validations.
-    whenValid: function whenValid() {
-      var _this7 = this;
-
-      var _ref8 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var group = _ref8.group;
-      var force = _ref8.force;
-
-      this._refreshFields();
-
-      var promises = this._withoutReactualizingFormOptions(function () {
-        return $.map(_this7.fields, function (field) {
-          return field.whenValid({ group: group, force: force });
-        });
-      });
-      return Utils.all(promises);
-    },
-
-    refresh: function refresh() {
-      this._refreshFields();
-      return this;
-    },
-
-    // Reset UI
-    reset: function reset() {
-      // Form case: emit a reset event for each field
-      for (var i = 0; i < this.fields.length; i++) this.fields[i].reset();
-
-      this._trigger('reset');
-    },
-
-    // Destroy Parsley instance (+ UI)
-    destroy: function destroy() {
-      // Field case: emit destroy event to clean UI and then destroy stored instance
-      this._destroyUI();
-
-      // Form case: destroy all its fields and then destroy stored instance
-      for (var i = 0; i < this.fields.length; i++) this.fields[i].destroy();
-
-      this.$element.removeData('Parsley');
-      this._trigger('destroy');
-    },
-
-    _refreshFields: function _refreshFields() {
-      return this.actualizeOptions()._bindFields();
-    },
-
-    _bindFields: function _bindFields() {
-      var _this8 = this;
-
-      var oldFields = this.fields;
-
-      this.fields = [];
-      this.fieldsMappedById = {};
-
-      this._withoutReactualizingFormOptions(function () {
-        _this8.$element.find(_this8.options.inputs).not(_this8.options.excluded).each(function (_, element) {
-          var fieldInstance = new window.Parsley.Factory(element, {}, _this8);
-
-          // Only add valid and not excluded `Field` and `FieldMultiple` children
-          if (('Field' === fieldInstance.__class__ || 'FieldMultiple' === fieldInstance.__class__) && true !== fieldInstance.options.excluded) {
-            var uniqueId = fieldInstance.__class__ + '-' + fieldInstance.__id__;
-            if ('undefined' === typeof _this8.fieldsMappedById[uniqueId]) {
-              _this8.fieldsMappedById[uniqueId] = fieldInstance;
-              _this8.fields.push(fieldInstance);
-            }
-          }
-        });
-
-        $.each(Utils.difference(oldFields, _this8.fields), function (_, field) {
-          field.reset();
-        });
-      });
-      return this;
-    },
-
-    // Internal only.
-    // Looping on a form's fields to do validation or similar
-    // will trigger reactualizing options on all of them, which
-    // in turn will reactualize the form's options.
-    // To avoid calling actualizeOptions so many times on the form
-    // for nothing, _withoutReactualizingFormOptions temporarily disables
-    // the method actualizeOptions on this form while `fn` is called.
-    _withoutReactualizingFormOptions: function _withoutReactualizingFormOptions(fn) {
-      var oldActualizeOptions = this.actualizeOptions;
-      this.actualizeOptions = function () {
-        return this;
-      };
-      var result = fn();
-      this.actualizeOptions = oldActualizeOptions;
-      return result;
-    },
-
-    // Internal only.
-    // Shortcut to trigger an event
-    // Returns true iff event is not interrupted and default not prevented.
-    _trigger: function _trigger(eventName) {
-      return this.trigger('form:' + eventName);
-    }
-
-  };
-
-  var Constraint = function Constraint(parsleyField, name, requirements, priority, isDomConstraint) {
-    var validatorSpec = window.Parsley._validatorRegistry.validators[name];
-    var validator = new Validator(validatorSpec);
-    priority = priority || parsleyField.options[name + 'Priority'] || validator.priority;
-    isDomConstraint = true === isDomConstraint;
-
-    _extends(this, {
-      validator: validator,
-      name: name,
-      requirements: requirements,
-      priority: priority,
-      isDomConstraint: isDomConstraint
-    });
-    this._parseRequirements(parsleyField.options);
-  };
-
-  var capitalize = function capitalize(str) {
-    var cap = str[0].toUpperCase();
-    return cap + str.slice(1);
-  };
-
-  Constraint.prototype = {
-    validate: function validate(value, instance) {
-      var _validator;
-
-      return (_validator = this.validator).validate.apply(_validator, [value].concat(_toConsumableArray(this.requirementList), [instance]));
-    },
-
-    _parseRequirements: function _parseRequirements(options) {
-      var _this9 = this;
-
-      this.requirementList = this.validator.parseRequirements(this.requirements, function (key) {
-        return options[_this9.name + capitalize(key)];
-      });
-    }
-  };
-
-  var Field = function Field(field, domOptions, options, parsleyFormInstance) {
-    this.__class__ = 'Field';
-
-    this.element = field;
-    this.$element = $(field);
-
-    // Set parent if we have one
-    if ('undefined' !== typeof parsleyFormInstance) {
-      this.parent = parsleyFormInstance;
-    }
-
-    this.options = options;
-    this.domOptions = domOptions;
-
-    // Initialize some properties
-    this.constraints = [];
-    this.constraintsByName = {};
-    this.validationResult = true;
-
-    // Bind constraints
-    this._bindConstraints();
-  };
-
-  var parsley_field__statusMapping = { pending: null, resolved: true, rejected: false };
-
-  Field.prototype = {
-    // # Public API
-    // Validate field and trigger some events for mainly `UI`
-    // @returns `true`, an array of the validators that failed, or
-    // `null` if validation is not finished. Prefer using whenValidate
-    validate: function validate(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling validate on a parsley field without passing arguments as an object is deprecated.');
-        options = { options: options };
-      }
-      var promise = this.whenValidate(options);
-      if (!promise) // If excluded with `group` option
-        return true;
-      switch (promise.state()) {
-        case 'pending':
-          return null;
-        case 'resolved':
-          return true;
-        case 'rejected':
-          return this.validationResult;
-      }
-    },
-
-    // Validate field and trigger some events for mainly `UI`
-    // @returns a promise that succeeds only when all validations do
-    // or `undefined` if field is not in the given `group`.
-    whenValidate: function whenValidate() {
-      var _whenValid$always$done$fail$always,
-          _this10 = this;
-
-      var _ref9 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var force = _ref9.force;
-      var group = _ref9.group;
-
-      // do not validate a field if not the same as given validation group
-      this.refresh();
-      if (group && !this._isInGroup(group)) return;
-
-      this.value = this.getValue();
-
-      // Field Validate event. `this.value` could be altered for custom needs
-      this._trigger('validate');
-
-      return (_whenValid$always$done$fail$always = this.whenValid({ force: force, value: this.value, _refreshed: true }).always(function () {
-        _this10._reflowUI();
-      }).done(function () {
-        _this10._trigger('success');
-      }).fail(function () {
-        _this10._trigger('error');
-      }).always(function () {
-        _this10._trigger('validated');
-      })).pipe.apply(_whenValid$always$done$fail$always, _toConsumableArray(this._pipeAccordingToValidationResult()));
-    },
-
-    hasConstraints: function hasConstraints() {
-      return 0 !== this.constraints.length;
-    },
-
-    // An empty optional field does not need validation
-    needsValidation: function needsValidation(value) {
-      if ('undefined' === typeof value) value = this.getValue();
-
-      // If a field is empty and not required, it is valid
-      // Except if `data-parsley-validate-if-empty` explicitely added, useful for some custom validators
-      if (!value.length && !this._isRequired() && 'undefined' === typeof this.options.validateIfEmpty) return false;
-
-      return true;
-    },
-
-    _isInGroup: function _isInGroup(group) {
-      if (Array.isArray(this.options.group)) return -1 !== $.inArray(group, this.options.group);
-      return this.options.group === group;
-    },
-
-    // Just validate field. Do not trigger any event.
-    // Returns `true` iff all constraints pass, `false` if there are failures,
-    // or `null` if the result can not be determined yet (depends on a promise)
-    // See also `whenValid`.
-    isValid: function isValid(options) {
-      if (arguments.length >= 1 && !$.isPlainObject(options)) {
-        Utils.warnOnce('Calling isValid on a parsley field without passing arguments as an object is deprecated.');
-
-        var _arguments3 = _slice.call(arguments);
-
-        var force = _arguments3[0];
-        var value = _arguments3[1];
-
-        options = { force: force, value: value };
-      }
-      var promise = this.whenValid(options);
-      if (!promise) // Excluded via `group`
-        return true;
-      return parsley_field__statusMapping[promise.state()];
-    },
-
-    // Just validate field. Do not trigger any event.
-    // @returns a promise that succeeds only when all validations do
-    // or `undefined` if the field is not in the given `group`.
-    // The argument `force` will force validation of empty fields.
-    // If a `value` is given, it will be validated instead of the value of the input.
-    whenValid: function whenValid() {
-      var _this11 = this;
-
-      var _ref10 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var _ref10$force = _ref10.force;
-      var force = _ref10$force === undefined ? false : _ref10$force;
-      var value = _ref10.value;
-      var group = _ref10.group;
-      var _refreshed = _ref10._refreshed;
-
-      // Recompute options and rebind constraints to have latest changes
-      if (!_refreshed) this.refresh();
-      // do not validate a field if not the same as given validation group
-      if (group && !this._isInGroup(group)) return;
-
-      this.validationResult = true;
-
-      // A field without constraint is valid
-      if (!this.hasConstraints()) return $.when();
-
-      // Value could be passed as argument, needed to add more power to 'field:validate'
-      if ('undefined' === typeof value || null === value) value = this.getValue();
-
-      if (!this.needsValidation(value) && true !== force) return $.when();
-
-      var groupedConstraints = this._getGroupedConstraints();
-      var promises = [];
-      $.each(groupedConstraints, function (_, constraints) {
-        // Process one group of constraints at a time, we validate the constraints
-        // and combine the promises together.
-        var promise = Utils.all($.map(constraints, function (constraint) {
-          return _this11._validateConstraint(value, constraint);
-        }));
-        promises.push(promise);
-        if (promise.state() === 'rejected') return false; // Interrupt processing if a group has already failed
-      });
-      return Utils.all(promises);
-    },
-
-    // @returns a promise
-    _validateConstraint: function _validateConstraint(value, constraint) {
-      var _this12 = this;
-
-      var result = constraint.validate(value, this);
-      // Map false to a failed promise
-      if (false === result) result = $.Deferred().reject();
-      // Make sure we return a promise and that we record failures
-      return Utils.all([result]).fail(function (errorMessage) {
-        if (!(_this12.validationResult instanceof Array)) _this12.validationResult = [];
-        _this12.validationResult.push({
-          assert: constraint,
-          errorMessage: 'string' === typeof errorMessage && errorMessage
-        });
-      });
-    },
-
-    // @returns Parsley field computed value that could be overrided or configured in DOM
-    getValue: function getValue() {
-      var value;
-
-      // Value could be overriden in DOM or with explicit options
-      if ('function' === typeof this.options.value) value = this.options.value(this);else if ('undefined' !== typeof this.options.value) value = this.options.value;else value = this.$element.val();
-
-      // Handle wrong DOM or configurations
-      if ('undefined' === typeof value || null === value) return '';
-
-      return this._handleWhitespace(value);
-    },
-
-    // Reset UI
-    reset: function reset() {
-      this._resetUI();
-      return this._trigger('reset');
-    },
-
-    // Destroy Parsley instance (+ UI)
-    destroy: function destroy() {
-      // Field case: emit destroy event to clean UI and then destroy stored instance
-      this._destroyUI();
-      this.$element.removeData('Parsley');
-      this.$element.removeData('FieldMultiple');
-      this._trigger('destroy');
-    },
-
-    // Actualize options and rebind constraints
-    refresh: function refresh() {
-      this._refreshConstraints();
-      return this;
-    },
-
-    _refreshConstraints: function _refreshConstraints() {
-      return this.actualizeOptions()._bindConstraints();
-    },
-
-    refreshConstraints: function refreshConstraints() {
-      Utils.warnOnce("Parsley's refreshConstraints is deprecated. Please use refresh");
-      return this.refresh();
-    },
-
-    /**
-    * Add a new constraint to a field
-    *
-    * @param {String}   name
-    * @param {Mixed}    requirements      optional
-    * @param {Number}   priority          optional
-    * @param {Boolean}  isDomConstraint   optional
-    */
-    addConstraint: function addConstraint(name, requirements, priority, isDomConstraint) {
-
-      if (window.Parsley._validatorRegistry.validators[name]) {
-        var constraint = new Constraint(this, name, requirements, priority, isDomConstraint);
-
-        // if constraint already exist, delete it and push new version
-        if ('undefined' !== this.constraintsByName[constraint.name]) this.removeConstraint(constraint.name);
-
-        this.constraints.push(constraint);
-        this.constraintsByName[constraint.name] = constraint;
-      }
-
-      return this;
-    },
-
-    // Remove a constraint
-    removeConstraint: function removeConstraint(name) {
-      for (var i = 0; i < this.constraints.length; i++) if (name === this.constraints[i].name) {
-        this.constraints.splice(i, 1);
-        break;
-      }
-      delete this.constraintsByName[name];
-      return this;
-    },
-
-    // Update a constraint (Remove + re-add)
-    updateConstraint: function updateConstraint(name, parameters, priority) {
-      return this.removeConstraint(name).addConstraint(name, parameters, priority);
-    },
-
-    // # Internals
-
-    // Internal only.
-    // Bind constraints from config + options + DOM
-    _bindConstraints: function _bindConstraints() {
-      var constraints = [];
-      var constraintsByName = {};
-
-      // clean all existing DOM constraints to only keep javascript user constraints
-      for (var i = 0; i < this.constraints.length; i++) if (false === this.constraints[i].isDomConstraint) {
-        constraints.push(this.constraints[i]);
-        constraintsByName[this.constraints[i].name] = this.constraints[i];
-      }
-
-      this.constraints = constraints;
-      this.constraintsByName = constraintsByName;
-
-      // then re-add Parsley DOM-API constraints
-      for (var name in this.options) this.addConstraint(name, this.options[name], undefined, true);
-
-      // finally, bind special HTML5 constraints
-      return this._bindHtml5Constraints();
-    },
-
-    // Internal only.
-    // Bind specific HTML5 constraints to be HTML5 compliant
-    _bindHtml5Constraints: function _bindHtml5Constraints() {
-      // html5 required
-      if (null !== this.element.getAttribute('required')) this.addConstraint('required', true, undefined, true);
-
-      // html5 pattern
-      if (null !== this.element.getAttribute('pattern')) this.addConstraint('pattern', this.element.getAttribute('pattern'), undefined, true);
-
-      // range
-      var min = this.element.getAttribute('min');
-      var max = this.element.getAttribute('max');
-      if (null !== min && null !== max) this.addConstraint('range', [min, max], undefined, true);
-
-      // HTML5 min
-      else if (null !== min) this.addConstraint('min', min, undefined, true);
-
-        // HTML5 max
-        else if (null !== max) this.addConstraint('max', max, undefined, true);
-
-      // length
-      if (null !== this.element.getAttribute('minlength') && null !== this.element.getAttribute('maxlength')) this.addConstraint('length', [this.element.getAttribute('minlength'), this.element.getAttribute('maxlength')], undefined, true);
-
-      // HTML5 minlength
-      else if (null !== this.element.getAttribute('minlength')) this.addConstraint('minlength', this.element.getAttribute('minlength'), undefined, true);
-
-        // HTML5 maxlength
-        else if (null !== this.element.getAttribute('maxlength')) this.addConstraint('maxlength', this.element.getAttribute('maxlength'), undefined, true);
-
-      // html5 types
-      var type = Utils.getType(this.element);
-
-      // Small special case here for HTML5 number: integer validator if step attribute is undefined or an integer value, number otherwise
-      if ('number' === type) {
-        return this.addConstraint('type', ['number', {
-          step: this.element.getAttribute('step') || '1',
-          base: min || this.element.getAttribute('value')
-        }], undefined, true);
-        // Regular other HTML5 supported types
-      } else if (/^(email|url|range|date)$/i.test(type)) {
-          return this.addConstraint('type', type, undefined, true);
-        }
-      return this;
-    },
-
-    // Internal only.
-    // Field is required if have required constraint without `false` value
-    _isRequired: function _isRequired() {
-      if ('undefined' === typeof this.constraintsByName.required) return false;
-
-      return false !== this.constraintsByName.required.requirements;
-    },
-
-    // Internal only.
-    // Shortcut to trigger an event
-    _trigger: function _trigger(eventName) {
-      return this.trigger('field:' + eventName);
-    },
-
-    // Internal only
-    // Handles whitespace in a value
-    // Use `data-parsley-whitespace="squish"` to auto squish input value
-    // Use `data-parsley-whitespace="trim"` to auto trim input value
-    _handleWhitespace: function _handleWhitespace(value) {
-      if (true === this.options.trimValue) Utils.warnOnce('data-parsley-trim-value="true" is deprecated, please use data-parsley-whitespace="trim"');
-
-      if ('squish' === this.options.whitespace) value = value.replace(/\s{2,}/g, ' ');
-
-      if ('trim' === this.options.whitespace || 'squish' === this.options.whitespace || true === this.options.trimValue) value = Utils.trimString(value);
-
-      return value;
-    },
-
-    _isDateInput: function _isDateInput() {
-      var c = this.constraintsByName.type;
-      return c && c.requirements === 'date';
-    },
-
-    // Internal only.
-    // Returns the constraints, grouped by descending priority.
-    // The result is thus an array of arrays of constraints.
-    _getGroupedConstraints: function _getGroupedConstraints() {
-      if (false === this.options.priorityEnabled) return [this.constraints];
-
-      var groupedConstraints = [];
-      var index = {};
-
-      // Create array unique of priorities
-      for (var i = 0; i < this.constraints.length; i++) {
-        var p = this.constraints[i].priority;
-        if (!index[p]) groupedConstraints.push(index[p] = []);
-        index[p].push(this.constraints[i]);
-      }
-      // Sort them by priority DESC
-      groupedConstraints.sort(function (a, b) {
-        return b[0].priority - a[0].priority;
-      });
-
-      return groupedConstraints;
-    }
-
-  };
-
-  var parsley_field = Field;
-
-  var Multiple = function Multiple() {
-    this.__class__ = 'FieldMultiple';
-  };
-
-  Multiple.prototype = {
-    // Add new `$element` sibling for multiple field
-    addElement: function addElement($element) {
-      this.$elements.push($element);
-
-      return this;
-    },
-
-    // See `Field._refreshConstraints()`
-    _refreshConstraints: function _refreshConstraints() {
-      var fieldConstraints;
-
-      this.constraints = [];
-
-      // Select multiple special treatment
-      if (this.element.nodeName === 'SELECT') {
-        this.actualizeOptions()._bindConstraints();
-
-        return this;
-      }
-
-      // Gather all constraints for each input in the multiple group
-      for (var i = 0; i < this.$elements.length; i++) {
-
-        // Check if element have not been dynamically removed since last binding
-        if (!$('html').has(this.$elements[i]).length) {
-          this.$elements.splice(i, 1);
-          continue;
-        }
-
-        fieldConstraints = this.$elements[i].data('FieldMultiple')._refreshConstraints().constraints;
-
-        for (var j = 0; j < fieldConstraints.length; j++) this.addConstraint(fieldConstraints[j].name, fieldConstraints[j].requirements, fieldConstraints[j].priority, fieldConstraints[j].isDomConstraint);
-      }
-
-      return this;
-    },
-
-    // See `Field.getValue()`
-    getValue: function getValue() {
-      // Value could be overriden in DOM
-      if ('function' === typeof this.options.value) return this.options.value(this);else if ('undefined' !== typeof this.options.value) return this.options.value;
-
-      // Radio input case
-      if (this.element.nodeName === 'INPUT') {
-        var type = Utils.getType(this.element);
-        if (type === 'radio') return this._findRelated().filter(':checked').val() || '';
-
-        // checkbox input case
-        if (type === 'checkbox') {
-          var values = [];
-
-          this._findRelated().filter(':checked').each(function () {
-            values.push($(this).val());
-          });
-
-          return values;
-        }
-      }
-
-      // Select multiple case
-      if (this.element.nodeName === 'SELECT' && null === this.$element.val()) return [];
-
-      // Default case that should never happen
-      return this.$element.val();
-    },
-
-    _init: function _init() {
-      this.$elements = [this.$element];
-
-      return this;
-    }
-  };
-
-  var Factory = function Factory(element, options, parsleyFormInstance) {
-    this.element = element;
-    this.$element = $(element);
-
-    // If the element has already been bound, returns its saved Parsley instance
-    var savedparsleyFormInstance = this.$element.data('Parsley');
-    if (savedparsleyFormInstance) {
-
-      // If the saved instance has been bound without a Form parent and there is one given in this call, add it
-      if ('undefined' !== typeof parsleyFormInstance && savedparsleyFormInstance.parent === window.Parsley) {
-        savedparsleyFormInstance.parent = parsleyFormInstance;
-        savedparsleyFormInstance._resetOptions(savedparsleyFormInstance.options);
-      }
-
-      if ('object' === typeof options) {
-        _extends(savedparsleyFormInstance.options, options);
-      }
-
-      return savedparsleyFormInstance;
-    }
-
-    // Parsley must be instantiated with a DOM element or jQuery $element
-    if (!this.$element.length) throw new Error('You must bind Parsley on an existing element.');
-
-    if ('undefined' !== typeof parsleyFormInstance && 'Form' !== parsleyFormInstance.__class__) throw new Error('Parent instance must be a Form instance');
-
-    this.parent = parsleyFormInstance || window.Parsley;
-    return this.init(options);
-  };
-
-  Factory.prototype = {
-    init: function init(options) {
-      this.__class__ = 'Parsley';
-      this.__version__ = '2.8.1';
-      this.__id__ = Utils.generateID();
-
-      // Pre-compute options
-      this._resetOptions(options);
-
-      // A Form instance is obviously a `<form>` element but also every node that is not an input and has the `data-parsley-validate` attribute
-      if (this.element.nodeName === 'FORM' || Utils.checkAttr(this.element, this.options.namespace, 'validate') && !this.$element.is(this.options.inputs)) return this.bind('parsleyForm');
-
-      // Every other element is bound as a `Field` or `FieldMultiple`
-      return this.isMultiple() ? this.handleMultiple() : this.bind('parsleyField');
-    },
-
-    isMultiple: function isMultiple() {
-      var type = Utils.getType(this.element);
-      return type === 'radio' || type === 'checkbox' || this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple');
-    },
-
-    // Multiples fields are a real nightmare :(
-    // Maybe some refactoring would be appreciated here...
-    handleMultiple: function handleMultiple() {
-      var _this13 = this;
-
-      var name;
-      var multiple;
-      var parsleyMultipleInstance;
-
-      // Handle multiple name
-      this.options.multiple = this.options.multiple || (name = this.element.getAttribute('name')) || this.element.getAttribute('id');
-
-      // Special select multiple input
-      if (this.element.nodeName === 'SELECT' && null !== this.element.getAttribute('multiple')) {
-        this.options.multiple = this.options.multiple || this.__id__;
-        return this.bind('parsleyFieldMultiple');
-
-        // Else for radio / checkboxes, we need a `name` or `data-parsley-multiple` to properly bind it
-      } else if (!this.options.multiple) {
-          Utils.warn('To be bound by Parsley, a radio, a checkbox and a multiple select input must have either a name or a multiple option.', this.$element);
-          return this;
-        }
-
-      // Remove special chars
-      this.options.multiple = this.options.multiple.replace(/(:|\.|\[|\]|\{|\}|\$)/g, '');
-
-      // Add proper `data-parsley-multiple` to siblings if we have a valid multiple name
-      if (name) {
-        $('input[name="' + name + '"]').each(function (i, input) {
-          var type = Utils.getType(input);
-          if (type === 'radio' || type === 'checkbox') input.setAttribute(_this13.options.namespace + 'multiple', _this13.options.multiple);
-        });
-      }
-
-      // Check here if we don't already have a related multiple instance saved
-      var $previouslyRelated = this._findRelated();
-      for (var i = 0; i < $previouslyRelated.length; i++) {
-        parsleyMultipleInstance = $($previouslyRelated.get(i)).data('Parsley');
-        if ('undefined' !== typeof parsleyMultipleInstance) {
-
-          if (!this.$element.data('FieldMultiple')) {
-            parsleyMultipleInstance.addElement(this.$element);
-          }
-
-          break;
-        }
-      }
-
-      // Create a secret Field instance for every multiple field. It will be stored in `data('FieldMultiple')`
-      // And will be useful later to access classic `Field` stuff while being in a `FieldMultiple` instance
-      this.bind('parsleyField', true);
-
-      return parsleyMultipleInstance || this.bind('parsleyFieldMultiple');
-    },
-
-    // Return proper `Form`, `Field` or `FieldMultiple`
-    bind: function bind(type, doNotStore) {
-      var parsleyInstance;
-
-      switch (type) {
-        case 'parsleyForm':
-          parsleyInstance = $.extend(new Form(this.element, this.domOptions, this.options), new Base(), window.ParsleyExtend)._bindFields();
-          break;
-        case 'parsleyField':
-          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Base(), window.ParsleyExtend);
-          break;
-        case 'parsleyFieldMultiple':
-          parsleyInstance = $.extend(new parsley_field(this.element, this.domOptions, this.options, this.parent), new Multiple(), new Base(), window.ParsleyExtend)._init();
-          break;
-        default:
-          throw new Error(type + 'is not a supported Parsley type');
-      }
-
-      if (this.options.multiple) Utils.setAttr(this.element, this.options.namespace, 'multiple', this.options.multiple);
-
-      if ('undefined' !== typeof doNotStore) {
-        this.$element.data('FieldMultiple', parsleyInstance);
-
-        return parsleyInstance;
-      }
-
-      // Store the freshly bound instance in a DOM element for later access using jQuery `data()`
-      this.$element.data('Parsley', parsleyInstance);
-
-      // Tell the world we have a new Form or Field instance!
-      parsleyInstance._actualizeTriggers();
-      parsleyInstance._trigger('init');
-
-      return parsleyInstance;
-    }
-  };
-
-  var vernums = $.fn.jquery.split('.');
-  if (parseInt(vernums[0]) <= 1 && parseInt(vernums[1]) < 8) {
-    throw "The loaded version of jQuery is too old. Please upgrade to 1.8.x or better.";
-  }
-  if (!vernums.forEach) {
-    Utils.warn('Parsley requires ES5 to run properly. Please include https://github.com/es-shims/es5-shim');
-  }
-  // Inherit `on`, `off` & `trigger` to Parsley:
-  var Parsley = _extends(new Base(), {
-    element: document,
-    $element: $(document),
-    actualizeOptions: null,
-    _resetOptions: null,
-    Factory: Factory,
-    version: '2.8.1'
-  });
-
-  // Supplement Field and Form with Base
-  // This way, the constructors will have access to those methods
-  _extends(parsley_field.prototype, UI.Field, Base.prototype);
-  _extends(Form.prototype, UI.Form, Base.prototype);
-  // Inherit actualizeOptions and _resetOptions:
-  _extends(Factory.prototype, Base.prototype);
-
-  // ### jQuery API
-  // `$('.elem').parsley(options)` or `$('.elem').psly(options)`
-  $.fn.parsley = $.fn.psly = function (options) {
-    if (this.length > 1) {
-      var instances = [];
-
-      this.each(function () {
-        instances.push($(this).parsley(options));
-      });
-
-      return instances;
-    }
-
-    // Return undefined if applied to non existing DOM element
-    if (this.length == 0) {
-      return;
-    }
-
-    return new Factory(this[0], options);
-  };
-
-  // ### Field and Form extension
-  // Ensure the extension is now defined if it wasn't previously
-  if ('undefined' === typeof window.ParsleyExtend) window.ParsleyExtend = {};
-
-  // ### Parsley config
-  // Inherit from ParsleyDefault, and copy over any existing values
-  Parsley.options = _extends(Utils.objectCreate(Defaults), window.ParsleyConfig);
-  window.ParsleyConfig = Parsley.options; // Old way of accessing global options
-
-  // ### Globals
-  window.Parsley = window.psly = Parsley;
-  Parsley.Utils = Utils;
-  window.ParsleyUtils = {};
-  $.each(Utils, function (key, value) {
-    if ('function' === typeof value) {
-      window.ParsleyUtils[key] = function () {
-        Utils.warnOnce('Accessing `window.ParsleyUtils` is deprecated. Use `window.Parsley.Utils` instead.');
-        return Utils[key].apply(Utils, arguments);
-      };
-    }
-  });
-
-  // ### Define methods that forward to the registry, and deprecate all access except through window.Parsley
-  var registry = window.Parsley._validatorRegistry = new ValidatorRegistry(window.ParsleyConfig.validators, window.ParsleyConfig.i18n);
-  window.ParsleyValidator = {};
-  $.each('setLocale addCatalog addMessage addMessages getErrorMessage formatMessage addValidator updateValidator removeValidator hasValidator'.split(' '), function (i, method) {
-    window.Parsley[method] = function () {
-      return registry[method].apply(registry, arguments);
-    };
-    window.ParsleyValidator[method] = function () {
-      var _window$Parsley;
-
-      Utils.warnOnce('Accessing the method \'' + method + '\' through Validator is deprecated. Simply call \'window.Parsley.' + method + '(...)\'');
-      return (_window$Parsley = window.Parsley)[method].apply(_window$Parsley, arguments);
-    };
-  });
-
-  // ### UI
-  // Deprecated global object
-  window.Parsley.UI = UI;
-  window.ParsleyUI = {
-    removeError: function removeError(instance, name, doNotUpdateClass) {
-      var updateClass = true !== doNotUpdateClass;
-      Utils.warnOnce('Accessing UI is deprecated. Call \'removeError\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
-      return instance.removeError(name, { updateClass: updateClass });
-    },
-    getErrorsMessages: function getErrorsMessages(instance) {
-      Utils.warnOnce('Accessing UI is deprecated. Call \'getErrorsMessages\' on the instance directly.');
-      return instance.getErrorsMessages();
-    }
-  };
-  $.each('addError updateError'.split(' '), function (i, method) {
-    window.ParsleyUI[method] = function (instance, name, message, assert, doNotUpdateClass) {
-      var updateClass = true !== doNotUpdateClass;
-      Utils.warnOnce('Accessing UI is deprecated. Call \'' + method + '\' on the instance directly. Please comment in issue 1073 as to your need to call this method.');
-      return instance[method](name, { message: message, assert: assert, updateClass: updateClass });
-    };
-  });
-
-  // ### PARSLEY auto-binding
-  // Prevent it by setting `ParsleyConfig.autoBind` to `false`
-  if (false !== window.ParsleyConfig.autoBind) {
-    $(function () {
-      // Works only on `data-parsley-validate`.
-      if ($('[data-parsley-validate]').length) $('[data-parsley-validate]').parsley();
-    });
-  }
-
-  var o = $({});
-  var deprecated = function deprecated() {
-    Utils.warnOnce("Parsley's pubsub module is deprecated; use the 'on' and 'off' methods on parsley instances or window.Parsley");
-  };
-
-  // Returns an event handler that calls `fn` with the arguments it expects
-  function adapt(fn, context) {
-    // Store to allow unbinding
-    if (!fn.parsleyAdaptedCallback) {
-      fn.parsleyAdaptedCallback = function () {
-        var args = Array.prototype.slice.call(arguments, 0);
-        args.unshift(this);
-        fn.apply(context || o, args);
-      };
-    }
-    return fn.parsleyAdaptedCallback;
-  }
-
-  var eventPrefix = 'parsley:';
-  // Converts 'parsley:form:validate' into 'form:validate'
-  function eventName(name) {
-    if (name.lastIndexOf(eventPrefix, 0) === 0) return name.substr(eventPrefix.length);
-    return name;
-  }
-
-  // $.listen is deprecated. Use Parsley.on instead.
-  $.listen = function (name, callback) {
-    var context;
-    deprecated();
-    if ('object' === typeof arguments[1] && 'function' === typeof arguments[2]) {
-      context = arguments[1];
-      callback = arguments[2];
-    }
-
-    if ('function' !== typeof callback) throw new Error('Wrong parameters');
-
-    window.Parsley.on(eventName(name), adapt(callback, context));
-  };
-
-  $.listenTo = function (instance, name, fn) {
-    deprecated();
-    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
-
-    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong parameters');
-
-    instance.on(eventName(name), adapt(fn));
-  };
-
-  $.unsubscribe = function (name, fn) {
-    deprecated();
-    if ('string' !== typeof name || 'function' !== typeof fn) throw new Error('Wrong arguments');
-    window.Parsley.off(eventName(name), fn.parsleyAdaptedCallback);
-  };
-
-  $.unsubscribeTo = function (instance, name) {
-    deprecated();
-    if (!(instance instanceof parsley_field) && !(instance instanceof Form)) throw new Error('Must give Parsley instance');
-    instance.off(eventName(name));
-  };
-
-  $.unsubscribeAll = function (name) {
-    deprecated();
-    window.Parsley.off(eventName(name));
-    $('form,input,textarea,select').each(function () {
-      var instance = $(this).data('Parsley');
-      if (instance) {
-        instance.off(eventName(name));
-      }
-    });
-  };
-
-  // $.emit is deprecated. Use jQuery events instead.
-  $.emit = function (name, instance) {
-    var _instance;
-
-    deprecated();
-    var instanceGiven = instance instanceof parsley_field || instance instanceof Form;
-    var args = Array.prototype.slice.call(arguments, instanceGiven ? 2 : 1);
-    args.unshift(eventName(name));
-    if (!instanceGiven) {
-      instance = window.Parsley;
-    }
-    (_instance = instance).trigger.apply(_instance, _toConsumableArray(args));
-  };
-
-  var pubsub = {};
-
-  $.extend(true, Parsley, {
-    asyncValidators: {
-      'default': {
-        fn: function fn(xhr) {
-          // By default, only status 2xx are deemed successful.
-          // Note: we use status instead of state() because responses with status 200
-          // but invalid messages (e.g. an empty body for content type set to JSON) will
-          // result in state() === 'rejected'.
-          return xhr.status >= 200 && xhr.status < 300;
-        },
-        url: false
-      },
-      reverse: {
-        fn: function fn(xhr) {
-          // If reverse option is set, a failing ajax request is considered successful
-          return xhr.status < 200 || xhr.status >= 300;
-        },
-        url: false
-      }
-    },
-
-    addAsyncValidator: function addAsyncValidator(name, fn, url, options) {
-      Parsley.asyncValidators[name] = {
-        fn: fn,
-        url: url || false,
-        options: options || {}
-      };
-
-      return this;
-    }
-
-  });
-
-  Parsley.addValidator('remote', {
-    requirementType: {
-      '': 'string',
-      'validator': 'string',
-      'reverse': 'boolean',
-      'options': 'object'
-    },
-
-    validateString: function validateString(value, url, options, instance) {
-      var data = {};
-      var ajaxOptions;
-      var csr;
-      var validator = options.validator || (true === options.reverse ? 'reverse' : 'default');
-
-      if ('undefined' === typeof Parsley.asyncValidators[validator]) throw new Error('Calling an undefined async validator: `' + validator + '`');
-
-      url = Parsley.asyncValidators[validator].url || url;
-
-      // Fill current value
-      if (url.indexOf('{value}') > -1) {
-        url = url.replace('{value}', encodeURIComponent(value));
-      } else {
-        data[instance.element.getAttribute('name') || instance.element.getAttribute('id')] = value;
-      }
-
-      // Merge options passed in from the function with the ones in the attribute
-      var remoteOptions = $.extend(true, options.options || {}, Parsley.asyncValidators[validator].options);
-
-      // All `$.ajax(options)` could be overridden or extended directly from DOM in `data-parsley-remote-options`
-      ajaxOptions = $.extend(true, {}, {
-        url: url,
-        data: data,
-        type: 'GET'
-      }, remoteOptions);
-
-      // Generate store key based on ajax options
-      instance.trigger('field:ajaxoptions', instance, ajaxOptions);
-
-      csr = $.param(ajaxOptions);
-
-      // Initialise querry cache
-      if ('undefined' === typeof Parsley._remoteCache) Parsley._remoteCache = {};
-
-      // Try to retrieve stored xhr
-      var xhr = Parsley._remoteCache[csr] = Parsley._remoteCache[csr] || $.ajax(ajaxOptions);
-
-      var handleXhr = function handleXhr() {
-        var result = Parsley.asyncValidators[validator].fn.call(instance, xhr, url, options);
-        if (!result) // Map falsy results to rejected promise
-          result = $.Deferred().reject();
-        return $.when(result);
-      };
-
-      return xhr.then(handleXhr, handleXhr);
-    },
-
-    priority: -1
-  });
-
-  Parsley.on('form:submit', function () {
-    Parsley._remoteCache = {};
-  });
-
-  Base.prototype.addAsyncValidator = function () {
-    Utils.warnOnce('Accessing the method `addAsyncValidator` through an instance is deprecated. Simply call `Parsley.addAsyncValidator(...)`');
-    return Parsley.addAsyncValidator.apply(Parsley, arguments);
-  };
-
-  // This is included with the Parsley library itself,
-  // thus there is no use in adding it to your project.
-  Parsley.addMessages('en', {
-    defaultMessage: "This value seems to be invalid.",
-    type: {
-      email: "This value should be a valid email.",
-      url: "This value should be a valid url.",
-      number: "This value should be a valid number.",
-      integer: "This value should be a valid integer.",
-      digits: "This value should be digits.",
-      alphanum: "This value should be alphanumeric."
-    },
-    notblank: "This value should not be blank.",
-    required: "This value is required.",
-    pattern: "This value seems to be invalid.",
-    min: "This value should be greater than or equal to %s.",
-    max: "This value should be lower than or equal to %s.",
-    range: "This value should be between %s and %s.",
-    minlength: "This value is too short. It should have %s characters or more.",
-    maxlength: "This value is too long. It should have %s characters or fewer.",
-    length: "This value length is invalid. It should be between %s and %s characters long.",
-    mincheck: "You must select at least %s choices.",
-    maxcheck: "You must select %s choices or fewer.",
-    check: "You must select between %s and %s choices.",
-    equalto: "This value should be the same."
-  });
-
-  Parsley.setLocale('en');
-
-  /**
-   * inputevent - Alleviate browser bugs for input events
-   * https://github.com/marcandre/inputevent
-   * @version v0.0.3 - (built Thu, Apr 14th 2016, 5:58 pm)
-   * @author Marc-Andre Lafortune <github@marc-andre.ca>
-   * @license MIT
-   */
-
-  function InputEvent() {
-    var _this14 = this;
-
-    var globals = window || global;
-
-    // Slightly odd way construct our object. This way methods are force bound.
-    // Used to test for duplicate library.
-    _extends(this, {
-
-      // For browsers that do not support isTrusted, assumes event is native.
-      isNativeEvent: function isNativeEvent(evt) {
-        return evt.originalEvent && evt.originalEvent.isTrusted !== false;
-      },
-
-      fakeInputEvent: function fakeInputEvent(evt) {
-        if (_this14.isNativeEvent(evt)) {
-          $(evt.target).trigger('input');
-        }
-      },
-
-      misbehaves: function misbehaves(evt) {
-        if (_this14.isNativeEvent(evt)) {
-          _this14.behavesOk(evt);
-          $(document).on('change.inputevent', evt.data.selector, _this14.fakeInputEvent);
-          _this14.fakeInputEvent(evt);
-        }
-      },
-
-      behavesOk: function behavesOk(evt) {
-        if (_this14.isNativeEvent(evt)) {
-          $(document) // Simply unbinds the testing handler
-          .off('input.inputevent', evt.data.selector, _this14.behavesOk).off('change.inputevent', evt.data.selector, _this14.misbehaves);
-        }
-      },
-
-      // Bind the testing handlers
-      install: function install() {
-        if (globals.inputEventPatched) {
-          return;
-        }
-        globals.inputEventPatched = '0.0.3';
-        var _arr = ['select', 'input[type="checkbox"]', 'input[type="radio"]', 'input[type="file"]'];
-        for (var _i = 0; _i < _arr.length; _i++) {
-          var selector = _arr[_i];
-          $(document).on('input.inputevent', selector, { selector: selector }, _this14.behavesOk).on('change.inputevent', selector, { selector: selector }, _this14.misbehaves);
-        }
-      },
-
-      uninstall: function uninstall() {
-        delete globals.inputEventPatched;
-        $(document).off('.inputevent');
-      }
-
-    });
-  };
-
-  var inputevent = new InputEvent();
-
-  inputevent.install();
-
-  var parsley = Parsley;
-
-  return parsley;
-});
-//# sourceMappingURL=parsley.js.map
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(2)))
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jquery.sumoselect - v3.0.3
- * http://hemantnegi.github.io/jquery.sumoselect
- * 2016-12-12
- *
- * Copyright 2015 Hemant Negi
- * Email : hemant.frnz@gmail.com
- * Compressor http://refresh-sf.com/
- */
-
-(function (factory) {
-    'use strict';
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else if (typeof exports !== 'undefined') {
-        module.exports = factory(require('jquery'));
-    } else {
-        factory(jQuery);
-    }
-
-})(function ($) {
-
-    'namespace sumo';
-    $.fn.SumoSelect = function (options) {
-
-        // This is the easiest way to have default options.
-        var settings = $.extend({
-            placeholder: 'Select Here',   // Dont change it here.
-            csvDispCount: 3,              // display no. of items in multiselect. 0 to display all.
-            captionFormat: '{0} Selected', // format of caption text. you can set your locale.
-            captionFormatAllSelected: '{0} all selected!', // format of caption text when all elements are selected. set null to use captionFormat. It will not work if there are disabled elements in select.
-            floatWidth: 400,              // Screen width of device at which the list is rendered in floating popup fashion.
-            forceCustomRendering: false,  // force the custom modal on all devices below floatWidth resolution.
-            nativeOnDevice: ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'], //
-            outputAsCSV: false,           // true to POST data as csv ( false for Html control array ie. default select )
-            csvSepChar: ',',              // separation char in csv mode
-            okCancelInMulti: false,       // display ok cancel buttons in desktop mode multiselect also.
-            isClickAwayOk: false,         // for okCancelInMulti=true. sets whether click outside will trigger Ok or Cancel (default is cancel).
-            triggerChangeCombined: true,  // im multi select mode whether to trigger change event on individual selection or combined selection.
-            selectAll: false,             // to display select all button in multiselect mode.|| also select all will not be available on mobile devices.
-
-            search: false,                // to display input for filtering content. selectAlltext will be input text placeholder
-            searchText: 'Search...',      // placeholder for search input
-            searchFn: function(haystack, needle) { // search function
-                return haystack.toLowerCase().indexOf(needle.toLowerCase()) < 0;
-            },
-            noMatch: 'No matches for "{0}"',
-            prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
-            locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
-            up: false,                    // set true to open upside.
-            showTitle: true               // set to false to prevent title (tooltip) from appearing
-        }, options);
-
-        var ret = this.each(function () {
-            var selObj = this; // the original select object.
-            if (this.sumo || !$(this).is('select')) return; //already initialized
-
-            this.sumo = {
-                E: $(selObj),   //the jquery object of original select element.
-                is_multi: $(selObj).attr('multiple'),  //if its a multiple select
-                select: '',
-                caption: '',
-                placeholder: '',
-                optDiv: '',
-                CaptionCont: '',
-                ul: '',
-                is_floating: false,
-                is_opened: false,
-                //backdrop: '',
-                mob: false, // if to open device default select
-                Pstate: [],
-                lastUnselected: null,
-
-                createElems: function () {
-                    var O = this;
-                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
-                    O.select = O.E.parent();
-                    O.caption = $('<span>');
-                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
-                        .attr('style', O.E.attr('style'))
-                        .prepend(O.caption);
-                    O.select.append(O.CaptionCont);
-
-                    // default turn off if no multiselect
-                    if (!O.is_multi) settings.okCancelInMulti = false
-
-                    if (O.E.attr('disabled'))
-                        O.select.addClass('disabled').removeAttr('tabindex');
-
-                    //if output as csv and is a multiselect.
-                    if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
-                        //create a hidden field to store csv value.
-                        O.select.append($('<input class="HEMANT123" type="hidden" />').attr('name', O.E.attr('name')).val(O.getSelStr()));
-
-                        // so it can not post the original select.
-                        O.E.removeAttr('name');
-                    }
-
-                    //break for mobile rendring.. if forceCustomRendering is false
-                    if (O.isMobile() && !settings.forceCustomRendering) {
-                        O.setNativeMobile();
-                        return;
-                    }
-
-                    // if there is a name attr in select add a class to container div
-                    if (O.E.attr('name')) O.select.addClass('sumo_' + O.E.attr('name').replace(/\[\]/, ''))
-
-                    //hide original select
-                    O.E.addClass('SumoUnder').attr('tabindex', '-1');
-
-                    //## Creating the list...
-                    O.optDiv = $('<div class="optWrapper ' + (settings.up ? 'up' : '') + '">');
-
-                    //branch for floating list in low res devices.
-                    O.floatingList();
-
-                    //Creating the markup for the available options
-                    O.ul = $('<ul class="options">');
-                    O.optDiv.append(O.ul);
-
-                    // Select all functionality
-                    if (settings.selectAll && O.is_multi) O.SelAll();
-
-                    // search functionality
-                    if (settings.search) O.Search();
-
-                    O.ul.append(O.prepItems(O.E.children()));
-
-                    //if multiple then add the class multiple and add OK / CANCEL button
-                    if (O.is_multi) O.multiSelelect();
-
-                    O.select.append(O.optDiv);
-                    O.basicEvents();
-                    O.selAllState();
-                },
-
-                prepItems: function (opts, d) {
-                    var lis = [], O = this;
-                    $(opts).each(function (i, opt) {       // parsing options to li
-                        opt = $(opt);
-                        lis.push(opt.is('optgroup') ?
-                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
-                                .find('ul')
-                                .append(O.prepItems(opt.children(), opt[0].disabled))
-                                .end()
-                            :
-                            O.createLi(opt, d)
-                        );
-                    });
-                    return lis;
-                },
-
-                //## Creates a LI element from a given option and binds events to it
-                //## returns the jquery instance of li (not inserted in dom)
-                createLi: function (opt, d) {
-                    var O = this;
-
-                    if (!opt.attr('value')) opt.attr('value', opt.val());
-                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
-
-                    li.data('opt', opt);    // store a direct reference to option.
-                    opt.data('li', li);    // store a direct reference to list item.
-                    if (O.is_multi) li.prepend('<span><i></i></span>');
-
-                    if (opt[0].disabled || d)
-                        li = li.addClass('disabled');
-
-                    O.onOptClick(li);
-
-                    if (opt[0].selected)
-                        li.addClass('selected');
-
-                    if (opt.attr('class'))
-                        li.addClass(opt.attr('class'));
-
-                    if (opt.attr('title'))
-                        li.attr('title', opt.attr('title'));
-
-                    return li;
-                },
-
-                //## Returns the selected items as string in a Multiselect.
-                getSelStr: function () {
-                    // get the pre selected items.
-                    var sopt = [];
-                    this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
-                    return sopt.join(settings.csvSepChar);
-                },
-
-                //## THOSE OK/CANCEL BUTTONS ON MULTIPLE SELECT.
-                multiSelelect: function () {
-                    var O = this;
-                    O.optDiv.addClass('multiple');
-                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
-                        //if combined change event is set.
-                        O._okbtn();
-                        O.hideOpts();
-                    });
-                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
-                        O._cnbtn();
-                        O.hideOpts();
-                    });
-                    var btns = O.okbtn.add(O.cancelBtn);
-                    O.optDiv.append($('<div class="MultiControls">').append(btns));
-
-                    // handling keyboard navigation on ok cancel buttons.
-                    btns.on('keydown.sumo', function (e) {
-                        var el = $(this);
-                        switch (e.which) {
-                            case 32: // space
-                            case 13: // enter
-                                el.trigger('click');
-                                break;
-
-                            case 9:  //tab
-                                if (el.hasClass('btnOk')) return;
-                            case 27: // esc
-                                O._cnbtn();
-                                O.hideOpts();
-                                return;
-                        }
-                        e.stopPropagation();
-                        e.preventDefault();
-                    });
-                },
-
-                _okbtn: function () {
-                    var O = this, cg = 0;
-                    //if combined change event is set.
-                    if (settings.triggerChangeCombined) {
-                        //check for a change in the selection.
-                        if (O.E.find('option:selected').length !== O.Pstate.length) {
-                            cg = 1;
-                        }
-                        else {
-                            O.E.find('option').each(function (i, e) {
-                                if (e.selected && O.Pstate.indexOf(i) < 0) cg = 1;
-                            });
-                        }
-
-                        if (cg) {
-                            O.callChange();
-                            O.setText();
-                        }
-                    }
-                },
-                _cnbtn: function () {
-                    var O = this;
-                    //remove all selections
-                    O.E.find('option:selected').each(function () { this.selected = false; });
-                    O.optDiv.find('li.selected').removeClass('selected')
-
-                    //restore selections from saved state.
-                    for (var i = 0; i < O.Pstate.length; i++) {
-                        O.E.find('option')[O.Pstate[i]].selected = true;
-                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
-                    }
-                    O.selAllState();
-                },
-
-                SelAll: function () {
-                    var O = this;
-                    if (!O.is_multi) return;
-                    O.selAll = $('<p class="select-all"><span><i></i></span><label>' + settings.locale[2] + '</label></p>');
-                    O.optDiv.addClass('selall');
-                    O.selAll.on('click', function () {
-                        O.selAll.toggleClass('selected');
-                        O.toggSelAll(O.selAll.hasClass('selected'), 1);
-                        //O.selAllState();
-                    });
-
-                    O.optDiv.prepend(O.selAll);
-                },
-
-                // search module (can be removed if not required.)
-                Search: function () {
-                    var O = this,
-                        cc = O.CaptionCont.addClass('search'),
-                        P = $('<p class="no-match">'),
-                        fn = (options.searchFn && typeof options.searchFn == 'function') ? options.searchFn : settings.searchFn;
-
-                    O.ftxt = $('<input type="text" class="search-txt" value="" placeholder="' + settings.searchText + '">')
-                        .on('click', function (e) {
-                            e.stopPropagation();
-                        });
-                    cc.append(O.ftxt);
-                    O.optDiv.children('ul').after(P);
-
-                    O.ftxt.on('keyup.sumo', function () {
-                        var hid = O.optDiv.find('ul.options li.opt').each(function (ix, e) {
-                            var e = $(e),
-                                opt = e.data('opt')[0];
-                            opt.hidden = fn(e.text(), O.ftxt.val());
-                            e.toggleClass('hidden', opt.hidden);
-                        }).not('.hidden');
-
-                        P.html(settings.noMatch.replace(/\{0\}/g, '<em></em>')).toggle(!hid.length);
-                        P.find('em').text(O.ftxt.val());
-                        O.selAllState();
-                    });
-                },
-
-                selAllState: function () {
-                    var O = this;
-                    if (settings.selectAll && O.is_multi) {
-                        var sc = 0, vc = 0;
-                        O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
-                            if ($(e).hasClass('selected')) sc++;
-                            if (!$(e).hasClass('disabled')) vc++;
-                        });
-                        //select all checkbox state change.
-                        if (sc === vc) O.selAll.removeClass('partial').addClass('selected');
-                        else if (sc === 0) O.selAll.removeClass('selected partial');
-                        else O.selAll.addClass('partial')//.removeClass('selected');
-                    }
-                },
-
-                showOpts: function () {
-                    var O = this;
-                    if (O.E.attr('disabled')) return; // if select is disabled then retrun
-                    O.E.trigger('sumo:opening', O);
-                    O.is_opened = true;
-                    O.select.addClass('open').attr('aria-expanded', 'true');
-                    O.E.trigger('sumo:opened', O);
-
-                    if (O.ftxt) O.ftxt.focus();
-                    else O.select.focus();
-
-                    // hide options on click outside.
-                    $(document).on('click.sumo', function (e) {
-                        if (!O.select.is(e.target)                  // if the target of the click isn't the container...
-                            && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
-                            if (!O.is_opened) return;
-                            O.hideOpts();
-                            if (settings.okCancelInMulti) {
-                                if (settings.isClickAwayOk)
-                                    O._okbtn();
-                                else
-                                    O._cnbtn();
-                            }
-                        }
-                    });
-
-                    if (O.is_floating) {
-                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
-                        if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
-                        O.optDiv.css('height', H);
-                        $('body').addClass('sumoStopScroll');
-                    }
-
-                    O.setPstate();
-                },
-
-                //maintain state when ok/cancel buttons are available storing the indexes.
-                setPstate: function () {
-                    var O = this;
-                    if (O.is_multi && (O.is_floating || settings.okCancelInMulti)) {
-                        O.Pstate = [];
-                        // assuming that find returns elements in tree order
-                        O.E.find('option').each(function (i, e) { if (e.selected) O.Pstate.push(i); });
-                    }
-                },
-
-                callChange: function () {
-                    this.E.trigger('change').trigger('click');
-                },
-
-                hideOpts: function () {
-                    var O = this;
-                    if (O.is_opened) {
-                        O.E.trigger('sumo:closing', O);
-                        O.is_opened = false;
-                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
-                        O.E.trigger('sumo:closed', O);
-                        $(document).off('click.sumo');
-                        O.select.focus();
-                        $('body').removeClass('sumoStopScroll');
-
-                        // clear the search
-                        if (settings.search) {
-                            O.ftxt.val('');
-                            O.ftxt.trigger('keyup.sumo');
-                        }
-                    }
-                },
-                setOnOpen: function () {
-                    var O = this,
-                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search ? 0 : O.E[0].selectedIndex);
-                    if (li.hasClass('disabled')) {
-                        li = li.next(':not(disabled)')
-                        if (!li.length) return;
-                    }
-                    O.optDiv.find('li.sel').removeClass('sel');
-                    li.addClass('sel');
-                    O.showOpts();
-                },
-                nav: function (up) {
-                    var O = this, c,
-                        s = O.ul.find('li.opt:not(.disabled, .hidden)'),
-                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
-                        idx = s.index(sel);
-                    if (O.is_opened && sel.length) {
-
-                        if (up && idx > 0)
-                            c = s.eq(idx - 1);
-                        else if (!up && idx < s.length - 1 && idx > -1)
-                            c = s.eq(idx + 1);
-                        else return; // if no items before or after
-
-                        sel.removeClass('sel');
-                        sel = c.addClass('sel');
-
-                        // setting sel item to visible view.
-                        var ul = O.ul,
-                            st = ul.scrollTop(),
-                            t = sel.position().top + st;
-                        if (t >= st + ul.height() - sel.outerHeight())
-                            ul.scrollTop(t - ul.height() + sel.outerHeight());
-                        if (t < st)
-                            ul.scrollTop(t);
-
-                    }
-                    else
-                        O.setOnOpen();
-                },
-
-                basicEvents: function () {
-                    var O = this;
-                    O.CaptionCont.click(function (evt) {
-                        O.E.trigger('click');
-                        if (O.is_opened) O.hideOpts(); else O.showOpts();
-                        evt.stopPropagation();
-                    });
-
-                    O.select.on('keydown.sumo', function (e) {
-                        switch (e.which) {
-                            case 38: // up
-                                O.nav(true);
-                                break;
-
-                            case 40: // down
-                                O.nav(false);
-                                break;
-
-                            case 65: // shortcut ctrl + a to select all and ctrl + shift + a to unselect all.
-                                if (O.is_multi && e.ctrlKey) {
-                                    O.toggSelAll(!e.shiftKey, 1);
-                                    break;
-                                }
-                                else
-                                    return;
-
-                            case 32: // space
-                                if (settings.search && O.ftxt.is(e.target)) return;
-                            case 13: // enter
-                                if (O.is_opened)
-                                    O.optDiv.find('ul li.sel').trigger('click');
-                                else
-                                    O.setOnOpen();
-                                break;
-                            case 9:	 //tab
-                                if (!settings.okCancelInMulti)
-                                    O.hideOpts();
-                                return;
-                            case 27: // esc
-                                if (settings.okCancelInMulti) O._cnbtn();
-                                O.hideOpts();
-                                return;
-
-                            default:
-                                return; // exit this handler for other keys
-                        }
-                        e.preventDefault(); // prevent the default action (scroll / move caret)
-                    });
-
-                    $(window).on('resize.sumo', function () {
-                        O.floatingList();
-                    });
-                },
-
-                onOptClick: function (li) {
-                    var O = this;
-                    li.click(function () {
-                        var li = $(this);
-                        if (li.hasClass('disabled')) return;
-                        var txt = "";
-                        if (O.is_multi) {
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = li.hasClass('selected');
-                            if (li.data('opt')[0].selected === false) {
-                                O.lastUnselected = li.data('opt')[0].textContent;
-                            }
-                            O.selAllState();
-                        }
-                        else {
-                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
-                            li.toggleClass('selected');
-                            li.data('opt')[0].selected = true;
-                        }
-
-                        //branch for combined change event.
-                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
-                            O.setText();
-                            O.callChange();
-                        }
-
-                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
-                    });
-                },
-
-                // fixed some variables that were not explicitly typed (michc)
-                setText: function () {
-                    var O = this;
-                    O.placeholder = "";
-                    if (O.is_multi) {
-                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
-
-                        for (var i = 0; i < sels.length; i++) {
-                            if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
-                                if (sels.length === O.E.find('option').length && settings.captionFormatAllSelected) {
-                                    O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length) + ',';
-                                } else {
-                                    O.placeholder = settings.captionFormat.replace(/\{0\}/g, sels.length) + ',';
-                                }
-
-                                break;
-                            }
-                            else O.placeholder += $(sels[i]).text() + ", ";
-                        }
-                        O.placeholder = O.placeholder.replace(/,([^,]*)$/, '$1'); //remove unexpected "," from last.
-                    }
-                    else {
-                        O.placeholder = O.E.find(':selected').not(':disabled').text();
-                    }
-
-                    var is_placeholder = false;
-
-                    if (!O.placeholder) {
-
-                        is_placeholder = true;
-
-                        O.placeholder = O.E.attr('placeholder');
-                        if (!O.placeholder)                  //if placeholder is there then set it
-                            O.placeholder = O.E.find('option:disabled:selected').text();
-                    }
-
-                    O.placeholder = O.placeholder ? (settings.prefix + ' ' + O.placeholder) : settings.placeholder
-
-                    //set display text
-                    O.caption.html(O.placeholder);
-                    if (settings.showTitle) O.CaptionCont.attr('title', O.placeholder);
-
-                    //set the hidden field if post as csv is true.
-                    var csvField = O.select.find('input.HEMANT123');
-                    if (csvField.length) csvField.val(O.getSelStr());
-
-                    //add class placeholder if its a placeholder text.
-                    if (is_placeholder) O.caption.addClass('placeholder'); else O.caption.removeClass('placeholder');
-                    return O.placeholder;
-                },
-
-                isMobile: function () {
-
-                    // Adapted from http://www.detectmobilebrowsers.com
-                    var ua = navigator.userAgent || navigator.vendor || window.opera;
-
-                    // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
-                    for (var i = 0; i < settings.nativeOnDevice.length; i++) if (ua.toString().toLowerCase().indexOf(settings.nativeOnDevice[i].toLowerCase()) > 0) return settings.nativeOnDevice[i];
-                    return false;
-                },
-
-                setNativeMobile: function () {
-                    var O = this;
-                    O.E.addClass('SelectClass')//.css('height', O.select.outerHeight());
-                    O.mob = true;
-                    O.E.change(function () {
-                        O.setText();
-                    });
-                },
-
-                floatingList: function () {
-                    var O = this;
-                    //called on init and also on resize.
-                    //O.is_floating = true if window width is < specified float width
-                    O.is_floating = $(window).width() <= settings.floatWidth;
-
-                    //set class isFloating
-                    O.optDiv.toggleClass('isFloating', O.is_floating);
-
-                    //remove height if not floating
-                    if (!O.is_floating) O.optDiv.css('height', '');
-
-                    //toggle class according to okCancelInMulti flag only when it is not floating
-                    O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
-                },
-
-                //HELPERS FOR OUTSIDERS
-                // validates range of given item operations
-                vRange: function (i) {
-                    var O = this;
-                    var opts = O.E.find('option');
-                    if (opts.length <= i || i < 0) throw "index out of bounds"
-                    return O;
-                },
-
-                //toggles selection on c as boolean.
-                toggSel: function (c, i) {
-                    var O = this;
-                    var opt;
-                    if (typeof (i) === "number") {
-                        O.vRange(i);
-                        opt = O.E.find('option')[i];
-                    }
-                    else {
-                        opt = O.E.find('option[value="' + i + '"]')[0] || 0;
-                    }
-                    if (!opt || opt.disabled)
-                        return;
-
-                    if (opt.selected !== c) {
-                        opt.selected = c;
-                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
-
-                        O.callChange();
-                        O.setPstate();
-                        O.setText();
-                        O.selAllState();
-                    }
-                },
-
-                //toggles disabled on c as boolean.
-                toggDis: function (c, i) {
-                    var O = this.vRange(i);
-                    O.E.find('option')[i].disabled = c;
-                    if (c) O.E.find('option')[i].selected = false;
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
-                    O.setText();
-                },
-
-                // toggle disable/enable on complete select control
-                toggSumo: function (val) {
-                    var O = this;
-                    O.enabled = val;
-                    O.select.toggleClass('disabled', val);
-
-                    if (val) {
-                        O.E.attr('disabled', 'disabled');
-                        O.select.removeAttr('tabindex');
-                    }
-                    else {
-                        O.E.removeAttr('disabled');
-                        O.select.attr('tabindex', '0');
-                    }
-
-                    return O;
-                },
-
-                // toggles all option on c as boolean.
-                // set direct=false/0 bypasses okCancelInMulti behaviour.
-                toggSelAll: function (c, direct) {
-                    var O = this;
-                    O.E.find('option:not(:disabled,:hidden)')
-                        .each(function (ix, e) {
-                            var is_selected = e.selected,
-                                e = $(e).data('li');
-                            if (e.hasClass('hidden')) return;
-                            if (!!c) {
-                                if (!is_selected) e.trigger('click');
-                            }
-                            else {
-                                if (is_selected) e.trigger('click');
-                            }
-                        });
-
-                    if (!direct) {
-                        if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
-                        O.callChange();
-                        O.setText();
-                        O.setPstate();
-                    }
-                },
-
-                /* outside accessibility options
-                 which can be accessed from the element instance.
-                 */
-                reload: function () {
-                    var elm = this.unload();
-                    return $(elm).SumoSelect(settings);
-                },
-
-                unload: function () {
-                    var O = this;
-                    O.select.before(O.E);
-                    O.E.show();
-
-                    if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
-                        O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
-                    }
-                    O.select.remove();
-                    delete selObj.sumo;
-                    return selObj;
-                },
-
-                //## add a new option to select at a given index.
-                add: function (val, txt, i) {
-                    if (typeof val === "undefined") throw "No value to add"
-
-                    var O = this;
-                    var opts = O.E.find('option')
-                    if (typeof txt === "number") { i = txt; txt = val; }
-                    if (typeof txt === "undefined") { txt = val; }
-
-                    var opt = $("<option></option>").val(val).html(txt);
-
-                    if (opts.length < i) throw "index out of bounds"
-
-                    if (typeof i === "undefined" || opts.length === i) { // add it to the last if given index is last no or no index provides.
-                        O.E.append(opt);
-                        if (!O.mob) O.ul.append(O.createLi(opt));
-                    }
-                    else {
-                        opts.eq(i).before(opt);
-                        if (!O.mob) O.ul.find('li.opt').eq(i).before(O.createLi(opt));
-                    }
-
-                    return selObj;
-                },
-
-                //## removes an item at a given index.
-                remove: function (i) {
-                    var O = this.vRange(i);
-                    O.E.find('option').eq(i).remove();
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).remove();
-                    O.setText();
-                },
-
-                // removes all but the selected one
-                removeAll: function () {
-                    var O = this;
-                    var options = O.E.find('option');
-
-                    for (var x = (options.length - 1); x >= 0; x--) {
-                        if (options[x].selected !== true) {
-                            O.remove(x);
-                        }
-                    }
-
-                },
-
-
-                find: function (val) {
-                    var O = this;
-                    var options = O.E.find('option');
-                    for (var x in options) {
-                        if (options[x].value === val) {
-                            return parseInt(x);
-                        }
-                    }
-
-                    return -1;
-
-                },
-
-                //## Select an item at a given index.
-                selectItem: function (i) { this.toggSel(true, i); },
-
-                //## UnSelect an iten at a given index.
-                unSelectItem: function (i) { this.toggSel(false, i); },
-
-                //## Select all items  of the select.
-                selectAll: function () { this.toggSelAll(true); },
-
-                //## UnSelect all items of the select.
-                unSelectAll: function () { this.toggSelAll(false); },
-
-                //## Disable an iten at a given index.
-                disableItem: function (i) { this.toggDis(true, i) },
-
-                //## Removes disabled an iten at a given index.
-                enableItem: function (i) { this.toggDis(false, i) },
-
-                //## New simple methods as getter and setter are not working fine in ie8-
-                //## variable to check state of control if enabled or disabled.
-                enabled: true,
-                //## Enables the control
-                enable: function () { return this.toggSumo(false) },
-
-                //## Disables the control
-                disable: function () { return this.toggSumo(true) },
-
-
-                init: function () {
-                    var O = this;
-                    O.createElems();
-                    O.setText();
-                    return O
-                }
-
-            };
-
-            selObj.sumo.init();
-        });
-
-        return ret.length === 1 ? ret[0] : ret;
-    };
-
-
-});
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = function(module) {
+	if(!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if(!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
 
 
 /***/ }),
-/* 13 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -35818,36 +35851,36 @@ Vue.compile = compileToFunctions;
 
 /* harmony default export */ __webpack_exports__["default"] = (Vue);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(5).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(8).setImmediate))
 
 /***/ }),
-/* 14 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var win32 = process && process.platform === 'win32';
-var path = __webpack_require__(15);
-var fileRe = __webpack_require__(90);
+var path = __webpack_require__(21);
+var fileRe = __webpack_require__(255);
 var utils = module.exports;
 
 /**
  * Module dependencies
  */
 
-utils.diff = __webpack_require__(91);
-utils.unique = __webpack_require__(93);
-utils.braces = __webpack_require__(94);
-utils.brackets = __webpack_require__(105);
-utils.extglob = __webpack_require__(107);
-utils.isExtglob = __webpack_require__(16);
-utils.isGlob = __webpack_require__(108);
-utils.typeOf = __webpack_require__(109);
-utils.normalize = __webpack_require__(110);
-utils.omit = __webpack_require__(112);
-utils.parseGlob = __webpack_require__(115);
-utils.cache = __webpack_require__(121);
+utils.diff = __webpack_require__(256);
+utils.unique = __webpack_require__(258);
+utils.braces = __webpack_require__(259);
+utils.brackets = __webpack_require__(270);
+utils.extglob = __webpack_require__(272);
+utils.isExtglob = __webpack_require__(22);
+utils.isGlob = __webpack_require__(273);
+utils.typeOf = __webpack_require__(274);
+utils.normalize = __webpack_require__(275);
+utils.omit = __webpack_require__(277);
+utils.parseGlob = __webpack_require__(280);
+utils.cache = __webpack_require__(286);
 
 /**
  * Get the filename of a filepath
@@ -35978,7 +36011,7 @@ module.exports = utils;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 15 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -36209,7 +36242,7 @@ var substr = 'ab'.substr(-1) === 'b'
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 16 */
+/* 22 */
 /***/ (function(module, exports) {
 
 /*!
@@ -36226,7 +36259,7 @@ module.exports = function isExtglob(str) {
 
 
 /***/ }),
-/* 17 */
+/* 23 */
 /***/ (function(module, exports) {
 
 /**
@@ -36302,39 +36335,139 @@ module.exports = debounce;
 
 
 /***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if(!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if(!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-/* 19 */
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */,
+/* 131 */,
+/* 132 */,
+/* 133 */,
+/* 134 */,
+/* 135 */,
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */,
+/* 140 */,
+/* 141 */,
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */,
+/* 146 */,
+/* 147 */,
+/* 148 */,
+/* 149 */,
+/* 150 */,
+/* 151 */,
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Pagination = __webpack_require__(50);
-var PaginationEvent = __webpack_require__(20);
+var Pagination = __webpack_require__(215);
+var PaginationEvent = __webpack_require__(153);
 
 module.exports = {
   Pagination:Pagination,
@@ -36343,13 +36476,13 @@ module.exports = {
 
 
 /***/ }),
-/* 20 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _vue = __webpack_require__(13);
+var _vue = __webpack_require__(19);
 
 var _vue2 = _interopRequireDefault(_vue);
 
@@ -36360,7 +36493,7 @@ var bus = new _vue2.default();
 module.exports = bus;
 
 /***/ }),
-/* 21 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36486,7 +36619,7 @@ function clientExtra() {
 }
 
 /***/ }),
-/* 22 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36507,7 +36640,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 23 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36521,13 +36654,13 @@ exports.default = function () {
   return { methods: methods, computed: computed, directives: directives, beforeDestroy: beforeDestroy };
 };
 
-var methods = __webpack_require__(56);
-var computed = __webpack_require__(163);
-var directives = __webpack_require__(175);
-var beforeDestroy = __webpack_require__(178);
+var methods = __webpack_require__(221);
+var computed = __webpack_require__(328);
+var directives = __webpack_require__(340);
+var beforeDestroy = __webpack_require__(343);
 
 /***/ }),
-/* 24 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36598,7 +36731,7 @@ function noDebounce(e, name, opts) {
 }
 
 /***/ }),
-/* 25 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36609,7 +36742,7 @@ module.exports = function (val) {
 };
 
 /***/ }),
-/* 26 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36623,9 +36756,9 @@ module.exports = function (val) {
 
 
 
-var base64 = __webpack_require__(84)
-var ieee754 = __webpack_require__(85)
-var isArray = __webpack_require__(27)
+var base64 = __webpack_require__(249)
+var ieee754 = __webpack_require__(250)
+var isArray = __webpack_require__(160)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -38406,7 +38539,7 @@ function isnan (val) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 27 */
+/* 160 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -38417,7 +38550,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 28 */
+/* 161 */
 /***/ (function(module, exports) {
 
 var toString = Object.prototype.toString;
@@ -38552,7 +38685,7 @@ function isBuffer(val) {
 
 
 /***/ }),
-/* 29 */
+/* 162 */
 /***/ (function(module, exports) {
 
 /*!
@@ -38579,7 +38712,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 30 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38604,7 +38737,7 @@ module.exports = function repeat(ele, num) {
 
 
 /***/ }),
-/* 31 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38617,7 +38750,7 @@ module.exports = function repeat(ele, num) {
 
 
 
-var forIn = __webpack_require__(114);
+var forIn = __webpack_require__(279);
 var hasOwn = Object.prototype.hasOwnProperty;
 
 module.exports = function forOwn(obj, fn, thisArg) {
@@ -38630,7 +38763,7 @@ module.exports = function forOwn(obj, fn, thisArg) {
 
 
 /***/ }),
-/* 32 */
+/* 165 */
 /***/ (function(module, exports) {
 
 /*!
@@ -38647,7 +38780,7 @@ module.exports = function isExtglob(str) {
 
 
 /***/ }),
-/* 33 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -38657,7 +38790,7 @@ module.exports = function isExtglob(str) {
  * Licensed under the MIT License.
  */
 
-var isExtglob = __webpack_require__(119);
+var isExtglob = __webpack_require__(284);
 
 module.exports = function isGlob(str) {
   return typeof str === 'string'
@@ -38666,7 +38799,7 @@ module.exports = function isGlob(str) {
 };
 
 /***/ }),
-/* 34 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38717,7 +38850,7 @@ var _merge2 = _interopRequireDefault(_merge);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 35 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38743,15 +38876,15 @@ function makeId() {
 }
 
 /***/ }),
-/* 36 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var is_empty = __webpack_require__(179);
+var is_empty = __webpack_require__(344);
 
-var registerVuexModule = __webpack_require__(180);
+var registerVuexModule = __webpack_require__(345);
 
 module.exports = function (self) {
 
@@ -38827,7 +38960,7 @@ function getDevice(val) {
 }
 
 /***/ }),
-/* 37 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38838,28 +38971,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 module.exports = function (template, theme) {
 
     var themes = {
-        bootstrap3: __webpack_require__(183)(),
-        bootstrap4: __webpack_require__(184)(),
-        bulma: __webpack_require__(185)()
+        bootstrap3: __webpack_require__(348)(),
+        bootstrap4: __webpack_require__(349)(),
+        bulma: __webpack_require__(350)()
     };
 
     var templates = {
-        default: __webpack_require__(186),
-        footerPagination: __webpack_require__(187)
+        default: __webpack_require__(351),
+        footerPagination: __webpack_require__(352)
     };
 
     return function (h) {
 
         var modules = {
-            rows: __webpack_require__(188).call(this, h),
-            normalFilter: __webpack_require__(189).call(this, h),
-            dropdownPagination: __webpack_require__(190).call(this, h),
-            dropdownPaginationCount: __webpack_require__(191).call(this, h),
-            columnFilters: __webpack_require__(192).call(this, h),
-            pagination: __webpack_require__(196).call(this, h),
-            headings: __webpack_require__(197).call(this, h),
-            perPage: __webpack_require__(199).call(this, h),
-            columnsDropdown: __webpack_require__(200).call(this, h)
+            rows: __webpack_require__(353).call(this, h),
+            normalFilter: __webpack_require__(354).call(this, h),
+            dropdownPagination: __webpack_require__(355).call(this, h),
+            dropdownPaginationCount: __webpack_require__(356).call(this, h),
+            columnFilters: __webpack_require__(357).call(this, h),
+            pagination: __webpack_require__(361).call(this, h),
+            headings: __webpack_require__(362).call(this, h),
+            perPage: __webpack_require__(364).call(this, h),
+            columnsDropdown: __webpack_require__(365).call(this, h)
         };
 
         if (typeof template === 'string' && (!templates[template] || typeof templates[template] !== 'function')) {
@@ -38872,14 +39005,14 @@ module.exports = function (template, theme) {
 
         var tpl = typeof template === 'string' ? templates[template] : template;
         var thm = typeof theme === 'string' ? themes[theme] : theme();
-        var slots = __webpack_require__(203).call(this);
+        var slots = __webpack_require__(368).call(this);
 
         return tpl.call(this, h, modules, thm, slots);
     };
 };
 
 /***/ }),
-/* 38 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38910,7 +39043,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 39 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38921,7 +39054,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 40 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38929,9 +39062,9 @@ module.exports = function () {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var object_filled_keys_count = __webpack_require__(207);
-var is_valid_moment_object = __webpack_require__(25);
-var filterByCustomFilters = __webpack_require__(208);
+var object_filled_keys_count = __webpack_require__(372);
+var is_valid_moment_object = __webpack_require__(158);
+var filterByCustomFilters = __webpack_require__(373);
 
 module.exports = function (data, e) {
 
@@ -39059,23 +39192,275 @@ function foundMatch(query, value, isListFilter) {
 }
 
 /***/ }),
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */
+/* 174 */,
+/* 175 */,
+/* 176 */,
+/* 177 */,
+/* 178 */,
+/* 179 */,
+/* 180 */,
+/* 181 */,
+/* 182 */,
+/* 183 */,
+/* 184 */,
+/* 185 */,
+/* 186 */,
+/* 187 */,
+/* 188 */,
+/* 189 */,
+/* 190 */,
+/* 191 */,
+/* 192 */,
+/* 193 */,
+/* 194 */,
+/* 195 */,
+/* 196 */,
+/* 197 */,
+/* 198 */,
+/* 199 */,
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */,
+/* 204 */,
+/* 205 */,
+/* 206 */,
+/* 207 */,
+/* 208 */,
+/* 209 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(210);
+
+
+/***/ }),
+/* 210 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(212);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2__ = __webpack_require__(213);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__);
+window.Vue = __webpack_require__(10);
+window.Vue = __webpack_require__(211);
+
+__webpack_require__(7);
+__webpack_require__(9);
+
+
+
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue__["default"].config.productionTip = false;
+__WEBPACK_IMPORTED_MODULE_0_vue__["default"].config.devtools = false;
+__WEBPACK_IMPORTED_MODULE_0_vue__["default"].config.performance = false;
+
+__WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["ClientTable"]);
+__WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["Event"]);
+__WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+            $('#imagePreview').hide();
+            $('#imagePreview').fadeIn(650);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+if (document.getElementById("candidates-app")) {
+    var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
+        el: '#candidates-app',
+        data: {
+            qual: {
+                reference: '', description: '', institution: '', obtained_on: '',
+                student_no: ''
+            },
+            quals: [],
+            employment: {
+                previous_employer: '', position: '', salary: '',
+                reason_leaving: '', start_date: '', end_date: '', contact: ''
+            },
+            employments: [],
+            errors: [],
+            titles: ['Mr', 'Miss', 'Mrs'],
+            genders: ['Male', 'Female'],
+            maritalStatuses: ['married', 'single', 'divorced'],
+            surname: null,
+            firstName: null,
+            dob: null,
+            personalEmail: null,
+            homeAddress: null,
+            phone: null,
+            position_applied: null,
+            date_available: null,
+            salary_expectation: null,
+            idNumber: null,
+            skills: ['php', 'css', 'mysql', 'js', 'angular', 'vue', 'laravel', 'symfony', 'codeigniter', 'zend'],
+            multipleSelectionsDisabilities: ["Optic Atropy", "Full Blown Aids"],
+            disabilities: ["Optic Atropy", "Full Blown Aids", "Tinnitus", "ADHD", "Down syndrome", "Dyslexia"],
+            qualifications: ["Higher School Certificate", "Certificate", "Diploma", "Degree", "Masters", "PhD"],
+            selectedTitle: null,
+            selectedGender: null,
+            selectedMaritalStatus: null,
+            selectedDisability: null,
+            selectedSkill: null,
+            selectedQualification: null
+        },
+        methods: {
+            checkForm: function checkForm(e) {
+                if (this.title && this.gender && this.maritalStatus) {
+                    return true;
+                }
+
+                this.errors = [];
+
+                if (this.surname) {
+                    this.errors.push('Surname is required.');
+                }
+
+                if (this.firstName) {
+                    this.errors.push('FirstName is required.');
+                }
+
+                if (!this.selectedDisability) {
+                    this.errors.push('Disability is required.');
+                }
+
+                if (!this.selectedGender) {
+                    this.errors.push('Gender is required.');
+                }
+
+                if (!this.selectedTitle) {
+                    this.errors.push('Title is required.');
+                }
+
+                if (!this.selectedMaritalStatus) {
+                    this.errors.push('Marital Status is required.');
+                }
+
+                if (!this.dob) {
+                    this.errors.push('Date of birth is required.');
+                }
+
+                if (!this.selectedSkill) {
+                    this.errors.push('Skills is required.');
+                }
+
+                e.preventDefault();
+            },
+            selectedDisabilityFunc: function selectedDisabilityFunc() {
+                console.log(this.selectedDisability);
+            },
+            selectedSkillFunc: function selectedSkillFunc() {
+                console.log(this.selectedSkill);
+            },
+            selectedQualificationFunc: function selectedQualificationFunc() {
+                console.log(this.selectedQualification);
+            },
+            addNewQual: function addNewQual() {
+                this.quals.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.qual));
+                //ensure height is enough as accordion sets a height as inline style
+                $('.accordion--active').css("height", "");
+            },
+            removeQual: function removeQual(index) {
+                __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
+            },
+            addNewEmploy: function addNewEmploy() {
+                this.employments.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.employment));
+                //ensure height is enough as accordion sets a height as inline style
+                $('.accordion--active').css("height", "");
+            },
+            removeEmploy: function removeEmploy(index) {
+                __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.employments, index);
+            },
+            submitForm: function submitForm(event) {
+                event.preventDefault();
+            },
+            fetchQualifications: function fetchQualifications() {
+                var _this = this;
+
+                if (!route().current("candidates.create")) {
+                    fetch('./candidate-qualifications').then(function (res) {
+                        return res.json();
+                    }).then(function (res) {
+                        _this.quals = res;
+                    });
+                }
+            },
+            fetchQPreviousEmployments: function fetchQPreviousEmployments() {
+                var _this2 = this;
+
+                if (!route().current("candidates.create")) {
+                    fetch('./previous_employments').then(function (res) {
+                        return res.json();
+                    }).then(function (res) {
+                        _this2.employments = res;
+                    });
+                }
+            }
+        },
+        mounted: function mounted() {
+            +function ($, el) {
+                $("#imageUpload").change(function () {
+                    readURL(this);
+                });
+
+                $.fn.mirror = function (selector) {
+                    return this.each(function () {
+                        var $this = $(this);
+                        var $selector = $(selector);
+                        $this.bind('keyup change', function () {
+                            $selector.val($this.val());
+                        });
+                    });
+                };
+
+                $(':input[data-mirror]').each(function () {
+                    $(this).mirror($(this).data('mirror'));
+                });
+
+                $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
+
+                window.Parsley.on('field:ajaxoptions', function (p1, ajaxOptions) {
+                    var id_number = $("[name=id_number]").val();
+
+                    var namedDataMap = {
+                        'id_number': { 'id_number': id_number }
+
+                    };
+
+                    ajaxOptions.global = false;
+                    ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
+                });
+            }(jQuery, this);
+        },
+        created: function created() {
+            this.fetchQualifications();
+            this.fetchQPreviousEmployments();
+        }
+    });
+}
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(1)))
+
+/***/ }),
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function($) {var VueTables=function(t){function e(n){if(r[n])return r[n].exports;var i=r[n]={i:n,l:!1,exports:{}};return t[n].call(i.exports,i,i.exports,e),i.l=!0,i.exports}var r={};return e.m=t,e.c=r,e.d=function(t,r,n){e.o(t,r)||Object.defineProperty(t,r,{configurable:!1,enumerable:!0,get:n})},e.n=function(t){var r=t&&t.__esModule?function(){return t.default}:function(){return t};return e.d(r,"a",r),r},e.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},e.p="/dist/",e(e.s=28)}([function(t,e,r){(function(t){!function(e){function r(t,e){if("object"!==i(t))return e;for(var n in e)"object"===i(t[n])&&"object"===i(e[n])?t[n]=r(t[n],e[n]):t[n]=e[n];return t}function n(t,e,n){var s=n[0],a=n.length;(t||"object"!==i(s))&&(s={});for(var u=0;u<a;++u){var c=n[u];if("object"===i(c))for(var l in c){var f=t?o.clone(c[l]):c[l];s[l]=e?r(s[l],f):f}}return s}function i(t){return{}.toString.call(t).slice(8,-1).toLowerCase()}var o=function(t){return n(!0===t,!1,arguments)};o.recursive=function(t){return n(!0===t,!0,arguments)},o.clone=function(t){var e,r,n=t,s=i(t);if("array"===s)for(n=[],r=t.length,e=0;e<r;++e)n[e]=o.clone(t[e]);else if("object"===s){n={};for(e in t)n[e]=o.clone(t[e])}return n},e?t.exports=o:window.merge=o}("object"==typeof t&&t&&"object"==typeof t.exports&&t.exports)}).call(e,r(32)(t))},function(t,e,r){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var n=r(9),i=function(t){return t&&t.__esModule?t:{default:t}}(n),o=new i.default;e.default=o},function(t,e){function r(t){return!!t.constructor&&"function"==typeof t.constructor.isBuffer&&t.constructor.isBuffer(t)}function n(t){return"function"==typeof t.readFloatLE&&"function"==typeof t.slice&&r(t.slice(0,0))}t.exports=function(t){return null!=t&&(r(t)||n(t)||!!t._isBuffer)}},function(t,e){t.exports=function(t){return"string"==typeof t&&/[@?!+*]\(/.test(t)}},function(t,e,r){var n=r(3);t.exports=function(t){return"string"==typeof t&&(/[*!?{}(|)[\]]/.test(t)||n(t))}},function(t,e,r){"use strict";(function(e){var n=e&&"win32"===e.platform,i=r(7),o=r(74),s=t.exports;s.diff=r(75),s.unique=r(18),s.braces=r(77),s.brackets=r(90),s.extglob=r(92),s.isExtglob=r(3),s.isGlob=r(4),s.typeOf=r(93),s.normalize=r(94),s.omit=r(96),s.parseGlob=r(99),s.cache=r(103),s.filename=function(t){var e=t.match(o());return e&&e[0]},s.isPath=function(t,e){return e=e||{},function(r){var n=s.unixify(r,e);return e.nocase?t.toLowerCase()===n.toLowerCase():t===n}},s.hasPath=function(t,e){return function(r){return-1!==s.unixify(t,e).indexOf(r)}},s.matchPath=function(t,e){return e&&e.contains?s.hasPath(t,e):s.isPath(t,e)},s.hasFilename=function(t){return function(e){var r=s.filename(e);return r&&t.test(r)}},s.arrayify=function(t){return Array.isArray(t)?t:[t]},s.unixify=function(t,e){return e&&!1===e.unixify?t:e&&!0===e.unixify||n||"\\"===i.sep?s.normalize(t,!1):e&&!0===e.unescape?t?t.toString().replace(/\\(\w)/g,"$1"):"":t},s.escapePath=function(t){return t.replace(/[\\.]/g,"\\$&")},s.unescapeGlob=function(t){return t.replace(/[\\"']/g,"")},s.escapeRe=function(t){return t.replace(/[-[\\$*+?.#^\s{}(|)\]]/g,"\\$&")},t.exports=s}).call(e,r(6))},function(t,e){function r(){throw new Error("setTimeout has not been defined")}function n(){throw new Error("clearTimeout has not been defined")}function i(t){if(l===setTimeout)return setTimeout(t,0);if((l===r||!l)&&setTimeout)return l=setTimeout,setTimeout(t,0);try{return l(t,0)}catch(e){try{return l.call(null,t,0)}catch(e){return l.call(this,t,0)}}}function o(t){if(f===clearTimeout)return clearTimeout(t);if((f===n||!f)&&clearTimeout)return f=clearTimeout,clearTimeout(t);try{return f(t)}catch(e){try{return f.call(null,t)}catch(e){return f.call(this,t)}}}function s(){g&&h&&(g=!1,h.length?d=h.concat(d):y=-1,d.length&&a())}function a(){if(!g){var t=i(s);g=!0;for(var e=d.length;e;){for(h=d,d=[];++y<e;)h&&h[y].run();y=-1,e=d.length}h=null,g=!1,o(t)}}function u(t,e){this.fun=t,this.array=e}function c(){}var l,f,p=t.exports={};!function(){try{l="function"==typeof setTimeout?setTimeout:r}catch(t){l=r}try{f="function"==typeof clearTimeout?clearTimeout:n}catch(t){f=n}}();var h,d=[],g=!1,y=-1;p.nextTick=function(t){var e=new Array(arguments.length-1);if(arguments.length>1)for(var r=1;r<arguments.length;r++)e[r-1]=arguments[r];d.push(new u(t,e)),1!==d.length||g||i(a)},u.prototype.run=function(){this.fun.apply(null,this.array)},p.title="browser",p.browser=!0,p.env={},p.argv=[],p.version="",p.versions={},p.on=c,p.addListener=c,p.once=c,p.off=c,p.removeListener=c,p.removeAllListeners=c,p.emit=c,p.prependListener=c,p.prependOnceListener=c,p.listeners=function(t){return[]},p.binding=function(t){throw new Error("process.binding is not supported")},p.cwd=function(){return"/"},p.chdir=function(t){throw new Error("process.chdir is not supported")},p.umask=function(){return 0}},function(t,e,r){(function(t){function r(t,e){for(var r=0,n=t.length-1;n>=0;n--){var i=t[n];"."===i?t.splice(n,1):".."===i?(t.splice(n,1),r++):r&&(t.splice(n,1),r--)}if(e)for(;r--;r)t.unshift("..");return t}function n(t,e){if(t.filter)return t.filter(e);for(var r=[],n=0;n<t.length;n++)e(t[n],n,t)&&r.push(t[n]);return r}var i=/^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/,o=function(t){return i.exec(t).slice(1)};e.resolve=function(){for(var e="",i=!1,o=arguments.length-1;o>=-1&&!i;o--){var s=o>=0?arguments[o]:t.cwd();if("string"!=typeof s)throw new TypeError("Arguments to path.resolve must be strings");s&&(e=s+"/"+e,i="/"===s.charAt(0))}return e=r(n(e.split("/"),function(t){return!!t}),!i).join("/"),(i?"/":"")+e||"."},e.normalize=function(t){var i=e.isAbsolute(t),o="/"===s(t,-1);return t=r(n(t.split("/"),function(t){return!!t}),!i).join("/"),t||i||(t="."),t&&o&&(t+="/"),(i?"/":"")+t},e.isAbsolute=function(t){return"/"===t.charAt(0)},e.join=function(){var t=Array.prototype.slice.call(arguments,0);return e.normalize(n(t,function(t,e){if("string"!=typeof t)throw new TypeError("Arguments to path.join must be strings");return t}).join("/"))},e.relative=function(t,r){function n(t){for(var e=0;e<t.length&&""===t[e];e++);for(var r=t.length-1;r>=0&&""===t[r];r--);return e>r?[]:t.slice(e,r-e+1)}t=e.resolve(t).substr(1),r=e.resolve(r).substr(1);for(var i=n(t.split("/")),o=n(r.split("/")),s=Math.min(i.length,o.length),a=s,u=0;u<s;u++)if(i[u]!==o[u]){a=u;break}for(var c=[],u=a;u<i.length;u++)c.push("..");return c=c.concat(o.slice(a)),c.join("/")},e.sep="/",e.delimiter=":",e.dirname=function(t){var e=o(t),r=e[0],n=e[1];return r||n?(n&&(n=n.substr(0,n.length-1)),r+n):"."},e.basename=function(t,e){var r=o(t)[2];return e&&r.substr(-1*e.length)===e&&(r=r.substr(0,r.length-e.length)),r},e.extname=function(t){return o(t)[3]};var s="b"==="ab".substr(-1)?function(t,e,r){return t.substr(e,r)}:function(t,e,r){return e<0&&(e=t.length+e),t.substr(e,r)}}).call(e,r(6))},function(t,e){t.exports=function(t,e,r){function n(){var c=Date.now()-a;c<e&&c>=0?i=setTimeout(n,e-c):(i=null,r||(u=t.apply(s,o),s=o=null))}var i,o,s,a,u;null==e&&(e=100);var c=function(){s=this,o=arguments,a=Date.now();var c=r&&!i;return i||(i=setTimeout(n,e)),c&&(u=t.apply(s,o),s=o=null),u};return c.clear=function(){i&&(clearTimeout(i),i=null)},c.flush=function(){i&&(u=t.apply(s,o),s=o=null,clearTimeout(i),i=null)},c}},function(t,e){t.exports=Vue},function(t,e,r){var n=r(30),i=r(11);t.exports={Pagination:n,PaginationEvent:i}},function(t,e,r){"use strict";var n=r(9),i=function(t){return t&&t.__esModule?t:{default:t}}(n),o=new i.default;t.exports=o},function(t,e,r){"use strict";function n(){return{methods:{setData:function(t){this.commit("SET_DATA",t),setTimeout(function(){this.dispatch("loaded",t)}.bind(this),0)}}}}function i(){return{}}Object.defineProperty(e,"__esModule",{value:!0});var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};e.default=function(t){var e="server"==t?n():i();return a.default.recursive(!0,{props:{name:{type:String,required:!0}},computed:{state:function(){return this.$store.state[this.name]},Page:function(){return this.state.page},count:function(){return this.state.count},Columns:function(){return this.state.columns},tableData:function(){return this.state.data},page:function(){return this.state.page},limit:function(){return this.state.limit},customQueries:function(){return this.state.customQueries},query:function(){return this.state.query},orderBy:function(){return{column:this.state.sortBy,ascending:this.state.ascending}}},methods:{commit:function(t,e){return this.$store.commit(this.name+"/"+t,e)},orderByColumn:function(t,e){if(this.sortable(t))if(e.shiftKey&&this.orderBy.column&&this.hasMultiSort)this.setUserMultiSort(t);else{var r=this.orderBy.column===t?!this.orderBy.ascending:this._initialOrderAscending(t),n={column:t,ascending:r};this.updateState("orderBy",n),this.commit("SORT",n),this.dispatch("sorted",n)}},setLimit:function(t){var e="object"===(void 0===t?"undefined":o(t))?parseInt(t.target.value):t;this.updateState("perPage",e),this.commit("SET_LIMIT",e),this.dispatch("limit",e)},setOrder:function(t,e){this.updateState("orderBy",{column:t,ascending:e}),this.commit("SORT",{column:t,ascending:e})},setPage:function(t){t||(t=this.$refs.page.value),this.opts.pagination.dropdown||(this.$refs.pagination.Page=t),this.commit("PAGINATE",t)}}},e)};var s=r(0),a=function(t){return t&&t.__esModule?t:{default:t}}(s)},function(t,e,r){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=function(){return{computed:{Columns:function(){return this.columns}}}}},function(t,e,r){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=function(){return{methods:n,computed:i,directives:o,beforeDestroy:s}};var n=r(37),i=r(144),o=r(156),s=r(159)},function(t,e,r){"use strict";function n(t,e){t.vuex?t.commit("SET_FILTER",e):(t.initPagination(),t.opts.pagination.dropdown&&t.getData())}t.exports=function(t,e){var r=this.vuex?JSON.parse(JSON.stringify(this.query)):this.query;if("Object"==Object.prototype.toString.call(t).slice(8,-1)){r=this.vuex?JSON.parse(JSON.stringify(t)):t,this.vuex||(this.query=r);var i=e.target.name,o=e.target.value;i?(this.dispatch("filter",{name:i,value:o}),this.dispatch("filter::"+i,o)):this.dispatch("filter",o),this.updateState("query",r)}else if(t){var s=this.getName(t.target.name),a=t.target.value;s?r[s]=a:r=a,this.vuex||(this.query=r),s?(this.dispatch("filter",{name:s,value:a}),this.dispatch("filter::"+s,a)):this.dispatch("filter",a),this.updateState("query",r)}return n(this,r)}},function(t,e,r){"use strict";t.exports=function(t){return t&&"function"==typeof t.isValid&&t.isValid()}},function(t,e,r){"use strict";(function(t){function n(){return o.TYPED_ARRAY_SUPPORT?2147483647:1073741823}function i(t,e){if(n()<e)throw new RangeError("Invalid typed array length");return o.TYPED_ARRAY_SUPPORT?(t=new Uint8Array(e),t.__proto__=o.prototype):(null===t&&(t=new o(e)),t.length=e),t}function o(t,e,r){if(!(o.TYPED_ARRAY_SUPPORT||this instanceof o))return new o(t,e,r);if("number"==typeof t){if("string"==typeof e)throw new Error("If encoding is specified then the first argument must be a string");return c(this,t)}return s(this,t,e,r)}function s(t,e,r,n){if("number"==typeof e)throw new TypeError('"value" argument must not be a number');return"undefined"!=typeof ArrayBuffer&&e instanceof ArrayBuffer?p(t,e,r,n):"string"==typeof e?l(t,e,r):h(t,e)}function a(t){if("number"!=typeof t)throw new TypeError('"size" argument must be a number');if(t<0)throw new RangeError('"size" argument must not be negative')}function u(t,e,r,n){return a(e),e<=0?i(t,e):void 0!==r?"string"==typeof n?i(t,e).fill(r,n):i(t,e).fill(r):i(t,e)}function c(t,e){if(a(e),t=i(t,e<0?0:0|d(e)),!o.TYPED_ARRAY_SUPPORT)for(var r=0;r<e;++r)t[r]=0;return t}function l(t,e,r){if("string"==typeof r&&""!==r||(r="utf8"),!o.isEncoding(r))throw new TypeError('"encoding" must be a valid string encoding');var n=0|y(e,r);t=i(t,n);var s=t.write(e,r);return s!==n&&(t=t.slice(0,s)),t}function f(t,e){var r=e.length<0?0:0|d(e.length);t=i(t,r);for(var n=0;n<r;n+=1)t[n]=255&e[n];return t}function p(t,e,r,n){if(e.byteLength,r<0||e.byteLength<r)throw new RangeError("'offset' is out of bounds");if(e.byteLength<r+(n||0))throw new RangeError("'length' is out of bounds");return e=void 0===r&&void 0===n?new Uint8Array(e):void 0===n?new Uint8Array(e,r):new Uint8Array(e,r,n),o.TYPED_ARRAY_SUPPORT?(t=e,t.__proto__=o.prototype):t=f(t,e),t}function h(t,e){if(o.isBuffer(e)){var r=0|d(e.length);return t=i(t,r),0===t.length?t:(e.copy(t,0,0,r),t)}if(e){if("undefined"!=typeof ArrayBuffer&&e.buffer instanceof ArrayBuffer||"length"in e)return"number"!=typeof e.length||W(e.length)?i(t,0):f(t,e);if("Buffer"===e.type&&X(e.data))return f(t,e.data)}throw new TypeError("First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.")}function d(t){if(t>=n())throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x"+n().toString(16)+" bytes");return 0|t}function g(t){return+t!=t&&(t=0),o.alloc(+t)}function y(t,e){if(o.isBuffer(t))return t.length;if("undefined"!=typeof ArrayBuffer&&"function"==typeof ArrayBuffer.isView&&(ArrayBuffer.isView(t)||t instanceof ArrayBuffer))return t.byteLength;"string"!=typeof t&&(t=""+t);var r=t.length;if(0===r)return 0;for(var n=!1;;)switch(e){case"ascii":case"latin1":case"binary":return r;case"utf8":case"utf-8":case void 0:return V(t).length;case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return 2*r;case"hex":return r>>>1;case"base64":return H(t).length;default:if(n)return V(t).length;e=(""+e).toLowerCase(),n=!0}}function m(t,e,r){var n=!1;if((void 0===e||e<0)&&(e=0),e>this.length)return"";if((void 0===r||r>this.length)&&(r=this.length),r<=0)return"";if(r>>>=0,e>>>=0,r<=e)return"";for(t||(t="utf8");;)switch(t){case"hex":return k(this,e,r);case"utf8":case"utf-8":return T(this,e,r);case"ascii":return O(this,e,r);case"latin1":case"binary":return B(this,e,r);case"base64":return E(this,e,r);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return R(this,e,r);default:if(n)throw new TypeError("Unknown encoding: "+t);t=(t+"").toLowerCase(),n=!0}}function b(t,e,r){var n=t[e];t[e]=t[r],t[r]=n}function v(t,e,r,n,i){if(0===t.length)return-1;if("string"==typeof r?(n=r,r=0):r>2147483647?r=2147483647:r<-2147483648&&(r=-2147483648),r=+r,isNaN(r)&&(r=i?0:t.length-1),r<0&&(r=t.length+r),r>=t.length){if(i)return-1;r=t.length-1}else if(r<0){if(!i)return-1;r=0}if("string"==typeof e&&(e=o.from(e,n)),o.isBuffer(e))return 0===e.length?-1:_(t,e,r,n,i);if("number"==typeof e)return e&=255,o.TYPED_ARRAY_SUPPORT&&"function"==typeof Uint8Array.prototype.indexOf?i?Uint8Array.prototype.indexOf.call(t,e,r):Uint8Array.prototype.lastIndexOf.call(t,e,r):_(t,[e],r,n,i);throw new TypeError("val must be string, number or Buffer")}function _(t,e,r,n,i){function o(t,e){return 1===s?t[e]:t.readUInt16BE(e*s)}var s=1,a=t.length,u=e.length;if(void 0!==n&&("ucs2"===(n=String(n).toLowerCase())||"ucs-2"===n||"utf16le"===n||"utf-16le"===n)){if(t.length<2||e.length<2)return-1;s=2,a/=2,u/=2,r/=2}var c;if(i){var l=-1;for(c=r;c<a;c++)if(o(t,c)===o(e,-1===l?0:c-l)){if(-1===l&&(l=c),c-l+1===u)return l*s}else-1!==l&&(c-=c-l),l=-1}else for(r+u>a&&(r=a-u),c=r;c>=0;c--){for(var f=!0,p=0;p<u;p++)if(o(t,c+p)!==o(e,p)){f=!1;break}if(f)return c}return-1}function w(t,e,r,n){r=Number(r)||0;var i=t.length-r;n?(n=Number(n))>i&&(n=i):n=i;var o=e.length;if(o%2!=0)throw new TypeError("Invalid hex string");n>o/2&&(n=o/2);for(var s=0;s<n;++s){var a=parseInt(e.substr(2*s,2),16);if(isNaN(a))return s;t[r+s]=a}return s}function x(t,e,r,n){return K(V(e,t.length-r),t,r,n)}function S(t,e,r,n){return K(G(e),t,r,n)}function C(t,e,r,n){return S(t,e,r,n)}function A(t,e,r,n){return K(H(e),t,r,n)}function P(t,e,r,n){return K(Q(e,t.length-r),t,r,n)}function E(t,e,r){return 0===e&&r===t.length?z.fromByteArray(t):z.fromByteArray(t.slice(e,r))}function T(t,e,r){r=Math.min(t.length,r);for(var n=[],i=e;i<r;){var o=t[i],s=null,a=o>239?4:o>223?3:o>191?2:1;if(i+a<=r){var u,c,l,f;switch(a){case 1:o<128&&(s=o);break;case 2:u=t[i+1],128==(192&u)&&(f=(31&o)<<6|63&u)>127&&(s=f);break;case 3:u=t[i+1],c=t[i+2],128==(192&u)&&128==(192&c)&&(f=(15&o)<<12|(63&u)<<6|63&c)>2047&&(f<55296||f>57343)&&(s=f);break;case 4:u=t[i+1],c=t[i+2],l=t[i+3],128==(192&u)&&128==(192&c)&&128==(192&l)&&(f=(15&o)<<18|(63&u)<<12|(63&c)<<6|63&l)>65535&&f<1114112&&(s=f)}}null===s?(s=65533,a=1):s>65535&&(s-=65536,n.push(s>>>10&1023|55296),s=56320|1023&s),n.push(s),i+=a}return j(n)}function j(t){var e=t.length;if(e<=Z)return String.fromCharCode.apply(String,t);for(var r="",n=0;n<e;)r+=String.fromCharCode.apply(String,t.slice(n,n+=Z));return r}function O(t,e,r){var n="";r=Math.min(t.length,r);for(var i=e;i<r;++i)n+=String.fromCharCode(127&t[i]);return n}function B(t,e,r){var n="";r=Math.min(t.length,r);for(var i=e;i<r;++i)n+=String.fromCharCode(t[i]);return n}function k(t,e,r){var n=t.length;(!e||e<0)&&(e=0),(!r||r<0||r>n)&&(r=n);for(var i="",o=e;o<r;++o)i+=Y(t[o]);return i}function R(t,e,r){for(var n=t.slice(e,r),i="",o=0;o<n.length;o+=2)i+=String.fromCharCode(n[o]+256*n[o+1]);return i}function D(t,e,r){if(t%1!=0||t<0)throw new RangeError("offset is not uint");if(t+e>r)throw new RangeError("Trying to access beyond buffer length")}function M(t,e,r,n,i,s){if(!o.isBuffer(t))throw new TypeError('"buffer" argument must be a Buffer instance');if(e>i||e<s)throw new RangeError('"value" argument is out of bounds');if(r+n>t.length)throw new RangeError("Index out of range")}function F(t,e,r,n){e<0&&(e=65535+e+1);for(var i=0,o=Math.min(t.length-r,2);i<o;++i)t[r+i]=(e&255<<8*(n?i:1-i))>>>8*(n?i:1-i)}function $(t,e,r,n){e<0&&(e=4294967295+e+1);for(var i=0,o=Math.min(t.length-r,4);i<o;++i)t[r+i]=e>>>8*(n?i:3-i)&255}function I(t,e,r,n,i,o){if(r+n>t.length)throw new RangeError("Index out of range");if(r<0)throw new RangeError("Index out of range")}function L(t,e,r,n,i){return i||I(t,e,r,4,3.4028234663852886e38,-3.4028234663852886e38),J.write(t,e,r,n,23,4),r+4}function N(t,e,r,n,i){return i||I(t,e,r,8,1.7976931348623157e308,-1.7976931348623157e308),J.write(t,e,r,n,52,8),r+8}function U(t){if(t=q(t).replace(tt,""),t.length<2)return"";for(;t.length%4!=0;)t+="=";return t}function q(t){return t.trim?t.trim():t.replace(/^\s+|\s+$/g,"")}function Y(t){return t<16?"0"+t.toString(16):t.toString(16)}function V(t,e){e=e||1/0;for(var r,n=t.length,i=null,o=[],s=0;s<n;++s){if((r=t.charCodeAt(s))>55295&&r<57344){if(!i){if(r>56319){(e-=3)>-1&&o.push(239,191,189);continue}if(s+1===n){(e-=3)>-1&&o.push(239,191,189);continue}i=r;continue}if(r<56320){(e-=3)>-1&&o.push(239,191,189),i=r;continue}r=65536+(i-55296<<10|r-56320)}else i&&(e-=3)>-1&&o.push(239,191,189);if(i=null,r<128){if((e-=1)<0)break;o.push(r)}else if(r<2048){if((e-=2)<0)break;o.push(r>>6|192,63&r|128)}else if(r<65536){if((e-=3)<0)break;o.push(r>>12|224,r>>6&63|128,63&r|128)}else{if(!(r<1114112))throw new Error("Invalid code point");if((e-=4)<0)break;o.push(r>>18|240,r>>12&63|128,r>>6&63|128,63&r|128)}}return o}function G(t){for(var e=[],r=0;r<t.length;++r)e.push(255&t.charCodeAt(r));return e}function Q(t,e){for(var r,n,i,o=[],s=0;s<t.length&&!((e-=2)<0);++s)r=t.charCodeAt(s),n=r>>8,i=r%256,o.push(i),o.push(n);return o}function H(t){return z.toByteArray(U(t))}function K(t,e,r,n){for(var i=0;i<n&&!(i+r>=e.length||i>=t.length);++i)e[i+r]=t[i];return i}function W(t){return t!==t}var z=r(66),J=r(67),X=r(68);e.Buffer=o,e.SlowBuffer=g,e.INSPECT_MAX_BYTES=50,o.TYPED_ARRAY_SUPPORT=void 0!==t.TYPED_ARRAY_SUPPORT?t.TYPED_ARRAY_SUPPORT:function(){try{var t=new Uint8Array(1);return t.__proto__={__proto__:Uint8Array.prototype,foo:function(){return 42}},42===t.foo()&&"function"==typeof t.subarray&&0===t.subarray(1,1).byteLength}catch(t){return!1}}(),e.kMaxLength=n(),o.poolSize=8192,o._augment=function(t){return t.__proto__=o.prototype,t},o.from=function(t,e,r){return s(null,t,e,r)},o.TYPED_ARRAY_SUPPORT&&(o.prototype.__proto__=Uint8Array.prototype,o.__proto__=Uint8Array,"undefined"!=typeof Symbol&&Symbol.species&&o[Symbol.species]===o&&Object.defineProperty(o,Symbol.species,{value:null,configurable:!0})),o.alloc=function(t,e,r){return u(null,t,e,r)},o.allocUnsafe=function(t){return c(null,t)},o.allocUnsafeSlow=function(t){return c(null,t)},o.isBuffer=function(t){return!(null==t||!t._isBuffer)},o.compare=function(t,e){if(!o.isBuffer(t)||!o.isBuffer(e))throw new TypeError("Arguments must be Buffers");if(t===e)return 0;for(var r=t.length,n=e.length,i=0,s=Math.min(r,n);i<s;++i)if(t[i]!==e[i]){r=t[i],n=e[i];break}return r<n?-1:n<r?1:0},o.isEncoding=function(t){switch(String(t).toLowerCase()){case"hex":case"utf8":case"utf-8":case"ascii":case"latin1":case"binary":case"base64":case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return!0;default:return!1}},o.concat=function(t,e){if(!X(t))throw new TypeError('"list" argument must be an Array of Buffers');if(0===t.length)return o.alloc(0);var r;if(void 0===e)for(e=0,r=0;r<t.length;++r)e+=t[r].length;var n=o.allocUnsafe(e),i=0;for(r=0;r<t.length;++r){var s=t[r];if(!o.isBuffer(s))throw new TypeError('"list" argument must be an Array of Buffers');s.copy(n,i),i+=s.length}return n},o.byteLength=y,o.prototype._isBuffer=!0,o.prototype.swap16=function(){var t=this.length;if(t%2!=0)throw new RangeError("Buffer size must be a multiple of 16-bits");for(var e=0;e<t;e+=2)b(this,e,e+1);return this},o.prototype.swap32=function(){var t=this.length;if(t%4!=0)throw new RangeError("Buffer size must be a multiple of 32-bits");for(var e=0;e<t;e+=4)b(this,e,e+3),b(this,e+1,e+2);return this},o.prototype.swap64=function(){var t=this.length;if(t%8!=0)throw new RangeError("Buffer size must be a multiple of 64-bits");for(var e=0;e<t;e+=8)b(this,e,e+7),b(this,e+1,e+6),b(this,e+2,e+5),b(this,e+3,e+4);return this},o.prototype.toString=function(){var t=0|this.length;return 0===t?"":0===arguments.length?T(this,0,t):m.apply(this,arguments)},o.prototype.equals=function(t){if(!o.isBuffer(t))throw new TypeError("Argument must be a Buffer");return this===t||0===o.compare(this,t)},o.prototype.inspect=function(){var t="",r=e.INSPECT_MAX_BYTES;return this.length>0&&(t=this.toString("hex",0,r).match(/.{2}/g).join(" "),this.length>r&&(t+=" ... ")),"<Buffer "+t+">"},o.prototype.compare=function(t,e,r,n,i){if(!o.isBuffer(t))throw new TypeError("Argument must be a Buffer");if(void 0===e&&(e=0),void 0===r&&(r=t?t.length:0),void 0===n&&(n=0),void 0===i&&(i=this.length),e<0||r>t.length||n<0||i>this.length)throw new RangeError("out of range index");if(n>=i&&e>=r)return 0;if(n>=i)return-1;if(e>=r)return 1;if(e>>>=0,r>>>=0,n>>>=0,i>>>=0,this===t)return 0;for(var s=i-n,a=r-e,u=Math.min(s,a),c=this.slice(n,i),l=t.slice(e,r),f=0;f<u;++f)if(c[f]!==l[f]){s=c[f],a=l[f];break}return s<a?-1:a<s?1:0},o.prototype.includes=function(t,e,r){return-1!==this.indexOf(t,e,r)},o.prototype.indexOf=function(t,e,r){return v(this,t,e,r,!0)},o.prototype.lastIndexOf=function(t,e,r){return v(this,t,e,r,!1)},o.prototype.write=function(t,e,r,n){if(void 0===e)n="utf8",r=this.length,e=0;else if(void 0===r&&"string"==typeof e)n=e,r=this.length,e=0;else{if(!isFinite(e))throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");e|=0,isFinite(r)?(r|=0,void 0===n&&(n="utf8")):(n=r,r=void 0)}var i=this.length-e;if((void 0===r||r>i)&&(r=i),t.length>0&&(r<0||e<0)||e>this.length)throw new RangeError("Attempt to write outside buffer bounds");n||(n="utf8");for(var o=!1;;)switch(n){case"hex":return w(this,t,e,r);case"utf8":case"utf-8":return x(this,t,e,r);case"ascii":return S(this,t,e,r);case"latin1":case"binary":return C(this,t,e,r);case"base64":return A(this,t,e,r);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return P(this,t,e,r);default:if(o)throw new TypeError("Unknown encoding: "+n);n=(""+n).toLowerCase(),o=!0}},o.prototype.toJSON=function(){return{type:"Buffer",data:Array.prototype.slice.call(this._arr||this,0)}};var Z=4096;o.prototype.slice=function(t,e){var r=this.length;t=~~t,e=void 0===e?r:~~e,t<0?(t+=r)<0&&(t=0):t>r&&(t=r),e<0?(e+=r)<0&&(e=0):e>r&&(e=r),e<t&&(e=t);var n;if(o.TYPED_ARRAY_SUPPORT)n=this.subarray(t,e),n.__proto__=o.prototype;else{var i=e-t;n=new o(i,void 0);for(var s=0;s<i;++s)n[s]=this[s+t]}return n},o.prototype.readUIntLE=function(t,e,r){t|=0,e|=0,r||D(t,e,this.length);for(var n=this[t],i=1,o=0;++o<e&&(i*=256);)n+=this[t+o]*i;return n},o.prototype.readUIntBE=function(t,e,r){t|=0,e|=0,r||D(t,e,this.length);for(var n=this[t+--e],i=1;e>0&&(i*=256);)n+=this[t+--e]*i;return n},o.prototype.readUInt8=function(t,e){return e||D(t,1,this.length),this[t]},o.prototype.readUInt16LE=function(t,e){return e||D(t,2,this.length),this[t]|this[t+1]<<8},o.prototype.readUInt16BE=function(t,e){return e||D(t,2,this.length),this[t]<<8|this[t+1]},o.prototype.readUInt32LE=function(t,e){return e||D(t,4,this.length),(this[t]|this[t+1]<<8|this[t+2]<<16)+16777216*this[t+3]},o.prototype.readUInt32BE=function(t,e){return e||D(t,4,this.length),16777216*this[t]+(this[t+1]<<16|this[t+2]<<8|this[t+3])},o.prototype.readIntLE=function(t,e,r){t|=0,e|=0,r||D(t,e,this.length);for(var n=this[t],i=1,o=0;++o<e&&(i*=256);)n+=this[t+o]*i;return i*=128,n>=i&&(n-=Math.pow(2,8*e)),n},o.prototype.readIntBE=function(t,e,r){t|=0,e|=0,r||D(t,e,this.length);for(var n=e,i=1,o=this[t+--n];n>0&&(i*=256);)o+=this[t+--n]*i;return i*=128,o>=i&&(o-=Math.pow(2,8*e)),o},o.prototype.readInt8=function(t,e){return e||D(t,1,this.length),128&this[t]?-1*(255-this[t]+1):this[t]},o.prototype.readInt16LE=function(t,e){e||D(t,2,this.length);var r=this[t]|this[t+1]<<8;return 32768&r?4294901760|r:r},o.prototype.readInt16BE=function(t,e){e||D(t,2,this.length);var r=this[t+1]|this[t]<<8;return 32768&r?4294901760|r:r},o.prototype.readInt32LE=function(t,e){return e||D(t,4,this.length),this[t]|this[t+1]<<8|this[t+2]<<16|this[t+3]<<24},o.prototype.readInt32BE=function(t,e){return e||D(t,4,this.length),this[t]<<24|this[t+1]<<16|this[t+2]<<8|this[t+3]},o.prototype.readFloatLE=function(t,e){return e||D(t,4,this.length),J.read(this,t,!0,23,4)},o.prototype.readFloatBE=function(t,e){return e||D(t,4,this.length),J.read(this,t,!1,23,4)},o.prototype.readDoubleLE=function(t,e){return e||D(t,8,this.length),J.read(this,t,!0,52,8)},o.prototype.readDoubleBE=function(t,e){return e||D(t,8,this.length),J.read(this,t,!1,52,8)},o.prototype.writeUIntLE=function(t,e,r,n){if(t=+t,e|=0,r|=0,!n){M(this,t,e,r,Math.pow(2,8*r)-1,0)}var i=1,o=0;for(this[e]=255&t;++o<r&&(i*=256);)this[e+o]=t/i&255;return e+r},o.prototype.writeUIntBE=function(t,e,r,n){if(t=+t,e|=0,r|=0,!n){M(this,t,e,r,Math.pow(2,8*r)-1,0)}var i=r-1,o=1;for(this[e+i]=255&t;--i>=0&&(o*=256);)this[e+i]=t/o&255;return e+r},o.prototype.writeUInt8=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,1,255,0),o.TYPED_ARRAY_SUPPORT||(t=Math.floor(t)),this[e]=255&t,e+1},o.prototype.writeUInt16LE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,2,65535,0),o.TYPED_ARRAY_SUPPORT?(this[e]=255&t,this[e+1]=t>>>8):F(this,t,e,!0),e+2},o.prototype.writeUInt16BE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,2,65535,0),o.TYPED_ARRAY_SUPPORT?(this[e]=t>>>8,this[e+1]=255&t):F(this,t,e,!1),e+2},o.prototype.writeUInt32LE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,4,4294967295,0),o.TYPED_ARRAY_SUPPORT?(this[e+3]=t>>>24,this[e+2]=t>>>16,this[e+1]=t>>>8,this[e]=255&t):$(this,t,e,!0),e+4},o.prototype.writeUInt32BE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,4,4294967295,0),o.TYPED_ARRAY_SUPPORT?(this[e]=t>>>24,this[e+1]=t>>>16,this[e+2]=t>>>8,this[e+3]=255&t):$(this,t,e,!1),e+4},o.prototype.writeIntLE=function(t,e,r,n){if(t=+t,e|=0,!n){var i=Math.pow(2,8*r-1);M(this,t,e,r,i-1,-i)}var o=0,s=1,a=0;for(this[e]=255&t;++o<r&&(s*=256);)t<0&&0===a&&0!==this[e+o-1]&&(a=1),this[e+o]=(t/s>>0)-a&255;return e+r},o.prototype.writeIntBE=function(t,e,r,n){if(t=+t,e|=0,!n){var i=Math.pow(2,8*r-1);M(this,t,e,r,i-1,-i)}var o=r-1,s=1,a=0;for(this[e+o]=255&t;--o>=0&&(s*=256);)t<0&&0===a&&0!==this[e+o+1]&&(a=1),this[e+o]=(t/s>>0)-a&255;return e+r},o.prototype.writeInt8=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,1,127,-128),o.TYPED_ARRAY_SUPPORT||(t=Math.floor(t)),t<0&&(t=255+t+1),this[e]=255&t,e+1},o.prototype.writeInt16LE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,2,32767,-32768),o.TYPED_ARRAY_SUPPORT?(this[e]=255&t,this[e+1]=t>>>8):F(this,t,e,!0),e+2},o.prototype.writeInt16BE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,2,32767,-32768),o.TYPED_ARRAY_SUPPORT?(this[e]=t>>>8,this[e+1]=255&t):F(this,t,e,!1),e+2},o.prototype.writeInt32LE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,4,2147483647,-2147483648),o.TYPED_ARRAY_SUPPORT?(this[e]=255&t,this[e+1]=t>>>8,this[e+2]=t>>>16,this[e+3]=t>>>24):$(this,t,e,!0),e+4},o.prototype.writeInt32BE=function(t,e,r){return t=+t,e|=0,r||M(this,t,e,4,2147483647,-2147483648),t<0&&(t=4294967295+t+1),o.TYPED_ARRAY_SUPPORT?(this[e]=t>>>24,this[e+1]=t>>>16,this[e+2]=t>>>8,this[e+3]=255&t):$(this,t,e,!1),e+4},o.prototype.writeFloatLE=function(t,e,r){return L(this,t,e,!0,r)},o.prototype.writeFloatBE=function(t,e,r){return L(this,t,e,!1,r)},o.prototype.writeDoubleLE=function(t,e,r){return N(this,t,e,!0,r)},o.prototype.writeDoubleBE=function(t,e,r){return N(this,t,e,!1,r)},o.prototype.copy=function(t,e,r,n){if(r||(r=0),n||0===n||(n=this.length),e>=t.length&&(e=t.length),e||(e=0),n>0&&n<r&&(n=r),n===r)return 0;if(0===t.length||0===this.length)return 0;if(e<0)throw new RangeError("targetStart out of bounds");if(r<0||r>=this.length)throw new RangeError("sourceStart out of bounds");if(n<0)throw new RangeError("sourceEnd out of bounds");n>this.length&&(n=this.length),t.length-e<n-r&&(n=t.length-e+r);var i,s=n-r;if(this===t&&r<e&&e<n)for(i=s-1;i>=0;--i)t[i+e]=this[i+r];else if(s<1e3||!o.TYPED_ARRAY_SUPPORT)for(i=0;i<s;++i)t[i+e]=this[i+r];else Uint8Array.prototype.set.call(t,this.subarray(r,r+s),e);return s},o.prototype.fill=function(t,e,r,n){if("string"==typeof t){if("string"==typeof e?(n=e,e=0,r=this.length):"string"==typeof r&&(n=r,r=this.length),1===t.length){var i=t.charCodeAt(0);i<256&&(t=i)}if(void 0!==n&&"string"!=typeof n)throw new TypeError("encoding must be a string");if("string"==typeof n&&!o.isEncoding(n))throw new TypeError("Unknown encoding: "+n)}else"number"==typeof t&&(t&=255);if(e<0||this.length<e||this.length<r)throw new RangeError("Out of range index");if(r<=e)return this;e>>>=0,r=void 0===r?this.length:r>>>0,t||(t=0);var s;if("number"==typeof t)for(s=e;s<r;++s)this[s]=t;else{var a=o.isBuffer(t)?t:V(new o(t,n).toString()),u=a.length;for(s=0;s<r-e;++s)this[s+e]=a[s%u]}return this};var tt=/[^+\/0-9A-Za-z-_]/g}).call(e,r(65))},function(t,e,r){"use strict";t.exports=function(t){if(!Array.isArray(t))throw new TypeError("array-unique expects an array.");for(var e=t.length,r=-1;r++<e;)for(var n=r+1;n<t.length;++n)t[r]===t[n]&&t.splice(n--,1);return t}},function(t,e,r){"use strict";t.exports=function(t,e){for(var r=new Array(e),n=0;n<e;n++)r[n]=t;return r}},function(t,e,r){"use strict";var n=r(98),i=Object.prototype.hasOwnProperty;t.exports=function(t,e,r){n(t,function(n,o){if(i.call(t,o))return e.call(r,t[o],o,t)})}},function(t,e,r){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=function(t,e){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:1,n={vuex:!0,activeState:!1,userColumnsDisplay:[],userControlsColumns:!1,displayColumnsDropdown:!1,collapsedGroups:[]};return t?n:(n=(0,i.default)(n,{vuex:!1,count:0,customQueries:{},query:null,page:r,limit:10,windowWidth:"undefined"!=typeof window?window.innerWidth:null,orderBy:{column:!1,ascending:!0}}),"server"==e&&(n.data=[]),n)};var n=r(0),i=function(t){return t&&t.__esModule?t:{default:t}}(n)},function(t,e,r){"use strict";function n(){for(var t="",e="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=0;r<5;r++)t+=e.charAt(Math.floor(Math.random()*e.length));return t}t.exports=function(){return{id:n(),allFilteredData:[],openChildRows:[],windowWidth:"undefined"!=typeof window?window.innerWidth:null,userMultiSorting:{}}}},function(t,e,r){"use strict";function n(t){var e,r,n,a={};for(var u in t){n=o(t[u]);try{r=s(t[u]),e=i(r,n),a[u]=e.concat([n])}catch(t){console.warn("Unknown device "+r)}}return a}function i(t,e){var r={desktop:[1024,null],tablet:[480,1024],mobile:[0,480],tabletL:[768,1024],tabletP:[480,768],mobileL:[320,480],mobileP:[0,320]};switch(e){case"min":return[r[t][0],null];case"max":return[0,r[t][1]];default:return r[t]}}function o(t){var e=t.split("_");return["not","min","max"].indexOf(e[0])>-1&&e[0]}function s(t){var e=t.split("_");return e.length>1?e[1]:e[0]}var a=r(160),u=r(161);t.exports=function(t){t.vuex?u(t):t.limit=t.opts.perPage,a(t.opts.columnsDisplay)||"undefined"==typeof window||(t.columnsDisplay=n(t.opts.columnsDisplay),window.addEventListener("resize",function(){t.windowWidth=window.innerWidth}.bind(t)))}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(t,e){var i={bootstrap3:r(164)(),bootstrap4:r(165)(),bulma:r(166)()},o={default:r(167),footerPagination:r(168)};return function(s){var a={rows:r(169).call(this,s),normalFilter:r(170).call(this,s),dropdownPagination:r(171).call(this,s),dropdownPaginationCount:r(172).call(this,s),columnFilters:r(173).call(this,s),pagination:r(177).call(this,s),headings:r(178).call(this,s),perPage:r(180).call(this,s),columnsDropdown:r(181).call(this,s)};if("string"==typeof t&&(!o[t]||"function"!=typeof o[t]))throw'vue-tables-2: Template "'+t+'" does not exist';if("string"==typeof e&&(!i[e]||"object"!==n(i[e])))throw'vue-tables-2: Theme "'+e+'" does not exist';var u="string"==typeof t?o[t]:t,c="string"==typeof e?i[e]:e(),l=r(184).call(this);return u.call(this,s,a,c,l)}}},function(t,e,r){"use strict";t.exports=function(t){var e=this,r=[];return this.opts.perPageValues.every(function(n){var i=n>=e.count,o=e.limit==n||i&&e.limit>n;return r.push(t("option",{attrs:{value:n},domProps:{selected:o}},[n])),!i}),r}},function(t,e,r){"use strict";t.exports=function(){return Math.ceil(this.count/this.limit)}},function(t,e,r){"use strict";function n(t){return t?"string"==typeof t?t.toLowerCase():t:""}function i(t,e,r){if(["string","number"].indexOf(void 0===e?"undefined":o(e))>-1&&(e=String(e).toLowerCase()),r)return e==t;if("string"==typeof e)return e.indexOf(t)>-1;if(a(e)){var n=moment(t.start,"YYYY-MM-DD HH:mm:ss"),s=moment(t.end,"YYYY-MM-DD HH:mm:ss");return e>=n&&e<=s}if("object"===(void 0===e?"undefined":o(e))){for(var u in e)if(i(t,e[u]))return!0;return!1}return e>=n&&e<=s}var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},s=r(188),a=r(16),u=r(189);t.exports=function(t,e){if(e){var r=this.query;this.setPage(1,!0);var c=this.getName(e.target.name),l="object"===o(e.target.value)?e.target.value:""+e.target.value;c?r[c]=l:r=l,this.vuex?this.commit("SET_FILTER",r):this.query=r,this.updateState("query",r),c?(this.dispatch("filter",{name:c,value:l}),this.dispatch("filter::"+c,l)):this.dispatch("filter",l)}var f=this.query,p=f?1:0;if(!this.opts)return t;this.opts.filterByColumn&&(p=s(f));var l,h,d,g,y,m,t=u(t,this.opts.customFilters,this.customQueries);return p?t.filter(function(t,e){return h=0,this.filterableColumns.forEach(function(e){y=this.opts.dateColumns.indexOf(e)>-1&&this.opts.filterByColumn,m=this.isListFilter(e)&&this.opts.filterByColumn,g=this.dateFormat(e),l=this._getValue(t,e),a(l)&&!y&&(l=l.format(g)),d=this.opts.filterByColumn?f[e]:f,(d=n(d))&&i(d,l,m)&&h++}.bind(this)),h>=p}.bind(this)):t}},function(t,e,r){"use strict";var n=r(1),i=function(t){return t&&t.__esModule?t:{default:t}}(n),o=r(29),s=r(195);t.exports={ClientTable:o,ServerTable:s,Event:i.default}},function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}var i=r(10),o=r(12),s=n(o),a=r(13),u=n(a),c=r(0),l=n(c),f=r(14),p=n(f),h=r(21),d=n(h),g=r(22),y=r(23),m=r(24);e.install=function(t,e,n){var o=arguments.length>3&&void 0!==arguments[3]?arguments[3]:"bootstrap3",a=arguments.length>4&&void 0!==arguments[4]?arguments[4]:"default",c=l.default.recursive(!0,(0,p.default)(),{name:"client-table",components:{Pagination:i.Pagination},render:m.call(this,a,o),props:{columns:{type:Array,required:!0},data:{type:Array,required:!0},name:{type:String,required:!1},options:{type:Object,required:!1,default:function(){return{}}}},created:function(){y(this),this.vuex||(this.initOrderBy(),this.query=this.initQuery(),this.customQueries=this.initCustomFilters())},mounted:function(){this._setColumnsDropdownCloseListener(),this.opts.toMomentFormat&&this.transformDateStringsToMoment(),this.vuex||(this.registerClientFilters(),this.options.initialPage&&this.setPage(this.options.initialPage)),this.opts.groupBy&&!this.opts.orderBy&&(this.orderBy.column=this.opts.groupBy),this.loadState(),this.hasDateFilters()&&this.initDateFilters()},data:function(){return l.default.recursive(g(),{source:"client",globalOptions:e,currentlySorting:{},time:Date.now()},(0,d.default)(n,"client",this.options.initialPage))},computed:{q:r(185),customQ:r(186),totalPages:r(26),filteredData:r(187),hasMultiSort:function(){return this.opts.clientMultiSorting}},methods:{transformDateStringsToMoment:r(191),registerClientFilters:r(192),search:r(27),defaultSort:r(193),getGroupSlot:r(194),toggleGroup:function(t,e){e.stopPropagation();var r=this.collapsedGroups.indexOf(t);r>=0?this.collapsedGroups.splice(r,1):this.collapsedGroups.push(t)},groupToggleIcon:function(t){var e=this.opts.sortIcon.base+" ";return e+=this.collapsedGroups.indexOf(t)>-1?this.opts.sortIcon.down:this.opts.sortIcon.up},loadState:function(){if(this.opts.saveState){if(!this.storage.getItem(this.stateKey))return this.initState(),void(this.activeState=!0);var t=JSON.parse(this.storage.getItem(this.stateKey));this.opts.filterable&&this.setFilter(t.query),this.setOrder(t.orderBy.column,t.orderBy.ascending),this.vuex?this.commit("SET_LIMIT",t.perPage):this.limit=t.perPage,this.setPage(t.page),this.activeState=!0,t.userControlsColumns&&(this.userColumnsDisplay=t.userColumnsDisplay,this.userControlsColumns=t.userControlsColumns)}}}}),f=n?(0,s.default)():(0,u.default)();return c=l.default.recursive(c,f),t.component("v-client-table",c),c}},function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}function i(t,e,r){return e in t?Object.defineProperty(t,e,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[e]=r,t}function o(t,e){return Array.apply(0,Array(e)).map(function(e,r){return r+t})}var s="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},a=r(31),u=n(a),c=r(0),l=n(c),f=r(33),p=r(11);t.exports={render:f.call(void 0),props:{for:{type:String,required:!1},records:{type:Number,required:!0},perPage:{type:Number,default:25},vuex:{type:Boolean},options:{type:Object}},created:function(){if(this.vuex){if(!this.for)throw new Error('vue-pagination-2: The "for" prop is required when using vuex');var t=this.for;this.$store.state[t]||this.$store.registerModule(this.for,{state:{page:1},mutations:i({},t+"/PAGINATE",function(t,e){t.page=e})})}},data:function(){return{Page:1,firstPage:1}},computed:{opts:function(){return(0,l.default)((0,u.default)(),this.options)},Theme:function(){if("object"===s(this.opts.theme))return this.opts.theme;var t={bootstrap3:r(34),bootstrap4:r(35),bulma:r(36)};if(void 0===s(t[this.opts.theme]))throw"vue-pagination-2: the theme "+this.opts.theme+" does not exist";return t[this.opts.theme]},page:function(){return this.vuex?this.$store.state[this.for].page:this.Page},pages:function(){return this.records?o(this.paginationStart,this.pagesInCurrentChunk):[]},totalPages:function(){return this.records?Math.ceil(this.records/this.perPage):1},totalChunks:function(){return Math.ceil(this.totalPages/this.opts.chunk)},currentChunk:function(){return Math.ceil(this.page/this.opts.chunk)},paginationStart:function(){return"scroll"===this.opts.chunksNavigation?this.firstPage:(this.currentChunk-1)*this.opts.chunk+1},pagesInCurrentChunk:function(){return this.paginationStart+this.opts.chunk<=this.totalPages?this.opts.chunk:this.totalPages-this.paginationStart+1},count:function(){if(/{page}/.test(this.opts.texts.count))return this.totalPages<=1?"":this.opts.texts.count.replace("{page}",this.page).replace("{pages}",this.totalPages);var t=this.opts.texts.count.split("|"),e=(this.page-1)*this.perPage+1,r=this.page==this.totalPages?this.records:e+this.perPage-1;return t[Math.min(1==this.records?2:1==this.totalPages?1:0,t.length-1)].replace("{count}",this.formatNumber(this.records)).replace("{from}",this.formatNumber(e)).replace("{to}",this.formatNumber(r))}},methods:{setPage:function(t){this.allowedPage(t)&&this.paginate(t)},paginate:function(t){this.vuex?this.$store.commit(this.for+"/PAGINATE",t):this.Page=t,this.$emit("paginate",t),this.for&&p.$emit("vue-pagination::"+this.for,t)},next:function(){var t=this.page+1;return"scroll"===this.opts.chunksNavigation&&this.allowedPage(t)&&!this.inDisplay(t)&&this.firstPage++,this.setPage(t)},prev:function(){var t=this.page-1;return"scroll"===this.opts.chunksNavigation&&this.allowedPage(t)&&!this.inDisplay(t)&&this.firstPage--,this.setPage(t)},inDisplay:function(t){var e=this.firstPage,r=e+this.opts.chunk-1;return t>=e&&t<=r},nextChunk:function(){return this.setChunk(1)},prevChunk:function(){return this.setChunk(-1)},setChunk:function(t){this.setPage((this.currentChunk-1+t)*this.opts.chunk+1)},allowedPage:function(t){return t>=1&&t<=this.totalPages},allowedChunk:function(t){return 1==t&&this.currentChunk<this.totalChunks||-1==t&&this.currentChunk>1},allowedPageClass:function(t){return this.allowedPage(t)?"":this.Theme.disabled},allowedChunkClass:function(t){return this.allowedChunk(t)?"":this.Theme.disabled},activeClass:function(t){return this.page==t?this.Theme.active:""},formatNumber:function(t){return this.opts.format?t.toString().replace(/\B(?=(\d{3})+(?!\d))/g,","):t}},beforeDestroy:function(){p.$off(),p.$destroy()}}},function(t,e,r){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=function(){return{format:!0,chunk:10,chunksNavigation:"fixed",edgeNavigation:!1,theme:"bootstrap3",texts:{count:"Showing {from} to {to} of {count} records|{count} records|One record",first:"First",last:"Last"}}}},function(t,e){t.exports=function(t){return t.webpackPolyfill||(t.deprecate=function(){},t.paths=[],t.children||(t.children=[]),Object.defineProperty(t,"loaded",{enumerable:!0,get:function(){return t.l}}),Object.defineProperty(t,"id",{enumerable:!0,get:function(){return t.i}}),t.webpackPolyfill=1),t}},function(t,e,r){"use strict";t.exports=function(){return function(t){var e=this.Theme,r="",n="",i="",o="",s=this.pages.map(function(r){return t("li",{class:"VuePagination__pagination-item "+e.item+" "+this.activeClass(r)},[t("a",{class:e.link+" "+this.activeClass(r),attrs:{href:"javascript:void(0)",role:"button"},on:{click:this.setPage.bind(this,r)}},[r])])}.bind(this));return this.opts.edgeNavigation&&this.totalChunks>1&&(i=t("li",{class:"VuePagination__pagination-item "+e.item+" "+(1===this.page?e.disabled:"")+" VuePagination__pagination-item-prev-chunk"},[t("a",{class:e.link,attrs:{href:"javascript:void(0);",disabled:1===this.page},on:{click:this.setPage.bind(this,1)}},[this.opts.texts.first])]),o=t("li",{class:"VuePagination__pagination-item "+e.item+" "+(this.page===this.totalPages?e.disabled:"")+" VuePagination__pagination-item-prev-chunk"},[t("a",{class:e.link,attrs:{href:"javascript:void(0);",disabled:this.page===this.totalPages},on:{click:this.setPage.bind(this,this.totalPages)}},[this.opts.texts.last])])),"fixed"===this.opts.chunksNavigation&&(r=t("li",{class:"VuePagination__pagination-item "+e.item+" "+e.prev+" VuePagination__pagination-item-prev-chunk "+this.allowedChunkClass(-1)},[t("a",{class:e.link,attrs:{href:"javascript:void(0);",disabled:!!this.allowedChunkClass(-1)},on:{click:this.setChunk.bind(this,-1)}},["<<"])]),n=t("li",{class:"VuePagination__pagination-item "+e.item+" "+e.next+" VuePagination__pagination-item-next-chunk "+this.allowedChunkClass(1)},[t("a",{class:e.link,attrs:{href:"javascript:void(0);",disabled:!!this.allowedChunkClass(1)},on:{click:this.setChunk.bind(this,1)}},[">>"])])),t("div",{class:"VuePagination "+e.wrapper},[t("nav",{class:""+e.nav},[t("ul",{directives:[{name:"show",value:this.totalPages>1}],class:e.list+" VuePagination__pagination"},[i,r,t("li",{class:"VuePagination__pagination-item "+e.item+" "+e.prev+" VuePagination__pagination-item-prev-page "+this.allowedPageClass(this.page-1)},[t("a",{class:e.link,attrs:{href:"javascript:void(0);",disabled:!!this.allowedPageClass(this.page-1)},on:{click:this.prev.bind(this)}},["<"])]),s,t("li",{class:"VuePagination__pagination-item "+e.item+" "+e.next+" VuePagination__pagination-item-next-page "+this.allowedPageClass(this.page+1)},[t("a",{class:e.link,attrs:{href:"javascript:void(0);",disabled:!!this.allowedPageClass(this.page+1)},on:{click:this.next.bind(this)}},[">"])]),n,o]),t("p",{directives:[{name:"show",value:parseInt(this.records)}],class:"VuePagination__count "+e.count},[this.count])])])}}},function(t,e,r){"use strict";t.exports={nav:"",count:"",wrapper:"",list:"pagination",item:"page-item",link:"page-link",next:"",prev:"",active:"active",disabled:"disabled"}},function(t,e,r){"use strict";t.exports={nav:"",count:"",wrapper:"",list:"pagination",item:"page-item",link:"page-link",next:"",prev:"",active:"active",disabled:"disabled"}},function(t,e,r){"use strict";t.exports={nav:"",count:"",wrapper:"pagination",list:"pagination-list",item:"",link:"pagination-link",next:"",prev:"",active:"is-current",disabled:""}},function(t,e,r){"use strict";t.exports={initQuery:r(38),initCustomFilters:r(39),initOptions:r(40),sortableClass:r(41),sortableChevronClass:r(42),display:r(43),orderByColumn:r(44),getHeading:r(45),getHeadingTooltip:r(47),sortable:r(48),serverSearch:r(15),initOrderBy:r(49),initDateFilters:r(50),setFilter:r(51),setPage:r(52),setOrder:r(53),initPagination:r(54),filterable:r(55),isTextFilter:r(56),isDateFilter:r(57),isListFilter:r(58),highlightMatch:r(59),formatDate:r(60),hasDateFilters:r(61),applyFilters:r(112),optionText:r(113),render:r(114),rowWasClicked:r(115),setLimit:r(116),getOpenChildRows:r(117),dispatch:r(118),toggleChildRow:r(119),childRowTogglerClass:r(120),sendRequest:r(121),getResponseData:r(122),getSortFn:r(123),initState:r(124),updateState:r(125),columnClass:r(126),getName:r(127),toggleColumn:r(128),setUserMultiSort:r(129),_setFiltersDOM:r(130),_currentlySorted:r(131),_getChildRowTemplate:r(132),_toggleColumnsDropdown:r(133),_onlyColumn:r(134),_onPagination:r(135),_toggleGroupDirection:r(136),_getInitialDateRange:r(137),_setDatepickerText:r(138),_initialOrderAscending:r(139),dateFormat:r(140),_setColumnsDropdownCloseListener:r(141),_getValue:r(142),_getColumnName:r(143)}},function(t,e,r){"use strict";function n(t,e){return t.hasOwnProperty(e)?void 0===t[e].start?t[e]:{start:t[e].start.format("YYYY-MM-DD HH:mm:ss"),end:t[e].end.format("YYYY-MM-DD HH:mm:ss")}:""}var i="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(){var t=this.opts.initFilters;if(!this.opts.filterByColumn)return t.hasOwnProperty("GENERIC")?t.GENERIC:"";var e={};return(this.opts.filterable&&"object"==i(this.opts.filterable)?this.opts.filterable:this.columns).forEach(function(r){e[r]=n(t,r)}.bind(this)),e}},function(t,e,r){"use strict";t.exports=function(){var t={},e=this.opts.initFilters,r=void 0;return this.opts.customFilters.forEach(function(n){r="client"==this.source?n.name:n,t[r]=e.hasOwnProperty(r)?e[r]:""}.bind(this)),t}},function(t,e,r){"use strict";var n=r(0);t.exports=function(t,e,r){return e&&(t=n.recursive(t,e)),r=n.recursive(t,r)}},function(t,e,r){"use strict";t.exports=function(t){var e=this.sortable(t)?"VueTables__sortable ":"";return e+=this.columnClass(t)}},function(t,e,r){"use strict";t.exports=function(t){var e=this.opts.sortIcon.base+" ";if(this.sortable(t)){if(this.opts.sortIcon.is&&!this._currentlySorted(t)&&(e+=this.opts.sortIcon.is+" "),this.hasMultiSort&&this.orderBy.column&&this.userMultiSorting[this.orderBy.column]){var r=this.userMultiSorting[this.orderBy.column].filter(function(e){return e.column===t})[0];r&&(e+=r.ascending?this.opts.sortIcon.up:this.opts.sortIcon.down)}return t==this.orderBy.column&&(e+=1==this.orderBy.ascending?this.opts.sortIcon.up:this.opts.sortIcon.down),e}}},function(t,e,r){"use strict";t.exports=function(t,e){if(!this.opts.texts)return"";var t=this.opts.texts[t];if(e)for(var r in e)t=t.replace("{"+r+"}",e[r]);return t}},function(t,e,r){"use strict";t.exports=function(t,e){this.sortable(t)&&(e.shiftKey&&this.orderBy.column&&this.hasMultiSort?this.setUserMultiSort(t):(this.userMultiSorting={},this.orderBy.ascending=t==this.orderBy.column?!this.orderBy.ascending:this._initialOrderAscending(t),this.orderBy.column=t,this.updateState("orderBy",this.orderBy),this.dispatch("sorted",JSON.parse(JSON.stringify(this.orderBy)))),"server"==this.source&&this.getData())}},function(t,e,r){"use strict";var n=r(46),i=function(t){return t&&t.__esModule?t:{default:t}}(n);t.exports=function(t,e){if("string"!=typeof t)return"";if(void 0!==this.$slots["h__"+t])return this.$slots["h__"+t];var r=(0,i.default)(t.split("_").join(" "));return this.opts.headings.hasOwnProperty(t)?"function"==typeof this.opts.headings[t]?e?this.opts.headings[t].call(this.$parent,e):r:this.opts.headings[t]:r}},function(t,e,r){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=function(t){return t.charAt(0).toUpperCase()+t.slice(1)}},function(t,e,r){"use strict";t.exports=function(t,e){if("string"!=typeof t)return"";return this.opts.headingsTooltips.hasOwnProperty(t)?"function"==typeof this.opts.headingsTooltips[t]?e?this.opts.headingsTooltips[t].call(this.$parent,e):"":this.opts.headingsTooltips[t]:""}},function(t,e,r){"use strict";t.exports=function(t){return!("boolean"!=typeof this.opts.sortable||!this.opts.sortable)||this.opts.sortable.indexOf(t)>-1}},function(t,e,r){"use strict";t.exports=function(){this.opts.orderBy&&(this.orderBy.column=this.opts.orderBy.column,this.orderBy.ascending=!this.opts.orderBy.hasOwnProperty("ascending")||this.opts.orderBy.ascending)}},function(t,e,r){"use strict";var n=r(0);t.exports=function(){if("undefined"==typeof $)return void console.error("Date filters require jquery and daterangepicker");var t,e,r,i=this,o=this.vuex?JSON.parse(JSON.stringify(this.query)):this.query,s=function(t,e){return"client"==i.source?i.search(i.data,e):i.serverSearch(t,e)},a=n.recursive(this.opts.datepickerOptions,{autoUpdateInput:!1,singleDatePicker:!1});i.opts.dateColumns.forEach(function(u){var c=i._getInitialDateRange(u);c?(i._setDatepickerText(u,c.start,c.end),c={startDate:c.start,endDate:c.end}):c={},t=$(i.$el).find("#VueTables__"+u+"-filter"),e=void 0!==i.opts.datepickerPerColumnOptions[u]?i.opts.datepickerPerColumnOptions[u]:{},e=n.recursive(e,{locale:{format:i.dateFormat(u)}}),r=n(!0,a),!1===e.ranges&&(r.ranges={}),t.daterangepicker(n.recursive(r,e,c)),t.on("apply.daterangepicker",function(t,e){o[u]={start:e.startDate.format("YYYY-MM-DD HH:mm:ss"),end:e.endDate.format("YYYY-MM-DD HH:mm:ss")},i.vuex||(i.query=o),i._setDatepickerText(u,e.startDate,e.endDate),i.updateState("query",o),s(o,{target:{name:i._getColumnName(u),value:o[u]}})}),t.on("cancel.daterangepicker",function(t,e){o[u]="",i.vuex||(i.query=o),e.setStartDate(moment()),e.setEndDate(moment()),i.updateState("query",o),$(this).html("<span class='VueTables__filter-placeholder'>"+i.display("filterBy",{column:i.getHeading(u)})+"</span>"),s(o,{target:{name:i._getColumnName(u),value:o[u]}})})})}},function(t,e,r){"use strict";var n=r(0);t.exports=function(t){if(!this.opts.filterable)return void console.warn("vue-tables-2: Unable to set filter. Filtering is disabled (filterable: false)");if(this.opts.filterByColumn&&"string"==typeof t)return void console.warn("vue-tables-2: Unable to set filter. Filter value must be an object (`filterByColumn` is set to `true`)");if(!this.opts.filterByColumn&&"string"!=typeof t)return void console.warn("vue-tables-2: Unable to set filter. Filter value must be a string (`filterByColumn` is set to `false`)");var e=this.opts.filterByColumn?n(this.query,t):t;this.vuex?this.commit("SET_FILTER",e):(this.query=e,this.setPage(1,!0)),this.updateState("query",e),this._setFiltersDOM(t),"server"==this.source&&this.getData()}},function(t,e,r){"use strict";t.exports=function(t,e){t=t||this.$refs.page.value,this.opts.pagination.dropdown||(this.$refs.pagination.Page=t),this.page=t,this.updateState("page",t),"server"!=this.source||e||this.getData()}},function(t,e,r){"use strict";t.exports=function(t,e){this.orderBy.column=t,this.orderBy.ascending=e,this.updateState("orderBy",{column:t,ascending:e}),"server"==this.source&&this.getData()}},function(t,e,r){"use strict";t.exports=function(){this.page=1,this.opts.pagination.dropdown||this.$refs.pagination.setPage(1)}},function(t,e,r){"use strict";t.exports=function(t){return!!this.opts.filterable&&("boolean"==typeof this.opts.filterable&&this.opts.filterable||this.opts.filterable.indexOf(t)>-1)}},function(t,e,r){"use strict";t.exports=function(t){return this.query.hasOwnProperty(t)&&-1==this.opts.dateColumns.indexOf(t)&&!this.opts.listColumns.hasOwnProperty(t)}},function(t,e,r){"use strict";t.exports=function(t){return this.query.hasOwnProperty(t)&&this.opts.dateColumns.indexOf(t)>-1}},function(t,e,r){"use strict";t.exports=function(t){return this.query.hasOwnProperty(t)&&this.opts.listColumns.hasOwnProperty(t)}},function(t,e,r){"use strict";function n(t,e,r){return String(t).split(e).map(function(t){return e.test(t)?r("b",{},t):t})}function i(t){return"string"==typeof t?t.replace(/[-\/\\^$*+?.()|[\]{}]/g,"\\$&"):t}t.exports=function(t,e,r){var o=this.opts.filterByColumn?this.query[e]:this.query;return o?(o=new RegExp("("+i(o)+")","i"),r("span",{class:"VueTables__highlight"},n(t,o,r))):t}},function(t,e,r){"use strict";var n=r(16);t.exports=function(t,e){return n(t)?t.format(e):t}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},i=r(62);t.exports=function(){var t=this.opts;return t.dateColumns.length&&t.filterByColumn&&("boolean"==typeof t.filterable&&t.filterable||"object"==n(t.filterable)&&i(t.filterable,t.dateColumns).length)}},function(t,e,r){"use strict";var n=r(63),i=r(108),o=r(18),s=r(110),a=r(111);t.exports=function(t){if(null==t)return[];if(1===arguments.length)return o(t);var e=s(arguments,1);return n(o(t),function(t){return i(e,function(e){return-1!==a(e,t)})})}},function(t,e,r){"use strict";var n=r(64),i=r(69),o=r(72);t.exports=function(t,e,r){if(0===t.length)return[];if("function"===n(e)||"regexp"===n(e)){var s=o.matcher(e,r);return i(t,function(t){return s(t)})}return"string"===n(e)||"array"===n(e)?i(t,o.filter(e,r)):[]}},function(t,e,r){(function(e){var r=Object.prototype.toString;t.exports=function(t){if(void 0===t)return"undefined";if(null===t)return"null";if(!0===t||!1===t||t instanceof Boolean)return"boolean";if("object"!=typeof t)return typeof t;if(Array.isArray(t))return"array";var n=r.call(t);return t instanceof RegExp||"[object RegExp]"===n?"regexp":t instanceof Date||"[object Date]"===n?"date":"[object Function]"===n?"function":"[object Arguments]"===n?"arguments":void 0!==e&&e.isBuffer(t)?"buffer":n.slice(8,-1).toLowerCase()}}).call(e,r(17).Buffer)},function(t,e){var r;r=function(){return this}();try{r=r||Function("return this")()||(0,eval)("this")}catch(t){"object"==typeof window&&(r=window)}t.exports=r},function(t,e,r){"use strict";function n(t){var e=t.length;if(e%4>0)throw new Error("Invalid string. Length must be a multiple of 4");return"="===t[e-2]?2:"="===t[e-1]?1:0}function i(t){return 3*t.length/4-n(t)}function o(t){var e,r,i,o,s,a=t.length;o=n(t),s=new f(3*a/4-o),r=o>0?a-4:a;var u=0;for(e=0;e<r;e+=4)i=l[t.charCodeAt(e)]<<18|l[t.charCodeAt(e+1)]<<12|l[t.charCodeAt(e+2)]<<6|l[t.charCodeAt(e+3)],s[u++]=i>>16&255,s[u++]=i>>8&255,s[u++]=255&i;return 2===o?(i=l[t.charCodeAt(e)]<<2|l[t.charCodeAt(e+1)]>>4,s[u++]=255&i):1===o&&(i=l[t.charCodeAt(e)]<<10|l[t.charCodeAt(e+1)]<<4|l[t.charCodeAt(e+2)]>>2,s[u++]=i>>8&255,s[u++]=255&i),s}function s(t){return c[t>>18&63]+c[t>>12&63]+c[t>>6&63]+c[63&t]}function a(t,e,r){for(var n,i=[],o=e;o<r;o+=3)n=(t[o]<<16&16711680)+(t[o+1]<<8&65280)+(255&t[o+2]),i.push(s(n));return i.join("")}function u(t){for(var e,r=t.length,n=r%3,i="",o=[],s=0,u=r-n;s<u;s+=16383)o.push(a(t,s,s+16383>u?u:s+16383));return 1===n?(e=t[r-1],i+=c[e>>2],i+=c[e<<4&63],i+="=="):2===n&&(e=(t[r-2]<<8)+t[r-1],i+=c[e>>10],i+=c[e>>4&63],i+=c[e<<2&63],i+="="),o.push(i),o.join("")}e.byteLength=i,e.toByteArray=o,e.fromByteArray=u;for(var c=[],l=[],f="undefined"!=typeof Uint8Array?Uint8Array:Array,p="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",h=0,d=p.length;h<d;++h)c[h]=p[h],l[p.charCodeAt(h)]=h;l["-".charCodeAt(0)]=62,l["_".charCodeAt(0)]=63},function(t,e){e.read=function(t,e,r,n,i){var o,s,a=8*i-n-1,u=(1<<a)-1,c=u>>1,l=-7,f=r?i-1:0,p=r?-1:1,h=t[e+f];for(f+=p,o=h&(1<<-l)-1,h>>=-l,l+=a;l>0;o=256*o+t[e+f],f+=p,l-=8);for(s=o&(1<<-l)-1,o>>=-l,l+=n;l>0;s=256*s+t[e+f],f+=p,l-=8);if(0===o)o=1-c;else{if(o===u)return s?NaN:1/0*(h?-1:1);s+=Math.pow(2,n),o-=c}return(h?-1:1)*s*Math.pow(2,o-n)},e.write=function(t,e,r,n,i,o){var s,a,u,c=8*o-i-1,l=(1<<c)-1,f=l>>1,p=23===i?Math.pow(2,-24)-Math.pow(2,-77):0,h=n?0:o-1,d=n?1:-1,g=e<0||0===e&&1/e<0?1:0;for(e=Math.abs(e),isNaN(e)||e===1/0?(a=isNaN(e)?1:0,s=l):(s=Math.floor(Math.log(e)/Math.LN2),e*(u=Math.pow(2,-s))<1&&(s--,u*=2),e+=s+f>=1?p/u:p*Math.pow(2,1-f),e*u>=2&&(s++,u/=2),s+f>=l?(a=0,s=l):s+f>=1?(a=(e*u-1)*Math.pow(2,i),s+=f):(a=e*Math.pow(2,f-1)*Math.pow(2,i),s=0));i>=8;t[r+h]=255&a,h+=d,a/=256,i-=8);for(s=s<<i|a,c+=i;c>0;t[r+h]=255&s,h+=d,s/=256,c-=8);t[r+h-d]|=128*g}},function(t,e){var r={}.toString;t.exports=Array.isArray||function(t){return"[object Array]"==r.call(t)}},function(t,e,r){"use strict";var n=r(70);t.exports=function(t,e,r){if(null==t)return[];if("function"!=typeof e)throw new TypeError("expected callback to be a function");for(var i=n(e,r),o=t.length,s=t.slice(),a=-1;o--;)i(t[o],a++)||s.splice(o,1);return s}},function(t,e,r){"use strict";function n(t,e){for(var r=t.length,n=-1;++n<r;)if(s(t[n],e))return!0;return!1}function i(t,e){for(var r=e.length,i=-1;++i<r;)if(!n(t,e[i]))return!1;return!0}function o(t,e){for(var r in e)if(e.hasOwnProperty(r)&&!1===s(t[r],e[r]))return!1;return!0}function s(t,e){return"object"===c(t)?Array.isArray(t)&&Array.isArray(e)?i(t,e):o(t,e):t===e}function a(t){return function(e){return e[t]}}function u(t){return t}var c=r(71);t.exports=function(t,e){switch(c(t)){case"undefined":case"null":return u;case"function":return void 0!==e?function(r,n,i){return t.call(e,r,n,i)}:t;case"object":return function(e){return s(e,t)};case"regexp":return function(e){return t.test(e)};case"string":case"number":default:return a(t)}}},function(t,e){function r(t){return t.constructor?t.constructor.name:null}function n(t){return Array.isArray?Array.isArray(t):t instanceof Array}function i(t){return t instanceof Error||"string"==typeof t.message&&t.constructor&&"number"==typeof t.constructor.stackTraceLimit}function o(t){return t instanceof Date||"function"==typeof t.toDateString&&"function"==typeof t.getDate&&"function"==typeof t.setDate}function s(t){return t instanceof RegExp||"string"==typeof t.flags&&"boolean"==typeof t.ignoreCase&&"boolean"==typeof t.multiline&&"boolean"==typeof t.global}function a(t,e){return"GeneratorFunction"===r(t)}function u(t){return"function"==typeof t.throw&&"function"==typeof t.return&&"function"==typeof t.next}function c(t){try{if("number"==typeof t.length&&"function"==typeof t.callee)return!0}catch(t){if(-1!==t.message.indexOf("callee"))return!0}return!1}function l(t){return!(!t.constructor||"function"!=typeof t.constructor.isBuffer)&&t.constructor.isBuffer(t)}var f=Object.prototype.toString;t.exports=function(t){if(void 0===t)return"undefined";if(null===t)return"null";var e=typeof t;if("boolean"===e)return"boolean";if("string"===e)return"string";if("number"===e)return"number";if("symbol"===e)return"symbol";if("function"===e)return a(t)?"generatorfunction":"function";if(n(t))return"array";if(l(t))return"buffer";if(c(t))return"arguments";if(o(t))return"date";if(i(t))return"error";if(s(t))return"regexp";switch(r(t)){case"Symbol":return"symbol";case"Promise":return"promise";case"WeakMap":return"weakmap";case"WeakSet":return"weakset";case"Map":return"map";case"Set":return"set";case"Int8Array":return"int8array";case"Uint8Array":return"uint8array";case"Uint8ClampedArray":return"uint8clampedarray";case"Int16Array":return"int16array";case"Uint16Array":return"uint16array";case"Int32Array":return"int32array";case"Uint32Array":return"uint32array";case"Float32Array":return"float32array";case"Float64Array":return"float64array"}if(u(t))return"generator";switch(e=f.call(t)){case"[object Object]":return"object";case"[object Map Iterator]":return"mapiterator";case"[object Set Iterator]":return"setiterator";case"[object String Iterator]":return"stringiterator";case"[object Array Iterator]":return"arrayiterator"}return e.slice(8,-1).toLowerCase().replace(/\s/g,"")}},function(t,e,r){"use strict";function n(t,e,r){if(!t||!e)return[];if(r=r||{},void 0===r.cache&&(r.cache=!0),!Array.isArray(e))return i(t,e,r);for(var n=e.length,o=0,s=[],a=[];n--;){var u=e[o++];"string"==typeof u&&33===u.charCodeAt(0)?s.push.apply(s,i(t,u.slice(1),r)):a.push.apply(a,i(t,u,r))}return y.diff(a,s)}function i(t,e,r){if("string"!==y.typeOf(t)&&!Array.isArray(t))throw new Error(d("match","files","a string or array"));t=y.arrayify(t),r=r||{};var i=r.negate||!1,o=e;"string"==typeof e&&(i="!"===e.charAt(0),i&&(e=e.slice(1)),!0===r.nonegate&&(i=!1));for(var s=l(e,r),a=t.length,u=0,c=[];u<a;){var f=t[u++],p=y.unixify(f,r);s(p)&&c.push(p)}if(0===c.length){if(!0===r.failglob)throw new Error('micromatch.match() found no matches for: "'+o+'".');(r.nonull||r.nullglob)&&c.push(y.unescapeGlob(o))}return i&&(c=y.diff(t,c)),r.ignore&&r.ignore.length&&(e=r.ignore,r=y.omit(r,["ignore"]),c=y.diff(c,n(c,e,r))),r.nodupes?y.unique(c):c}function o(t,e){if(!Array.isArray(t)&&"string"!=typeof t)throw new TypeError(d("filter","patterns","a string or array"));t=y.arrayify(t);for(var r=t.length,n=0,i=Array(r);n<r;)i[n]=l(t[n++],e);return function(t){if(null==t)return[];var r=i.length,n=0,o=!0;for(t=y.unixify(t,e);n<r;){if(!(0,i[n++])(t)){o=!1;break}}return o}}function s(t,e,r){if("string"!=typeof t)throw new TypeError(d("isMatch","filepath","a string"));return t=y.unixify(t,r),"object"===y.typeOf(e)?l(t,e):l(e,r)(t)}function a(t,e,r){if("string"!=typeof t)throw new TypeError(d("contains","pattern","a string"));return r=r||{},r.contains=""!==e,t=y.unixify(t,r),r.contains&&!y.isGlob(e)?-1!==t.indexOf(e):l(e,r)(t)}function u(t,e,r){if(!Array.isArray(e)&&"string"!=typeof e)throw new TypeError(d("any","patterns","a string or array"));e=y.arrayify(e);var n=e.length;for(t=y.unixify(t,r);n--;){if(l(e[n],r)(t))return!0}return!1}function c(t,e,r){if("object"!==y.typeOf(t))throw new TypeError(d("matchKeys","first argument","an object"));var n=l(e,r),i={};for(var o in t)t.hasOwnProperty(o)&&n(o)&&(i[o]=t[o]);return i}function l(t,e){if("function"==typeof t)return t;if(t instanceof RegExp)return function(e){return t.test(e)};if("string"!=typeof t)throw new TypeError(d("matcher","pattern","a string, regex, or function"));if(t=y.unixify(t,e),!y.isGlob(t))return y.matchPath(t,e);var r=h(t,e);return e&&e.matchBase?y.hasFilename(r,e):function(t){return t=y.unixify(t,e),r.test(t)}}function f(t,e){var r=Object.create(e||{}),n=r.flags||"";r.nocase&&-1===n.indexOf("i")&&(n+="i");var i=g(t,r);r.negated=r.negated||i.negated,r.negate=r.negated,t=p(i.pattern,r);var o;try{return o=new RegExp(t,n)}catch(t){if(t.reason="micromatch invalid regex: ("+o+")",r.strict)throw new SyntaxError(t)}return/$^/}function p(t,e){var r=e&&!e.contains?"^":"";return t="(?:"+t+")"+(e&&!e.contains?"$":""),e&&e.negate?r+"(?!^"+t+").*$":r+t}function h(t,e){if("string"!==y.typeOf(t))throw new Error(d("makeRe","glob","a string"));return y.cache(f,t,e)}function d(t,e,r){return"micromatch."+t+"(): "+e+" should be "+r+"."}var g=r(73),y=r(5);n.any=u,n.braces=n.braceExpand=y.braces,n.contains=a,n.expand=g,n.filter=o,n.isMatch=s,n.makeRe=h,n.match=i,n.matcher=l,n.matchKeys=c,t.exports=n},function(t,e,r){"use strict";function n(t,e){if("string"!=typeof t)throw new TypeError("micromatch.expand(): argument should be a string.");var r=new l(t,e||{}),n=r.options;if(!c.isGlob(t))return r.pattern=r.pattern.replace(/([\/.])/g,"\\$1"),r;if(r.pattern=r.pattern.replace(/(\+)(?!\()/g,"\\$1"),r.pattern=r.pattern.split("$").join("\\$"),"boolean"!=typeof n.braces&&"boolean"!=typeof n.nobraces&&(n.braces=!0),".*"===r.pattern)return{pattern:"\\."+p,tokens:d,options:n};if("*"===r.pattern)return{pattern:a(n.dot),tokens:d,options:n};r.parse();var d=r.tokens;return d.is.negated=n.negated,!0!==n.dotfiles&&!d.is.dotfile||!1===n.dot||(n.dotfiles=!0,n.dot=!0),!0!==n.dotdirs&&!d.is.dotdir||!1===n.dot||(n.dotdirs=!0,n.dot=!0),/[{,]\./.test(r.pattern)&&(n.makeRe=!1,n.dot=!0),!0!==n.nonegate&&(n.negated=r.negated),"."===r.pattern.charAt(0)&&"/"!==r.pattern.charAt(1)&&(r.pattern="\\"+r.pattern),r.track("before braces"),d.is.braces&&r.braces(),r.track("after braces"),r.track("before extglob"),d.is.extglob&&r.extglob(),r.track("after extglob"),r.track("before brackets"),d.is.brackets&&r.brackets(),r.track("after brackets"),r._replace("[!","[^"),r._replace("(?","(%~"),r._replace(/\[\]/,"\\[\\]"),r._replace("/[","/"+(n.dot?g:h)+"[",!0),r._replace("/?","/"+(n.dot?g:h)+"[^/]",!0),r._replace("/.","/(?=.)\\.",!0),r._replace(/^(\w):([\\\/]+?)/gi,"(?=.)$1:$2",!0),-1!==r.pattern.indexOf("[^")&&(r.pattern=o(r.pattern)),!1!==n.globstar&&"**"===r.pattern?r.pattern=u(n.dot):(r.pattern=s(r.pattern,"[","]"),r.escape(r.pattern),d.is.globstar&&(r.pattern=i(r.pattern,"/**"),r.pattern=i(r.pattern,"**/"),r._replace("/**/","(?:/"+u(n.dot)+"/|/)",!0),r._replace(/\*{2,}/g,"**"),r._replace(/(\w+)\*(?!\/)/g,"$1[^/]*?",!0),r._replace(/\*\*\/\*(\w)/g,u(n.dot)+"\\/"+(n.dot?g:h)+"[^/]*?$1",!0),!0!==n.dot&&r._replace(/\*\*\/(.)/g,"(?:**\\/|)$1"),(""!==d.path.dirname||/,\*\*|\*\*,/.test(r.orig))&&r._replace("**",u(n.dot),!0)),r._replace(/\/\*$/,"\\/"+a(n.dot),!0),r._replace(/(?!\/)\*$/,p,!0),r._replace(/([^\/]+)\*/,"$1"+a(!0),!0),r._replace("*",a(n.dot),!0),r._replace("?.","?\\.",!0),r._replace("?:","?:",!0),r._replace(/\?+/g,function(t){var e=t.length;return 1===e?f:f+"{"+e+"}"}),r._replace(/\.([*\w]+)/g,"\\.$1"),r._replace(/\[\^[\\\/]+\]/g,f),r._replace(/\/+/g,"\\/"),r._replace(/\\{2,}/g,"\\")),r.unescape(r.pattern),r._replace("__UNESC_STAR__","*"),r._replace("?.","?\\."),r._replace("[^\\/]",f),r.pattern.length>1&&/^[\[?*]/.test(r.pattern)&&(r.pattern=(n.dot?g:h)+r.pattern),r}function i(t,e){var r=t.split(e),n=""===r[0],i=""===r[r.length-1];return r=r.filter(Boolean),n&&r.unshift(""),i&&r.push(""),r.join(e)}function o(t){return t.replace(/\[\^([^\]]*?)\]/g,function(t,e){return-1===e.indexOf("/")&&(e="\\/"+e),"[^"+e+"]"})}function s(t,e,r){var n=t.split(e);return n.join("").length!==t.split(r).join("").length?(t=n.join("\\"+e),t.split(r).join("\\"+r)):t}function a(t){return t?"(?!"+d+")(?=.)"+p:h+p}function u(t){return t?y:"(?:(?!(?:\\/|^)\\.).)*?"}var c=r(5),l=r(106);t.exports=n;var f="[^/]",p=f+"*?",h="(?!\\.)(?=.)",d="(?:\\/|^)\\.{1,2}($|\\/)",g="(?!"+d+")(?=.)",y="(?:(?!"+d+").)*?"},function(t,e){t.exports=function(){return/([^\\\/]+)$/}},function(t,e,r){"use strict";function n(t,e){var e,r=arguments.length,n=t.length,s=-1,a=[];if(1===r)return t;for(r>2&&(e=i(o.call(arguments,1)));++s<n;)~e.indexOf(t[s])||a.push(t[s]);return a}var i=r(76),o=[].slice;t.exports=n},function(t,e,r){"use strict";function n(t,e){for(var r,i=0,o=t.length;i<o;i++)r=t[i],Array.isArray(r)?n(r,e):e.push(r);return e}t.exports=function(t){return n(t,[])}},function(t,e,r){"use strict";function n(t,e,r){if(""===t)return[];Array.isArray(e)||(r=e,e=[]);var m=r||{};e=e||[],void 0===m.nodupes&&(m.nodupes=!0);var _,C=m.fn;switch("function"==typeof m&&(C=m,m={}),S instanceof RegExp||(S=h()),(t.match(S)||[])[0]){case"\\,":return p(t,e,m);case"\\.":return l(t,e,m);case"/.":return f(t,e,m);case" ":return u(t);case"{,}":return i(t,m,n);case"{}":return s(t,e,m);case"\\{":case"\\}":return c(t,e,m);case"${":if(!/\{[^{]+\{/.test(t))return e.concat(t);_=!0,t=w.before(t,g())}x instanceof RegExp||(x=d());var A=x.exec(t);if(null==A)return[t];var P=A[1],E=A[2];if(""===E)return[t];var T,j;if(-1!==E.indexOf(".."))T=v(E,m,C)||E.split(","),j=T.length;else{if('"'===E[0]||"'"===E[0])return e.concat(t.split(/['"]/).join(""));if(T=E.split(","),m.makeRe)return n(t.replace(P,o(T,"|")),m);1===(j=T.length)&&m.bash&&(T[0]=o(T[0],"\\"))}for(var O,B=T.length,k=0;B--;){var R=T[k++];if(/(\.[^.\/])/.test(R))return j>1?T:[t];if(O=y(t,P,R),/\{[^{}]+?\}/.test(O))e=n(O,e,m);else if(""!==O){if(m.nodupes&&-1!==e.indexOf(O))continue;e.push(_?w.after(O):O)}}return m.strict?b(e,a):e}function i(t,e,r){"function"==typeof e&&(r=e,e=null);var n,i=e||{},o="__ESC_EXP__",s=0,a=t.split("{,}");if(i.nodupes)return r(a.join(""),i);s=a.length-1,n=r(a.join(o),i);for(var u=n.length,c=[],l=0;u--;){var f=n[l++];if(-1===f.indexOf(o))c.push(f);else if((f=f.split("__ESC_EXP__").join(""))&&!1!==i.nodupes)c.push(f);else{var p=Math.pow(2,s);c.push.apply(c,_(f,p))}}return c}function o(t,e){return"|"===e?"("+t.join(e)+")":","===e?"{"+t.join(e)+"}":"-"===e?"["+t.join(e)+"]":"\\"===e?"\\{"+t+"\\}":void 0}function s(t,e,r){return n(t.split("{}").join("\\{\\}"),e,r)}function a(t){return!!t&&"\\"!==t}function u(t){for(var e=t.split(" "),r=e.length,i=[],o=0;r--;)i.push.apply(i,n(e[o++]));return i}function c(t,e,r){return/\{[^{]+\{/.test(t)?(t=t.split("\\{").join("__LT_BRACE__"),t=t.split("\\}").join("__RT_BRACE__"),m(n(t,e,r),function(t){return t=t.split("__LT_BRACE__").join("{"),t.split("__RT_BRACE__").join("}")})):e.concat(t.split("\\").join(""))}function l(t,e,r){return/[^\\]\..+\\\./.test(t)?(t=t.split("\\.").join("__ESC_DOT__"),m(n(t,e,r),function(t){return t.split("__ESC_DOT__").join(".")})):e.concat(t.split("\\").join(""))}function f(t,e,r){return t=t.split("/.").join("__ESC_PATH__"),m(n(t,e,r),function(t){return t.split("__ESC_PATH__").join("/.")})}function p(t,e,r){return/\w,/.test(t)?(t=t.split("\\,").join("__ESC_COMMA__"),m(n(t,e,r),function(t){return t.split("__ESC_COMMA__").join(",")})):e.concat(t.split("\\").join(""))}function h(){return/\${|( (?=[{,}])|(?=[{,}]) )|{}|{,}|\\,(?=.*[{}])|\/\.(?=.*[{}])|\\\.(?={)|\\{|\\}/}function d(){return/.*(\\?\{([^}]+)\})/}function g(){return/\$\{([^}]+)\}/}function y(t,e,r){var n=t.indexOf(e);return t.substr(0,n)+r+t.substr(n+e.length)}function m(t,e){if(null==t)return[];for(var r=t.length,n=new Array(r),i=-1;++i<r;)n[i]=e(t[i],i,t);return n}function b(t,e){if(null==t)return[];if("function"!=typeof e)throw new TypeError("braces: filter expects a callback function.");for(var r=t.length,n=t.slice(),i=0;r--;)e(t[r],i++)||n.splice(r,1);return n}var v=r(78),_=r(19),w=r(89);t.exports=function(t,e){if("string"!=typeof t)throw new Error("braces expects a string");return n(t,e)};var x,S},function(t,e,r){"use strict";var n=r(79);t.exports=function(t,e,r){if("string"!=typeof t)throw new TypeError("expand-range expects a string.");"function"==typeof e&&(r=e,e={}),"boolean"==typeof e&&(e={},e.makeRe=!0);var i=e||{},o=t.split(".."),s=o.length;return s>3?t:1===s?o:("boolean"==typeof r&&!0===r&&(i.makeRe=!0),o.push(i),n.apply(null,o.concat(r)))}},function(t,e,r){"use strict";function n(t,e,r,n,o){if(null==t||null==e)throw new Error("fill-range expects the first and second args to be strings.");"function"==typeof r&&(o=r,n={},r=null),"function"==typeof n&&(o=n,n={}),v(r)&&(n=r,r="");var f,y=!1,b="",x=n||{};void 0===x.silent&&(x.silent=!0),r=r||x.step;var C=t,A=e;if(e="-0"===e.toString()?0:e,(x.optimize||x.makeRe)&&(r=r?r+="~":r,f=!0,y=!0,b="~"),"string"==typeof r){var P=p().exec(r);if(P){var E=P.index,T=P[0];if("+"===T)return S(t,e);if("?"===T)return[w(t,e)];">"===T?(r=r.substr(0,E)+r.substr(E+1),f=!0):"|"===T?(r=r.substr(0,E)+r.substr(E+1),f=!0,y=!0,b=T):"~"===T&&(r=r.substr(0,E)+r.substr(E+1),f=!0,y=!0,b=T)}else if(!_(r)){if(!x.silent)throw new TypeError("fill-range: invalid step.");return null}}if(/[.&*()[\]^%$#@!]/.test(t)||/[.&*()[\]^%$#@!]/.test(e)){if(!x.silent)throw new RangeError("fill-range: invalid range arguments.");return null}if(!h(t)||!h(e)||d(t)||d(e)){if(!x.silent)throw new RangeError("fill-range: invalid range arguments.");return null}var j=_(g(t)),O=_(g(e));if(!j&&O||j&&!O){if(!x.silent)throw new TypeError("fill-range: first range argument is incompatible with second.");return null}var B=j,k=u(r);B?(t=+t,e=+e):(t=t.charCodeAt(0),e=e.charCodeAt(0));var R=t>e;(t<0||e<0)&&(f=!1,y=!1);var D,M,F=m(C,A),$=[],I=0;if(y&&s(t,e,k,B,F,x))return"|"!==b&&"~"!==b||(b=a(t,e,k,B,R)),i([C,A],b,x);for(;R?t>=e:t<=e;)F&&B&&(M=F(t)),D="function"==typeof o?o(t,B,M,I++):B?c(t,M):y&&l(t)?null:String.fromCharCode(t),null!==D&&$.push(D),R?t-=k:t+=k;return!y&&!f||x.noexpand?$:("|"!==b&&"~"!==b||(b=a(t,e,k,B,R)),1===$.length||t<0||e<0?$:i($,b,x))}function i(t,e,r){"~"===e&&(e="-");var n=t.join(e),i=r&&r.regexPrefix;return"|"===e&&(n=i?i+n:n,n="("+n+")"),"-"===e&&(n=i&&"^"===i?i+n:n,n="["+n+"]"),[n]}function o(t,e,r,n,i){return!i&&(n?t<=9&&e<=9:t<e&&1===r)}function s(t,e,r,n,i,o){return(!n||!(t>9||e>9))&&(!i&&1===r&&t<e)}function a(t,e,r,n,i){return o(t,e,r,n,i)?"~":"|"}function u(t){return Math.abs(t>>0)||1}function c(t,e){var r=e?e+t:t;return e&&"-"===t.toString().charAt(0)&&(r="-"+e+t.toString().substr(1)),r.toString()}function l(t){var e=f(t);return"\\"===e||"["===e||"]"===e||"^"===e||"("===e||")"===e||"`"===e}function f(t){return String.fromCharCode(t)}function p(){return/\?|>|\||\+|\~/g}function h(t){return/[a-z0-9]/i.test(t)}function d(t){return/[a-z][0-9]|[0-9][a-z]/i.test(t)}function g(t){return/^-*0+$/.test(t.toString())?"0":t}function y(t){return/[^.]\.|^-*0+[0-9]/.test(t)}function m(t,e){if(y(t)||y(e)){var r=b(t),n=b(e),i=r>=n?r:n;return function(t){return x("0",i-b(t))}}return!1}function b(t){return t.toString().length}var v=r(80),_=r(82),w=r(84),x=r(88),S=r(19);t.exports=n},function(t,e,r){"use strict";var n=r(81);t.exports=function(t){return null!=t&&"object"==typeof t&&!1===n(t)}},function(t,e){var r={}.toString;t.exports=Array.isArray||function(t){return"[object Array]"==r.call(t)}},function(t,e,r){"use strict";var n=r(83);t.exports=function(t){var e=n(t);if("number"!==e&&"string"!==e)return!1;var r=+t;return r-r+1>=0&&""!==t}},function(t,e,r){var n=r(2),i=Object.prototype.toString;t.exports=function(t){if(void 0===t)return"undefined";if(null===t)return"null";if(!0===t||!1===t||t instanceof Boolean)return"boolean";if("string"==typeof t||t instanceof String)return"string";if("number"==typeof t||t instanceof Number)return"number";if("function"==typeof t||t instanceof Function)return"function";if(void 0!==Array.isArray&&Array.isArray(t))return"array";if(t instanceof RegExp)return"regexp";if(t instanceof Date)return"date";var e=i.call(t);return"[object RegExp]"===e?"regexp":"[object Date]"===e?"date":"[object Arguments]"===e?"arguments":"[object Error]"===e?"error":n(t)?"buffer":"[object Set]"===e?"set":"[object WeakSet]"===e?"weakset":"[object Map]"===e?"map":"[object WeakMap]"===e?"weakmap":"[object Symbol]"===e?"symbol":"[object Int8Array]"===e?"int8array":"[object Uint8Array]"===e?"uint8array":"[object Uint8ClampedArray]"===e?"uint8clampedarray":"[object Int16Array]"===e?"int16array":"[object Uint16Array]"===e?"uint16array":"[object Int32Array]"===e?"int32array":"[object Uint32Array]"===e?"uint32array":"[object Float32Array]"===e?"float32array":"[object Float64Array]"===e?"float64array":"object"}},function(t,e,r){"use strict";function n(t,e,r){if(void 0===t)throw new Error("randomatic expects a string or number.");var n=!1;1===arguments.length&&("string"==typeof t?e=t.length:i(t)&&(r={},e=t,t="*")),"object"===o(e)&&e.hasOwnProperty("chars")&&(r=e,t=r.chars,e=t.length,n=!0);var a=r||{},u="",c="";for(-1!==t.indexOf("?")&&(u+=a.chars),-1!==t.indexOf("a")&&(u+=s.lower),-1!==t.indexOf("A")&&(u+=s.upper),-1!==t.indexOf("0")&&(u+=s.number),-1!==t.indexOf("!")&&(u+=s.special),-1!==t.indexOf("*")&&(u+=s.all),n&&(u+=t);e--;)c+=u.charAt(parseInt(Math.random()*u.length,10));return c}var i=r(85),o=r(87);t.exports=n;var s={lower:"abcdefghijklmnopqrstuvwxyz",upper:"ABCDEFGHIJKLMNOPQRSTUVWXYZ",number:"0123456789",special:"~!@#$%^&()_+-={}[];',."};s.all=s.lower+s.upper+s.number+s.special},function(t,e,r){"use strict";var n=r(86);t.exports=function(t){var e=n(t);if("string"===e){if(!t.trim())return!1}else if("number"!==e)return!1;return t-t+1>=0}},function(t,e,r){var n=r(2),i=Object.prototype.toString;t.exports=function(t){if(void 0===t)return"undefined";if(null===t)return"null";if(!0===t||!1===t||t instanceof Boolean)return"boolean";if("string"==typeof t||t instanceof String)return"string";if("number"==typeof t||t instanceof Number)return"number";if("function"==typeof t||t instanceof Function)return"function";if(void 0!==Array.isArray&&Array.isArray(t))return"array";if(t instanceof RegExp)return"regexp";if(t instanceof Date)return"date";var e=i.call(t);return"[object RegExp]"===e?"regexp":"[object Date]"===e?"date":"[object Arguments]"===e?"arguments":"[object Error]"===e?"error":n(t)?"buffer":"[object Set]"===e?"set":"[object WeakSet]"===e?"weakset":"[object Map]"===e?"map":"[object WeakMap]"===e?"weakmap":"[object Symbol]"===e?"symbol":"[object Int8Array]"===e?"int8array":"[object Uint8Array]"===e?"uint8array":"[object Uint8ClampedArray]"===e?"uint8clampedarray":"[object Int16Array]"===e?"int16array":"[object Uint16Array]"===e?"uint16array":"[object Int32Array]"===e?"int32array":"[object Uint32Array]"===e?"uint32array":"[object Float32Array]"===e?"float32array":"[object Float64Array]"===e?"float64array":"object"}},function(t,e,r){var n=r(2),i=Object.prototype.toString;t.exports=function(t){if(void 0===t)return"undefined";if(null===t)return"null";if(!0===t||!1===t||t instanceof Boolean)return"boolean";if("string"==typeof t||t instanceof String)return"string";if("number"==typeof t||t instanceof Number)return"number";if("function"==typeof t||t instanceof Function)return"function";if(void 0!==Array.isArray&&Array.isArray(t))return"array";if(t instanceof RegExp)return"regexp";if(t instanceof Date)return"date";var e=i.call(t);return"[object RegExp]"===e?"regexp":"[object Date]"===e?"date":"[object Arguments]"===e?"arguments":"[object Error]"===e?"error":"[object Promise]"===e?"promise":n(t)?"buffer":"[object Set]"===e?"set":"[object WeakSet]"===e?"weakset":"[object Map]"===e?"map":"[object WeakMap]"===e?"weakmap":"[object Symbol]"===e?"symbol":"[object Int8Array]"===e?"int8array":"[object Uint8Array]"===e?"uint8array":"[object Uint8ClampedArray]"===e?"uint8clampedarray":"[object Int16Array]"===e?"int16array":"[object Uint16Array]"===e?"uint16array":"[object Int32Array]"===e?"int32array":"[object Uint32Array]"===e?"uint32array":"[object Float32Array]"===e?"float32array":"[object Float64Array]"===e?"float64array":"object"}},function(t,e,r){"use strict";function n(t,e){if("string"!=typeof t)throw new TypeError("expected a string");if(1===e)return t;if(2===e)return t+t;var r=t.length*e;if(i!==t||void 0===i)i=t,o="";else if(o.length>=r)return o.substr(0,r);for(;r>o.length&&e>1;)1&e&&(o+=t),e>>=1,t+=t;return o+=t,o=o.substr(0,r)}var i,o="";t.exports=n},function(t,e,r){"use strict";function n(){return Math.random().toString().slice(2,7)}e.before=function(t,e){return t.replace(e,function(t){var e=n();return i[e]=t,"__ID"+e+"__"})},e.after=function(t){return t.replace(/__ID(.{5})__/g,function(t,e){return i[e]})};var i={}},function(t,e,r){"use strict";function n(t){if(!i(t))return t;var e=!1;-1!==t.indexOf("[^")&&(e=!0,t=t.split("[^").join("[")),-1!==t.indexOf("[!")&&(e=!0,t=t.split("[!").join("["));for(var r=t.split("["),n=t.split("]"),s=r.length!==n.length,a=t.split(/(?::\]\[:|\[?\[:|:\]\]?)/),u=a.length,c=0,l="",f="",p=[];u--;){var h=a[c++];"^[!"!==h&&"[!"!==h||(h="",e=!0);var d=e?"^":"",g=o[h];g?p.push("["+d+g+"]"):h&&(/^\[?\w-\w\]?$/.test(h)?c===a.length?p.push("["+d+h):1===c?p.push(d+h+"]"):p.push(d+h):1===c?f+=h:c===a.length?l+=h:p.push("["+d+h+"]"))}var y=p.join("|"),m=p.length||1;return m>1&&(y="(?:"+y+")",m=1),f&&(m++,"["===f.charAt(0)&&(s?f="\\["+f.slice(1):f+="]"),y=f+y),l&&(m++,"]"===l.slice(-1)&&(l=s?l.slice(0,l.length-1)+"\\]":"["+l),y+=l),m>1&&(y=y.split("][").join("]|["),-1===y.indexOf("|")||/\(\?/.test(y)||(y="(?:"+y+")")),y=y.replace(/\[+=|=\]+/g,"\\b")}var i=r(91),o={alnum:"a-zA-Z0-9",alpha:"a-zA-Z",blank:" \\t",cntrl:"\\x00-\\x1F\\x7F",digit:"0-9",graph:"\\x21-\\x7E",lower:"a-z",print:"\\x20-\\x7E",punct:"-!\"#$%&'()\\*+,./:;<=>?@[\\]^_`{|}~",space:" \\t\\r\\n\\v\\f",upper:"A-Z",word:"A-Za-z0-9_",xdigit:"A-Fa-f0-9"};t.exports=n,n.makeRe=function(t){try{return new RegExp(n(t))}catch(t){}},n.isMatch=function(t,e){try{return n.makeRe(e).test(t)}catch(t){return!1}},n.match=function(t,e){for(var r=t.length,i=0,o=t.slice(),s=n.makeRe(e);i<r;){var a=t[i++];s.test(a)&&o.splice(i,1)}return o}},function(t,e){t.exports=function(t){return"string"==typeof t&&/\[([:.=+])(?:[^\[\]]|)+\1\]/.test(t)}},function(t,e,r){"use strict";function n(t,e){e=e||{};var r={},n=0;t=t.replace(/!\(([^\w*()])/g,"$1!("),t=t.replace(/([*\/])\.!\([*]\)/g,function(t,e){return o("/"===e?"\\/[^.]+":"[^.]+")});var a=t+String(!!e.regex)+String(!!e.contains)+String(!!e.escape);if(l.hasOwnProperty(a))return l[a];c instanceof RegExp||(c=s()),e.negate=!1;for(var f;f=c.exec(t);){var p=f[1],h=f[3];"!"===p&&(e.negate=!0);var d="__EXTGLOB_"+n+++"__";r[d]=i(h,p,e.escape),t=t.split(f[0]).join(d)}for(var g=Object.keys(r),y=g.length;y--;){var m=g[y];t=t.split(m).join(r[m])}var b=e.regex?u(t,e.contains,e.negate):t;return b=b.split(".").join("\\."),l[a]=b}function i(t,e,r){switch(r&&(t=o(t)),e){case"!":return"(?!"+t+")[^/]"+(r?"%%%~":"*?");case"@":return"(?:"+t+")";case"+":return"(?:"+t+")+";case"*":return"(?:"+t+")"+(r?"%%":"*");case"?":return"(?:"+t+"|)";default:return t}}function o(t){return t=t.split("*").join("[^/]%%%~"),t=t.split(".").join("\\.")}function s(){return/(\\?[@?!+*$]\\?)(\(([^()]*?)\))/}function a(t){return"(?!^"+t+").*$"}function u(t,e,r){var n=e?"^":"";return t="(?:"+t+")"+(e?"$":""),r&&(t=n+a(t)),new RegExp(n+t)}var c,l=(r(3),{});t.exports=n},function(t,e,r){var n=r(2),i=Object.prototype.toString;t.exports=function(t){if(void 0===t)return"undefined";if(null===t)return"null";if(!0===t||!1===t||t instanceof Boolean)return"boolean";if("string"==typeof t||t instanceof String)return"string";if("number"==typeof t||t instanceof Number)return"number";if("function"==typeof t||t instanceof Function)return"function";if(void 0!==Array.isArray&&Array.isArray(t))return"array";if(t instanceof RegExp)return"regexp";if(t instanceof Date)return"date";var e=i.call(t);return"[object RegExp]"===e?"regexp":"[object Date]"===e?"date":"[object Arguments]"===e?"arguments":"[object Error]"===e?"error":n(t)?"buffer":"[object Set]"===e?"set":"[object WeakSet]"===e?"weakset":"[object Map]"===e?"map":"[object WeakMap]"===e?"weakmap":"[object Symbol]"===e?"symbol":"[object Int8Array]"===e?"int8array":"[object Uint8Array]"===e?"uint8array":"[object Uint8ClampedArray]"===e?"uint8clampedarray":"[object Int16Array]"===e?"int16array":"[object Uint16Array]"===e?"uint16array":"[object Int32Array]"===e?"int32array":"[object Uint32Array]"===e?"uint32array":"[object Float32Array]"===e?"float32array":"[object Float64Array]"===e?"float64array":"object"}},function(t,e,r){var n=r(95);t.exports=function(t,e){if("string"!=typeof t)throw new TypeError("expected a string");return t=t.replace(/[\\\/]+/g,"/"),!1!==e&&(t=n(t)),t}},function(t,e,r){(function(e){function r(t,e){var r=t[e];return e>0&&("/"===r||n&&"\\"===r)}var n="win32"===e.platform;t.exports=function(t){var e=t.length-1;if(e<2)return t;for(;r(t,e);)e--;return t.substr(0,e+1)}}).call(e,r(6))},function(t,e,r){"use strict";var n=r(97),i=r(20);t.exports=function(t,e){if(!n(t))return{};e=[].concat.apply([],[].slice.call(arguments,1));var r,o=e[e.length-1],s={};"function"==typeof o&&(r=e.pop());var a="function"==typeof r;return e.length||a?(i(t,function(n,i){-1===e.indexOf(i)&&(a?r(n,i,t)&&(s[i]=n):s[i]=n)}),s):t}},function(t,e,r){"use strict";t.exports=function(t){return void 0!==t&&null!==t&&("object"==typeof t||"function"==typeof t)}},function(t,e,r){"use strict";t.exports=function(t,e,r){for(var n in t)if(!1===e.call(r,t[n],n,t))break}},function(t,e,r){"use strict";function n(t){return-1!==t.indexOf("/.")||"."===t.charAt(0)&&"/"!==t.charAt(1)}function i(t,e,r){return t&&-1!==e.indexOf(r)}function o(t){var e=/\{([^{}]*?)}|\(([^()]*?)\)|\[([^\[\]]*?)\]/g;return t.replace(e,function(t,e,r,n){var i=e||r||n;return i?t.split(i).join(s(i)):t})}function s(t){return t=t.split("/").join("__SLASH__"),t=t.split(".").join("__DOT__")}function a(t){return t=t.split("__SLASH__").join("/"),t=t.split("__DOT__").join(".")}var u=r(4),c=r(100),l=r(3),f=r(102),p=t.exports.cache={};t.exports=function(t){if(p.hasOwnProperty(t))return p[t];var e={};e.orig=t,e.is={},t=o(t);var r=c(t);e.is.glob=r.isGlob,e.glob=r.glob,e.base=r.base;var s=/([^\/]*)$/.exec(t);e.path={},e.path.dirname="",e.path.basename=s[1]||"",e.path.dirname=t.split(e.path.basename).join("")||"";var h=(e.path.basename||"").split(".")||"";e.path.filename=h[0]||"",e.path.extname=h.slice(1).join(".")||"",e.path.ext="",u(e.path.dirname)&&!e.path.basename&&(/\/$/.test(e.glob)||(e.path.basename=e.glob),e.path.dirname=e.base),-1!==t.indexOf("/")||e.is.globstar||(e.path.dirname="",e.path.basename=e.orig);var d=e.path.basename.indexOf(".");if(-1!==d&&(e.path.filename=e.path.basename.slice(0,d),e.path.extname=e.path.basename.slice(d)),"."===e.path.extname.charAt(0)){var g=e.path.extname.split(".");e.path.ext=g[g.length-1]}e.glob=a(e.glob),e.path.dirname=a(e.path.dirname),e.path.basename=a(e.path.basename),e.path.filename=a(e.path.filename),e.path.extname=a(e.path.extname);var y=t&&e.is.glob;return e.is.negated=t&&"!"===t.charAt(0),e.is.extglob=t&&l(t),e.is.braces=i(y,t,"{"),e.is.brackets=i(y,t,"[:"),e.is.globstar=i(y,t,"**"),e.is.dotfile=f(e.path.basename)||f(e.path.filename),e.is.dotdir=n(e.path.dirname),p[t]=e}},function(t,e,r){"use strict";function n(t){return"/"===t.slice(-1)?t:i.dirname(t)}var i=r(7),o=r(101),s=r(4);t.exports=function(t){if("string"!=typeof t)throw new TypeError("glob-base expects a string.");var e={};return e.base=o(t),e.isGlob=s(t),"."!==e.base?(e.glob=t.substr(e.base.length),"/"===e.glob.charAt(0)&&(e.glob=e.glob.substr(1))):e.glob=t,e.isGlob||(e.base=n(t),e.glob="."!==e.base?t.substr(e.base.length):t),"./"===e.glob.substr(0,2)&&(e.glob=e.glob.substr(2)),"/"===e.glob.charAt(0)&&(e.glob=e.glob.substr(1)),e}},function(t,e,r){"use strict";var n=r(7),i=r(4);t.exports=function(t){t+="a";do{t=n.dirname(t)}while(i(t));return t}},function(t,e){t.exports=function(t){if(46===t.charCodeAt(0)&&-1===t.indexOf("/",1))return!0;var e=t.lastIndexOf("/");return-1!==e&&46===t.charCodeAt(e+1)}},function(t,e,r){"use strict";function n(t,e,r){var n,u,c="_default_";if(!e&&!r)return"function"!=typeof t?t:s[c]||(s[c]=t(e));if("string"==typeof e){if(!r)return s[e]||(s[e]=t(e));c=e}else r=e;return(u=a[c])&&o(u.opts,r)?u.regex:(i(c,r,n=t(e,r)),n)}function i(t,e,r){a[t]={regex:r,opts:e}}var o=r(104),s={},a={};t.exports=n,t.exports.cache=a,t.exports.basic=s},function(t,e,r){"use strict";var n=r(105);t.exports=function(t,e){if(!t&&!e)return!0;if(!t&&e||t&&!e)return!1;var r,i=0,o=0;for(r in e)if(o++,!n(e[r])||!t.hasOwnProperty(r)||t[r]!==e[r])return!1;for(r in t)i++;return i===o}},function(t,e,r){"use strict";t.exports=function(t){return null==t||"function"!=typeof t&&"object"!=typeof t}},function(t,e,r){"use strict";function n(t){return t=t.split("?").join("%~"),t=t.split("*").join("%%")}function i(t){return t=t.split("%~").join("?"),t=t.split("%%").join("*")}var o=r(107),s=r(5),a=t.exports=function t(e,r){if(!(this instanceof t))return new t(e,r);this.options=r||{},this.pattern=e,this.history=[],this.tokens={},this.init(e)};a.prototype.init=function(t){this.orig=t,this.negated=this.isNegated(),this.options.track=this.options.track||!1,this.options.makeRe=!0},a.prototype.track=function(t){this.options.track&&this.history.push({msg:t,pattern:this.pattern})},a.prototype.isNegated=function(){return 33===this.pattern.charCodeAt(0)&&(this.pattern=this.pattern.slice(1),!0)},a.prototype.braces=function(){if(!0!==this.options.nobraces&&!0!==this.options.nobrace){var t=this.pattern.match(/[\{\(\[]/g),e=this.pattern.match(/[\}\)\]]/g);t&&e&&t.length!==e.length&&(this.options.makeRe=!1);var r=s.braces(this.pattern,this.options);this.pattern=r.join("|")}},a.prototype.brackets=function(){!0!==this.options.nobrackets&&(this.pattern=s.brackets(this.pattern))},a.prototype.extglob=function(){!0!==this.options.noextglob&&s.isExtglob(this.pattern)&&(this.pattern=s.extglob(this.pattern,{escape:!0}))},a.prototype.parse=function(t){return this.tokens=s.parseGlob(t||this.pattern,!0),this.tokens},a.prototype._replace=function(t,e,r){this.track('before (find): "'+t+'" (replace with): "'+e+'"'),r&&(e=n(e)),this.pattern=t&&e&&"string"==typeof t?this.pattern.split(t).join(e):this.pattern.replace(t,e),this.track("after")},a.prototype.escape=function(t){this.track("before escape: ");var e=/["\\](['"]?[^"'\\]['"]?)/g;this.pattern=t.replace(e,function(t,e){var r=o.ESC,n=r&&r[e];return n||(/[a-z]/i.test(t)?t.split("\\").join(""):t)}),this.track("after escape: ")},a.prototype.unescape=function(t){var e=/__([A-Z]+)_([A-Z]+)__/g;this.pattern=t.replace(e,function(t,e){return o[e][t]}),this.pattern=i(this.pattern)}},function(t,e,r){"use strict";function n(t,e){return Object.keys(t).reduce(function(r,n){var i=e?e+n:n;return r[t[n]]=i,r},{})}var i,o,s={};s.escapeRegex={"?":/\?/g,"@":/\@/g,"!":/\!/g,"+":/\+/g,"*":/\*/g,"(":/\(/g,")":/\)/g,"[":/\[/g,"]":/\]/g},s.ESC={"?":"__UNESC_QMRK__","@":"__UNESC_AMPE__","!":"__UNESC_EXCL__","+":"__UNESC_PLUS__","*":"__UNESC_STAR__",",":"__UNESC_COMMA__","(":"__UNESC_LTPAREN__",")":"__UNESC_RTPAREN__","[":"__UNESC_LTBRACK__","]":"__UNESC_RTBRACK__"},s.UNESC=i||(i=n(s.ESC,"\\")),s.ESC_TEMP={"?":"__TEMP_QMRK__","@":"__TEMP_AMPE__","!":"__TEMP_EXCL__","*":"__TEMP_STAR__","+":"__TEMP_PLUS__",",":"__TEMP_COMMA__","(":"__TEMP_LTPAREN__",")":"__TEMP_RTPAREN__","[":"__TEMP_LTBRACK__","]":"__TEMP_RTBRACK__"},s.TEMP=o||(o=n(s.ESC_TEMP)),t.exports=s},function(t,e,r){"use strict";var n=r(109);t.exports=function(t,e,r){e=n(e,r);var i=!0;if(null==t)return i;for(var o=t.length,s=0;o--;)if(!e(t[s++],s,t)){i=!1;break}return i}},function(t,e,r){"use strict";function n(t,e){for(var r=t.length,n=-1;++n<r;)if(s(t[n],e))return!0;return!1}function i(t,e){for(var r=e.length,i=-1;++i<r;)if(!n(t,e[i]))return!1;return!0}function o(t,e){var r=!0;return c(e,function(e,n){if(!s(t[n],e))return r=!1}),r}function s(t,e){return t&&"object"==typeof t?Array.isArray(t)&&Array.isArray(e)?i(t,e):o(t,e):t===e}function a(t){return function(e){return e[t]}}function u(t){return t}var c=r(20);t.exports=function(t,e){if(null==t)return u;switch(typeof t){case"function":return void 0!==e?function(r,n,i){return t.call(e,r,n,i)}:t;case"object":return function(e){return s(e,t)};case"string":case"number":return a(t)}}},function(t,e,r){"use strict";function n(t,e,r){var n=t.length>>>0;return e=null==e?r||0:e<0?Math.max(n+e,0):Math.min(e,n)}t.exports=function(t,e,r){var i=t.length>>>0,o=[];for(e=n(t,e),r=n(t,r,i);e<r;)o.push(t[e++]);return o}},function(t,e,r){"use strict";t.exports=function(t,e,r){r=r||0;var n=-1;if(null==t)return n;for(var i=t.length,o=r<0?i+r:r;i--;)if(t[o++]===e){n=o-1;break}return n}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(t){var e=this;try{return t.map(function(t){for(var r in t)"client"===e.source&&(t[r]=e.formatDate(t[r],e.dateFormat(r))),!e.isListFilter(r)||e.opts.templates[r]||e.$scopedSlots[r]||(t[r]=e.optionText(t[r],r));return t})}catch(e){throw console.error("vue-tables-2: non-iterable data property. Expected array, got "+(void 0===t?"undefined":n(t))+". Make sure that your response conforms to the expected format, or use the 'responseAdapter' option to match the currently returned format"),console.error("Data equals",t),new Error}}},function(t,e,r){"use strict";t.exports=function(t,e){var r=this.listColumnsObject[e];return void 0===r[t]?t:r[t]}},function(t,e,r){"use strict";t.exports=function(t,e,r,n){var i=this._getValue(t,e);if(-1==this.templatesKeys.indexOf(e))return void 0!==i&&this.opts.highlightMatches&&-1!==this.filterableColumns.indexOf(e)?this.highlightMatch(i,e,n):i;var o=this.opts.templates[e];return o="function"==typeof o?o.apply(this.$root,[n,t,r,e]):n(o,{attrs:{data:t,column:e,index:r}})}},function(t,e,r){"use strict";t.exports=function(t,e){var r,n=this.opts.uniqueKey;r="client"==this.source&&void 0!==t[n]?this.tableData.filter(function(e){return t[n]===e[n]})[0]:t,this.dispatch("row-click",{row:r,event:e})}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(t){this.limit="object"===(void 0===t?"undefined":n(t))?t.target.value:t,this.updateState("perPage",this.limit),this.dispatch("limit",parseInt(this.limit)),this.setPage(1)}},function(t,e,r){"use strict";t.exports=function(){var t=this,e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:null;if(!this.opts.childRow||"function"==typeof this.opts.childRow)throw new Error("vue-tables-2: Child row undefined or not a component");var r=e?this.openChildRows.filter(function(t){return e.includes(t)}):this.openChildRows;return r.length?this.$children.filter(function(e){return"ChildRow"===e.$options.name&&r.includes(e.data[t.opts.uniqueKey])}):[]}},function(t,e,r){"use strict";var n=r(1),i=function(t){return t&&t.__esModule?t:{default:t}}(n);t.exports=function(t,e){if(this.vuex){if(t.split("::").length>1)return;this.commit(t.toUpperCase().replace("-","_"),e)}this.$emit(t,e),i.default.$emit("vue-tables."+t,e),this.name&&i.default.$emit("vue-tables."+this.name+"."+t,e)}},function(t,e,r){"use strict";t.exports=function(t,e){if(e&&e.stopPropagation(),this.openChildRows.includes(t)){var r=this.openChildRows.indexOf(t);this.openChildRows.splice(r,1)}else this.openChildRows.push(t)}},function(t,e,r){"use strict";t.exports=function(t){return this.openChildRows.includes(t)?"VueTables__child-row-toggler--open":"VueTables__child-row-toggler--closed"}},function(t,e,r){"use strict";t.exports=function(t){if("function"==typeof this.opts.requestFunction)return this.opts.requestFunction.call(this,t);if("undefined"!=typeof axios)return axios.get(this.url,{params:t}).catch(function(t){this.dispatch("error",t)}.bind(this));if(void 0!==this.$http)return this.$http.get(this.url,{params:t}).then(function(t){return t.json()}.bind(this),function(t){this.dispatch("error",t)}.bind(this));if("undefined"!=typeof $)return $.getJSON(this.url,t).fail(function(t){this.dispatch("error",t)}.bind(this));throw"vue-tables: No supported ajax library was found. (jQuery, axios or vue-resource). To use a different library you can write your own request function (see the `requestFunction` option)"}},function(t,e,r){"use strict";t.exports=function(t){return"undefined"!=typeof axios?t.data:t}},function(t,e,r){"use strict";t.exports=function(t){var e=this.orderBy.ascending;return this.currentlySorting={column:t,ascending:e},void 0===this.opts.customSorting[t]?this.defaultSort(t,e):this.opts.customSorting[t](e)}},function(t,e,r){"use strict";t.exports=function(){var t={page:1,query:this.query,orderBy:this.orderBy,perPage:this.opts.perPage,customQueries:this.customQueries};return this.storage.setItem(this.stateKey,JSON.stringify(t)),t}},function(t,e,r){"use strict";t.exports=function(t,e){if(this.opts.saveState&&this.activeState){try{var r=JSON.parse(this.storage.getItem(this.stateKey))}catch(t){var r=this.initState()}r[t]=e,this.storage.setItem(this.stateKey,JSON.stringify(r))}}},function(t,e,r){"use strict";t.exports=function(t){var e=this.opts.columnsClasses;return e.hasOwnProperty(t)?e[t]:""}},function(t,e,r){"use strict";t.exports=function(t){return t?(t=t.split("__"),t.shift(),t.join("__").split("@@@").join(".")):t}},function(t,e,r){"use strict";t.exports=function(t){var e=this;if(this.userControlsColumns||(this.userColumnsDisplay=JSON.parse(JSON.stringify(this.allColumns)),this.userControlsColumns=!0),this.userColumnsDisplay.includes(t)){if(1===this.userColumnsDisplay.length)return;var r=this.userColumnsDisplay.indexOf(t);this.userColumnsDisplay.splice(r,1)}else this.userColumnsDisplay.push(t);this.updateState("userControlsColumns",!0),this.updateState("userColumnsDisplay",this.userColumnsDisplay),this.$nextTick(function(){e._setFiltersDOM(e.query)})}},function(t,e,r){"use strict";function n(t,e){var r=[JSON.parse(JSON.stringify(t))];return r=r.concat(e[t.column])}t.exports=function(t){var e=this.orderBy.column,r=this.orderBy.ascending;this.userMultiSorting[e]||(this.userMultiSorting[e]=[]);var i=this.userMultiSorting[e];if(e===t)!i.length||r?this.orderBy.ascending=!this.orderBy.ascending:(this.orderBy=i.shift(),this.userMultiSorting={},this.userMultiSorting[this.orderBy.column]=i);else{var o=i.filter(function(e){return e.column==t})[0];o?o.ascending?o.ascending=!o.ascending:(this.userMultiSorting[e]=i.filter(function(e){return e.column!=t}),this.userMultiSorting[e].length||(this.userMultiSorting={})):i.push({column:t,ascending:!0})}this.time=Date.now(),this.dispatch("sorted",n(this.orderBy,this.userMultiSorting))}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(t){var e;if(this.opts.filterByColumn)for(var r in t){var i=this._getColumnName(r);if(this.isDateFilter(r))if(t[r]&&"object"===n(t[r])){var o="string"==typeof t[r].start?moment(t[r].start,"YYYY-MM-DD"):t[r].start,s="string"==typeof t[r].end?moment(t[r].end,"YYYY-MM-DD"):t[r].end;this._setDatepickerText(r,o,s)}else $(this.$el).find("#VueTables__"+r+"-filter").html("<span class='VueTables__filter-placeholder'>"+this.display("filterBy",{column:this.getHeading(r)})+"</span>");else e=this.$el.querySelector("[name='"+i+"']"),e?e.value=t[r]:-1===this.columns.indexOf(r)&&console.error("vue-tables-2: Error in setting filter value. Column '"+r+"' does not exist.")}else this.$el.querySelector(".VueTables__search input").value=t}},function(t,e,r){"use strict";t.exports=function(t){var e=Object.keys(this.userMultiSorting);return e.length&&this.orderBy.column!==t?!!this.userMultiSorting[e[0]].filter(function(e){return e.column==t}).length:this.orderBy.column===t}},function(t,e,r){"use strict";t.exports=function(t,e){if(this.$scopedSlots.child_row)return this.$scopedSlots.child_row({row:e});var r=this.opts.childRow;return"function"==typeof r?r.apply(this,[t,e]):t(r,{attrs:{data:e}})}},function(t,e,r){"use strict";t.exports=function(){this.displayColumnsDropdown=!this.displayColumnsDropdown}},function(t,e,r){"use strict";t.exports=function(t){return 1===this.userColumnsDisplay.length&&this.userColumnsDisplay[0]===t}},function(t,e,r){"use strict";t.exports=function(t){this.vuex||(this.setPage(t),this.dispatch("pagination",t))}},function(t,e,r){"use strict";t.exports=function(){this.orderBy.column!=this.opts.groupBy?this.setOrder(this.opts.groupBy,!0):this.setOrder(this.opts.groupBy,!this.orderBy.ascending)}},function(t,e,r){"use strict";t.exports=function(t){return void 0!==this.opts.initFilters[t]?this.opts.initFilters[t]:!(void 0===this.query[t]||!this.query[t].start)&&{start:moment(this.query[t].start,"YYYY-MM-DD HH:mm:ss"),end:moment(this.query[t].end,"YYYY-MM-DD HH:mm:ss")}}},function(t,e,r){"use strict";t.exports=function(t,e,r){var n=this.dateFormat(t);("string"==typeof t?$(this.$el).find("#VueTables__"+t+"-filter"):t).text(e.format(n)+" - "+r.format(n))}},function(t,e,r){"use strict";t.exports=function(t){return!this.opts.descOrderColumns.includes(t)}},function(t,e,r){"use strict";t.exports=function(t){return this.opts.dateFormatPerColumn.hasOwnProperty(t)?this.opts.dateFormatPerColumn[t]:this.opts.dateFormat}},function(t,e,r){"use strict";t.exports=function(){var t=this;if(this.opts.columnsDropdown){var e=function(t){return t.stopPropagation()},r=function(){t.displayColumnsDropdown&&(t.displayColumnsDropdown=!1)};this.$refs.columnsdropdown.addEventListener("click",e),document.addEventListener("click",r),this.$once("hook:beforeDestroy",function(){document.removeEventListener("click",r),t.$refs.columnsdropdown.removeEventListener("click",e)})}}},function(t,e,r){"use strict";t.exports=function(t,e){if(-1===e.indexOf("."))return t[e];var r=e.split("."),n=t[r[0]];if(!n)return"";for(var i=1;i<r.length;i++)if(void 0===(n=n[r[i]]))return"";return n}},function(t,e,r){"use strict";t.exports=function(t){return"vf__"+t.split(".").join("@@@")}},function(t,e,r){"use strict";t.exports={listColumnsObject:r(145),allColumns:r(146),templatesKeys:r(147),opts:r(148),tableData:r(150),storage:r(151),filterableColumns:r(152),hasChildRow:r(153),colspan:r(154),hasGenericFilter:r(155),stateKey:function(){return"vuetables_"+(this.name?this.name:this.id)},Page:function(){return this.page}}},function(t,e,r){"use strict";t.exports=function(){var t=Object.keys(this.opts.listColumns),e={};return t.forEach(function(t){e[t]={},this.opts.listColumns[t].forEach(function(r){e[t][r.id]=r.text})}.bind(this)),e}},function(t,e,r){"use strict";t.exports=function(){var t=this,e=this.columnsDisplay;return e||this.userControlsColumns?this.userControlsColumns?this.columns.filter(function(e){return t.userColumnsDisplay.includes(e)}):this.opts.ssr?this.Columns:this.Columns.filter(function(r){if(!e[r])return!0;var n=e[r],i=n[2],o=(!n[0]||t.windowWidth>=n[0])&&(!n[1]||t.windowWidth<n[1]);return"not"==i?!o:o}):this.Columns}},function(t,e,r){"use strict";t.exports=function(){return Object.keys(this.opts.templates)}},function(t,e,r){"use strict";t.exports=function(){var t=r(149)();return this.initOptions(t,this.globalOptions,this.options)}},function(t,e,r){"use strict";t.exports=function(){return{dateColumns:[],listColumns:{},datepickerOptions:{locale:{cancelLabel:"Clear"}},datepickerPerColumnOptions:{},initialPage:1,perPage:10,perPageValues:[10,25,50,100],groupBy:!1,collapseGroups:!1,destroyEventBus:!1,sendEmptyFilters:!1,params:{},sortable:!0,filterable:!0,groupMeta:[],initFilters:{},customFilters:[],templates:{},debounce:250,dateFormat:"DD/MM/YYYY",dateFormatPerColumn:{},toMomentFormat:!1,skin:!1,columnsDisplay:{},columnsDropdown:!1,texts:{count:"Showing {from} to {to} of {count} records|{count} records|One record",first:"First",last:"Last",filter:"Filter:",filterPlaceholder:"Search query",limit:"Records:",page:"Page:",noResults:"No matching records",filterBy:"Filter by {column}",loading:"Loading...",defaultOption:"Select {column}",columns:"Columns"},sortIcon:{is:"glyphicon-sort",base:"glyphicon",up:"glyphicon-chevron-up",down:"glyphicon-chevron-down"},sortingAlgorithm:function(t,e){return t.sort(this.getSortFn(e))},customSorting:{},multiSorting:{},clientMultiSorting:!0,serverMultiSorting:!1,filterByColumn:!1,highlightMatches:!1,orderBy:!1,descOrderColumns:[],footerHeadings:!1,headings:{},headingsTooltips:{},pagination:{dropdown:!1,chunk:10,edge:!1,align:"center",nav:"fixed"},childRow:!1,childRowTogglerFirst:!0,uniqueKey:"id",requestFunction:!1,requestAdapter:function(t){return t},responseAdapter:function(t){var e=this.getResponseData(t);return{data:e.data,count:e.count}},requestKeys:{query:"query",limit:"limit",orderBy:"orderBy",ascending:"ascending",page:"page",byColumn:"byColumn"},rowClassCallback:!1,preserveState:!1,saveState:!1,storage:"local",columnsClasses:{}}}},function(t,e,r){"use strict";t.exports=function(){return this.data}},function(t,e,r){"use strict";t.exports=function(){return"undefined"==typeof localStorage?{}:"local"===this.opts.storage?localStorage:sessionStorage}},function(t,e,r){"use strict";t.exports=function(){return this.opts.filterable&&this.opts.filterable.length?this.opts.filterable:this.Columns}},function(t,e,r){"use strict";t.exports=function(){return this.opts.childRow||this.$scopedSlots.child_row}},function(t,e,r){"use strict";t.exports=function(){return this.hasChildRow?this.allColumns.length+1:this.allColumns.length}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(){return!this.opts.filterByColumn&&("boolean"==typeof this.opts.filterable&&this.opts.filterable||"object"===n(this.opts.filterable)&&this.opts.filterable.length)}},function(t,e,r){"use strict";t.exports={input:r(157),select:r(158)}},function(t,e,r){"use strict";t.exports={twoWay:!0,bind:function(t,e,r){t.addEventListener("keydown",function(t){r.context[e.value]=t.target.value})},update:function(t,e,r,n){}}},function(t,e,r){"use strict";t.exports={twoWay:!0,bind:function(t,e,r){t.addEventListener("change",function(t){console.log("SELECT CHANGE"),r.context[e.value.name]=t.target.value,e.value.cb.call(this,e.value.params)})},update:function(t,e,r,n){}}},function(t,e,r){"use strict";var n=r(1),i=function(t){return t&&t.__esModule?t:{default:t}}(n);t.exports=function(){var t,e=this;this.opts.destroyEventBus&&(i.default.$off(),i.default.$destroy()),this.vuex&&!this.opts.preserveState&&this.$store.unregisterModule(this.name),this.opts.filterByColumn&&this.opts.dateColumns.forEach(function(r){(t=$(e.$el).find("#VueTables__"+r+"-filter").data("daterangepicker"))&&t.remove()})}},function(t,e,r){"use strict";t.exports=function(t){if(null==t)return!0;if(t.length>0)return!1;if(0===t.length)return!0;for(var e in t)if(Object.prototype.hasOwnProperty.call(t,e))return!1;return!0}},function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}var i=r(162),o=n(i),s=r(163),a=n(s),u=r(0),c=n(u);t.exports=function(t){var e={state:(0,o.default)(t),mutations:(0,a.default)(t)};t.$store&&t.$store.state&&t.$store.state[t.name]&&(e.state=c.default.recursive(e.state,t.$store.state[t.name]),t.$store.unregisterModule(t.name)),t.$store.registerModule(t.name,e)}},function(t,e,r){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=function(t){var e={page:t.opts.initialPage?t.opts.initialPage:1,limit:t.opts.perPage,count:"server"==t.source?0:t.data.length,columns:t.columns,data:"client"==t.source?t.data:[],query:t.initQuery(),customQueries:t.initCustomFilters(),sortBy:!(!t.opts.orderBy||!t.opts.orderBy.column)&&t.opts.orderBy.column,ascending:!t.opts.orderBy||!t.opts.orderBy.hasOwnProperty("ascending")||t.opts.orderBy.ascending};return void 0!==t.$store.state[t.name]?(0,i.default)(!0,t.$store.state[t.name],e):e};var n=r(0),i=function(t){return t&&t.__esModule?t:{default:t}}(n)},function(t,e,r){"use strict";function n(t,e,r){return e in t?Object.defineProperty(t,e,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[e]=r,t}Object.defineProperty(e,"__esModule",{value:!0}),e.default=function(t){var e,r,i="server"==t.source?(e={},n(e,t.name+"/SET_DATA",function(e,r){var n=t.opts.responseAdapter.call(t,r);e.data=n.data,e.count=parseInt(n.count)}),n(e,t.name+"/LOADING",function(t,e){}),n(e,t.name+"/LOADED",function(t,e){}),n(e,t.name+"/ERROR",function(t,e){}),e):n({},t.name+"/SET_COUNT",function(t,e){t.count=e});return o.default.recursive(!0,(r={},n(r,t.name+"/PAGINATE",function(e,r){e.page=r,t.updateState("page",r),"server"==t.source&&t.getData(),t.commit("PAGINATION",r)}),n(r,t.name+"/SET_FILTER",function(e,r){e.page=1,t.updateState("page",1),e.query=r,"server"==t.source&&t.getData()}),n(r,t.name+"/PAGINATION",function(t,e){}),n(r,t.name+"/SET_CUSTOM_FILTER",function(e,r){var n=r.filter,i=r.value;e.customQueries[n]=i,e.page=1,t.updateState("page",1),t.updateState("customQueries",e.customQueries),"server"==t.source&&t.getData()}),n(r,t.name+"/SET_STATE",function(t,e){var r=e.page,n=e.query,i=e.customQueries,o=e.limit,s=e.orderBy;t.customQueries=i,t.query=n,t.page=r,t.limit=o,t.ascending=s.ascending,t.sortBy=s.column}),n(r,t.name+"/SET_LIMIT",function(e,r){e.page=1,t.updateState("page",1),e.limit=r,"server"==t.source&&t.getData()}),n(r,t.name+"/SORT",function(e,r){var n=r.column,i=r.ascending;e.ascending=i,e.sortBy=n,"server"==t.source&&t.getData()}),n(r,t.name+"/SORTED",function(t,e){}),n(r,t.name+"/ROW_CLICK",function(t,e){}),n(r,t.name+"/FILTER",function(t,e){}),n(r,t.name+"/LIMIT",function(t,e){}),r),i)};var i=r(0),o=function(t){return t&&t.__esModule?t:{default:t}}(i)},function(t,e,r){"use strict";t.exports=function(){return{framework:"bootstrap3",table:"table table-striped table-bordered table-hover",row:"row",column:"col-md-12",label:"",input:"form-control",select:"form-control",field:"form-group",inline:"form-inline",right:"pull-right",left:"pull-left",center:"text-center",contentCenter:"",small:"",nomargin:"",groupTr:"info",button:"btn btn-secondary",dropdown:{container:"dropdown",trigger:"dropdown-toggle",menu:"dropdown-menu",content:"",item:"",caret:"caret"},pagination:{nav:"",count:"",wrapper:"",list:"pagination",item:"page-item",link:"page-link",next:"",prev:"",active:"active",disabled:"disabled"}}}},function(t,e,r){"use strict";t.exports=function(){return{framework:"bootstrap4",table:"table table-striped table-bordered table-hover",row:"row",column:"col-md-12",label:"",input:"form-control",select:"form-control",field:"form-group",inline:"form-inline",right:"float-right",left:"float-left",center:"text-center",contentCenter:"justify-content-center",nomargin:"m-0",groupTr:"table-info",small:"",button:"btn btn-secondary",dropdown:{container:"dropdown",trigger:"dropdown-toggle",menu:"dropdown-menu",content:"",item:"dropdown-item",caret:"caret"},pagination:{nav:"",count:"",wrapper:"",list:"pagination",item:"page-item",link:"page-link",next:"",prev:"",active:"active",disabled:"disabled"}}}},function(t,e,r){"use strict";t.exports=function(){return{framework:"bulma",table:"table is-bordered is-striped is-hoverable is-fullwidth",row:"columns",column:"column is-12",label:"label",input:"input",select:"select",field:"field",inline:"is-horizontal",right:"is-pulled-right",left:"is-pulled-left",center:"has-text-centered",contentCenter:"is-centered",icon:"icon",small:"is-small",nomargin:"marginless",button:"button",groupTr:"is-selected",dropdown:{container:"dropdown",trigger:"dropdown-trigger",menu:"dropdown-menu",content:"dropdown-content",item:"dropdown-item",caret:"fa fa-angle-down"},pagination:{nav:"",count:"",wrapper:"pagination",list:"pagination-list",item:"",link:"pagination-link",next:"",prev:"",active:"is-current",disabled:""}}}},function(t,e,r){"use strict";var n=r(0),i=function(t){return t&&t.__esModule?t:{default:t}}(n);t.exports=function(t,e,n,o){var s="VueTables__search_"+this.id,a="VueTables__dropdown-pagination_"+this.id,u="VueTables__limit_"+this.id,c=r(25).call(this,t),l=this.hasGenericFilter?t("div",{class:"VueTables__search-field"},[t("label",{attrs:{for:s},class:n.label},[this.display("filter")]),e.normalFilter(n,s)]):"",f=c.length>1?t("div",{class:"VueTables__limit-field"},[t("label",{class:n.label,attrs:{for:u}},[this.display("limit")]),e.perPage(c,n.select,u)]):"",p=this.opts.pagination&&this.opts.pagination.dropdown?t("div",{class:"VueTables__pagination-wrapper"},[t("div",{class:n.field+" "+n.inline+" "+n.right+" VueTables__dropdown-pagination",directives:[{name:"show",value:this.totalPages>1}]},[t("label",{attrs:{for:a}},[this.display("page")]),e.dropdownPagination(n.select,a)])]):"",h=this.opts.columnsDropdown?t("div",{class:"VueTables__columns-dropdown-wrapper"},[e.columnsDropdown(n)]):"",d=this.opts.footerHeadings?t("tfoot",[t("tr",[e.headings(n.right)])]):"",g=l||f||p||h||o.beforeFilter||o.afterFilter||o.beforeLimit||o.afterLimit,y=t("div",{class:n.row,directives:[{name:"show",value:g}]},[t("div",{class:n.column},[t("div",{class:n.field+" "+n.inline+" "+n.left+" VueTables__search"},[o.beforeFilter,l,o.afterFilter]),t("div",{class:n.field+" "+n.inline+" "+n.right+" VueTables__limit"},[o.beforeLimit,f,o.afterLimit]),p,h])]);return t("div",{class:"VueTables VueTables--"+this.source},[y,o.beforeTable,t("div",{class:"table-responsive"},[t("table",{class:"VueTables__table "+(this.opts.skin?this.opts.skin:n.table)},[t("thead",[t("tr",[e.headings(n.right)]),o.beforeFilters,e.columnFilters(n),o.afterFilters]),d,o.beforeBody,t("tbody",[o.prependBody,e.rows(n),o.appendBody]),o.afterBody])]),o.afterTable,e.pagination((0,i.default)(n.pagination,{wrapper:n.row+" "+n.column+" "+n.contentCenter,nav:n.center,count:n.center+" "+n.column})),e.dropdownPaginationCount()])}},function(t,e,r){"use strict";var n=r(0),i=function(t){return t&&t.__esModule?t:{default:t}}(n);t.exports=function(t,e,n,o){var s="VueTables__search_"+this.id,a="VueTables__limit_"+this.id,u=r(25).call(this,t),c=this.hasGenericFilter?t("div",{class:"VueTables__search-field"},[t("label",{attrs:{for:s},class:n.label},[this.display("filter")]),e.normalFilter(n,s)]):"",l=u.length>1?t("div",{class:"VueTables__limit-field"},[t("label",{class:n.label,attrs:{for:a}},[this.display("limit")]),e.perPage(u,n.select,a)]):"",f=this.opts.columnsDropdown?t("div",{class:"VueTables__columns-dropdown-wrapper"},[e.columnsDropdown(n)]):"",p=c||l||f||o.beforeFilter||o.afterFilter||o.beforeLimit||o.afterLimit,h=t("div",{class:n.row,directives:[{name:"show",value:p}]},[t("div",{class:n.column},[t("div",{class:n.field+" "+n.inline+" "+n.left+" VueTables__search"},[o.beforeFilter,c,o.afterFilter]),t("div",{class:n.field+" "+n.inline+" "+n.right+" VueTables__limit"},[o.beforeLimit,l,o.afterLimit]),f])]);return t("div",{class:"VueTables VueTables--"+this.source},[h,o.beforeTable,t("div",{class:"table-responsive"},[t("table",{class:"VueTables__table "+(this.opts.skin?this.opts.skin:n.table)},[t("thead",[t("tr",[e.headings(n.right)]),o.beforeFilters,e.columnFilters(n),o.afterFilters]),t("tfoot",[t("tr",[t("td",{attrs:{colspan:this.colspan}},[e.pagination((0,i.default)(n.pagination,{list:n.pagination.list+" "+n.right+" "+n.nomargin,count:""+n.left}))])])]),o.beforeBody,t("tbody",[o.prependBody,e.rows(n),o.appendBody]),o.afterBody])]),o.afterTable])}},function(t,e,r){"use strict";t.exports=function(t){var e=this;return function(r){var n;if("client"===e.source?(n=e.filteredData,n.length||"client"!==e.source||1===e.page||e.setPage(e.totalPages?e.totalPages:1)):n=e.tableData,0===e.count){var i=e.allColumns.length;return e.hasChildRow&&i++,t("tr",{class:"VueTables__no-results"},[t("td",{class:"text-center",attrs:{colspan:e.colspan}},[e.display(e.loading?"loading":"noResults")])])}var o,s,a,u,c,l,f=[],p=e.opts.uniqueKey,h=(e.Page-1)*e.limit;return n.map(function(n,i){if(e.opts.groupBy&&"client"===e.source&&n[e.opts.groupBy]!==a&&(u=e.getGroupSlot(n[e.opts.groupBy]),c=n[e.opts.groupBy],l=e.opts.toggleGroups?t("button",{class:r.button,on:{click:e.toggleGroup.bind(e,c)}},[c,t("span",{class:e.groupToggleIcon(c)})]):c,f.push(t("tr",{class:r.groupTr,on:{click:e._toggleGroupDirection.bind(e)}},[t("td",{attrs:{colspan:e.colspan}},[l,u])])),a=n[e.opts.groupBy]),!e.opts.toggleGroups||!e.collapsedGroups.includes(a)){if(i=h+i+1,o=[],e.hasChildRow){var d=t("td",[t("span",{on:{click:e.toggleChildRow.bind(e,n[p])},class:"VueTables__child-row-toggler "+e.childRowTogglerClass(n[p])})]);e.opts.childRowTogglerFirst&&o.push(d)}e.allColumns.map(function(r){var s=e.$scopedSlots&&e.$scopedSlots[r];o.push(t("td",{class:e.columnClass(r)},[s?s({row:n,column:r,index:i}):e.render(n,r,i,t)]))}),e.hasChildRow&&!e.opts.childRowTogglerFirst&&o.push(d),s=e.opts.rowClassCallback?e.opts.rowClassCallback(n):"",f.push(t("tr",{class:s,on:{click:e.rowWasClicked.bind(e,n),dblclick:e.rowWasClicked.bind(e,n)}},[o," "])),f.push(e.hasChildRow&&e.openChildRows.includes(n[p])?t("tr",{class:"VueTables__child-row"},[t("td",{attrs:{colspan:e.colspan}},[e._getChildRowTemplate(t,n)])]):t())}}),f}}},function(t,e,r){"use strict";var n=r(8);t.exports=function(t){var e=this;return function(r,i){var o="client"==e.source?e.search.bind(e,e.data):e.serverSearch.bind(e);return t("input",{class:r.input+" "+r.small,attrs:{type:"text",value:e.query,placeholder:e.display("filterPlaceholder"),id:i},on:{keyup:e.opts.debounce?n(o,e.opts.debounce):o}})}}},function(t,e,r){"use strict";r(8);t.exports=function(t){var e=this;return function(r,n){for(var i,o=[],s=1;s<=e.totalPages;s++){var i=e.page==s;o.push(t("option",{attrs:{value:s},domProps:{selected:i}},[s]))}return t("select",{class:r+" dropdown-pagination",directives:[{name:"show",value:e.totalPages>1}],attrs:{name:"page",value:e.page,id:n},ref:"page",on:{change:e.setPage.bind(e,null,!1)}},[o])}}},function(t,e,r){"use strict";t.exports=function(t){var e=this;return function(){if(e.count>0&&e.opts.pagination.dropdown){var r=parseInt(e.limit),n=(e.Page-1)*r+1,i=e.Page==e.totalPages?e.count:n+r-1,o=e.opts.texts.count.split("|"),s=Math.min(1==e.count?2:1==e.totalPages?1:0,o.length-1),a=o[s].replace("{count}",e.count).replace("{from}",n).replace("{to}",i);return t("div",{class:"VuePagination"},[t("p",{class:"VuePagination__count"},[a])])}return""}}},function(t,e,r){"use strict";function n(t,e,r){return e in t?Object.defineProperty(t,e,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[e]=r,t}var i=r(0);!function(t){t&&t.__esModule}(i);t.exports=function(t){var e=this;return function(i){if(!e.opts.filterByColumn||!e.opts.filterable)return"";var o=r(174).call(e,t,i.input),s=r(175).call(e,t),a=r(176).call(e,t,i.select),u=[];return e.hasChildRow&&e.opts.childRowTogglerFirst&&u.push(t("th")),e.allColumns.map(function(r){var i="";if(e.filterable(r))switch(!0){case e.isTextFilter(r):i=o(r);break;case e.isDateFilter(r):i=s(r);break;case e.isListFilter(r):i=a(r)}void 0!==e.$slots["filter__"+r]&&(i=i?t("div",[i,e.$slots["filter__"+r]]):e.$slots["filter__"+r]),u.push(t("th",{class:e.columnClass(r)},[t("div",n({class:"VueTables__column-filter"},"class","VueTables__"+r+"-filter-wrapper"),[i])]))}),e.hasChildRow&&!e.opts.childRowTogglerFirst&&u.push(t("th")),t("tr",{class:"VueTables__filters-row"},[u])}}},function(t,e,r){"use strict";var n=r(8);t.exports=function(t,e){var r=this,i="client"==this.source?this.search.bind(this,this.data):this.serverSearch.bind(this);if(this.opts.debounce)var o=n(i,this.opts.debounce),s=function(t){13===t.keyCode?(o.clear(),i.apply(void 0,arguments)):o.apply(void 0,arguments)};return function(n){return t("input",{on:{keyup:r.opts.debounce?s:i},class:e,attrs:{name:r._getColumnName(n),type:"text",placeholder:r.display("filterBy",{column:r.getHeading(n)}),value:r.query[n]}})}}},function(t,e,r){"use strict";t.exports=function(t){var e=this;return function(r){return t("div",{class:"VueTables__date-filter",attrs:{id:"VueTables__"+r+"-filter"}},[t("span",{class:"VueTables__filter-placeholder"},[e.display("filterBy",{column:e.getHeading(r)})])])}}},function(t,e,r){"use strict";t.exports=function(t,e){var r=this;return function(n){var i=[],o=void 0,s="client"==r.source?r.search.bind(r,r.data):r.serverSearch.bind(r);return r.opts.listColumns[n].filter(function(t){return!t.hide}).map(function(e){o=e.id==r.query[n]&&""!==r.query[n],i.push(t("option",{attrs:{value:e.id},domProps:{selected:o}},[e.text]))}),t("div",{class:"VueTables__list-filter",attrs:{id:"VueTables__"+n+"-filter"}},[t("select",{class:e,on:{change:s},attrs:{name:r._getColumnName(n),value:r.query[n]}},[t("option",{attrs:{value:""}},[r.display("defaultOption",{column:r.opts.headings[n]?r.opts.headings[n]:n})]),i])])}}},function(t,e,r){"use strict";t.exports=function(t){var e=this;return function(r){if(e.opts.pagination&&e.opts.pagination.dropdown)return"";var n={theme:r,chunk:e.opts.pagination.chunk,chunksNavigation:e.opts.pagination.nav,edgeNavigation:e.opts.pagination.edge,texts:{count:e.opts.texts.count,first:e.opts.texts.first,last:e.opts.texts.last}},i=e.vuex?e.name:e.id;return t("pagination",{ref:"pagination",attrs:{options:n,for:i,vuex:e.vuex,records:e.count,"per-page":parseInt(e.limit)},on:{paginate:e._onPagination.bind(e)}})}}},function(t,e,r){"use strict";t.exports=function(t){var e=this;return function(n){var i=r(179)(t,n),o=[];return e.hasChildRow&&e.opts.childRowTogglerFirst&&o.push(t("th")),e.allColumns.map(function(e){o.push(t("th",{on:{click:this.orderByColumn.bind(this,e)},class:this.sortableClass(e)},[t("span",{class:"VueTables__heading",attrs:{title:this.getHeadingTooltip(e,t)}},[this.getHeading(e,t)]),i.call(this,e)]))}.bind(e)),e.hasChildRow&&!e.opts.childRowTogglerFirst&&o.push(t("th")),o}}},function(t,e,r){"use strict";t.exports=function(t,e){return function(r){return this.sortable(r)?t("span",{class:"VueTables__sort-icon "+e+" "+this.sortableChevronClass(r)}):""}}},function(t,e,r){"use strict";t.exports=function(t){var e=this;return function(r,n,i){return r.length>1?t("select",{class:n,attrs:{name:"limit",value:e.limit,id:i},on:{change:e.setLimit.bind(e)}},[r]):""}}},function(t,e,r){"use strict";var n=r(182),i=r(183);t.exports=function(t){var e=this;return function(r){var o=e.columns.map(function(n){return i(t,r,t("a",{class:r.dropdown.item,attrs:{href:"#"},on:{click:function(){return e.toggleColumn(n)}}},[t("input",{attrs:{type:"checkbox",value:n,disabled:e._onlyColumn(n)},domProps:{checked:e.allColumns.includes(n)}}),e.getHeading(n)]))});return t("div",{ref:"columnsdropdown",class:r.dropdown.container+" "+r.right+" VueTables__columns-dropdown"},[t("button",{attrs:{type:"button"},class:r.button+" "+r.dropdown.trigger,on:{click:e._toggleColumnsDropdown.bind(e)}},[e.display("columns"),t("span",{class:r.icon+" "+r.small},[t("i",{class:r.dropdown.caret})])]),n.call(e,t,r,o)])}}},function(t,e,r){"use strict";t.exports=function(t,e,r){return"bulma"===e.framework?t("div",{class:e.dropdown.menu,style:this.displayColumnsDropdown?"display:block":"display:none"},[t("div",{class:e.dropdown.content},[r])]):"bootstrap4"===e.framework?t("div",{class:e.dropdown.menu,style:this.displayColumnsDropdown?"display:block":"display:none"},[r]):t("ul",{class:e.dropdown.menu,style:this.displayColumnsDropdown?"display:block":"display:none"},[r])}},function(t,e,r){"use strict";t.exports=function(t,e,r){return"bulma"===e.framework?r:t("li",[r])}},function(t,e,r){"use strict";t.exports=function(){return{beforeFilters:this.$slots.beforeFilters?this.$slots.beforeFilters:"",afterFilters:this.$slots.afterFilters?this.$slots.afterFilters:"",beforeBody:this.$slots.beforeBody?this.$slots.beforeBody:"",prependBody:this.$slots.prependBody?this.$slots.prependBody:"",appendBody:this.$slots.appendBody?this.$slots.appendBody:"",afterBody:this.$slots.afterBody?this.$slots.afterBody:"",beforeFilter:this.$slots.beforeFilter?this.$slots.beforeFilter:"",afterFilter:this.$slots.afterFilter?this.$slots.afterFilter:"",beforeLimit:this.$slots.beforeLimit?this.$slots.beforeLimit:"",afterLimit:this.$slots.afterLimit?this.$slots.afterLimit:"",beforeTable:this.$slots.beforeTable?this.$slots.beforeTable:"",afterTable:this.$slots.afterTable?this.$slots.afterTable:""}}},function(t,e,r){"use strict";t.exports=function(){return this.opts.filterByColumn?JSON.stringify(this.query):this.query}},function(t,e,r){"use strict";t.exports=function(){return JSON.stringify(this.customQueries)}},function(t,e,r){"use strict";var n=(r(27),r(190));t.exports=function(){var t=n(this.tableData),e=this.orderBy.column;t=this.search(t),e?(this.time&&(this.time=this.time),t=this.opts.sortingAlgorithm.call(this,t,e)):this.opts.groupBy&&(t=this.opts.sortingAlgorithm.call(this,t,this.opts.groupBy)),this.vuex?this.count!=t.length&&this.commit("SET_COUNT",t.length):this.count=t.length;var r=(this.page-1)*this.limit;return this.allFilteredData=JSON.parse(JSON.stringify(t)),t=t.splice(r,this.limit),this.applyFilters(t)}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(t){var e=0;for(var r in t){("object"==n(t[r])||t[r]&&(!isNaN(t[r])||t[r].trim()))&&e++}return e}},function(t,e,r){"use strict";t.exports=function(t,e,r){var n;return t.filter(function(t){return n=!0,e.forEach(function(e){var i=r[e.name];i&&!e.callback(t,i)&&(n=!1)}),n})}},function(t,e,r){(function(e){var r=function(){"use strict";function t(t,e){return null!=e&&t instanceof e}function r(n,i,o,s,f){function p(n,o){if(null===n)return null;if(0===o)return n;var y,m;if("object"!=typeof n)return n;if(t(n,u))y=new u;else if(t(n,c))y=new c;else if(t(n,l))y=new l(function(t,e){n.then(function(e){t(p(e,o-1))},function(t){e(p(t,o-1))})});else if(r.__isArray(n))y=[];else if(r.__isRegExp(n))y=new RegExp(n.source,a(n)),n.lastIndex&&(y.lastIndex=n.lastIndex);else if(r.__isDate(n))y=new Date(n.getTime());else{if(g&&e.isBuffer(n))return y=new e(n.length),n.copy(y),y;t(n,Error)?y=Object.create(n):void 0===s?(m=Object.getPrototypeOf(n),y=Object.create(m)):(y=Object.create(s),m=s)}if(i){var b=h.indexOf(n);if(-1!=b)return d[b];h.push(n),d.push(y)}t(n,u)&&n.forEach(function(t,e){var r=p(e,o-1),n=p(t,o-1);y.set(r,n)}),t(n,c)&&n.forEach(function(t){var e=p(t,o-1);y.add(e)});for(var v in n){var _;m&&(_=Object.getOwnPropertyDescriptor(m,v)),_&&null==_.set||(y[v]=p(n[v],o-1))}if(Object.getOwnPropertySymbols)for(var w=Object.getOwnPropertySymbols(n),v=0;v<w.length;v++){var x=w[v],S=Object.getOwnPropertyDescriptor(n,x);(!S||S.enumerable||f)&&(y[x]=p(n[x],o-1),S.enumerable||Object.defineProperty(y,x,{enumerable:!1}))}if(f)for(var C=Object.getOwnPropertyNames(n),v=0;v<C.length;v++){var A=C[v],S=Object.getOwnPropertyDescriptor(n,A);S&&S.enumerable||(y[A]=p(n[A],o-1),Object.defineProperty(y,A,{enumerable:!1}))}return y}"object"==typeof i&&(o=i.depth,s=i.prototype,f=i.includeNonEnumerable,i=i.circular);var h=[],d=[],g=void 0!==e;return void 0===i&&(i=!0),void 0===o&&(o=1/0),p(n,o)}function n(t){return Object.prototype.toString.call(t)}function i(t){return"object"==typeof t&&"[object Date]"===n(t)}function o(t){return"object"==typeof t&&"[object Array]"===n(t)}function s(t){return"object"==typeof t&&"[object RegExp]"===n(t)}function a(t){var e="";return t.global&&(e+="g"),t.ignoreCase&&(e+="i"),t.multiline&&(e+="m"),e}var u;try{u=Map}catch(t){u=function(){}}var c;try{c=Set}catch(t){c=function(){}}var l;try{l=Promise}catch(t){l=function(){}}return r.clonePrototype=function(t){if(null===t)return null;var e=function(){};return e.prototype=t,new e},r.__objToStr=n,r.__isDate=i,r.__isArray=o,r.__isRegExp=s,r.__getRegExpFlags=a,r}();"object"==typeof t&&t.exports&&(t.exports=r)}).call(e,r(17).Buffer)},function(t,e,r){"use strict";t.exports=function(){this.data.forEach(function(t,e){this.opts.dateColumns.forEach(function(e){t[e]=t[e]?moment(t[e],this.opts.toMomentFormat):""}.bind(this))}.bind(this))}},function(t,e,r){"use strict";var n=r(1),i=function(t){return t&&t.__esModule?t:{default:t}}(n);t.exports=function(){var t=this,e="vue-tables";this.name&&(e+="."+this.name),this.opts.customFilters.forEach(function(r){i.default.$off(e+".filter::"+r.name),i.default.$on(e+".filter::"+r.name,function(e){t.customQueries[r.name]=e,t.updateState("customQueries",t.customQueries)})})}},function(t,e,r){"use strict";t.exports=function(t,e){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:-1,n=this.defaultSort,i=this.userMultiSorting[this.currentlySorting.column]?this.userMultiSorting[this.currentlySorting.column]:this.opts.multiSorting[this.currentlySorting.column],o=this.currentlySorting.ascending,s=this;return function(a,u){var c,l=s._getValue(a,t)||"",f=s._getValue(u,t)||"",p=e?1:-1;if("string"==typeof l&&(l=l.toLowerCase()),"string"==typeof f&&(f=f.toLowerCase()),l===f&&i&&i[r+1]){var h=i[r+1];return c=void 0!==h.ascending?h.ascending:h.matchDir?o:!o,n(h.column,c,r+1)(a,u)}return l>f?p:-p}}},function(t,e,r){"use strict";t.exports=function(t){if(this.$scopedSlots&&this.$scopedSlots.__group_meta){var e=this.opts.groupMeta.find(function(e){return e.value===t});return e?this.$scopedSlots.__group_meta(e):""}return""}},function(t,e,r){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}var i=r(0),o=n(i),s=r(21),a=n(s),u=r(12),c=n(u),l=r(13),f=n(l),p=r(14),h=n(p),d=r(10),g=r(22),y=r(23),m=r(24);e.install=function(t,e,n){var i=arguments.length>3&&void 0!==arguments[3]?arguments[3]:"bootstrap3",s=arguments.length>4&&void 0!==arguments[4]?arguments[4]:"default",u=n?(0,c.default)("server"):(0,f.default)(),l=o.default.recursive(!0,(0,h.default)(),{name:"server-table",components:{Pagination:d.Pagination},render:m.call(this,s,i),props:{columns:{type:Array,required:!0},url:{type:String},name:{type:String,required:!1},options:{type:Object,required:!1,default:function(){return{}}}},created:function(){if(!this.opts.requestFunction&&!this.url)throw'vue-tables-2: you must provide either a "url" prop or a custom request function. Aborting';y(this),this.vuex||(this.query=this.initQuery(),this.initOrderBy(),this.customQueries=this.initCustomFilters()),this.loadState(),this.getData(!0).then(function(t){this.setData(t),this.loading=!1,this.hasDateFilters()&&setTimeout(function(){this.initDateFilters()}.bind(this),0)}.bind(this))},mounted:function(){this._setColumnsDropdownCloseListener(),this.vuex||(this.registerServerFilters(),this.options.initialPage&&this.setPage(this.options.initialPage,!0))},data:function(){return o.default.recursive(g(),{source:"server",loading:!0,lastKeyStrokeAt:!1,globalOptions:e},(0,a.default)(n,"server",this.options.initialPage))},methods:{refresh:r(196),getData:r(197),setData:r(198),serverSearch:r(15),registerServerFilters:r(199),loadState:function(){var t=this;if(this.opts.saveState){if(!this.storage.getItem(this.stateKey))return this.initState(),void(this.activeState=!0);var e=JSON.parse(this.storage.getItem(this.stateKey));this.vuex?this.commit("SET_STATE",{query:e.query,customQueries:e.customQueries,page:e.page,limit:e.perPage,orderBy:e.orderBy}):(this.page=e.page,this.query=e.query,this.customQueries=e.customQueries,this.limit=e.perPage,this.orderBy=e.orderBy),this.opts.pagination.dropdown||setTimeout(function(){t.$refs.pagination.Page=e.page},0),this.activeState=!0}}},watch:{url:function(){this.refresh()}},computed:{totalPages:r(26),filteredQuery:r(200),hasMultiSort:function(){return this.opts.serverMultiSorting}}},u);return t.component("v-server-table",l),l}},function(t,e,r){"use strict";t.exports=function(){this.serverSearch()}},function(t,e,r){"use strict";function n(t,e,r){return e in t?Object.defineProperty(t,e,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[e]=r,t}var i=r(0);t.exports=function(t){var e,r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},o=!(arguments.length>2&&void 0!==arguments[2])||arguments[2],s=this.opts.requestKeys,a=(e={},n(e,s.query,this.filteredQuery),n(e,s.limit,this.limit),n(e,s.ascending,this.orderBy.ascending?1:0),n(e,s.page,this.page),n(e,s.byColumn,this.opts.filterByColumn?1:0),e);this.orderBy.hasOwnProperty("column")&&this.orderBy.column&&(a[s.orderBy]=this.orderBy.column),a=i(a,this.opts.params,this.customQueries,r),this.hasMultiSort&&this.orderBy.column&&this.userMultiSorting[this.orderBy.column]&&(a.multiSort=this.userMultiSorting[this.orderBy.column]),a=this.opts.requestAdapter(a),o&&this.dispatch("loading",a);var u=this.sendRequest(a);return t?u:u.then(function(t){return this.setData(t)}.bind(this))}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(t){var e=this.opts.responseAdapter.call(this,t);if(this.data=this.applyFilters(e.data),isNaN(e.count))throw console.error("vue-tables-2: invalid 'count' property. Expected number, got "+n(e.count)),console.error("count equals",e.count),new Error;this.count=parseInt(e.count),setTimeout(function(){this.dispatch("loaded",t)}.bind(this),0)}},function(t,e,r){"use strict";var n=r(1),i=function(t){return t&&t.__esModule?t:{default:t}}(n);t.exports=function(){var t="vue-tables";this.name&&(t+="."+this.name),this.opts.customFilters.forEach(function(e){i.default.$off(t+".filter::"+e),i.default.$on(t+".filter::"+e,function(t){this.customQueries[e]=t,this.updateState("customQueries",this.customQueries),this.refresh()}.bind(this))}.bind(this))}},function(t,e,r){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t};t.exports=function(){if("object"!==n(this.query)||this.opts.sendEmptyFilters)return this.query;var t={};for(var e in this.query)""!==this.query[e]&&(t[e]=this.query[e]);return t}}]);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 47 */
+/* 212 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export Store */
+/* WEBPACK VAR INJECTION */(function(global) {/* unused harmony export Store */
 /* unused harmony export install */
 /* unused harmony export mapState */
 /* unused harmony export mapMutations */
@@ -39083,7 +39468,7 @@ function foundMatch(query, value, isListFilter) {
 /* unused harmony export mapActions */
 /* unused harmony export createNamespacedHelpers */
 /**
- * vuex v3.1.0
+ * vuex v3.1.1
  * (c) 2019 Evan You
  * @license MIT
  */
@@ -39123,9 +39508,12 @@ function applyMixin (Vue) {
   }
 }
 
-var devtoolHook =
-  typeof window !== 'undefined' &&
-  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+var target = typeof window !== 'undefined'
+  ? window
+  : typeof global !== 'undefined'
+    ? global
+    : {};
+var devtoolHook = target.__VUE_DEVTOOLS_GLOBAL_HOOK__;
 
 function devtoolPlugin (store) {
   if (!devtoolHook) { return }
@@ -39169,6 +39557,12 @@ function isPromise (val) {
 
 function assert (condition, msg) {
   if (!condition) { throw new Error(("[vuex] " + msg)) }
+}
+
+function partial (fn, arg) {
+  return function () {
+    return fn(arg)
+  }
 }
 
 // Base data struct for store's module, package with some attribute and method
@@ -39632,7 +40026,9 @@ function resetStoreVM (store, state, hot) {
   var computed = {};
   forEachValue(wrappedGetters, function (fn, key) {
     // use computed to leverage its lazy-caching mechanism
-    computed[key] = function () { return fn(store); };
+    // direct inline function use will lead to closure preserving oldVm.
+    // using partial to return function with only arguments preserved in closure enviroment.
+    computed[key] = partial(fn, store);
     Object.defineProperty(store.getters, key, {
       get: function () { return store._vm[key]; },
       enumerable: true // for local getters
@@ -40071,7 +40467,7 @@ function getModuleByNamespace (store, helper, namespace) {
 var index_esm = {
   Store: Store,
   install: install,
-  version: '3.1.0',
+  version: '3.1.1',
   mapState: mapState,
   mapMutations: mapMutations,
   mapGetters: mapGetters,
@@ -40082,22 +40478,23 @@ var index_esm = {
 /* harmony default export */ __webpack_exports__["a"] = (index_esm);
 
 
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
 
 /***/ }),
-/* 48 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bus = __webpack_require__(8);
+var _bus = __webpack_require__(12);
 
 var _bus2 = _interopRequireDefault(_bus);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ClientTable = __webpack_require__(49);
-var ServerTable = __webpack_require__(214);
+var ClientTable = __webpack_require__(214);
+var ServerTable = __webpack_require__(379);
 
 
 module.exports = {
@@ -40107,19 +40504,19 @@ module.exports = {
 };
 
 /***/ }),
-/* 49 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _vuePagination = __webpack_require__(19);
+var _vuePagination = __webpack_require__(152);
 
-var _vuex = __webpack_require__(21);
+var _vuex = __webpack_require__(154);
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _normal = __webpack_require__(22);
+var _normal = __webpack_require__(155);
 
 var _normal2 = _interopRequireDefault(_normal);
 
@@ -40127,20 +40524,20 @@ var _merge = __webpack_require__(3);
 
 var _merge2 = _interopRequireDefault(_merge);
 
-var _table = __webpack_require__(23);
+var _table = __webpack_require__(156);
 
 var _table2 = _interopRequireDefault(_table);
 
-var _data2 = __webpack_require__(34);
+var _data2 = __webpack_require__(167);
 
 var _data3 = _interopRequireDefault(_data2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _data = __webpack_require__(35);
-var _created = __webpack_require__(36);
+var _data = __webpack_require__(168);
+var _created = __webpack_require__(169);
 
-var templateCompiler = __webpack_require__(37);
+var templateCompiler = __webpack_require__(170);
 
 exports.install = function (Vue, globalOptions, useVuex) {
   var theme = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'bootstrap3';
@@ -40221,20 +40618,20 @@ exports.install = function (Vue, globalOptions, useVuex) {
       }, (0, _data3.default)(useVuex, 'client', this.options.initialPage));
     },
     computed: {
-      q: __webpack_require__(204),
-      customQ: __webpack_require__(205),
-      totalPages: __webpack_require__(39),
-      filteredData: __webpack_require__(206),
+      q: __webpack_require__(369),
+      customQ: __webpack_require__(370),
+      totalPages: __webpack_require__(172),
+      filteredData: __webpack_require__(371),
       hasMultiSort: function hasMultiSort() {
         return this.opts.clientMultiSorting;
       }
     },
     methods: {
-      transformDateStringsToMoment: __webpack_require__(210),
-      registerClientFilters: __webpack_require__(211),
-      search: __webpack_require__(40),
-      defaultSort: __webpack_require__(212),
-      getGroupSlot: __webpack_require__(213),
+      transformDateStringsToMoment: __webpack_require__(375),
+      registerClientFilters: __webpack_require__(376),
+      search: __webpack_require__(173),
+      defaultSort: __webpack_require__(377),
+      getGroupSlot: __webpack_require__(378),
       toggleGroup: function toggleGroup(group, e) {
 
         e.stopPropagation();
@@ -40299,7 +40696,7 @@ exports.install = function (Vue, globalOptions, useVuex) {
 };
 
 /***/ }),
-/* 50 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40307,7 +40704,7 @@ exports.install = function (Vue, globalOptions, useVuex) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _config = __webpack_require__(51);
+var _config = __webpack_require__(216);
 
 var _config2 = _interopRequireDefault(_config);
 
@@ -40319,8 +40716,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var template = __webpack_require__(52);
-var bus = __webpack_require__(20);
+var template = __webpack_require__(217);
+var bus = __webpack_require__(153);
 
 
 module.exports = {
@@ -40383,9 +40780,9 @@ module.exports = {
       }
 
       var themes = {
-        bootstrap3: __webpack_require__(53),
-        bootstrap4: __webpack_require__(54),
-        bulma: __webpack_require__(55)
+        bootstrap3: __webpack_require__(218),
+        bootstrap4: __webpack_require__(219),
+        bulma: __webpack_require__(220)
       };
 
       if (_typeof(themes[this.opts.theme]) === undefined) {
@@ -40528,7 +40925,7 @@ function range(start, count) {
 }
 
 /***/ }),
-/* 51 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40554,7 +40951,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 52 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40727,7 +41124,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 53 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40747,7 +41144,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 54 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40767,7 +41164,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 55 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40787,73 +41184,73 @@ module.exports = {
 };
 
 /***/ }),
-/* 56 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-      initQuery: __webpack_require__(57),
-      initCustomFilters: __webpack_require__(58),
-      initOptions: __webpack_require__(59),
-      sortableClass: __webpack_require__(60),
-      sortableChevronClass: __webpack_require__(61),
-      display: __webpack_require__(62),
-      orderByColumn: __webpack_require__(63),
-      getHeading: __webpack_require__(64),
-      getHeadingTooltip: __webpack_require__(66),
-      sortable: __webpack_require__(67),
-      serverSearch: __webpack_require__(24),
-      initOrderBy: __webpack_require__(68),
-      initDateFilters: __webpack_require__(69),
-      setFilter: __webpack_require__(70),
-      setPage: __webpack_require__(71),
-      setOrder: __webpack_require__(72),
-      initPagination: __webpack_require__(73),
-      filterable: __webpack_require__(74),
-      isTextFilter: __webpack_require__(75),
-      isDateFilter: __webpack_require__(76),
-      isListFilter: __webpack_require__(77),
-      highlightMatch: __webpack_require__(78),
-      formatDate: __webpack_require__(79),
-      hasDateFilters: __webpack_require__(80),
-      applyFilters: __webpack_require__(131),
-      optionText: __webpack_require__(132),
-      render: __webpack_require__(133),
-      rowWasClicked: __webpack_require__(134),
-      setLimit: __webpack_require__(135),
-      getOpenChildRows: __webpack_require__(136),
-      dispatch: __webpack_require__(137),
-      toggleChildRow: __webpack_require__(138),
-      childRowTogglerClass: __webpack_require__(139),
-      sendRequest: __webpack_require__(140),
-      getResponseData: __webpack_require__(141),
-      getSortFn: __webpack_require__(142),
-      initState: __webpack_require__(143),
-      updateState: __webpack_require__(144),
-      columnClass: __webpack_require__(145),
-      getName: __webpack_require__(146),
-      toggleColumn: __webpack_require__(147),
-      setUserMultiSort: __webpack_require__(148),
-      _setFiltersDOM: __webpack_require__(149),
-      _currentlySorted: __webpack_require__(150),
-      _getChildRowTemplate: __webpack_require__(151),
-      _toggleColumnsDropdown: __webpack_require__(152),
-      _onlyColumn: __webpack_require__(153),
-      _onPagination: __webpack_require__(154),
-      _toggleGroupDirection: __webpack_require__(155),
-      _getInitialDateRange: __webpack_require__(156),
-      _setDatepickerText: __webpack_require__(157),
-      _initialOrderAscending: __webpack_require__(158),
-      dateFormat: __webpack_require__(159),
-      _setColumnsDropdownCloseListener: __webpack_require__(160),
-      _getValue: __webpack_require__(161),
-      _getColumnName: __webpack_require__(162)
+      initQuery: __webpack_require__(222),
+      initCustomFilters: __webpack_require__(223),
+      initOptions: __webpack_require__(224),
+      sortableClass: __webpack_require__(225),
+      sortableChevronClass: __webpack_require__(226),
+      display: __webpack_require__(227),
+      orderByColumn: __webpack_require__(228),
+      getHeading: __webpack_require__(229),
+      getHeadingTooltip: __webpack_require__(231),
+      sortable: __webpack_require__(232),
+      serverSearch: __webpack_require__(157),
+      initOrderBy: __webpack_require__(233),
+      initDateFilters: __webpack_require__(234),
+      setFilter: __webpack_require__(235),
+      setPage: __webpack_require__(236),
+      setOrder: __webpack_require__(237),
+      initPagination: __webpack_require__(238),
+      filterable: __webpack_require__(239),
+      isTextFilter: __webpack_require__(240),
+      isDateFilter: __webpack_require__(241),
+      isListFilter: __webpack_require__(242),
+      highlightMatch: __webpack_require__(243),
+      formatDate: __webpack_require__(244),
+      hasDateFilters: __webpack_require__(245),
+      applyFilters: __webpack_require__(296),
+      optionText: __webpack_require__(297),
+      render: __webpack_require__(298),
+      rowWasClicked: __webpack_require__(299),
+      setLimit: __webpack_require__(300),
+      getOpenChildRows: __webpack_require__(301),
+      dispatch: __webpack_require__(302),
+      toggleChildRow: __webpack_require__(303),
+      childRowTogglerClass: __webpack_require__(304),
+      sendRequest: __webpack_require__(305),
+      getResponseData: __webpack_require__(306),
+      getSortFn: __webpack_require__(307),
+      initState: __webpack_require__(308),
+      updateState: __webpack_require__(309),
+      columnClass: __webpack_require__(310),
+      getName: __webpack_require__(311),
+      toggleColumn: __webpack_require__(312),
+      setUserMultiSort: __webpack_require__(313),
+      _setFiltersDOM: __webpack_require__(314),
+      _currentlySorted: __webpack_require__(315),
+      _getChildRowTemplate: __webpack_require__(316),
+      _toggleColumnsDropdown: __webpack_require__(317),
+      _onlyColumn: __webpack_require__(318),
+      _onPagination: __webpack_require__(319),
+      _toggleGroupDirection: __webpack_require__(320),
+      _getInitialDateRange: __webpack_require__(321),
+      _setDatepickerText: __webpack_require__(322),
+      _initialOrderAscending: __webpack_require__(323),
+      dateFormat: __webpack_require__(324),
+      _setColumnsDropdownCloseListener: __webpack_require__(325),
+      _getValue: __webpack_require__(326),
+      _getColumnName: __webpack_require__(327)
 };
 
 /***/ }),
-/* 57 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40891,7 +41288,7 @@ function getInitialValue(init, column) {
 }
 
 /***/ }),
-/* 58 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40915,7 +41312,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 59 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40933,7 +41330,7 @@ module.exports = function (defaults, globalOptions, localOptions) {
 };
 
 /***/ }),
-/* 60 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40949,7 +41346,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 61 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40980,7 +41377,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 62 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41001,7 +41398,7 @@ module.exports = function (text, replacements) {
 };
 
 /***/ }),
-/* 63 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41028,13 +41425,13 @@ module.exports = function (colName, ev) {
 };
 
 /***/ }),
-/* 64 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _ucfirst = __webpack_require__(65);
+var _ucfirst = __webpack_require__(230);
 
 var _ucfirst2 = _interopRequireDefault(_ucfirst);
 
@@ -41062,7 +41459,7 @@ module.exports = function (value, h) {
 };
 
 /***/ }),
-/* 65 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41077,7 +41474,7 @@ exports.default = function (str) {
 };
 
 /***/ }),
-/* 66 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41101,7 +41498,7 @@ module.exports = function (value, h) {
 };
 
 /***/ }),
-/* 67 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41117,7 +41514,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 68 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41132,7 +41529,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 69 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41232,7 +41629,7 @@ module.exports = function () {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 70 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41276,7 +41673,7 @@ module.exports = function (filter) {
 };
 
 /***/ }),
-/* 71 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41296,7 +41693,7 @@ module.exports = function (page, preventRequest) {
 };
 
 /***/ }),
-/* 72 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41315,7 +41712,7 @@ module.exports = function (column, ascending) {
 };
 
 /***/ }),
-/* 73 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41331,7 +41728,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 74 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41345,7 +41742,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 75 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41357,7 +41754,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 76 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41368,7 +41765,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 77 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41379,7 +41776,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 78 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41413,13 +41810,13 @@ function escapeRegex(s) {
 };
 
 /***/ }),
-/* 79 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var validMoment = __webpack_require__(25);
+var validMoment = __webpack_require__(158);
 
 module.exports = function (value, dateFormat) {
 
@@ -41429,7 +41826,7 @@ module.exports = function (value, dateFormat) {
 };
 
 /***/ }),
-/* 80 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41437,7 +41834,7 @@ module.exports = function (value, dateFormat) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var intersection = __webpack_require__(81);
+var intersection = __webpack_require__(246);
 
 module.exports = function () {
 
@@ -41447,7 +41844,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 81 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41460,11 +41857,11 @@ module.exports = function () {
 
 
 
-var filter = __webpack_require__(82);
-var every = __webpack_require__(126);
-var unique = __webpack_require__(128);
-var slice = __webpack_require__(129);
-var indexOf = __webpack_require__(130);
+var filter = __webpack_require__(247);
+var every = __webpack_require__(291);
+var unique = __webpack_require__(293);
+var slice = __webpack_require__(294);
+var indexOf = __webpack_require__(295);
 
 module.exports = function intersection(arr) {
   if (arr == null) {
@@ -41486,7 +41883,7 @@ module.exports = function intersection(arr) {
 
 
 /***/ }),
-/* 82 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41499,9 +41896,9 @@ module.exports = function intersection(arr) {
 
 
 
-var typeOf = __webpack_require__(83);
-var filter = __webpack_require__(86);
-var mm = __webpack_require__(88);
+var typeOf = __webpack_require__(248);
+var filter = __webpack_require__(251);
+var mm = __webpack_require__(253);
 
 /**
  * Filter array against given glob
@@ -41547,7 +41944,7 @@ module.exports = function filterArray(arr, filters, opts) {
 
 
 /***/ }),
-/* 83 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var toString = Object.prototype.toString;
@@ -41596,10 +41993,10 @@ module.exports = function kindOf(val) {
   return type.slice(8, -1).toLowerCase();
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(159).Buffer))
 
 /***/ }),
-/* 84 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41757,7 +42154,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 85 */
+/* 250 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -41847,7 +42244,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 86 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41860,7 +42257,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 
-var makeIterator = __webpack_require__(87);
+var makeIterator = __webpack_require__(252);
 
 module.exports = function filter(arr, fn, thisArg) {
   if (arr == null) {
@@ -41887,7 +42284,7 @@ module.exports = function filter(arr, fn, thisArg) {
 
 
 /***/ }),
-/* 87 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41900,7 +42297,7 @@ module.exports = function filter(arr, fn, thisArg) {
 
 
 
-var typeOf = __webpack_require__(28);
+var typeOf = __webpack_require__(161);
 
 module.exports = function makeIterator(target, thisArg) {
   switch (typeOf(target)) {
@@ -41993,7 +42390,7 @@ function noop(val) {
 
 
 /***/ }),
-/* 88 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42006,8 +42403,8 @@ function noop(val) {
 
 
 
-var expand = __webpack_require__(89);
-var utils = __webpack_require__(14);
+var expand = __webpack_require__(254);
+var utils = __webpack_require__(20);
 
 /**
  * The main function. Pass an array of filepaths,
@@ -42431,7 +42828,7 @@ module.exports = micromatch;
 
 
 /***/ }),
-/* 89 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42444,8 +42841,8 @@ module.exports = micromatch;
 
 
 
-var utils = __webpack_require__(14);
-var Glob = __webpack_require__(124);
+var utils = __webpack_require__(20);
+var Glob = __webpack_require__(289);
 
 /**
  * Expose `expand`
@@ -42742,7 +43139,7 @@ function globstar(dotfile) {
 
 
 /***/ }),
-/* 90 */
+/* 255 */
 /***/ (function(module, exports) {
 
 /*!
@@ -42758,7 +43155,7 @@ module.exports = function filenameRegex() {
 
 
 /***/ }),
-/* 91 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42771,7 +43168,7 @@ module.exports = function filenameRegex() {
 
 
 
-var flatten = __webpack_require__(92);
+var flatten = __webpack_require__(257);
 var slice = [].slice;
 
 /**
@@ -42823,7 +43220,7 @@ module.exports = diff;
 
 
 /***/ }),
-/* 92 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42852,7 +43249,7 @@ function flat(arr, res) {
 
 
 /***/ }),
-/* 93 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42887,7 +43284,7 @@ module.exports = function unique(arr) {
 
 
 /***/ }),
-/* 94 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42904,9 +43301,9 @@ module.exports = function unique(arr) {
  * Module dependencies
  */
 
-var expand = __webpack_require__(95);
-var repeat = __webpack_require__(30);
-var tokens = __webpack_require__(104);
+var expand = __webpack_require__(260);
+var repeat = __webpack_require__(163);
+var tokens = __webpack_require__(269);
 
 /**
  * Expose `braces`
@@ -43293,7 +43690,7 @@ function filter(arr, cb) {
 
 
 /***/ }),
-/* 95 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43306,7 +43703,7 @@ function filter(arr, cb) {
 
 
 
-var fill = __webpack_require__(96);
+var fill = __webpack_require__(261);
 
 module.exports = function expandRange(str, options, fn) {
   if (typeof str !== 'string') {
@@ -43343,7 +43740,7 @@ module.exports = function expandRange(str, options, fn) {
 
 
 /***/ }),
-/* 96 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43356,11 +43753,11 @@ module.exports = function expandRange(str, options, fn) {
 
 
 
-var isObject = __webpack_require__(97);
-var isNumber = __webpack_require__(98);
-var randomize = __webpack_require__(100);
-var repeatStr = __webpack_require__(103);
-var repeat = __webpack_require__(30);
+var isObject = __webpack_require__(262);
+var isNumber = __webpack_require__(263);
+var randomize = __webpack_require__(265);
+var repeatStr = __webpack_require__(268);
+var repeat = __webpack_require__(163);
 
 /**
  * Expose `fillRange`
@@ -43758,7 +44155,7 @@ function length(val) {
 
 
 /***/ }),
-/* 97 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43771,7 +44168,7 @@ function length(val) {
 
 
 
-var isArray = __webpack_require__(27);
+var isArray = __webpack_require__(160);
 
 module.exports = function isObject(val) {
   return val != null && typeof val === 'object' && isArray(val) === false;
@@ -43779,7 +44176,7 @@ module.exports = function isObject(val) {
 
 
 /***/ }),
-/* 98 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43792,7 +44189,7 @@ module.exports = function isObject(val) {
 
 
 
-var typeOf = __webpack_require__(99);
+var typeOf = __webpack_require__(264);
 
 module.exports = function isNumber(num) {
   var type = typeOf(num);
@@ -43805,10 +44202,10 @@ module.exports = function isNumber(num) {
 
 
 /***/ }),
-/* 99 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isBuffer = __webpack_require__(29);
+var isBuffer = __webpack_require__(162);
 var toString = Object.prototype.toString;
 
 /**
@@ -43927,7 +44324,7 @@ module.exports = function kindOf(val) {
 
 
 /***/ }),
-/* 100 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43940,9 +44337,9 @@ module.exports = function kindOf(val) {
 
 
 
-var isNumber = __webpack_require__(101);
-var typeOf = __webpack_require__(28);
-var mathRandom = __webpack_require__(102);
+var isNumber = __webpack_require__(266);
+var typeOf = __webpack_require__(161);
+var mathRandom = __webpack_require__(267);
 
 /**
  * Expose `randomatic`
@@ -44020,7 +44417,7 @@ function randomatic(pattern, length, options) {
 
 
 /***/ }),
-/* 101 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44048,7 +44445,7 @@ module.exports = function isNumber(num) {
 
 
 /***/ }),
-/* 102 */
+/* 267 */
 /***/ (function(module, exports) {
 
 module.exports = (function (global) {
@@ -44071,7 +44468,7 @@ module.exports = (function (global) {
 
 
 /***/ }),
-/* 103 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44148,7 +44545,7 @@ function repeat(str, num) {
 
 
 /***/ }),
-/* 104 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44208,7 +44605,7 @@ function randomize() {
 var cache = {};
 
 /***/ }),
-/* 105 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44221,7 +44618,7 @@ var cache = {};
 
 
 
-var isPosixBracket = __webpack_require__(106);
+var isPosixBracket = __webpack_require__(271);
 
 /**
  * POSIX character classes
@@ -44378,7 +44775,7 @@ brackets.match = function(arr, pattern) {
 
 
 /***/ }),
-/* 106 */
+/* 271 */
 /***/ (function(module, exports) {
 
 /*!
@@ -44394,7 +44791,7 @@ module.exports = function isPosixBracket(str) {
 
 
 /***/ }),
-/* 107 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44411,7 +44808,7 @@ module.exports = function isPosixBracket(str) {
  * Module dependencies
  */
 
-var isExtglob = __webpack_require__(16);
+var isExtglob = __webpack_require__(22);
 var re, cache = {};
 
 /**
@@ -44579,7 +44976,7 @@ function toRegex(pattern, contains, isNegated) {
 
 
 /***/ }),
-/* 108 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -44589,7 +44986,7 @@ function toRegex(pattern, contains, isNegated) {
  * Licensed under the MIT License.
  */
 
-var isExtglob = __webpack_require__(16);
+var isExtglob = __webpack_require__(22);
 
 module.exports = function isGlob(str) {
   return typeof str === 'string'
@@ -44598,10 +44995,10 @@ module.exports = function isGlob(str) {
 };
 
 /***/ }),
-/* 109 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isBuffer = __webpack_require__(29);
+var isBuffer = __webpack_require__(162);
 var toString = Object.prototype.toString;
 
 /**
@@ -44720,7 +45117,7 @@ module.exports = function kindOf(val) {
 
 
 /***/ }),
-/* 110 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -44730,7 +45127,7 @@ module.exports = function kindOf(val) {
  * Released under the MIT License.
  */
 
-var removeTrailingSeparator = __webpack_require__(111);
+var removeTrailingSeparator = __webpack_require__(276);
 
 module.exports = function normalizePath(str, stripTrailing) {
   if (typeof str !== 'string') {
@@ -44745,7 +45142,7 @@ module.exports = function normalizePath(str, stripTrailing) {
 
 
 /***/ }),
-/* 111 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var isWin = process.platform === 'win32';
@@ -44769,7 +45166,7 @@ function isSeparator(str, i) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 112 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44782,8 +45179,8 @@ function isSeparator(str, i) {
 
 
 
-var isObject = __webpack_require__(113);
-var forOwn = __webpack_require__(31);
+var isObject = __webpack_require__(278);
+var forOwn = __webpack_require__(164);
 
 module.exports = function omit(obj, keys) {
   if (!isObject(obj)) return {};
@@ -44816,7 +45213,7 @@ module.exports = function omit(obj, keys) {
 
 
 /***/ }),
-/* 113 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44836,7 +45233,7 @@ module.exports = function isExtendable(val) {
 
 
 /***/ }),
-/* 114 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44859,7 +45256,7 @@ module.exports = function forIn(obj, fn, thisArg) {
 
 
 /***/ }),
-/* 115 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44872,10 +45269,10 @@ module.exports = function forIn(obj, fn, thisArg) {
 
 
 
-var isGlob = __webpack_require__(116);
-var findBase = __webpack_require__(117);
-var extglob = __webpack_require__(32);
-var dotfile = __webpack_require__(120);
+var isGlob = __webpack_require__(281);
+var findBase = __webpack_require__(282);
+var extglob = __webpack_require__(165);
+var dotfile = __webpack_require__(285);
 
 /**
  * Expose `cache`
@@ -45022,7 +45419,7 @@ function unescape(str) {
 
 
 /***/ }),
-/* 116 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -45032,7 +45429,7 @@ function unescape(str) {
  * Licensed under the MIT License.
  */
 
-var isExtglob = __webpack_require__(32);
+var isExtglob = __webpack_require__(165);
 
 module.exports = function isGlob(str) {
   return typeof str === 'string'
@@ -45041,7 +45438,7 @@ module.exports = function isGlob(str) {
 };
 
 /***/ }),
-/* 117 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45054,9 +45451,9 @@ module.exports = function isGlob(str) {
 
 
 
-var path = __webpack_require__(15);
-var parent = __webpack_require__(118);
-var isGlob = __webpack_require__(33);
+var path = __webpack_require__(21);
+var parent = __webpack_require__(283);
+var isGlob = __webpack_require__(166);
 
 module.exports = function globBase(pattern) {
   if (typeof pattern !== 'string') {
@@ -45099,14 +45496,14 @@ function dirname(glob) {
 
 
 /***/ }),
-/* 118 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var path = __webpack_require__(15);
-var isglob = __webpack_require__(33);
+var path = __webpack_require__(21);
+var isglob = __webpack_require__(166);
 
 module.exports = function globParent(str) {
 	str += 'a'; // preserves full path in case of trailing path separator
@@ -45116,7 +45513,7 @@ module.exports = function globParent(str) {
 
 
 /***/ }),
-/* 119 */
+/* 284 */
 /***/ (function(module, exports) {
 
 /*!
@@ -45133,7 +45530,7 @@ module.exports = function isExtglob(str) {
 
 
 /***/ }),
-/* 120 */
+/* 285 */
 /***/ (function(module, exports) {
 
 /*!
@@ -45153,7 +45550,7 @@ module.exports = function(str) {
 
 
 /***/ }),
-/* 121 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45166,7 +45563,7 @@ module.exports = function(str) {
 
 
 
-var equal = __webpack_require__(122);
+var equal = __webpack_require__(287);
 var basic = {};
 var cache = {};
 
@@ -45228,7 +45625,7 @@ module.exports.basic = basic;
 
 
 /***/ }),
-/* 122 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45241,7 +45638,7 @@ module.exports.basic = basic;
 
 
 
-var isPrimitive = __webpack_require__(123);
+var isPrimitive = __webpack_require__(288);
 
 module.exports = function isEqual(a, b) {
   if (!a && !b) { return true; }
@@ -45262,7 +45659,7 @@ module.exports = function isEqual(a, b) {
 
 
 /***/ }),
-/* 123 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45282,14 +45679,14 @@ module.exports = function isPrimitive(value) {
 
 
 /***/ }),
-/* 124 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var chars = __webpack_require__(125);
-var utils = __webpack_require__(14);
+var chars = __webpack_require__(290);
+var utils = __webpack_require__(20);
 
 /**
  * Expose `Glob`
@@ -45482,7 +45879,7 @@ function unesc(str) {
 
 
 /***/ }),
-/* 125 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45556,7 +45953,7 @@ module.exports = chars;
 
 
 /***/ }),
-/* 126 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45569,7 +45966,7 @@ module.exports = chars;
 
 
 
-var iterator = __webpack_require__(127);
+var iterator = __webpack_require__(292);
 
 module.exports = function every(arr, cb, thisArg) {
   cb = iterator(cb, thisArg);
@@ -45591,7 +45988,7 @@ module.exports = function every(arr, cb, thisArg) {
 
 
 /***/ }),
-/* 127 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45605,7 +46002,7 @@ module.exports = function every(arr, cb, thisArg) {
 
 
 
-var forOwn = __webpack_require__(31);
+var forOwn = __webpack_require__(164);
 
 /**
  * Convert an argument into a valid iterator.
@@ -45698,7 +46095,7 @@ function noop(val) {
 }
 
 /***/ }),
-/* 128 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45733,7 +46130,7 @@ module.exports = function unique(arr) {
 
 
 /***/ }),
-/* 129 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45775,7 +46172,7 @@ function idx(arr, pos, end) {
 }
 
 /***/ }),
-/* 130 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45810,7 +46207,7 @@ module.exports = function indexOf(arr, ele, start) {
 
 
 /***/ }),
-/* 131 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45842,7 +46239,7 @@ module.exports = function (data) {
 };
 
 /***/ }),
-/* 132 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45858,7 +46255,7 @@ module.exports = function (value, column) {
 };
 
 /***/ }),
-/* 133 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45891,7 +46288,7 @@ module.exports = function (row, column, index, h) {
 };
 
 /***/ }),
-/* 134 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45914,7 +46311,7 @@ module.exports = function (row, event) {
 };
 
 /***/ }),
-/* 135 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45930,7 +46327,7 @@ module.exports = function (e) {
 };
 
 /***/ }),
-/* 136 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45960,13 +46357,13 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 137 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bus = __webpack_require__(8);
+var _bus = __webpack_require__(12);
 
 var _bus2 = _interopRequireDefault(_bus);
 
@@ -45989,7 +46386,7 @@ module.exports = function (event, payload) {
 };
 
 /***/ }),
-/* 138 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46008,7 +46405,7 @@ module.exports = function (rowId, e) {
 };
 
 /***/ }),
-/* 139 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46019,7 +46416,7 @@ module.exports = function (rowId) {
 };
 
 /***/ }),
-/* 140 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46050,7 +46447,7 @@ module.exports = function (data) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 141 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46064,7 +46461,7 @@ module.exports = function (response) {
 };
 
 /***/ }),
-/* 142 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46082,7 +46479,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 143 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46103,7 +46500,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 144 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46125,7 +46522,7 @@ module.exports = function (key, value) {
 };
 
 /***/ }),
-/* 145 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46138,7 +46535,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 146 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46154,7 +46551,7 @@ module.exports = function (name) {
 };
 
 /***/ }),
-/* 147 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46188,7 +46585,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 148 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46250,7 +46647,7 @@ function getMultiSortData(main, secondary) {
 };
 
 /***/ }),
-/* 149 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46294,7 +46691,7 @@ module.exports = function (query) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 150 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46311,7 +46708,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 151 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46335,7 +46732,7 @@ module.exports = function (h, row) {
 };
 
 /***/ }),
-/* 152 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46346,7 +46743,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 153 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46357,7 +46754,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 154 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46372,7 +46769,7 @@ module.exports = function (page) {
 };
 
 /***/ }),
-/* 155 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46388,7 +46785,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 156 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46410,7 +46807,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 157 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46426,7 +46823,7 @@ module.exports = function (column, start, end) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 158 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46437,7 +46834,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 159 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46453,7 +46850,7 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 160 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46484,7 +46881,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 161 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46511,7 +46908,7 @@ module.exports = function (row, column) {
 };
 
 /***/ }),
-/* 162 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46522,23 +46919,23 @@ module.exports = function (column) {
 };
 
 /***/ }),
-/* 163 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    listColumnsObject: __webpack_require__(164),
-    allColumns: __webpack_require__(165),
-    templatesKeys: __webpack_require__(166),
-    opts: __webpack_require__(167),
-    tableData: __webpack_require__(169),
-    storage: __webpack_require__(170),
-    filterableColumns: __webpack_require__(171),
-    hasChildRow: __webpack_require__(172),
-    colspan: __webpack_require__(173),
-    hasGenericFilter: __webpack_require__(174),
+    listColumnsObject: __webpack_require__(329),
+    allColumns: __webpack_require__(330),
+    templatesKeys: __webpack_require__(331),
+    opts: __webpack_require__(332),
+    tableData: __webpack_require__(334),
+    storage: __webpack_require__(335),
+    filterableColumns: __webpack_require__(336),
+    hasChildRow: __webpack_require__(337),
+    colspan: __webpack_require__(338),
+    hasGenericFilter: __webpack_require__(339),
     stateKey: function stateKey() {
         var key = this.name ? this.name : this.id;
         return 'vuetables_' + key;
@@ -46550,7 +46947,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 164 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46573,7 +46970,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 165 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46616,7 +47013,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 166 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46627,19 +47024,19 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 167 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = function () {
-  var defaults = __webpack_require__(168)();
+  var defaults = __webpack_require__(333)();
   return this.initOptions(defaults, this.globalOptions, this.options);
 };
 
 /***/ }),
-/* 168 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46751,7 +47148,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 169 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46762,7 +47159,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 170 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46776,7 +47173,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 171 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46787,7 +47184,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 172 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46798,7 +47195,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 173 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46809,7 +47206,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 174 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46822,19 +47219,19 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 175 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    input: __webpack_require__(176),
-    select: __webpack_require__(177)
+    input: __webpack_require__(341),
+    select: __webpack_require__(342)
 };
 
 /***/ }),
-/* 176 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46854,7 +47251,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 177 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46880,13 +47277,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 178 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {
 
-var _bus = __webpack_require__(8);
+var _bus = __webpack_require__(12);
 
 var _bus2 = _interopRequireDefault(_bus);
 
@@ -46916,7 +47313,7 @@ module.exports = function () {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 179 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46940,17 +47337,17 @@ module.exports = function (obj) {
 };
 
 /***/ }),
-/* 180 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _state = __webpack_require__(181);
+var _state = __webpack_require__(346);
 
 var _state2 = _interopRequireDefault(_state);
 
-var _mutations = __webpack_require__(182);
+var _mutations = __webpack_require__(347);
 
 var _mutations2 = _interopRequireDefault(_mutations);
 
@@ -46976,7 +47373,7 @@ module.exports = function (self) {
 };
 
 /***/ }),
-/* 181 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47014,7 +47411,7 @@ var _merge2 = _interopRequireDefault(_merge);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 182 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47109,7 +47506,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /***/ }),
-/* 183 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47158,7 +47555,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 184 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47207,7 +47604,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 185 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47257,7 +47654,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 186 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47274,7 +47671,7 @@ module.exports = function (h, modules, classes, slots) {
   var filterId = 'VueTables__search_' + this.id;
   var ddpId = 'VueTables__dropdown-pagination_' + this.id;
   var perpageId = 'VueTables__limit_' + this.id;
-  var perpageValues = __webpack_require__(38).call(this, h);
+  var perpageValues = __webpack_require__(171).call(this, h);
 
   var genericFilter = this.hasGenericFilter ? h(
     'div',
@@ -47372,7 +47769,7 @@ module.exports = function (h, modules, classes, slots) {
 };
 
 /***/ }),
-/* 187 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47388,7 +47785,7 @@ module.exports = function (h, modules, classes, slots) {
 
   var filterId = 'VueTables__search_' + this.id;
   var perpageId = 'VueTables__limit_' + this.id;
-  var perpageValues = __webpack_require__(38).call(this, h);
+  var perpageValues = __webpack_require__(171).call(this, h);
 
   var genericFilter = this.hasGenericFilter ? h(
     'div',
@@ -47468,7 +47865,7 @@ module.exports = function (h, modules, classes, slots) {
 };
 
 /***/ }),
-/* 188 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47612,13 +48009,13 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 189 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var debounce = __webpack_require__(17);
+var debounce = __webpack_require__(23);
 
 module.exports = function (h) {
     var _this = this;
@@ -47645,13 +48042,13 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 190 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var debounce = __webpack_require__(17);
+var debounce = __webpack_require__(23);
 
 module.exports = function (h) {
   var _this = this;
@@ -47700,7 +48097,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 191 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47738,7 +48135,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 192 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47758,9 +48155,9 @@ module.exports = function (h) {
   return function (classes) {
     if (!_this.opts.filterByColumn || !_this.opts.filterable) return '';
 
-    var textFilter = __webpack_require__(193).call(_this, h, classes.input);
-    var dateFilter = __webpack_require__(194).call(_this, h);
-    var listFilter = __webpack_require__(195).call(_this, h, classes.select);
+    var textFilter = __webpack_require__(358).call(_this, h, classes.input);
+    var dateFilter = __webpack_require__(359).call(_this, h);
+    var listFilter = __webpack_require__(360).call(_this, h, classes.select);
 
     var filters = [];
     var filter;
@@ -47808,13 +48205,13 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 193 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var debounce = __webpack_require__(17);
+var debounce = __webpack_require__(23);
 
 module.exports = function (h, inputClass) {
   var _this = this;
@@ -47853,7 +48250,7 @@ module.exports = function (h, inputClass) {
 };
 
 /***/ }),
-/* 194 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47878,7 +48275,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 195 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47943,7 +48340,7 @@ module.exports = function (h, selectClass) {
 };
 
 /***/ }),
-/* 196 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47986,7 +48383,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 197 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47996,7 +48393,7 @@ module.exports = function (h) {
   var _this = this;
 
   return function (right) {
-    var sortControl = __webpack_require__(198)(h, right);
+    var sortControl = __webpack_require__(363)(h, right);
 
     var headings = [];
 
@@ -48027,7 +48424,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 198 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48042,7 +48439,7 @@ module.exports = function (h, right) {
 };
 
 /***/ }),
-/* 199 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48073,14 +48470,14 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 200 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var dropdownWrapper = __webpack_require__(201);
-var dropdownItemWrapper = __webpack_require__(202);
+var dropdownWrapper = __webpack_require__(366);
+var dropdownItemWrapper = __webpack_require__(367);
 
 module.exports = function (h) {
     var _this = this;
@@ -48134,7 +48531,7 @@ module.exports = function (h) {
 };
 
 /***/ }),
-/* 201 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48169,7 +48566,7 @@ module.exports = function (h, classes, columns) {
 };
 
 /***/ }),
-/* 202 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48184,7 +48581,7 @@ module.exports = function (h, classes, item) {
 };
 
 /***/ }),
-/* 203 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48208,7 +48605,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 204 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48219,7 +48616,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 205 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48230,14 +48627,14 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 206 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var search = __webpack_require__(40);
-var clone = __webpack_require__(209);
+var search = __webpack_require__(173);
+var clone = __webpack_require__(374);
 
 module.exports = function () {
 
@@ -48272,7 +48669,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 207 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48290,7 +48687,7 @@ module.exports = function (obj) {
 };
 
 /***/ }),
-/* 208 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48314,7 +48711,7 @@ module.exports = function (data, customFilters, customQueries) {
 };
 
 /***/ }),
-/* 209 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var clone = (function() {
@@ -48575,10 +48972,10 @@ if (typeof module === 'object' && module.exports) {
   module.exports = clone;
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(159).Buffer))
 
 /***/ }),
-/* 210 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48593,13 +48990,13 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 211 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bus = __webpack_require__(8);
+var _bus = __webpack_require__(12);
 
 var _bus2 = _interopRequireDefault(_bus);
 
@@ -48621,7 +49018,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 212 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48662,7 +49059,7 @@ module.exports = function (column, ascending) {
 };
 
 /***/ }),
-/* 213 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48684,7 +49081,7 @@ module.exports = function (value) {
 };
 
 /***/ }),
-/* 214 */
+/* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48694,30 +49091,30 @@ var _merge = __webpack_require__(3);
 
 var _merge2 = _interopRequireDefault(_merge);
 
-var _data2 = __webpack_require__(34);
+var _data2 = __webpack_require__(167);
 
 var _data3 = _interopRequireDefault(_data2);
 
-var _vuex = __webpack_require__(21);
+var _vuex = __webpack_require__(154);
 
 var _vuex2 = _interopRequireDefault(_vuex);
 
-var _normal = __webpack_require__(22);
+var _normal = __webpack_require__(155);
 
 var _normal2 = _interopRequireDefault(_normal);
 
-var _table = __webpack_require__(23);
+var _table = __webpack_require__(156);
 
 var _table2 = _interopRequireDefault(_table);
 
-var _vuePagination = __webpack_require__(19);
+var _vuePagination = __webpack_require__(152);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _data = __webpack_require__(35);
-var _created = __webpack_require__(36);
+var _data = __webpack_require__(168);
+var _created = __webpack_require__(169);
 
-var templateCompiler = __webpack_require__(37);
+var templateCompiler = __webpack_require__(170);
 
 exports.install = function (Vue, globalOptions, useVuex) {
   var theme = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'bootstrap3';
@@ -48800,11 +49197,11 @@ exports.install = function (Vue, globalOptions, useVuex) {
       }, (0, _data3.default)(useVuex, 'server', this.options.initialPage));
     },
     methods: {
-      refresh: __webpack_require__(215),
-      getData: __webpack_require__(216),
-      setData: __webpack_require__(217),
-      serverSearch: __webpack_require__(24),
-      registerServerFilters: __webpack_require__(218),
+      refresh: __webpack_require__(380),
+      getData: __webpack_require__(381),
+      setData: __webpack_require__(382),
+      serverSearch: __webpack_require__(157),
+      registerServerFilters: __webpack_require__(383),
       loadState: function loadState() {
         var _this = this;
 
@@ -48849,8 +49246,8 @@ exports.install = function (Vue, globalOptions, useVuex) {
       }
     },
     computed: {
-      totalPages: __webpack_require__(39),
-      filteredQuery: __webpack_require__(219),
+      totalPages: __webpack_require__(172),
+      filteredQuery: __webpack_require__(384),
       hasMultiSort: function hasMultiSort() {
         return this.opts.serverMultiSorting;
       }
@@ -48864,7 +49261,7 @@ exports.install = function (Vue, globalOptions, useVuex) {
 };
 
 /***/ }),
-/* 215 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48875,7 +49272,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 216 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48920,7 +49317,7 @@ module.exports = function (promiseOnly) {
 };
 
 /***/ }),
-/* 217 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48948,13 +49345,13 @@ module.exports = function (response) {
 };
 
 /***/ }),
-/* 218 */
+/* 383 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bus = __webpack_require__(8);
+var _bus = __webpack_require__(12);
 
 var _bus2 = _interopRequireDefault(_bus);
 
@@ -48976,7 +49373,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 219 */
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49000,525 +49397,6 @@ module.exports = function () {
 
     return result;
 };
-
-/***/ }),
-/* 220 */,
-/* 221 */,
-/* 222 */,
-/* 223 */,
-/* 224 */,
-/* 225 */,
-/* 226 */,
-/* 227 */,
-/* 228 */,
-/* 229 */,
-/* 230 */,
-/* 231 */,
-/* 232 */,
-/* 233 */,
-/* 234 */,
-/* 235 */,
-/* 236 */,
-/* 237 */,
-/* 238 */,
-/* 239 */,
-/* 240 */,
-/* 241 */,
-/* 242 */,
-/* 243 */,
-/* 244 */,
-/* 245 */,
-/* 246 */,
-/* 247 */,
-/* 248 */,
-/* 249 */,
-/* 250 */,
-/* 251 */,
-/* 252 */,
-/* 253 */,
-/* 254 */,
-/* 255 */,
-/* 256 */,
-/* 257 */,
-/* 258 */,
-/* 259 */,
-/* 260 */,
-/* 261 */,
-/* 262 */,
-/* 263 */,
-/* 264 */,
-/* 265 */,
-/* 266 */,
-/* 267 */,
-/* 268 */,
-/* 269 */,
-/* 270 */,
-/* 271 */,
-/* 272 */,
-/* 273 */,
-/* 274 */,
-/* 275 */,
-/* 276 */,
-/* 277 */,
-/* 278 */,
-/* 279 */,
-/* 280 */,
-/* 281 */,
-/* 282 */,
-/* 283 */,
-/* 284 */,
-/* 285 */,
-/* 286 */,
-/* 287 */,
-/* 288 */,
-/* 289 */,
-/* 290 */,
-/* 291 */,
-/* 292 */,
-/* 293 */,
-/* 294 */,
-/* 295 */,
-/* 296 */,
-/* 297 */,
-/* 298 */,
-/* 299 */,
-/* 300 */,
-/* 301 */,
-/* 302 */,
-/* 303 */,
-/* 304 */,
-/* 305 */,
-/* 306 */,
-/* 307 */,
-/* 308 */,
-/* 309 */,
-/* 310 */,
-/* 311 */,
-/* 312 */,
-/* 313 */,
-/* 314 */,
-/* 315 */,
-/* 316 */,
-/* 317 */,
-/* 318 */,
-/* 319 */,
-/* 320 */,
-/* 321 */,
-/* 322 */,
-/* 323 */,
-/* 324 */,
-/* 325 */,
-/* 326 */,
-/* 327 */,
-/* 328 */,
-/* 329 */,
-/* 330 */,
-/* 331 */,
-/* 332 */,
-/* 333 */,
-/* 334 */,
-/* 335 */,
-/* 336 */,
-/* 337 */,
-/* 338 */,
-/* 339 */,
-/* 340 */,
-/* 341 */,
-/* 342 */,
-/* 343 */,
-/* 344 */,
-/* 345 */,
-/* 346 */,
-/* 347 */,
-/* 348 */,
-/* 349 */,
-/* 350 */,
-/* 351 */,
-/* 352 */,
-/* 353 */,
-/* 354 */,
-/* 355 */,
-/* 356 */,
-/* 357 */,
-/* 358 */,
-/* 359 */,
-/* 360 */,
-/* 361 */,
-/* 362 */,
-/* 363 */,
-/* 364 */,
-/* 365 */,
-/* 366 */,
-/* 367 */,
-/* 368 */,
-/* 369 */,
-/* 370 */,
-/* 371 */,
-/* 372 */,
-/* 373 */,
-/* 374 */,
-/* 375 */,
-/* 376 */,
-/* 377 */,
-/* 378 */,
-/* 379 */,
-/* 380 */,
-/* 381 */,
-/* 382 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(383);
-
-
-/***/ }),
-/* 383 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($, jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2__ = __webpack_require__(48);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_tables_2___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__);
-window.Vue = __webpack_require__(7);
-window.Vue = __webpack_require__(46);
-
-__webpack_require__(12);
-__webpack_require__(11);
-
-
-
-
-
-__WEBPACK_IMPORTED_MODULE_0_vue__["default"].config.productionTip = false;
-__WEBPACK_IMPORTED_MODULE_0_vue__["default"].config.devtools = false;
-__WEBPACK_IMPORTED_MODULE_0_vue__["default"].config.performance = false;
-
-__WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["ClientTable"]);
-__WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_2_vue_tables_2__["Event"]);
-__WEBPACK_IMPORTED_MODULE_0_vue__["default"].use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
-
-function readURL(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
-            $('#imagePreview').hide();
-            $('#imagePreview').fadeIn(650);
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-if (document.getElementById("candidates-table")) {
-    var table = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
-        el: '#candidates-table',
-        data: function data() {
-            return {
-                columns: ['title', 'gender', 'surname', 'firstName', 'personalEmail', 'phone', 'actions'],
-                subColumns: ['cv'],
-                data: getData(),
-                options: {
-                    filter: false,
-                    filterByColumn: false,
-                    perPage: 2,
-                    texts: {
-                        filter: "Filter:",
-                        filterBy: 'Filter by {column}',
-                        count: ' '
-                    },
-                    pagination: { chunk: 10 },
-                    headings: {
-                        title: "Title",
-                        gender: "Gender",
-                        maritalStatus: "Marital Status",
-                        surname: "Surname",
-                        firstName: "FirstName",
-                        dob: "Date of Birth",
-                        personalEmail: "Personal Email",
-                        homeAddress: "Home Address",
-                        phone: "Phone",
-                        idNumber: "ID number",
-                        skills: "Skills",
-                        qualifications: "Qualifications",
-                        disabilities: "Disabilities"
-                    },
-                    // sortable: [
-                    //     'title',
-                    //     'gender',
-                    //     'maritalStatus',
-                    //     'surname',
-                    //     'firstName',
-                    //     'dob',
-                    //     'personalEmail',
-                    //     'homeAddress',
-                    //     'phone',
-                    //     'idNumber',
-                    //     'skills',
-                    //     'disabilities',
-                    // ],
-                    sortable: [],
-                    filterable: false
-                    // filterable: [
-                    // 'title',
-                    // 'gender',
-                    // 'maritalStatus',
-                    // 'surname',
-                    // 'firstName',
-                    // 'dob',
-                    // 'personalEmail',
-                    // 'homeAddress',
-                    // 'phone',
-                    // 'idNumber',
-                    // 'skills',
-                    // 'disabilities'
-                    // ]
-                },
-                subOptions: {
-                    filter: false,
-                    filterByColumn: false,
-                    headings: {
-                        cv: "Filename"
-                    },
-                    filterable: false
-                },
-                methods: {
-                    stages: function stages(id) {
-                        window.location.href = '/recruitment';
-                    },
-                    erase: function erase(id) {
-                        alert(id);
-                    },
-                    edit: function edit(id) {
-                        window.location.href = '/recruitment';
-                    },
-                    download: function download(id) {
-                        alert(id);
-                    }
-                }
-            };
-        }
-    });
-}
-
-function getData() {
-    return [{
-        id: 1,
-        title: "Mr",
-        gender: "Male",
-        surname: "El",
-        firstName: "Nino",
-        personalEmail: "elnino@gmail.com",
-        phone: "+3322323333",
-        idNumber: "p1212362112436w",
-        skills: "php",
-        qualifications: "Masters",
-        disabilities: "Tinnitus, Mobility of limbs",
-        attachments: [{
-            cv: "cv.pdf"
-        }, {
-            cv: "cv2.pdf"
-        }, {
-            cv: "cv3.pdf"
-        }],
-        photo: "photo.jpg"
-    }, {
-        id: 2,
-        title: "Miss",
-        gender: "Female",
-        maritalStatus: "Single",
-        surname: "Nina",
-        firstName: "Williams",
-        dob: "23/12/89",
-        personalEmail: "NinaWilliams@gmail.com",
-        homeAddress: "43 river land, Long Mountain",
-        phone: "+33444444444",
-        idNumber: "p527993424234o",
-        skills: "Mysql",
-        qualifications: "phD",
-        disabilities: "Optic Atropy",
-        attachments: [{
-            cv: "cv.pdf"
-        }, {
-            cv: "cv2.pdf"
-        }],
-        photo: "photo.jpg"
-    }];
-}
-
-if (document.getElementById("candidates-app")) {
-    var rr = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
-        el: '#candidates-app',
-        data: {
-            qual: {
-                reference: '', description: '', institution: '', obtained_on: '',
-                student_no: ''
-            },
-            quals: [],
-            employment: {
-                previous_employer: '', position: '', salary: '', reason_leaving: '', start_date: '', end_date: ''
-            },
-            employments: [],
-            errors: [],
-            titles: ['Mr', 'Miss', 'Mrs'],
-            genders: ['Male', 'Female'],
-            maritalStatuses: ['married', 'single', 'divorced'],
-            surname: null,
-            firstName: null,
-            dob: null,
-            personalEmail: null,
-            homeAddress: null,
-            phone: null,
-            position_applied: null,
-            date_available: null,
-            salary_expectation: null,
-            idNumber: null,
-            skills: ['php', 'css', 'mysql', 'js', 'angular', 'vue', 'laravel', 'symfony', 'codeigniter', 'zend'],
-            multipleSelectionsDisabilities: ["Optic Atropy", "Full Blown Aids"],
-            disabilities: ["Optic Atropy", "Full Blown Aids", "Tinnitus", "ADHD", "Down syndrome", "Dyslexia"],
-            qualifications: ["Higher School Certificate", "Certificate", "Diploma", "Degree", "Masters", "PhD"],
-            selectedTitle: null,
-            selectedGender: null,
-            selectedMaritalStatus: null,
-            selectedDisability: null,
-            selectedSkill: null,
-            selectedQualification: null
-        },
-        methods: {
-            checkForm: function checkForm(e) {
-                if (this.title && this.gender && this.maritalStatus) {
-                    return true;
-                }
-
-                this.errors = [];
-
-                if (this.surname) {
-                    this.errors.push('Surname is required.');
-                }
-
-                if (this.firstName) {
-                    this.errors.push('FirstName is required.');
-                }
-
-                if (!this.selectedDisability) {
-                    this.errors.push('Disability is required.');
-                }
-
-                if (!this.selectedGender) {
-                    this.errors.push('Gender is required.');
-                }
-
-                if (!this.selectedTitle) {
-                    this.errors.push('Title is required.');
-                }
-
-                if (!this.selectedMaritalStatus) {
-                    this.errors.push('Marital Status is required.');
-                }
-
-                if (!this.dob) {
-                    this.errors.push('Date of birth is required.');
-                }
-
-                if (!this.selectedSkill) {
-                    this.errors.push('Skills is required.');
-                }
-
-                e.preventDefault();
-            },
-            selectedDisabilityFunc: function selectedDisabilityFunc() {
-                console.log(this.selectedDisability);
-            },
-            selectedSkillFunc: function selectedSkillFunc() {
-                console.log(this.selectedSkill);
-            },
-            selectedQualificationFunc: function selectedQualificationFunc() {
-                console.log(this.selectedQualification);
-            },
-            addNewQual: function addNewQual() {
-                this.quals.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.qual));
-                //ensure height is enough as accordion sets a height as inline style
-                $('.accordion--active').css("height", "");
-            },
-            removeQual: function removeQual(index) {
-                __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.quals, index);
-            },
-            addNewEmploy: function addNewEmploy() {
-                this.employments.push(__WEBPACK_IMPORTED_MODULE_0_vue__["default"].util.extend({}, this.employment));
-                //ensure height is enough as accordion sets a height as inline style
-                $('.accordion--active').css("height", "");
-            },
-            removeEmploy: function removeEmploy(index) {
-                __WEBPACK_IMPORTED_MODULE_0_vue__["default"].delete(this.employments, index);
-            },
-            submitForm: function submitForm(event) {
-                event.preventDefault();
-            },
-            fetchQualifications: function fetchQualifications() {
-                var _this = this;
-
-                if (!route().current("candidates.create")) {
-                    fetch('./candidate-qualifications').then(function (res) {
-                        return res.json();
-                    }).then(function (res) {
-                        _this.quals = res;
-                    });
-                }
-            },
-            fetchQPreviousEmployments: function fetchQPreviousEmployments() {
-                var _this2 = this;
-
-                if (!route().current("candidates.create")) {
-                    fetch('./previous_employments').then(function (res) {
-                        return res.json();
-                    }).then(function (res) {
-                        _this2.employments = res;
-                    });
-                }
-            }
-        },
-        mounted: function mounted() {
-            +function ($, el) {
-                $("#imageUpload").change(function () {
-                    readURL(this);
-                });
-
-                $.fn.mirror = function (selector) {
-                    return this.each(function () {
-                        var $this = $(this);
-                        var $selector = $(selector);
-                        $this.bind('keyup change', function () {
-                            $selector.val($this.val());
-                        });
-                    });
-                };
-
-                $(':input[data-mirror]').each(function () {
-                    $(this).mirror($(this).data('mirror'));
-                });
-
-                $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
-
-                window.Parsley.on('field:ajaxoptions', function (p1, ajaxOptions) {
-                    var id_number = $("[name=id_number]").val();
-
-                    var namedDataMap = {
-                        'id_number': { 'id_number': id_number }
-
-                    };
-
-                    ajaxOptions.global = false;
-                    ajaxOptions.data = namedDataMap[$(this.$element[0]).attr('name')];
-                });
-            }(jQuery, this);
-        },
-        created: function created() {
-            this.fetchQualifications();
-            this.fetchQPreviousEmployments();
-        }
-    });
-}
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(1)))
 
 /***/ })
 /******/ ]);
