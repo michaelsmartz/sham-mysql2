@@ -65,7 +65,5 @@
             <div class="text-success">Currently, there are no leave types allocated to you</div>
         </div>
     @endif
-    @component('partials.index')
-    @endcomponent
 </section>
 

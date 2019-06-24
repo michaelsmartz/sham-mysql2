@@ -36,18 +36,24 @@ class CalendarEventServiceProvider extends ServiceProvider
     public function generate($parameters)
     {
         $calendar  = $this->calendar($parameters['type']);
-        $view      = view('calendar_events.index', compact('calendar'))->renderSections();
-        return response()->json([
-            'title'   => $view['modalTitle'],
-            'content' => $view['modalContent'],
-            'footer'  => $view['modalFooter']
-        ]);
+
+        if(isset($parameters['view']) && ($parameters['view'] == 'modal')) {
+            $view      = view('calendar_events.modal-wrap', compact('calendar'))->renderSections();
+            return response()->json([
+                'title'   => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer'  => $view['modalFooter']
+            ]);
+        }elseif(isset($parameters['view']) && ($parameters['view'] == 'data')){
+            return $calendar;
+        }
+
+        return view('calendar_events.calendar',compact('calendar'));
     }
 
     public function calendar($type)
     {
         $events = [];
-        $type =  substr_replace($type,'App\\',0,3);
 
         switch ($type){
             case EmployeeLeave::class :
@@ -65,7 +71,6 @@ class CalendarEventServiceProvider extends ServiceProvider
 
         }
 
-
         if(count($data) > 0 )
         {
             foreach ($data as $key => $value)
@@ -76,7 +81,7 @@ class CalendarEventServiceProvider extends ServiceProvider
                     false,
                     new \DateTime($value->start_date),
                     new \DateTime($value->end_date),
-                    null,
+                    $value->calendable_id,
                     // Add color
                     [
                         'color' => '#3097D1',
@@ -85,9 +90,26 @@ class CalendarEventServiceProvider extends ServiceProvider
                 );
             }
         }
-        $calendar = Calendar::addEvents($events)->setOptions(
-            ['firstDay' => 1]
-        );
+
+
+        if($type === EmployeeLeave::class){
+            $calendar = Calendar::addEvents($events)->setOptions(
+                ['firstDay' => 1]
+            )->setCallbacks([
+                'eventRender' => 'function(event,element) {
+                      $(element).on("click",function(){
+                            location.hash = "#light-modal";
+                            return editForm(event.id, event,"leaves");
+                      });             
+                  }'
+            ]);
+        }else{
+            $calendar = Calendar::addEvents($events)->setOptions(
+                ['firstDay' => 1]
+            );
+        }
+
+
         $calendar->title = $title;
 
         return $calendar;

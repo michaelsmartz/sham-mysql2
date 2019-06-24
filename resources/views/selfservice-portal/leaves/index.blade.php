@@ -28,36 +28,35 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-@if(count($employees)>0)8 space-margin @else 12 @endif">
-                <div class="row">
-                    @include('selfservice-portal.leaves.absences.status')
-                </div>
-                <br>
-                <div class="row panel">
+            @include('selfservice-portal.leaves.absences.status')
+        </div>
+        <br>
+        <div class="row panel section-leaves col-sm-10">
+            <ul class="nav nav-tabs nav-tabs-leaves" style="background: #FFFFFF">
+                <li @if(isset($calendar))class="active"@endif><a href="/leaves"><i class="glyphicon glyphicon-calendar"></i> Calendar</a></li>
+                <li @if(!isset($calendar))class="active"@endif><a href="/leaves-history"><i class="glyphicon glyphicon-list"></i>  History</a></li>
+            </ul>
+            <div class="">
+                @if(isset($calendar))
                     <br>
-                    @include('selfservice-portal.leaves.absences.absence')
-                </div>
+                    @include('calendar_events.calendar')
+                @else
 
-                <br>
+                    @include('selfservice-portal.leaves.absences.absence')
+                @endif
             </div>
-            <div class="pull-right">
-                <a href="#light-modal" data-wenk="Edit" style="top:5px;right:10px;" class="btn btn-primary" onclick="loadUrl('/calendar_events/{{\App\EmployeeLeave::class}}')">
-                    <i class="glyphicon glyphicon-calendar"></i> View calendar
-                </a>
-            </div>
-            @if(count($employees)>0)
-                <div class="col-sm-4">
-                    @include('selfservice-portal.leaves.absences.notification')
-                </div>
-            @endif
         </div>
     </div>
-
-
+    @component('partials.index')
+    @endcomponent
 @endsection
+
 @section('scripts')
-    <script src="{{url('/')}}/plugins/chartjs/dist/Chart.js"></script>
     <script src="{{url('/')}}/plugins/moment-2.9.0/moment.min.js"></script>
     <script src="{{url('/')}}/plugins/fullcalendar-2.2.7/fullcalendar.min.js"></script>
     <script src="{{URL::to('/')}}/js/leaves.min.js"></script>
+    @if(isset($calendar))
+        {!! $calendar->script() !!}
+    @endif
+
 @endsection

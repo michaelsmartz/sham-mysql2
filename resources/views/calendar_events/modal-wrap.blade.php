@@ -5,11 +5,9 @@
     <div class="container-fluid">
         <div class="row">
             @include('calendar_events.calendar')
+            {!! $calendar->script() !!}
         </div>
     </div>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.7/fullcalendar.min.css"/>
-    {!! $calendar->script() !!}
 @endsection
 
 @section('modalFooter')

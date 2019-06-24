@@ -2,7 +2,6 @@
 @section('title', 'Leave request from '.$leave->employee)
 @section('modalTitle', 'Leave request from '.$leave->employee)
 
-
 @section('modalFooter')
     <a href="/leaves/status/{{$id}}/{{App\Enums\LeaveStatusType::status_denied}}" data-wenk="Deny leave request" class="btn btn-danger">
        Deny

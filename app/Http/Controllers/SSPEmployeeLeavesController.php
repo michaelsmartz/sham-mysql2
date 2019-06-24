@@ -48,8 +48,11 @@ class SSPEmployeeLeavesController extends Controller
             'fullname' => EmployeesController::getEmployeeFullName($employee_id)
         );
         $employees       = EmployeesController::getManagerEmployees($employee_id);
-        $leaves          = $this->getEmployeeLeavesHistory($employee_id);
         $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
+        $calendar        = app('CalendarEventService',[
+                                'type'=> EmployeeLeave::class,
+                                'view'=> 'data'
+                            ]);
         
         if(count($employees) > 0){
             $pending_request = $this->getPendingRequests($employee_id);
@@ -61,7 +64,37 @@ class SSPEmployeeLeavesController extends Controller
             'employee' => Employee::find($employee_id)
         );
         
+        return view($this->baseViewPath .'.index', compact('calendar','eligibility','employees','manager', 'selected', 'pending_request'));
+    }
+
+    /**
+     * Display a listing of the employee's leaves within date range.
+     *
+     * @return Illuminate\View\View
+     */
+    public function historyLeave()
+    {
+        $employee_id     = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+        $manager         = array(
+            'id'       => $employee_id,
+            'fullname' => EmployeesController::getEmployeeFullName($employee_id)
+        );
+        $employees       = EmployeesController::getManagerEmployees($employee_id);
+        $leaves          = $this->getEmployeeLeavesHistory($employee_id);
+        $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
+
+        if(count($employees) > 0){
+            $pending_request = $this->getPendingRequests($employee_id);
+        }else{
+            $pending_request = null;
+        }
+
+        $selected = array(
+            'employee' => Employee::find($employee_id)
+        );
+
         return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees','manager', 'selected', 'pending_request'));
+
     }
 
     /**
@@ -265,8 +298,6 @@ class SSPEmployeeLeavesController extends Controller
      */
     public function edit(Request $request)
     {
-        $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-
         $id = Route::current()->parameter('leaf');
         $leave = $this->getPendingRequest($id);
 

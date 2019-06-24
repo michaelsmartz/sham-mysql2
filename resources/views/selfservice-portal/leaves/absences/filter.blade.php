@@ -43,7 +43,7 @@
         @endif
         <div class="form-group col-lg-4 pull-right">
             <button id="btn-filter-date" class="btn btn-primary btn-filter" type="submit"><i class="glyphicon glyphicon-sort"></i> Filter</button>
-            <a href="{{route('leaves.index')}}" class="btn btn-primary btn-filter"><i class="glyphicon glyphicon-refresh"></i> Reset</a>
+            <a href="{{route('leaves.history')}}" class="btn btn-primary btn-filter"><i class="glyphicon glyphicon-refresh"></i> Reset</a>
         </div>
     </form>
 </div>

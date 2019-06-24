@@ -187,19 +187,13 @@ Auth::routes();
         #endregion
 
         #region Absences and leaves
+        //
         Route::resource('leaves', 'SSPEmployeeLeavesController' );
         Route::get('/leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
         Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
         Route::get('/leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
         Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
-        #endregion
-
-        #region Calendar Events
-        Route::get('/calendar_events/{event_type}', function ($type) {
-            return app('CalendarEventService',[
-                'type'=> $type
-            ]);
-        });
+        Route::any('/leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('leaves.history');
         #endregion
 
         #region Quality
