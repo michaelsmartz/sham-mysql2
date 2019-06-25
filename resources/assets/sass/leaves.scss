@@ -93,6 +93,7 @@ span.badge-status {
     margin-right: 20px;
     position: relative;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
 .colour_1 {
@@ -134,17 +135,6 @@ box_link {
     text-align: center;
 }
 
-.dashboard_wid_box.emp_total .dashboard_wid_box_inner.last-child {
-    margin-right: 0;
-}
-
-.dashboard_wid_box.emp_total .dashboard_wid_box_inner {
-    float: left;
-    margin-right: 18px;
-    margin-top: 13px;
-    width: 80px;
-    text-align: center;
-}
 .dashboard_wid_box_inner.last-child {
     margin-right: 0;
 }
@@ -152,7 +142,7 @@ box_link {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    background: url('../img/trasparent_white.png');
+    background: rgb(255,255,255,0.5);
     display: inline-block;
     margin-right: 2px;
     width: 86px;

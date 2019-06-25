@@ -31,7 +31,7 @@
             @include('selfservice-portal.leaves.absences.status')
         </div>
         <br>
-        <div class="row panel section-leaves col-sm-10">
+        <div class="row panel section-leaves col-sm-12">
             <ul class="nav nav-tabs nav-tabs-leaves" style="background: #FFFFFF">
                 <li @if(isset($calendar))class="active"@endif><a href="/leaves"><i class="glyphicon glyphicon-calendar"></i> Calendar</a></li>
                 <li @if(!isset($calendar))class="active"@endif><a href="/leaves-history"><i class="glyphicon glyphicon-list"></i>  History</a></li>
