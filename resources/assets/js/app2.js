@@ -3,6 +3,7 @@ import Popper from 'popper.js';
 import asyncJS from 'async-js';
 import 'flatpickr/dist/flatpickr.min.css'; // flatpickr base css
 import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
+import ready from '@benjaminreid/ready.js';
 
 var flatpickr = require("flatpickr");
 var EventEmitter = require('events');
