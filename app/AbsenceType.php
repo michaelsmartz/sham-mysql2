@@ -28,6 +28,8 @@ class AbsenceType extends Model implements AuditableContract
                   'non_working_days'
               ];
 
+    protected $cascadeDeletes = ['eligibilityEmployees', 'jobTitles', 'absenceTypeEmployees'];
+
     public $searchable = [ 'accrue_period',
                             'amount_earns',
                             'description',
