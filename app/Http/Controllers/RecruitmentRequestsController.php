@@ -378,6 +378,10 @@ class RecruitmentRequestsController extends CustomController
 
             foreach($candidates as $candidate){
                 foreach ($candidate['interviews'] as $interview){
+                    //send enum type description
+                    $interview->pivot->results = InterviewResultsType::getDescription($interview->pivot->results);
+                    $interview->pivot->status = InterviewStatusType::getDescription($interview->pivot->status);
+
                     $interviewMedias =
                         DB::table('mediables')
                             ->join('media', 'mediables.media_id', '=', 'media.id')

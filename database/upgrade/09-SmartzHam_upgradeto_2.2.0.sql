@@ -44,7 +44,7 @@ ALTER TABLE `candidates`
 ADD COLUMN `passport_no` VARCHAR(50) NULL DEFAULT NULL AFTER `id_number`,
 ADD COLUMN `passport_country_id` INT(11) NULL DEFAULT NULL AFTER `passport_no`,
 ADD COLUMN `nationality` VARCHAR(50) NULL DEFAULT NULL AFTER `passport_country_id`,
-ADD COLUMN `immigration_status_id` INT(11) NULL DEFAULT NULL AFTER `nationality`
+ADD COLUMN `immigration_status_id` INT(11) NULL DEFAULT NULL AFTER `nationality`,
 ADD COLUMN `notice_period` INT(2) NULL DEFAULT NULL AFTER `salary_expectation`;
 
 ALTER TABLE `candidate_previous_employments`
