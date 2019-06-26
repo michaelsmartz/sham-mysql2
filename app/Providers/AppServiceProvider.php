@@ -38,15 +38,6 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        Validator::extend('greater_or_equal', function($attribute, $value, $parameters, $validator) {
-            $min_field = $parameters[0];
-            return (float)$value >= (float)$min_field;
-        });
-
-        Validator::extend('less_or_equal', function($attribute, $value, $parameters, $validator) {
-            $min_field = $parameters[0];
-            return (float)$min_field <= (float)$value;
-        });
 
     }
 

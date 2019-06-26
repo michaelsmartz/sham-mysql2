@@ -84,7 +84,7 @@ class CalendarEventServiceProvider extends ServiceProvider
                     $value->calendable_id,
                     // Add color
                     [
-                        'color' => '#3097D1',
+                        'color' => $value->color,
                         'textColor' => '#FFFFFF'
                     ]
                 );

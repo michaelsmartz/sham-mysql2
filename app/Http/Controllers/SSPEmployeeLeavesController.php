@@ -175,19 +175,10 @@ class SSPEmployeeLeavesController extends Controller
         $remaining          = $leave_type[0]->remaining;
         $duration_unit      = $leave_type[0]->duration_unit;
         $non_working        = $leave_type[0]->non_working_days;
-        $time_period        = self::getTimePeriod($employee);
         $working_year_start = SysConfigValue::where('key','=', 'WORKING_YEAR_START')->first();
         $working_year_end   = SysConfigValue::where('key','=', 'WORKING_YEAR_END')->first();
-        
-        
+        $time_period        = $this->getTimePeriod($employee);
 
-        //Note if non_working_days flag set to 1 remove non working days from flatpickr
-        //non_working_days flag is send in $leave_type array
-        $leave_type = $this->getEligibleAbsencesTypes($employee_id);
-
-        $time_period = $this->getTimePeriod($employee);
-        //dd($time_period['Monday']['start_time']);
-        //dd($time_period);
 
         $view = view($this->baseViewPath .'.create',compact('remaining', 'non_working','working_year_start','working_year_end', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
         return response()->json([
@@ -346,9 +337,10 @@ class SSPEmployeeLeavesController extends Controller
     public static function getEmployeeLeavesStatus($employee_id){
 
         $employee_leave= DB::select(
-            "SELECT abs.id,abs.description as absence_description,abs.duration_unit,(SELECT COALESCE(SUM(TIMESTAMPDIFF(second,ate.starts_at,ate.ends_at)/3600),0) FROM absence_type_employee ate WHERE ate.employee_id = $employee_id AND abs.id = ate.absence_type_id AND ate.status = ".LeaveStatusType::status_pending.") as pending,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date
+            "SELECT abs.id,abs.description as absence_description,abs.duration_unit,(SELECT COALESCE(SUM(TIMESTAMPDIFF(second,ate.starts_at,ate.ends_at)/3600),0) FROM absence_type_employee ate WHERE ate.employee_id = $employee_id AND abs.id = ate.absence_type_id AND ate.status = ".LeaveStatusType::status_pending.") as pending,ele.taken,ele.total,(ele.total - ele.taken) as remaining,ele.start_date,c.code
             FROM eligibility_employee ele
             LEFT JOIN absence_types abs ON abs.id = ele.absence_type_id
+            LEFT JOIN colours c ON c.id = abs.colour_id 
             WHERE ele.start_date <= NOW() AND CURDATE() BETWEEN ele.start_date AND ele.end_date AND ele.employee_id = $employee_id ;"
         );
 
@@ -406,16 +398,15 @@ class SSPEmployeeLeavesController extends Controller
                                         ->update(['taken' => ($new_taken)]);
 
                 //insert in leave calendar
-                if($status == LeaveStatusType::status_approved){
-                    $leave_calendar = new CalendarEvent();
-                    $leave_calendar->title           = $leave_request->AbsenceType->description." : ".$leave_request->Employee->first_name." ".$leave_request->Employee->surname;
-                    $leave_calendar->start_Date      = $leave_request->starts_at;
-                    $leave_calendar->end_date        = $leave_request->ends_at;
-                    $leave_calendar->calendable_id   = $leave_id;
-                    $leave_calendar->calendable_type = EmployeeLeave::class;
-                    $leave_calendar->department_id   = $leave_request->Employee->department_id;
-                    $leave_calendar->save();
-                }
+                $leave_calendar = new CalendarEvent();
+                $leave_calendar->title           = $leave_request->AbsenceType->description." : ".$leave_request->Employee->first_name." ".$leave_request->Employee->surname;
+                $leave_calendar->start_Date      = $leave_request->starts_at;
+                $leave_calendar->end_date        = $leave_request->ends_at;
+                $leave_calendar->calendable_id   = $leave_id;
+                $leave_calendar->calendable_type = EmployeeLeave::class;
+                $leave_calendar->department_id   = $leave_request->Employee->department_id;
+                $leave_calendar->save();
+
             }
            
             $leave_request->status = $status;

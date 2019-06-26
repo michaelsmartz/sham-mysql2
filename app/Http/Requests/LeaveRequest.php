@@ -10,7 +10,7 @@ use DateTime;
 use DatePeriod;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\greater_or_equal;
+use App\Rules\GreaterOrEqual;
 
 class LeaveRequest extends FormRequest
 {
@@ -89,7 +89,7 @@ class LeaveRequest extends FormRequest
 
 
         $validators = [
-            'remaining_balance' => new greater_or_equal($count),
+            'remaining_balance' => new GreaterOrEqual($count),
             'leave_to'          => 'after:'.Input::get('leave_from')
         ];
 
@@ -108,7 +108,6 @@ class LeaveRequest extends FormRequest
         if ($validator->fails() && (\Auth::user()->employee_id !== (int)Input::get('employee_id'))) {
             $errors = $validator->errors();
             $alerts = array();
-            //dd($errors->messages());
             foreach ($errors->messages() as $message) {
                 array_push($alerts,$message);
             }

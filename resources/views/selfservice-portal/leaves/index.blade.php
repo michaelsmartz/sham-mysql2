@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{URL::to('/')}}/css/leaves.min.css"">
+<link rel="stylesheet" href="{{URL::to('/')}}/css/leaves.min.css">
 @extends('portal-index')
 @if(!empty($selected['employee']->id) && $selected['employee']->id !== \Auth::user()->employee_id)
     @section('title',"My Absences and leaves : ".$selected['employee']->first_name." ".$selected['employee']->surname)

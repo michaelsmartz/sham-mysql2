@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class greater_or_equal implements Rule
+class GreaterOrEqual implements Rule
 {
 
     protected $target;
