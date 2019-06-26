@@ -49,7 +49,7 @@ where the absence types are shown in distinguishable colours"></i>
             {!! $errors->first('colour_code', '<p class="help-block">:message</p>') !!}
         @else
             <div class="pickr">
-                <div class="pcr-button" style="cursor:default;color: rgb(255, 51, 119);"></div>
+                <div class="pcr-button" style="cursor:default;color: {!! optional($absenceType->colour)->code !!};"></div>
             </div>
         @endif
     </div>
@@ -61,7 +61,7 @@ where the absence types are shown in distinguishable colours"></i>
     <div class="form-group col-xs-6 {{ $errors->has('eligibility_begins') ? 'has-error' : '' }}">
         <label for="eligibility_begins">Employee Gains Eligibility
             <span>
-            <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
+            <i class="fa fa-question-circle" aria-hidden="true" data-wenk-pos="right"
                data-wenk="Is the starting date when the employee 
 
 earns the entitlement.
