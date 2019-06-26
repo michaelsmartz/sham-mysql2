@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\AbsenceType;
+use App\Jobs\ProcessLeaves;
 
 /**
  * AbsenceType observer
@@ -26,5 +27,14 @@ class AbsenceTypeObserver
         $absenceType->jobTitles()->sync([]);
         $absenceType->absenceTypeEmployees()->sync([]);
 
+    }
+
+    /**
+     * @param AbsenceType $absenceType
+     */
+    public function saved(AbsenceType $absenceType)
+    {
+
+        dispatch( new ProcessLeaves());
     }
 }

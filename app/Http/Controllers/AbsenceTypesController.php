@@ -9,11 +9,12 @@ use App\Enums\LeaveDurationUnitType;
 use App\Enums\LeaveEmployeeGainEligibilityType;
 use App\Enums\LeaveEmployeeLossEligibilityType;
 use App\JobTitle;
-use App\Jobs\ProcessLeaves;
 use App\Support\Helper;
 use App\SystemSubModule;
-use Illuminate\Http\Request;
+
 use App\Http\Controllers\CustomController;
+use App\Http\Requests\AbsenceTypeRequest;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
@@ -84,6 +85,7 @@ class AbsenceTypesController extends CustomController
     public function create()
     {
         $duration_units = LeaveDurationUnitType::ddList();
+        // get unused colours
         $temp = Colour::doesnthave('absenceTypes')->pluck('code', 'id');
         $colours = array_keys(array_flip($temp->toArray()));
 
@@ -98,10 +100,10 @@ class AbsenceTypesController extends CustomController
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function store(AbsenceTypeRequest $request)
     {
+
         try {
-            $this->createValidator($request);
 
             if (Cache::has('ColoursList')) {
                 $temp = Cache::get('ColoursList');
@@ -129,12 +131,13 @@ class AbsenceTypesController extends CustomController
 
             \Session::put('success', $this->baseFlash . 'created Successfully!');
 
+            return redirect()->route($this->baseViewPath .'.index');
+
         } catch (Exception $exception) {
-            dd($exception->getMessage());
+            dump($exception);
             \Session::put('error', 'could not create '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
     }
 
     /**
@@ -207,14 +210,13 @@ class AbsenceTypesController extends CustomController
      * Update the specified absence type in the storage.
      *
      * @param  int $id
-     * @param Request $request
+     * @param AbsenceTypeRequest $request
      *
      * @return Illuminate\Http\RedirectResponse | Illuminate\Routing\Redirector
      */
-    public function update(Request $request, $id)
+    public function update(AbsenceTypeRequest $request, $id)
     {
         try {
-            $this->editValidator($request);
 
             $this->saveAbsenceTypes($request, $id);
 
@@ -228,7 +230,7 @@ class AbsenceTypesController extends CustomController
         return redirect()->route($this->baseViewPath .'.index');
     }
 
-    protected function saveAbsenceTypes($request, $id = null) {
+    protected function saveAbsenceTypes(AbsenceTypeRequest $request, $id = null) {
 
         $otherFields = [
             '_token',
@@ -254,7 +256,6 @@ class AbsenceTypesController extends CustomController
             $data->jobTitles()->sync($jobTitles);
         }
 
-        dispatch( new ProcessLeaves());
     }
 
     /**
@@ -278,53 +279,5 @@ class AbsenceTypesController extends CustomController
 
         return redirect()->back();
     }
-
-
-    /**
-     * @param Request $request
-     */
-    protected function createValidator(Request $request)
-    {
-        $validateFields = [
-            'description' => 'required|string|min:1|max:100',
-            'duration_unit' => 'required',
-            'colour_code' => 'required'
-        ];
-
-       $this->validator($request, $validateFields);
-    }
-
-    /**
-     * @param Request $request
-     */
-    protected function editValidator(Request $request)
-    {
-        $validateFields = [
-            'description' => 'required|string|min:1|max:100',
-            'duration_unit' => 'nullable',
-            'eligibility_begins' => 'nullable',
-            'eligibility_ends' => 'nullable',
-            'accrue_period' => 'nullable',
-            'amount_earns' => 'nullable',
-        ];
-
-        $this->validator($request, $validateFields);
-    }
-
-    /**
-     * @param Request $request
-     * @param $validateFields
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    private function validator(Request $request, $validateFields)
-    {
-        $validator = Validator::make($request->all(), $validateFields);
-        if($validator->fails()) {
-            return redirect()->back()
-                ->withInput($request->all())
-                ->withErrors($validator);
-        }
-    }
-
 
 }
