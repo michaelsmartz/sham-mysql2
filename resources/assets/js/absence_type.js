@@ -1,7 +1,7 @@
 import {on} from "delegated-events";
 
-import '@simonwep/pickr/dist/pickr.nano.min.css'; // 'nano' theme
-import Pickr from '@simonwep/pickr';
+import '../../../node_modules/@simonwep/pickr/dist/themes/nano.min.css'; // 'nano' theme
+import Pickr from '../../../node_modules/@simonwep/pickr/dist/pickr.es5.min.js';
 
 require('sumoselect');
 
