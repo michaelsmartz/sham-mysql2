@@ -266,8 +266,20 @@ class SSPEmployeeLeavesController extends Controller
                             $leave_request->starts_at = $day->format("Y-m-d").' '.$start_time;
                             $leave_request->ends_at   = $day->format("Y-m-d").' '.$end_time;
                         }
-                    
+
+
+
                         $leave_request->save();
+
+                        //insert in leave calendar
+                        $leave_calendar = new CalendarEvent();
+                        $leave_calendar->title           = $leave_request->AbsenceType->description." : ".$leave_request->Employee->first_name." ".$leave_request->Employee->surname;
+                        $leave_calendar->start_Date      = $leave_request->starts_at;
+                        $leave_calendar->end_date        = $leave_request->ends_at;
+                        $leave_calendar->calendable_id   = $leave_request->id;
+                        $leave_calendar->calendable_type = EmployeeLeave::class;
+                        $leave_calendar->department_id   = $leave_request->Employee->department_id;
+                        $leave_calendar->save();
                     }
                     
                 }
@@ -396,16 +408,6 @@ class SSPEmployeeLeavesController extends Controller
                 $update_taken = EmployeeEligibility::where('employee_id',$leave_request->employee_id)
                                         ->where('absence_type_id',$leave_request->absence_type_id)
                                         ->update(['taken' => ($new_taken)]);
-
-                //insert in leave calendar
-                $leave_calendar = new CalendarEvent();
-                $leave_calendar->title           = $leave_request->AbsenceType->description." : ".$leave_request->Employee->first_name." ".$leave_request->Employee->surname;
-                $leave_calendar->start_Date      = $leave_request->starts_at;
-                $leave_calendar->end_date        = $leave_request->ends_at;
-                $leave_calendar->calendable_id   = $leave_id;
-                $leave_calendar->calendable_type = EmployeeLeave::class;
-                $leave_calendar->department_id   = $leave_request->Employee->department_id;
-                $leave_calendar->save();
 
             }
            
