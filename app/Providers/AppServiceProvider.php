@@ -5,12 +5,11 @@ namespace App\Providers;
 use App\User;
 use App\Macros\Routing\Router;
 use App\Observers\UserObserver;
-use Collective\Html\FormBuilder as Form;
 use DB;
+use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 use Validator;
-use Illuminate\Queue\Events\JobProcessed;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,7 +36,6 @@ class AppServiceProvider extends ServiceProvider
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
         });
-
 
     }
 
