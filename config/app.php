@@ -174,21 +174,15 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
-        //App\Providers\CalendarEventServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        //App\Providers\ViewComposerServiceProvider::class,
-        //Collective\Html\HtmlServiceProvider::class,
 
         /*
          * Dev Only Providers:
          */
         App\Providers\ShamServiceProvider::class,
-
         //App\Providers\SysConfigServiceProvider::class,
-        //App\Providers\LocalEnvironmentServiceProvider::class,
         //Arrilot\Widgets\ServiceProvider::class,
-        //Clockwork\Support\Laravel\ClockworkServiceProvider::class,
         //Plank\Mediable\MediableServiceProvider::class
 
     ],

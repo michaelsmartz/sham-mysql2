@@ -50,7 +50,7 @@ return [
      |
      */
 
-    'include_vendors' => true,
+    'include_vendors' => false,
 
     /*
      |--------------------------------------------------------------------------
@@ -107,7 +107,7 @@ return [
         'db'              => true,  // Show database (PDO) queries and bindings
         'views'           => true,  // Views with their data
         'route'           => true,  // Current route information
-        'auth'            => true, // Display Laravel authentication status
+        'auth'            => false, // Display Laravel authentication status
         'gate'            => false, // Display Laravel Gate checks
         'session'         => false,  // Display session data
         'symfony_request' => false,  // Only one can be enabled..

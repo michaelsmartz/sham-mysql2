@@ -134,7 +134,7 @@ return [
 	|
 	*/
 
-	'register_helpers' => env('CLOCKWORK_REGISTER_HELPERS', true),
+	'register_helpers' => env('CLOCKWORK_REGISTER_HELPERS', false),
 
 	/*
 	|--------------------------------------------------------------------------
