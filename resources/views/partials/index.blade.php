@@ -156,7 +156,7 @@
                 }
                 window.location = route + id + '/edit';
             };
-            window.deleteForm = function(id) {
+            window.deleteForm = function(id, extra) {
                 $("#deleteField").val(id);
                 var oldVal = $("#indexDeleteForm").attr("action");
                 $("#indexDeleteForm").attr("action", $("#indexDeleteForm").attr("action").replace('deleteId', id));
@@ -167,10 +167,11 @@
 
                     alerty.confirm(
                             "Are you sure to <strong class='text-danger'>delete</strong> this record?<br>" +
-                            "<img style='object-fit: cover;' src='"+image + "'>",
+                            "<img style='object-fit: cover;' src='"+image + "'>" +
+                            extra || "",
                             {   title: '@yield("title")',
-                                okLabel: '<span class="text-danger">Yes</span>',
-                                cancelLabel: 'No'
+                                okLabel: '<strong class="text-danger">Yes</strong>',
+                                cancelLabel: '<strong>No</strong>'
                             },
                             function() {
                                 // ok callback
