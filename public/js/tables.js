@@ -9970,7 +9970,7 @@ __webpack_require__(424);
         showExport: true,
         exportTypes: ['excel', 'csv'],
         exportOptions: {
-            "fileName": '@yield("title")',
+            "fileName": $('h2.page-header').text(),
             "worksheetName": "test1" /*,
                                      "jspdf": {
                                      "autotable": {
