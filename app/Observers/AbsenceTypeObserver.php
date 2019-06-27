@@ -35,6 +35,6 @@ class AbsenceTypeObserver
     public function saved(AbsenceType $absenceType)
     {
 
-        dispatch( new ProcessLeaves());
     }
+
 }

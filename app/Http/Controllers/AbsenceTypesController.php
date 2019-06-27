@@ -11,9 +11,9 @@ use App\Enums\LeaveEmployeeLossEligibilityType;
 use App\JobTitle;
 use App\Support\Helper;
 use App\SystemSubModule;
-
 use App\Http\Controllers\CustomController;
 use App\Http\Requests\AbsenceTypeRequest;
+use App\Jobs\ProcessLeaves;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -123,7 +123,7 @@ class AbsenceTypesController extends CustomController
             $key = str_replace('#', '', $colourCode);
 
             // cleaned the # in array keys and colour_code for lookup
-            $colourId = $colours[$key];
+            $colourId = $colours[''.$key.''];
 
             $request->merge(['colour_id' => $colourId]);
 
@@ -175,7 +175,7 @@ class AbsenceTypesController extends CustomController
             //remove not applicable from dropdown accrue period
             $notApplicable = $accrue_periods[-1];
             unset($accrue_periods[-1]);
-            $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+            $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->orderBy('description')->pluck('description','id')->all();
 
             $absenceTypeJobTitles = $data->jobTitles->pluck('id');
 
@@ -256,6 +256,7 @@ class AbsenceTypesController extends CustomController
             $data->jobTitles()->sync($jobTitles);
         }
 
+        dispatch( new ProcessLeaves());
     }
 
     /**
