@@ -94,7 +94,7 @@
                                     @endif
                                     @if($allowedActions->contains('Delete'))
                                     {{--@if($absenceType->eligibilityEmployees->count() == 0 && $absenceType->jobTitles->count() == 0 && $absenceType->absenceTypeEmployees->count() == 0)--}}
-                                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}')">
+                                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}', '<strong class=text-danger>Entitlements</strong> and <strong class=text-danger>leave applications</strong> will also be deleted')">
                                             <i class="glyphicon glyphicon-remove text-danger"></i>
                                         </button>
                                     @endif
