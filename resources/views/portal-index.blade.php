@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Smartz Human Asset Management software (c) Kalija Global">
         <meta name="author" content="Kalija Global">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="csrf-token" content="{{csrf_token()}}">
         <link rel="prefetch" href="{{asset('css/app.min.css')}}" as="stylesheet">
         <link rel="stylesheet" href="{{asset('css/app.min.css')}}">
         <title>Smartz Human Asset Management</title>
@@ -60,9 +60,7 @@
                             <small>@yield('subtitle')</small>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <div class="pull-right">
-                                @yield('right-title')
-                            </div>
+                            <div class="pull-right">@yield('right-title')</div>
                         </div>
                     </div>
                 </div>
@@ -79,7 +77,7 @@
             @endif
 
             <div class="footer">
-                Copyright &copy; {{ date('Y') }} Smartz Solutions - Smartz Human Asset Management. All rights reserved. Release {{env('VERSION')}} {{env('PLATFORM', '(VVM Version)')}}
+                Copyright &copy; 2019 Smartz Solutions - Smartz Human Asset Management. All rights reserved. Release {{env('VERSION')}} {{env('PLATFORM', '(VVM Version)')}}
                 @yield('footer')
             </div>
         </div>
@@ -178,34 +176,8 @@
                     $('#sidebar [data-scrollbar=true]').stop();
                     if ($(targetContainer).hasClass(sidebarClass)) {
                         $(targetContainer).removeClass(sidebarClass);
-                        if ($(targetContainer).hasClass('page-sidebar-fixed')) {
-                            /*if ($('#sidebar .slimScrollDiv').length !== 0) {
-                                $('#sidebar [data-scrollbar="true"]').slimScroll({destroy: true});
-                                $('#sidebar [data-scrollbar="true"]').removeAttr('style');
-                            }
-                            generateSlimScroll($('#sidebar [data-scrollbar="true"]'));
-                            
-                            $('#sidebar [data-scrollbar=true]').trigger('mouseover');*/
-                        } else if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                            /*if ($('#sidebar .slimScrollDiv').length !== 0) {
-                                $('#sidebar [data-scrollbar="true"]').slimScroll({destroy: true});
-                                $('#sidebar [data-scrollbar="true"]').removeAttr('style');
-                            }
-                            generateSlimScroll($('#sidebar [data-scrollbar="true"]'));*/
-                        }
                     } else {
                         $(targetContainer).addClass(sidebarClass);
-
-                        if(!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                            /*if ($(targetContainer).hasClass('page-sidebar-fixed')) {
-                                $('#sidebar [data-scrollbar="true"]').slimScroll({destroy: true});
-                                $('#sidebar [data-scrollbar="true"]').removeAttr('style');
-                            }
-                            $('#sidebar [data-scrollbar=true]').trigger('mouseover');*/
-                        } else {
-                            //$('#sidebar [data-scrollbar="true"]').css('margin-top','0');
-                            //$('#sidebar [data-scrollbar="true"]').css('overflow', 'visible');
-                        }
                     }
                     $(window).trigger('resize');
                 });
@@ -277,7 +249,6 @@
                     @if (isset($fullPageEdit) && $fullPageEdit == TRUE)
                         window.location = route + id + '/edit';
                     @else
-                        //$mainButton = $('.buttons button[type="submit"]');
                         loadUrl(route + id + '/edit');
                     @endif
                 }
@@ -288,18 +259,6 @@
                 handleSidebarMenu();
                 handleDynamicMenu();
                 handleSidebarMinify();
-
-                $('.user-profile').click(function() {
-                    $('#md-content').empty();
-                    $('#md-content').load('{{URL::to("shamusers")}}/{{ (Auth::user()!=null)?Auth::user()->Id:0}}/edit',function(response, status){
-                        if (status == "success"){
-                            $('#md').modal('toggle');
-                        } else {
-                            $('#mde').modal('toggle');
-                        }
-                    });
-                });
-
             });
 
         </script>
