@@ -38,15 +38,19 @@ class FlushDashboardCachedQueries implements ShouldQueue
             Cache::tags('dashboard')->flush();
             $this->summary = ['dashboard' => ['cache' => 'flushed']];
 
+            return true;
+
         } catch (Exception $exception) {
             
             DB::table('job_logs')->insert([
                 'message' => 'Exception',
-                'level' => 900,
+                'level' => 1000,
                 'context' => 'FlushDashboardCachedQueries',
                 'extra' => json_encode($exception),
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
+            
+            return false;
         }
 
     }
