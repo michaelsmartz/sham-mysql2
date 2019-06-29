@@ -108,9 +108,13 @@ var vm = new Vue({
 			}
 
             if(item.recruitment_status.length == 0) {
-                this.currentComment = "";
+				scope.currentComment = "";
             } else {
-                this.currentComment = item.recruitment_status[0].comment;
+				item.recruitment_status.forEach(function(el) {
+					if(el.status == vm.selectedCategory){
+						scope.currentComment = el.comment;
+					}
+				});
             }
 			if(item.interviews.length == 0) {
 				scope.interviewMedias = [];

@@ -162,7 +162,7 @@ class Candidate extends Model
     public function recruitment_status()
     {
         return $this->belongsToMany(Recruitment::class, 'recruitment_status')
-            ->select(['candidate_id','comment']);
+            ->select(['candidate_id','comment', 'status']);
     }
 
     public function interviews()
