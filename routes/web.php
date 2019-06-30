@@ -193,7 +193,9 @@ Auth::routes();
         Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
         Route::get('/leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
         Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
+        Route::post('/leaves/filter/calendar', 'SSPEmployeeLeavesController@filterCalendar')->name('leaves.filter-calendar');
         Route::any('/leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('leaves.history');
+        Route::any('/leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('leaves.pending');
         #endregion
 
         #region Quality
