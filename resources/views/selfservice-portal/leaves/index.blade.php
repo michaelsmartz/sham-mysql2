@@ -34,11 +34,15 @@
         <div class="row panel section-leaves col-sm-12">
             <ul class="nav nav-tabs nav-tabs-leaves" style="background: #FFFFFF">
                 <li @if(isset($calendar))class="active"@endif><a href="/leaves"><i class="glyphicon glyphicon-calendar"></i> Calendar</a></li>
+                @if(count($employees) > 0)
+                <li @if(!isset($calendar))class="active"@endif><a href="/leaves-pending-request"><i class="glyphicon glyphicon-exclamation-sign"></i>  Pending requests</a></li>
+                @endif
                 <li @if(!isset($calendar))class="active"@endif><a href="/leaves-history"><i class="glyphicon glyphicon-list"></i>  History</a></li>
             </ul>
             <div class="">
                 @if(isset($calendar))
                     <br>
+                    @include('selfservice-portal.leaves.absences.filter-calendar')
                     @include('calendar_events.calendar')
                 @else
 
@@ -52,11 +56,10 @@
 @endsection
 
 @section('scripts')
-    <script src="{{url('/')}}/plugins/moment-2.9.0/moment.min.js"></script>
-    <script src="{{url('/')}}/plugins/fullcalendar-2.2.7/fullcalendar.min.js"></script>
     <script src="{{URL::to('/')}}/js/leaves.min.js"></script>
     @if(isset($calendar))
+        <script src="{{url('/')}}/plugins/moment-2.9.0/moment.min.js"></script>
+        <script src="{{url('/')}}/plugins/fullcalendar-2.2.7/fullcalendar.min.js"></script>
         {!! $calendar->script() !!}
     @endif
-
 @endsection
