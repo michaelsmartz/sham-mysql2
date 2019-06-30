@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 420);
+/******/ 	return __webpack_require__(__webpack_require__.s = 421);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -9915,24 +9915,24 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 420:
+/***/ 421:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(421);
+module.exports = __webpack_require__(422);
 
 
 /***/ }),
 
-/***/ 421:
+/***/ 422:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery, $) {//import * as jsPDF from 'jspdf';
 
-__webpack_require__(422);
 __webpack_require__(423);
+__webpack_require__(424);
 //window.jsPDF = global.jsPDF = jsPDF;
 //require("jspdf-autotable");
-__webpack_require__(424);
+__webpack_require__(425);
 
 +function ($) {
     $("#sidebarCollapse").on("click", function () {
@@ -10018,7 +10018,7 @@ $(window).load(function () {
 
 /***/ }),
 
-/***/ 422:
+/***/ 423:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**
@@ -13321,7 +13321,7 @@ $(window).load(function () {
 
 /***/ }),
 
-/***/ 423:
+/***/ 424:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, jQuery) {/*
@@ -13410,7 +13410,7 @@ f.columns,f.rows,d);f.doc.autoTable(f.columns,f.rows,d);if("function"===typeof f
 
 /***/ }),
 
-/***/ 424:
+/***/ 425:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/**

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 385);
+/******/ 	return __webpack_require__(__webpack_require__.s = 386);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -9915,15 +9915,15 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 385:
+/***/ 386:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(386);
+module.exports = __webpack_require__(387);
 
 
 /***/ }),
 
-/***/ 386:
+/***/ 387:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9942,6 +9942,18 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('change', '
         var unchecked = $('#leave_list').val();
         $('#leave_list').val(unchecked.replace($(this).val() + ',', ''));
     }
+});
+
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '.fc-more,.fc-toolbar button', function (event) {
+    var leave_ids = $('#leave_list').val().slice(0, -1).split(',');
+
+    $("input[class='pending_box']").each(function (index) {
+        if ($.inArray($(this).val(), leave_ids) !== -1) {
+            $(this).prop('checked', true);
+        } else {
+            $(this).prop('checked', false);
+        }
+    });
 });
 
 Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#bundle_submit', function (event) {
