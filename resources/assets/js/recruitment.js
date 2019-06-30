@@ -92,6 +92,8 @@ var vm = new Vue({
 	methods: {
 		setCurrent: function (item) {
 			let scope = this;
+			scope.currentComment = "";
+
 			// handle empty offer letters error
 			if(item.offers.length == 0) {
 				item.offers.push({offer_id: 0,starting_on:""});
