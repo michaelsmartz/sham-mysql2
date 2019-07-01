@@ -1,4 +1,4 @@
-<section>
+<section id="leaves_apply">
     @foreach($eligibility as $eligible)
             <div style="display:none;">{!! $eligible->pending = number_format((float)($eligible->pending/9), 2, '.', '');; !!}</div>
             <div class="dashboard_wid_box  1 emp_total" style="background: {{$eligible->code}}">
