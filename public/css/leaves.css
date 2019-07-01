@@ -29,6 +29,10 @@
   min-width: 295px;
 }
 
+.batch-filter {
+  top: -1px;
+}
+
 .btn-filter {
   top: 15px;
   position: relative;
@@ -47,8 +51,7 @@ span.badge-status {
 }
 
 #bundle_submit {
-  top: 23px;
-  right: 5px;
+  top: 14px;
   position: relative;
 }
 
