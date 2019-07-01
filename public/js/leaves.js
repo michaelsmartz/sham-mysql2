@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 384);
+/******/ 	return __webpack_require__(__webpack_require__.s = 388);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -9915,24 +9915,26 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 384:
+/***/ 388:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(385);
+module.exports = __webpack_require__(389);
 
 
 /***/ }),
 
-/***/ 385:
+/***/ 389:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(global, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(5);
+/* WEBPACK VAR INJECTION */(function(global, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(6);
 
 
 window.on = global.on = __WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */];
-$("input[name='_method']").val('POST');
+if ($('#leaves_apply').length) {
+    $("input[name='_method']").val('POST');
+}
 
 Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('change', '.pending_box', function (event) {
     if (this.checked) {
@@ -10025,14 +10027,14 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('focusin', 
 
 /***/ }),
 
-/***/ 5:
+/***/ 6:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return on; });
 /* unused harmony export off */
 /* unused harmony export fire */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(7);
 
 
 var bubbleEvents = {};
@@ -10165,7 +10167,7 @@ function fire(target, name, detail) {
 
 /***/ }),
 
-/***/ 6:
+/***/ 7:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
