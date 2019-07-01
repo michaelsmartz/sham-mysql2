@@ -59,7 +59,11 @@ class CalendarEventServiceProvider extends ServiceProvider
 
         switch ($parameters['type']){
             case EmployeeLeave::class :
-                $data   = $this->getCalendarLeaves($parameters['status']);
+                if(isset($parameters['filter']) && !empty($parameters['filter'])){
+                    $data   = $this->getCalendarLeavesFilter($parameters['filter']);
+                }else{
+                    $data   = $this->getCalendarLeaves($parameters['status']);
+                }
                 $title  = "Leaves Calendar";
                 break;
             case Interview::class :
@@ -101,7 +105,7 @@ class CalendarEventServiceProvider extends ServiceProvider
 
 
         if($parameters['type'] === EmployeeLeave::class){
-            if($parameters['status'] === LeaveStatusType::status_pending){
+            if(($parameters['status'] === LeaveStatusType::status_pending) || (!empty($parameters['filter']['leave_status']) && $parameters['filter']['leave_status'] === LeaveStatusType::status_pending)){
                 $calendar = Calendar::addEvents($events)->setOptions([
                     'firstDay' => 1,
                     'weekNumbers' =>  true,
@@ -149,6 +153,21 @@ class CalendarEventServiceProvider extends ServiceProvider
             ->leftjoin('colours','colours.id','=','absence_types.colour_id')
             ->where('calendar_events.calendable_type', EmployeeLeave::class)
             ->where('absence_type_employee.status',$status)
+            ->get();
+        return $calendar_leave;
+
+    }
+
+    public static function getCalendarLeavesFilter($filter){
+        $calendar_leave = DB::table('calendar_events')
+            ->select('calendar_events.title','calendar_events.start_date','calendar_events.end_date','calendar_events.calendable_id','employees.picture','colours.code as colour_code')
+            ->leftjoin('absence_type_employee','absence_type_employee.id','=','calendar_events.calendable_id')
+            ->leftjoin('absence_types','absence_types.id','=','absence_type_employee.absence_type_id')
+            ->leftjoin('employees','employees.id','=','absence_type_employee.employee_id')
+            ->leftjoin('colours','colours.id','=','absence_types.colour_id')
+            ->where('calendar_events.calendable_type', EmployeeLeave::class)
+            ->where('absence_type_employee.status',$filter['leave_status'])
+            ->where('employees.id',$filter['employee_id'])
             ->get();
         return $calendar_leave;
 

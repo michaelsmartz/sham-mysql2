@@ -1037,5 +1037,11 @@ be a descendant of the grid when it is being dragged.
   content: "=";
 }
 
+button:focus {
+  outline:none !important;
+}
 
+.fc-event-container{
+  cursor: pointer;
+}
 /*# sourceMappingURL=calendar.css.map*/

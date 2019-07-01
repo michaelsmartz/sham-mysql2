@@ -3,12 +3,12 @@
 @section('modalTitle', 'Leave request from '.$leave->employee)
 
 @section('modalFooter')
-    <a href="/leaves/status/{{$id}}/{{App\Enums\LeaveStatusType::status_denied}}" data-wenk="Deny leave request" class="btn btn-danger">
-       Deny
-    </a>
-    <a href="/leaves/status/{{$id}}/{{App\Enums\LeaveStatusType::status_approved}}" data-wenk="Approve leave request" class="btn btn-success">
-       Approve
-    </a>
+    @if((date($leave->starts_at) >= date("Y-m-d H:i")) && ($leave->status == App\Enums\LeaveStatusType::status_pending || $leave->status == App\Enums\LeaveStatusType::status_approved))
+        <a href="/leaves/status/{{$leave->id}}/{{App\Enums\LeaveStatusType::status_cancelled}}" data-wenk="Cancel leave request" class="btn btn-cancel">
+            Cancel
+        </a>
+    @endif
+    <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Close</a>
 @endsection
 
 

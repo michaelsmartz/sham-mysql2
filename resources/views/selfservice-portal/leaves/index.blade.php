@@ -33,11 +33,11 @@
         <br>
         <div class="row panel section-leaves col-sm-12">
             <ul class="nav nav-tabs nav-tabs-leaves" style="background: #FFFFFF">
-                <li @if(isset($calendar))class="active"@endif><a href="/leaves"><i class="glyphicon glyphicon-calendar"></i> Calendar</a></li>
+                <li @if($_SERVER['REQUEST_URI'] == '/leaves' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_approved))class="active"@endif><a href="/leaves"><i class="glyphicon glyphicon-calendar"></i> Calendar</a></li>
                 @if(count($employees) > 0)
-                <li @if(!isset($calendar))class="active"@endif><a href="/leaves-pending-request"><i class="glyphicon glyphicon-exclamation-sign"></i>  Pending requests</a></li>
+                <li @if($_SERVER['REQUEST_URI'] == '/leaves-pending-request' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_pending))class="active"@endif><a href="/leaves-pending-request"><i class="glyphicon glyphicon-exclamation-sign"></i>  Pending requests</a></li>
                 @endif
-                <li @if(!isset($calendar))class="active"@endif><a href="/leaves-history"><i class="glyphicon glyphicon-list"></i>  History</a></li>
+                <li @if($_SERVER['REQUEST_URI'] == '/leaves-history' || $_SERVER['REQUEST_URI'] == '/leaves/filter')class="active"@endif><a href="/leaves-history"><i class="glyphicon glyphicon-list"></i>  History</a></li>
             </ul>
             <div class="">
                 @if(isset($calendar))

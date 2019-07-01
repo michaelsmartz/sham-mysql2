@@ -61,7 +61,7 @@ class SSPEmployeeLeavesController extends Controller
      *
      * @return Illuminate\View\View
      */
-    protected function renderCalendar($status)
+    protected function renderCalendar($status,$filter = null)
     {
         $employee_id     = (\Auth::check()) ? \Auth::user()->employee_id : 0;
         $manager         = array(
@@ -71,17 +71,23 @@ class SSPEmployeeLeavesController extends Controller
         $employees       = EmployeesController::getManagerEmployees($employee_id);
         $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
         $calendar        = app('CalendarEventService',[
-            'type'=> EmployeeLeave::class,
-            'view'=> 'data',
-            'status' => $status
-
+            'type'   => EmployeeLeave::class,
+            'view'   => 'data',
+            'status' => $status,
+            'filter' => $filter
         ]);
 
+        if(!empty($filter)){
+            $employee_select     = $filter['employee_id'];
+        }else{
+            $employee_select     = $employee_id;
+        }
+
         $selected = array(
-            'employee' => Employee::find($employee_id)
+            'employee' => Employee::find($employee_select)
         );
 
-        return view($this->baseViewPath .'.index', compact('calendar','eligibility','employees','manager', 'selected'));
+        return view($this->baseViewPath .'.index', compact('calendar','eligibility','employees','manager', 'selected','filter'));
     }
 
     /**
@@ -168,46 +174,20 @@ class SSPEmployeeLeavesController extends Controller
         if(!empty($request->input('employee_id')) && $request->input('employee_id') != 0){
             //employee's leave viewed from manager
             $employee_id = $request->input('employee_id');
-            $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
-            $manager         = array(
-                'id'       => \Auth::user()->employee_id,
-                'fullname' => EmployeesController::getEmployeeFullName(\Auth::user()->employee_id)
-            );
-            $selected    = $employee_id;
         }elseif ($request->input('employee_id') == 0){
             //manager's leave
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-            $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
-            $manager         = array(
-                'id'       => $employee_id,
-                'fullname' => EmployeesController::getEmployeeFullName($employee_id)
-            );
-            $selected    = null;
         }else{
             //employee's leave
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-            $employees   = null;
-            $selected    = null;
-            $manager     = null;
         }
 
-        //Filter by leave type
-        if(!empty($request->input('absence_type')) && $request->input('absence_type') != 0){
-            $absence_type = $request->input('absence_type');
-        }else{
-            $absence_type = null;
-        }
+        $filter = array(
+            'employee_id'  => $employee_id,
+            'leave_status' => $request->input('leave_status')
+         );
 
-
-        $leaves      = $this->getEmployeeLeavesHistory($employee_id,$request->input('from'),$request->input('to'),$absence_type);
-        $eligibility = $this->getEmployeeLeavesStatus($employee_id);
-
-        $selected = array(
-            'employee'    => Employee::find($employee_id),
-            'absence_id'  => $absence_type
-        );
-
-        return view($this->baseViewPath .'.index', compact('manager','leaves','eligibility','employees','selected'));
+        return $this->renderCalendar(LeaveStatusType::status_pending,$filter);
     }
 
     /**

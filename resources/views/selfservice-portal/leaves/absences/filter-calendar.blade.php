@@ -1,16 +1,5 @@
-<div class="container col-md-7">
+<div class="container @if($_SERVER['REQUEST_URI'] == '/leaves-pending-request' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_pending))col-md-5 @else col-md-3 @endif">
     <form method="POST" action="{{route('leaves.filter-calendar')}}" id="leave_request_filter" name="leave_request_filter" accept-charset="UTF-8" class="form-horizontal">
-        <div class="form-group col-lg-2 employee-filter">
-            <label for="absence_type"><span class="glyphicon glyphicon-tasks"></span> Leave type</label>
-            <select class="form-control" id="absence_type" name="absence_type">
-                <option value="0">Select leave type</option>
-                @foreach ($eligibility as $leave)
-                    <option value="{{ $leave->id }}"  @if(!empty($selected['absence_id']) && $selected['absence_id'] == $leave->id) selected @endif>
-                        {{ $leave->absence_description }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
         @if(count($employees)>0)
             <div class="form-group col-lg-2 employee-filter">
                 <label for="employee_id"><span class="glyphicon glyphicon-user"></span> Employee</label>
@@ -22,17 +11,26 @@
                         </option>
                     @endforeach
                 </select>
+                <button id="btn-filter-date" class="btn btn-primary btn-filter" type="submit"><i class="glyphicon glyphicon-sort"></i> Filter</button>
+                <a href="{{route('leaves.index')}}" class="btn btn-primary btn-filter"><i class="glyphicon glyphicon-refresh"></i> Reset</a>
+                @if($_SERVER['REQUEST_URI'] == '/leaves-pending-request' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_pending))
+                    <input name="leave_status" id="leave_status" value="{{App\Enums\LeaveStatusType::status_pending}}" type="hidden">
+                @else
+                    <input name="leave_status" id="leave_status" value="{{App\Enums\LeaveStatusType::status_approved}}" type="hidden">
+                @endif
             </div>
-            <div class="form-group col-lg-3 employee-filter">
+            @if($_SERVER['REQUEST_URI'] == '/leaves-pending-request' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_pending))
+            <div class="form-group col-lg-4 batch-filter">
                 <label for="batch_operation"><input type="checkbox" id="bundle_check" value="0">  <span class="glyphicon glyphicon-check"></span> Batch operation</label>
                 <select class="form-control" id="batch_operation" name="batch_operatione">
                     <option value="0">Select batch operation</option>
                     <option value="{{App\Enums\LeaveStatusType::status_approved}}">Approve selected</option>
                     <option value="{{App\Enums\LeaveStatusType::status_denied}}">Deny selected</option>
                 </select>
+                <button id="bundle_submit" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-save"></i> Execute batch</button>
+                <input name="leave_list" id="leave_list" value="" type="hidden">
             </div>
-            <button id="bundle_submit" type="button" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-save"></i> Execute batch</button>
-            <input name="leave_list" id="leave_list" value="" type="hidden">
+            @endif
         @endif
     </form>
 
