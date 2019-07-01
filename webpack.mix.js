@@ -57,6 +57,7 @@ if(!mix.inProduction){
 }else{
   mix.js('resources/assets/js/new-employee.js', 'public/js').babel('public/js/new-employee.js','public/js/new-employee.min.js');
   mix.js('resources/assets/js/absence_type.js', 'public/js').babel('public/js/absence_type.js','public/js/absence_type.min.js');
+  mix.js('resources/assets/js/calendar.js', 'public/js').babel('public/js/calendar.js','public/js/calendar.min.js');
 }
 
 mix.js('resources/assets/js/employees.js', 'public/js/employees.js');
@@ -119,6 +120,7 @@ mix.minify('public/js/parsley.js');
 if(!mix.inProduction){
   mix.minify('public/js/new-employee.js');
   mix.minify('public/js/absence_type.js');
+  mix.minify('public/js/calendar.js');
 }
 mix.minify('public/js/uploader.js');
 mix.minify('public/js/recruitment.js');

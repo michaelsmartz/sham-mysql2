@@ -36,6 +36,10 @@
   "dependencies": {
     "@benjaminreid/ready.js": "^0.1.2",
     "@clubajax/key-nav": "^1.1.2",
+    "@fullcalendar/core": "^4.2.0",
+    "@fullcalendar/daygrid": "^4.2.0",
+    "@fullcalendar/list": "^4.2.0",
+    "@fullcalendar/timegrid": "^4.2.0",
     "@simonwep/pickr": "^1.1.2",
     "air-datepicker": "^2.2.3",
     "babel-preset-env": "^1.7.0",
@@ -53,6 +57,7 @@
     "exports-loader": "^0.7.0",
     "file-upload-with-preview": "^2.1.1",
     "flatpickr": "^4.5.7",
+    "fullcalendar": "^3.10.0",
     "grindstone": "^3.2.1",
     "highlight-within-textarea": "^2.0.5",
     "jquery": "^2.2.4",
