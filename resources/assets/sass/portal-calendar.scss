@@ -1,0 +1,875 @@
+
+//colors
+$white: #fff;
+$black: #000;
+$color_celeste_approx: #ccc;
+$color_charlotte_approx: #bce8f1;
+$color_feijoa_approx: #8fdf82;
+$color_iron_approx: #d7d7d7;
+$black_15: rgba(0, 0, 0, 0.15);
+$color_curious_blue_approx: #3788d8;
+$black_20: rgba(0, 0, 0, 0.2);
+$black_30: rgba(0, 0, 0, 0.3);
+$red:  red;
+$color_alto_approx: #ddd;
+$color_gallery_approx: #eee;
+$color_solitaire_approx: #fcf8e3;
+$color_shark_approx: #212529;
+$color_pickled_bluewood_25_approx: rgba(44, 62, 80, 0.25);
+$color_pickled_bluewood_approx: #2c3e50;
+$color_ebony_clay_approx: #1e2b37;
+$color_scarpa_flow_50_approx: rgba(76, 91, 106, 0.5);
+$color_mirage_approx: #151e27;
+$color_wild_sand_approx: #f5f5f5;
+
+//@extend-elements
+//original selectors
+//.fc-bg, .fc-bgevent-skeleton, .fc-highlight-skeleton, .fc-mirror-skeleton
+%extend_1 {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+
+//original selectors
+//.fc th, .fc td
+%extend_2 {
+	border-style: solid;
+	border-width: 1px;
+	padding: 0;
+	vertical-align: top;
+}
+
+//original selectors
+//.fc-ltr .fc-h-event.fc-not-start, .fc-rtl .fc-h-event.fc-not-end
+%extend_3 {
+	margin-left: 0;
+	border-left-width: 0;
+	padding-left: 1px;
+	//Instead of the line below you could use @include border-top-left-radius($radius)
+	border-top-left-radius: 0;
+	//Instead of the line below you could use @include border-bottom-left-radius($radius)
+	border-bottom-left-radius: 0;
+}
+
+//original selectors
+//.fc-ltr .fc-h-event.fc-not-end, .fc-rtl .fc-h-event.fc-not-start
+%extend_4 {
+	margin-right: 0;
+	border-right-width: 0;
+	padding-right: 1px;
+	//Instead of the line below you could use @include border-top-right-radius($radius)
+	border-top-right-radius: 0;
+	//Instead of the line below you could use @include border-bottom-right-radius($radius)
+	border-bottom-right-radius: 0;
+}
+
+//original selectors
+//.fc-button-primary:not(:disabled):active, .fc-button-primary:not(:disabled).fc-button-active
+%extend_5 {
+	color: $white;
+	background-color: $color_shark_approx;
+	border-color: $color_mirage_approx;
+}
+
+
+.fc {
+	direction: ltr;
+	text-align: left;
+	table {
+		width: 100%;
+		//Instead of the line below you could use @include box-sizing($bs)
+		box-sizing: border-box;
+		table-layout: fixed;
+		border-collapse: collapse;
+		border-spacing: 0;
+		font-size: 1em;
+	}
+	th {
+		text-align: center;
+		@extend %extend_2;
+	}
+	td {
+		@extend %extend_2;
+		&.fc-today {
+			border-style: double;
+		}
+	}
+	.fc-row {
+		border-style: solid;
+		border-width: 0;
+		.fc-content-skeleton {
+			table {
+				background: none;
+				border-color: transparent;
+			}
+			td {
+				background: none;
+				border-color: transparent;
+			}
+		}
+		.fc-mirror-skeleton td {
+			background: none;
+			border-color: transparent;
+		}
+	}
+}
+.fc-rtl {
+	text-align: right;
+	.fc-h-event {
+		&.fc-not-end {
+			@extend %extend_3;
+		}
+		&.fc-not-start {
+			@extend %extend_4;
+		}
+		.fc-end-resizer {
+			cursor: w-resize;
+			left: -1px;
+		}
+		.fc-start-resizer {
+			cursor: e-resize;
+			right: -1px;
+		}
+		&.fc-selected {
+			.fc-end-resizer {
+				margin-left: -4px;
+			}
+			.fc-start-resizer {
+				margin-right: -4px;
+			}
+		}
+	}
+	.fc-popover .fc-header {
+		flex-direction: row-reverse;
+	}
+	.fc-day-grid-event.fc-allow-mouse-resize {
+		.fc-end-resizer {
+			margin-left: -2px;
+		}
+		.fc-start-resizer {
+			margin-right: -2px;
+		}
+	}
+}
+.fc-highlight {
+	background: $color_charlotte_approx;
+	opacity: .3;
+}
+.fc-bgevent {
+	background: $color_feijoa_approx;
+	opacity: .3;
+}
+.fc-nonbusiness {
+	background: $color_iron_approx;
+}
+.fc-popover {
+	position: absolute;
+	//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+	box-shadow: 0 2px 6px $black_15;
+	.fc-header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding: 2px 4px;
+		.fc-title {
+			margin: 0 2px;
+		}
+		.fc-close {
+			cursor: pointer;
+			opacity: 0.65;
+			font-size: 1.1em;
+		}
+	}
+}
+.fc-divider {
+	border-style: solid;
+	border-width: 1px;
+}
+.fc-bg {
+	@extend %extend_1;
+	bottom: 0;
+	table {
+		height: 100%;
+	}
+}
+.fc-bgevent-skeleton {
+	@extend %extend_1;
+}
+.fc-highlight-skeleton {
+	@extend %extend_1;
+}
+.fc-mirror-skeleton {
+	@extend %extend_1;
+	tr:first-child > td > .fc-day-grid-event {
+		margin-top: 0;
+	}
+}
+a[data-goto] {
+	cursor: pointer;
+	&:hover {
+		text-decoration: underline;
+	}
+}
+.fc-row {
+	position: relative;
+	table {
+		border-left: 0 hidden transparent;
+		border-right: 0 hidden transparent;
+		border-bottom: 0 hidden transparent;
+	}
+	.fc-bg {
+		z-index: 1;
+	}
+	.fc-bgevent-skeleton {
+		bottom: 0;
+		z-index: 2;
+		table {
+			height: 100%;
+		}
+		td {
+			border-color: transparent;
+		}
+	}
+	.fc-highlight-skeleton {
+		bottom: 0;
+		z-index: 3;
+		table {
+			height: 100%;
+		}
+		td {
+			border-color: transparent;
+		}
+	}
+	.fc-content-skeleton {
+		position: relative;
+		z-index: 4;
+		padding-bottom: 2px;
+		td {
+			border-bottom: 0;
+		}
+		tbody td {
+			border-top: 0;
+		}
+	}
+	.fc-mirror-skeleton {
+		z-index: 5;
+		td {
+			border-bottom: 0;
+		}
+		tbody td {
+			border-top: 0;
+		}
+	}
+	&:first-child table {
+		border-top: 0 hidden transparent;
+	}
+}
+.fc-event {
+	position: relative;
+	display: block;
+	font-size: .85em;
+	line-height: 1.4;
+	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+	border-radius: 3px;
+	border: 1px solid $color_curious_blue_approx;
+	background-color: $color_curious_blue_approx;
+	color: $white;
+	text-decoration: none;
+	&:hover {
+		color: $white;
+		text-decoration: none;
+	}
+	&.fc-draggable {
+		cursor: pointer;
+	}
+	.fc-content {
+		position: relative;
+		z-index: 2;
+	}
+	.fc-resizer {
+		position: absolute;
+		z-index: 4;
+		display: none;
+	}
+	&.fc-selected {
+		z-index: 9999 !important;
+		//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+		box-shadow: 0 2px 5px $black_20;
+		.fc-resizer {
+			display: block;
+			&:before {
+				content: "";
+				position: absolute;
+				z-index: 9999;
+				top: 50%;
+				left: 50%;
+				width: 40px;
+				height: 40px;
+				margin-left: -20px;
+				margin-top: -20px;
+			}
+		}
+		&:after {
+			content: "";
+			position: absolute;
+			z-index: 1;
+			top: -1px;
+			right: -1px;
+			bottom: -1px;
+			left: -1px;
+			background: $black;
+			opacity: .25;
+		}
+	}
+	&.fc-dragging {
+		&.fc-selected {
+			//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+			box-shadow: 0 2px 7px $black_30;
+		}
+		&:not(.fc-selected) {
+			opacity: .75;
+		}
+	}
+	&.fc-allow-mouse-resize .fc-resizer {
+		display: block;
+	}
+}
+.fc-event-dot {
+	background-color: $color_curious_blue_approx;
+}
+.fc-event[href] {
+	cursor: pointer;
+}
+.fc-not-allowed {
+	cursor: not-allowed;
+	.fc-event {
+		cursor: not-allowed;
+	}
+}
+.fc-h-event {
+	&.fc-selected {
+		&:before {
+			content: "";
+			position: absolute;
+			z-index: 3;
+			top: -10px;
+			bottom: -10px;
+			left: 0;
+			right: 0;
+		}
+		.fc-resizer {
+			//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+			border-radius: 4px;
+			border-width: 1px;
+			width: 6px;
+			height: 6px;
+			border-style: solid;
+			border-color: inherit;
+			background: $white;
+			top: 50%;
+			margin-top: -4px;
+		}
+	}
+	&.fc-allow-mouse-resize .fc-resizer {
+		width: 7px;
+		top: -1px;
+		bottom: -1px;
+	}
+}
+.fc-ltr {
+	.fc-h-event {
+		&.fc-not-start {
+			@extend %extend_3;
+		}
+		&.fc-not-end {
+			@extend %extend_4;
+		}
+		.fc-start-resizer {
+			cursor: w-resize;
+			left: -1px;
+		}
+		.fc-end-resizer {
+			cursor: e-resize;
+			right: -1px;
+		}
+		&.fc-selected {
+			.fc-start-resizer {
+				margin-left: -4px;
+			}
+			.fc-end-resizer {
+				margin-right: -4px;
+			}
+		}
+	}
+	.fc-day-grid-event.fc-allow-mouse-resize {
+		.fc-start-resizer {
+			margin-left: -2px;
+		}
+		.fc-end-resizer {
+			margin-right: -2px;
+		}
+	}
+}
+.fc-day-grid-event {
+	margin: 1px 2px 0;
+	padding: 0 1px;
+	.fc-content {
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	.fc-time {
+		font-weight: bold;
+	}
+}
+.fc-limited {
+	display: none;
+}
+.fc-more-popover {
+	z-index: 2;
+	width: 220px;
+	.fc-event-container {
+		padding: 10px;
+	}
+}
+.fc-now-indicator {
+	position: absolute;
+	border: 0 solid $red;
+}
+.fc-unselectable {
+	//Instead of the line below you could use @include user-select($select)
+	user-select: none;
+}
+.fc-unthemed {
+	th {
+		border-color: $color_alto_approx;
+	}
+	td {
+		border-color: $color_alto_approx;
+		&.fc-today {
+			background: $color_solitaire_approx;
+		}
+	}
+	thead {
+		border-color: $color_alto_approx;
+	}
+	tbody {
+		border-color: $color_alto_approx;
+	}
+	.fc-divider {
+		border-color: $color_alto_approx;
+		background: $color_gallery_approx;
+	}
+	.fc-row {
+		border-color: $color_alto_approx;
+	}
+	.fc-content {
+		border-color: $color_alto_approx;
+	}
+	.fc-popover {
+		border-color: $color_alto_approx;
+		background-color: $white;
+		border-width: 1px;
+		border-style: solid;
+		.fc-header {
+			background: $color_gallery_approx;
+		}
+	}
+	.fc-list-view {
+		border-color: $color_alto_approx;
+	}
+	.fc-disabled-day {
+		background: $color_iron_approx;
+		opacity: .3;
+	}
+	.fc-list-heading td {
+		border-color: $color_alto_approx;
+		background: $color_gallery_approx;
+	}
+	.fc-list-item:hover td {
+		background-color: $color_wild_sand_approx;
+	}
+}
+@font-face {
+	font-family: fcicons;
+	src: url("data:application/x-font-ttf;charset=utf-8;base64,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") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+}
+.fc-icon {
+	font-family: fcicons' !important;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	text-align: center;
+}
+.fc-button {
+	display: inline-block;
+	font-weight: 400;
+	color: $color_shark_approx;
+	text-align: center;
+	vertical-align: middle;
+	//Instead of the line below you could use @include user-select($select)
+	user-select: none;
+	background-color: transparent;
+	border: 1px solid transparent;
+	padding: 0.4em 0.65em;
+	font-size: 1em;
+	line-height: 1.5;
+	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+	border-radius: 0.25em;
+	&:focus {
+		outline: 0;
+		//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+		box-shadow: 0 0 0 0.2rem $color_pickled_bluewood_25_approx;
+	}
+	&:hover {
+		color: $color_shark_approx;
+		text-decoration: none;
+	}
+	&:disabled {
+		opacity: 0.65;
+	}
+	.fc-icon {
+		vertical-align: middle;
+		font-size: 1.5em;
+	}
+	&:not(:disabled) {
+		cursor: pointer;
+	}
+}
+.fc-button::-moz-focus-inner {
+	padding: 0;
+	border-style: none;
+}
+.fc-button-primary {
+	color: $white;
+	background-color: $color_pickled_bluewood_approx;
+	border-color: $color_pickled_bluewood_approx;
+	&:hover {
+		color: $white;
+		background-color: $color_ebony_clay_approx;
+		border-color: $color_shark_approx;
+	}
+	&:focus {
+		//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+		box-shadow: 0 0 0 0.2rem $color_scarpa_flow_50_approx;
+	}
+	&:disabled {
+		color: $white;
+		background-color: $color_pickled_bluewood_approx;
+		border-color: $color_pickled_bluewood_approx;
+	}
+	&:not(:disabled) {
+		&:active {
+			@extend %extend_5;
+			&:focus {
+				//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+				box-shadow: 0 0 0 0.2rem $color_scarpa_flow_50_approx;
+			}
+		}
+		&.fc-button-active {
+			@extend %extend_5;
+			&:focus {
+				//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+				box-shadow: 0 0 0 0.2rem $color_scarpa_flow_50_approx;
+			}
+		}
+	}
+}
+.fc-button-group {
+	position: relative;
+	display: inline-flex;
+	vertical-align: middle;
+	> .fc-button {
+		position: relative;
+		flex: 1 1 auto;
+		&:hover {
+			z-index: 1;
+		}
+		&:focus {
+			z-index: 1;
+		}
+		&:active {
+			z-index: 1;
+		}
+		&.fc-button-active {
+			z-index: 1;
+		}
+		&:not( {
+			&:first-child) {
+				margin-left: -1px;
+				//Instead of the line below you could use @include border-top-left-radius($radius)
+				border-top-left-radius: 0;
+				//Instead of the line below you could use @include border-bottom-left-radius($radius)
+				border-bottom-left-radius: 0;
+			}
+			&:last-child) {
+				//Instead of the line below you could use @include border-top-right-radius($radius)
+				border-top-right-radius: 0;
+				//Instead of the line below you could use @include border-bottom-right-radius($radius)
+				border-bottom-right-radius: 0;
+			}
+		}
+	}
+}
+.fc-toolbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	&.fc-header-toolbar {
+		margin-bottom: 1.5em;
+	}
+	&.fc-footer-toolbar {
+		margin-top: 1.5em;
+	}
+	h2 {
+		font-size: 1.75em;
+		margin: 0;
+	}
+	> * > :not(:first-child) {
+		margin-left: .75em;
+	}
+}
+.fc-view-container {
+	position: relative;
+	* {
+		//Instead of the line below you could use @include box-sizing($bs)
+		box-sizing: content-box;
+		&:before {
+			//Instead of the line below you could use @include box-sizing($bs)
+			box-sizing: content-box;
+		}
+		&:after {
+			//Instead of the line below you could use @include box-sizing($bs)
+			box-sizing: content-box;
+		}
+	}
+}
+.fc-view {
+	position: relative;
+	z-index: 1;
+	> table {
+		position: relative;
+		z-index: 1;
+	}
+}
+@media print {
+	.fc {
+		max-width: 100% !important;
+		th {
+			border-color: $color_celeste_approx !important;
+			background: $white !important;
+		}
+		td {
+			border-color: $color_celeste_approx !important;
+			background: $white !important;
+			&.fc-limited {
+				display: table-cell !important;
+			}
+		}
+		hr {
+			border-color: $color_celeste_approx !important;
+			background: $white !important;
+		}
+		thead {
+			border-color: $color_celeste_approx !important;
+			background: $white !important;
+		}
+		tbody {
+			border-color: $color_celeste_approx !important;
+			background: $white !important;
+			.fc-row {
+				height: auto !important;
+				min-height: 0 !important;
+				.fc-content-skeleton {
+					position: static;
+					padding-bottom: 0 !important;
+					table {
+						height: 1em;
+					}
+					tbody tr:last-child td {
+						padding-bottom: 1em;
+					}
+				}
+			}
+		}
+		button {
+			display: none;
+		}
+		tr.fc-limited {
+			display: table-row !important;
+		}
+	}
+	.fc-event {
+		background: $white !important;
+		color: $black !important;
+		page-break-inside: avoid;
+		.fc-resizer {
+			display: none;
+		}
+	}
+	.fc-row {
+		border-color: $color_celeste_approx !important;
+		background: $white !important;
+		border: 0 !important;
+		margin: 0 !important;
+	}
+	.fc-bg {
+		display: none;
+	}
+	.fc-bgevent-skeleton {
+		display: none;
+	}
+	.fc-highlight-skeleton {
+		display: none;
+	}
+	.fc-mirror-skeleton {
+		display: none;
+	}
+	.fc-bgevent-container {
+		display: none;
+	}
+	.fc-business-container {
+		display: none;
+	}
+	.fc-highlight-container {
+		display: none;
+	}
+	.fc-mirror-container {
+		display: none;
+	}
+	.fc-more-cell {
+		display: none !important;
+	}
+	.fc-more {
+		display: none !important;
+	}
+	.fc-popover {
+		display: none;
+	}
+	.fc-time-grid {
+		min-height: 0 !important;
+		hr {
+			display: none !important;
+		}
+		.fc-content-skeleton {
+			position: static;
+			table {
+				height: 4em;
+			}
+		}
+		.fc-event-container {
+			margin: 0 !important;
+		}
+		.fc-event {
+			position: static !important;
+			margin: 3px 2px !important;
+			&.fc-not-end {
+				border-bottom-width: 1px !important;
+				&:after {
+					content: "...";
+				}
+			}
+			&.fc-not-start {
+				border-top-width: 1px !important;
+				&:before {
+					content: "...";
+				}
+			}
+			.fc-time {
+				white-space: normal !important;
+				span {
+					display: none;
+				}
+				&:after {
+					content: attr(data-full);
+				}
+			}
+		}
+	}
+	.fc-slats {
+		display: none !important;
+	}
+	.fc-scroller {
+		overflow: visible !important;
+		height: auto !important;
+	}
+	.fc-day-grid-container {
+		overflow: visible !important;
+		height: auto !important;
+	}
+	.fc-time-grid-container {
+		overflow: visible !important;
+		height: auto !important;
+	}
+	.fc-button-group {
+		display: none;
+	}
+	.fc-timeGrid-view .fc-axis {
+		display: none;
+	}
+}
+body .fc {
+	font-size: 1em;
+}
+hr.fc-divider {
+	height: 0;
+	margin: 0;
+	padding: 0 0 2px;
+	border-width: 1px 0;
+}
+.fc-scroller > {
+	.fc-day-grid {
+		position: relative;
+		width: 100%;
+	}
+	.fc-time-grid {
+		position: relative;
+		width: 100%;
+	}
+}
+tr:first-child > td > .fc-day-grid-event {
+	margin-top: 2px;
+}
+a.fc-more {
+	margin: 1px 3px;
+	font-size: .85em;
+	cursor: pointer;
+	text-decoration: none;
+	&:hover {
+		text-decoration: underline;
+	}
+}
+.fc-day-grid .fc-row {
+	z-index: 1;
+}
+.fc-icon-chevron-left:before {
+	content: "\e900";
+}
+.fc-icon-chevron-right:before {
+	content: "\e901";
+}
+.fc-icon-chevrons-left:before {
+	content: "\e902";
+}
+.fc-icon-chevrons-right:before {
+	content: "\e903";
+}
+.fc-icon-minus-square:before {
+	content: "\e904";
+}
+.fc-icon-plus-square:before {
+	content: "\e905";
+}
+.fc-icon-x:before {
+	content: "\e906";
+}
