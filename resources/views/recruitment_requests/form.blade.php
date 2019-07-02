@@ -11,7 +11,7 @@
 
                 <div class="form-group col-sm-2">
                 <span class="field">
-                <label for="position">Job status</label>
+                <label for="position">Job Status</label>
                     {!! Form::select('employee_status_id', $positions, old('employee_status_id', isset($request->employee_status_id) ? $request->employee_status_id : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Job status..', 'data-field-name'=>'Job Status', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
                 </span>
                 </div>
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="form-group col-xs-4">
-                    <label for="skill">Select skills</label>
+                    <label for="skill">Select Skills</label>
                     {!! Form::select('skills[]', $skills,
                         old('skills', isset($recruitmentSkills) ? $recruitmentSkills : null),
                         ($_mode=='show')?['class'=>'form-control','disabled']:['class' => 'form-control select-multiple', 'multiple'=>'multiple']
@@ -41,8 +41,8 @@
 
                 <div class="form-group col-xs-2">
                 <span class="field">
-                    <label for="quantity">Quantity</label>
-                    {!! Form::text('quantity', old('quantity', isset($request->quantity) ? $request->quantity : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Quantity', 'required', 'title'=>'Required', 'id'=>'quantity',
+                    <label for="quantity">No. of Positions</label>
+                    {!! Form::text('quantity', old('quantity', isset($request->quantity) ? $request->quantity : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'No. of Positions', 'required', 'title'=>'Required', 'id'=>'quantity',
                       'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
                       'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
                       'data-parsley-trigger'=>'focusout'])
@@ -52,7 +52,7 @@
 
                 <div class="form-group col-xs-2">
                 <span class="field">
-                    <label for="yearExperience">Years of experience</label>
+                    <label for="yearExperience">Years of Experience</label>
                     {!! Form::text('year_experience', old('year_experience', isset($request->year_experience) ? $request->year_experience : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Year Experience', 'required', 'title'=>'Required', 'id'=>'year_experience',
                       'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
                       'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
@@ -98,7 +98,7 @@
 
                 <div class="form-group col-xs-3">
                 <span class="field">
-                    <label for="min_salary">Minimum salary</label>
+                    <label for="min_salary">Minimum Salary</label>
                     {!! Form::text('min_salary', old('min_salary', isset($request->min_salary) ? $request->min_salary : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Minimum Salary', '', 'title'=>'Required', 'id'=>'min_salary',
                       'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
                       'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
@@ -109,7 +109,7 @@
 
                 <div class="form-group col-xs-3">
                 <span class="field">
-                    <label for="max_salary">Maximum salary</label>
+                    <label for="max_salary">Maximum Salary</label>
                     {!! Form::text('max_salary', old('max_salary', isset($request->max_salary) ? $request->max_salary : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Maximum Salary', '', 'title'=>'Required', 'id'=>'max_salary',
                       'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
                       'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
@@ -184,6 +184,6 @@
 </div>
 
 @section('post-body')
-    <link href="{{URL::to('/')}}/css/recruitment-request.min.css" rel="stylesheet">
+    <link href="{{URL::to('/')}}/plugins/sumoselect/sumoselect.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/recruitment-request.min.js"></script>
 @endsection
