@@ -780,9 +780,6 @@ class RecruitmentRequestsController extends CustomController
         $comments = $request->get('comments');
         $employee_no = $request->get('employee_no');
 
-        dump($comments);
-        dd($employee_no);
-
         try{
             if(!is_null($candidate_id)){
                 $candidate = Candidate::find($candidate_id);
