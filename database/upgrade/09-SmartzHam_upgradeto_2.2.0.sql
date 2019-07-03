@@ -73,3 +73,6 @@ CREATE TABLE `candidate_interviewers` (
 
 ALTER TABLE `absence_types` 
 ADD `colour_id` INT(11) NULL DEFAULT '0' AFTER `duration_unit`;
+
+ALTER TABLE `absence_type_employee`
+ADD COLUMN `comments` TEXT NULL AFTER `updated_at`;

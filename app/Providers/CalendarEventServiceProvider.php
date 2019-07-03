@@ -87,6 +87,7 @@ class CalendarEventServiceProvider extends ServiceProvider
                 }else{
                     $picture = asset('/img/avatar.png');
                 }
+                $label = explode(' : ',$value->title);
                 $events[] = Calendar::event(
                     '',
                     false,
@@ -94,9 +95,10 @@ class CalendarEventServiceProvider extends ServiceProvider
                     new \DateTime($value->end_date),
                     $value->calendable_id,
                     [
-                        'label'     => $value->title,
-                        'color'     => $value->colour_code,
-                        'textColor' => '#FFFFFF',
+                        'label'     => $label[0],
+                        'wenk'      => $label[1],
+                        'color'     => 'transparent',
+                        'textColor' => $value->colour_code,
                         'picture'   => $picture
                     ]
                 );
@@ -112,8 +114,8 @@ class CalendarEventServiceProvider extends ServiceProvider
                 ])->setCallbacks([
                     'eventRender' => 'function(event,element) {
                       $(element).find(".fc-content").remove();
-                      $(element).prepend("<span data-wenk=\'"+event.label+"\' class=\'avatar-preview\'><img id=\'imagePreview\'  style=\'border: 3px solid transparent;width: 25px;height:25px;border-radius: 100%;\' src=\'"+event.picture+"\'/>"+event.label+"</span>");
-                      $(element).prepend("<input type=\'checkbox\'  class=\'pending_box\' name=\'pending_box[]\' id=\'pending_box_"+event.id+"\' value=\'"+event.id+"\'>")           
+                      $(element).prepend("<span data-wenk-pos=\'right\' data-wenk=\'"+event.wenk+"\' class=\'avatar-preview\'><img id=\'imagePreview\'  style=\'border: 2px solid "+event.textColor+";width: 27px;height:27px;border-radius: 100%;margin-right:5px;\' src=\'"+event.picture+"\'/><b style=\'font-size:13px\'>"+event.label+"</b></span>");
+                      $(element).prepend("<input type=\'checkbox\' style=\'margin-left:5px;margin-right:5px;transform: scale(1.3);\' class=\'pending_box\' name=\'pending_box[]\' id=\'pending_box_"+event.id+"\' value=\'"+event.id+"\'>")           
                   }'
                 ]);
             }else{
@@ -127,7 +129,7 @@ class CalendarEventServiceProvider extends ServiceProvider
                             return editForm(event.id, event,"leaves");
                       });  
                       $(element).find(".fc-content").remove();
-                      $(element).prepend("<span data-wenk=\'"+event.label+"\' class=\'avatar-preview\'><img id=\'imagePreview\'  style=\'border: 3px solid transparent;width: 25px;height:25px;border-radius: 100%;\' src=\'"+event.picture+"\'/>"+event.label+"</span>");
+                      $(element).prepend("<span data-wenk-pos=\'right\' data-wenk=\'"+event.wenk+"\' class=\'avatar-preview\'><img id=\'imagePreview\'  style=\'border: 2px solid "+event.textColor+";width: 27px;height:27px;border-radius: 100%;margin-right:5px;\' src=\'"+event.picture+"\'/><b style=\'font-size:13px\'>"+event.label+"</b></span>");
                   }'
                 ]);
             }

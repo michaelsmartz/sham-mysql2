@@ -11,6 +11,7 @@ use App\Enums\DayType;
 use App\Enums\LeaveStatusType;
 use App\Enums\LeaveDurationUnitType;
 use App\TimeGroup;
+use App\Traits\MediaFiles;
 use Illuminate\Http\Request;
 use App\Http\Requests\LeaveRequest;
 use Illuminate\Support\Facades\DB;
@@ -19,9 +20,11 @@ use DateInterval;
 use DateTime;
 use DatePeriod;
 
-class SSPEmployeeLeavesController extends Controller
+
+class SSPEmployeeLeavesController extends CustomController
 {
 
+    use MediaFiles;
     /**
      * Create a new controller instance.
      *
@@ -212,9 +215,17 @@ class SSPEmployeeLeavesController extends Controller
         $working_year_start = SysConfigValue::where('key','=', 'WORKING_YEAR_START')->first();
         $working_year_end   = SysConfigValue::where('key','=', 'WORKING_YEAR_END')->first();
         $time_period        = $this->getTimePeriod($employee);
+        $uploader           = [
+                                "fieldLabel" => "Attach Leave(s) Document",
+                                "restrictionMsg" => "Upload document file in the format doc, docx, ppt, pptx, pdf",
+                                "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+                                "fileMaxSize" => "1.2", // in MB
+                                "totalMaxSize" => "6", // in MB
+                                "multiple" => "multiple" // set as empty string for single file, default multiple if not set
+                            ];
 
 
-        $view = view($this->baseViewPath .'.create',compact('remaining', 'non_working','working_year_start','working_year_end', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
+        $view = view($this->baseViewPath .'.create',compact('uploader','remaining', 'non_working','working_year_start','working_year_end', 'duration_unit','leave_id','leave_description', 'employee_id', 'time_period'))->renderSections();
         return response()->json([
             'title' => $view['modalTitle'],
             'content' => $view['modalContent'],
@@ -256,7 +267,21 @@ class SSPEmployeeLeavesController extends Controller
                 $leave_request->status = LeaveStatusType::status_pending; 
                 $leave_request->starts_at = $request->input('leave_from');
                 $leave_request->ends_at   = $request->input('leave_to');
+                $leave_request->comments  = $request->input('comments');
                 $leave_request->save();
+
+                //attachment
+                $this->attach($request, $leave_request->id,'EmployeeLeave');
+
+                //insert in leave calendar
+                $leave_calendar = new CalendarEvent();
+                $leave_calendar->title           = $leave_request->AbsenceType->description." : ".$leave_request->Employee->first_name." ".$leave_request->Employee->surname;
+                $leave_calendar->start_Date      = $leave_request->starts_at;
+                $leave_calendar->end_date        = $leave_request->ends_at;
+                $leave_calendar->calendable_id   = $leave_request->id;
+                $leave_calendar->calendable_type = EmployeeLeave::class;
+                $leave_calendar->department_id   = $leave_request->Employee->department_id;
+                $leave_calendar->save();
             }else{
                 //multiple days
                 $start      = new DateTime($request->input('leave_from'));
@@ -301,9 +326,11 @@ class SSPEmployeeLeavesController extends Controller
                             $leave_request->ends_at   = $day->format("Y-m-d").' '.$end_time;
                         }
 
-
-
+                        $leave_request->comments  = $request->input('comments');
                         $leave_request->save();
+
+                        //attachment
+                        $this->attach($request, $leave_request->id,'EmployeeLeave');
 
                         //insert in leave calendar
                         $leave_calendar = new CalendarEvent();

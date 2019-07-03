@@ -2,10 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Plank\Mediable\Mediable;
 
 class EmployeeLeave extends Model
 {
+    use Mediable;
     /**
      * The database table used by the model.
      *
@@ -13,6 +14,9 @@ class EmployeeLeave extends Model
      */
     protected $table = 'absence_type_employee';
 
+    protected $fillable = [
+        'absence_type_id',
+    ];
     /**
      * The database primary key value.
      *

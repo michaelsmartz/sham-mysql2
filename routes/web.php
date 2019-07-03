@@ -71,6 +71,16 @@ Auth::routes();
 
             Route::resource('my-surveys', 'SSPMySurveysController');
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');
+
+            #Absences and leaves
+            Route::resource('leaves', 'SSPEmployeeLeavesController' );
+            Route::get('/leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
+            Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
+            Route::get('/leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
+            Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
+            Route::post('/leaves/filter/calendar', 'SSPEmployeeLeavesController@filterCalendar')->name('leaves.filter-calendar');
+            Route::any('/leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('leaves.history');
+            Route::any('/leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('leaves.pending');
         #endregion
 
         #region Central HR
@@ -184,18 +194,6 @@ Auth::routes();
             ]);
             Route::get('module_assessments/{response}/responses/{module_assessment}/employee/{employee_id}/editAssessment', 'ModuleAssessmentResponsesController@editAssessment');
             Route::resource('course_training_sessions', 'CourseTrainingSessionsController' );
-        #endregion
-
-        #region Absences and leaves
-        //
-        Route::resource('leaves', 'SSPEmployeeLeavesController' );
-        Route::get('/leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
-        Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
-        Route::get('/leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
-        Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
-        Route::post('/leaves/filter/calendar', 'SSPEmployeeLeavesController@filterCalendar')->name('leaves.filter-calendar');
-        Route::any('/leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('leaves.history');
-        Route::any('/leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('leaves.pending');
         #endregion
 
         #region Quality
