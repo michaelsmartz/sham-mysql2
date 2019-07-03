@@ -16,6 +16,7 @@
     "/css/flatpickr.css": "/css/flatpickr.css",
     "/css/leaves.css": "/css/leaves.css",
     "/css/calendar.css": "/css/calendar.css",
+    "/css/portal-calendar.css": "/css/portal-calendar.css",
     "/js/new-employee.js.map": "/js/new-employee.js.map",
     "/css/app.css.map": "/css/app.css.map",
     "/css/employees.css.map": "/css/employees.css.map",
@@ -29,12 +30,13 @@
     "/css/flatpickr.css.map": "/css/flatpickr.css.map",
     "/css/leaves.css.map": "/css/leaves.css.map",
     "/css/calendar.css.map": "/css/calendar.css.map",
+    "/css/portal-calendar.css.map": "/css/portal-calendar.css.map",
     "/js/app2.js": "/js/app2.js",
     "/js/app2.js.map": "/js/app2.js.map",
-    "/js/employees.js": "/js/employees.js",
-    "/js/employees.js.map": "/js/employees.js.map",
     "/js/tinymce.js": "/js/tinymce.js",
     "/js/tinymce.js.map": "/js/tinymce.js.map",
+    "/js/employees.js": "/js/employees.js",
+    "/js/employees.js.map": "/js/employees.js.map",
     "/js/absence_type.js": "/js/absence_type.js",
     "/js/absence_type.js.map": "/js/absence_type.js.map",
     "/js/recruitment-request.js": "/js/recruitment-request.js",
@@ -70,5 +72,6 @@
     "/css/candidates.min.css": "/css/candidates.min.css",
     "/css/flatpickr.min.css": "/css/flatpickr.min.css",
     "/css/leaves.min.css": "/css/leaves.min.css",
-    "/css/calendar.min.css": "/css/calendar.min.css"
+    "/css/calendar.min.css": "/css/calendar.min.css",
+    "/css/portal-calendar.min.css": "/css/portal-calendar.min.css"
 }

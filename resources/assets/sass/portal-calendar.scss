@@ -499,7 +499,7 @@ a[data-goto] {
 	font-style: normal;
 }
 .fc-icon {
-	font-family: fcicons' !important;
+	font-family: fcicons !important;
 	speak: none;
 	font-style: normal;
 	font-weight: normal;
@@ -604,20 +604,18 @@ a[data-goto] {
 		&.fc-button-active {
 			z-index: 1;
 		}
-		&:not( {
-			&:first-child) {
-				margin-left: -1px;
-				//Instead of the line below you could use @include border-top-left-radius($radius)
-				border-top-left-radius: 0;
-				//Instead of the line below you could use @include border-bottom-left-radius($radius)
-				border-bottom-left-radius: 0;
-			}
-			&:last-child) {
-				//Instead of the line below you could use @include border-top-right-radius($radius)
-				border-top-right-radius: 0;
-				//Instead of the line below you could use @include border-bottom-right-radius($radius)
-				border-bottom-right-radius: 0;
-			}
+		&:not(:first-child) {
+			margin-left: -1px;
+			//Instead of the line below you could use @include border-top-left-radius($radius)
+			border-top-left-radius: 0;
+			//Instead of the line below you could use @include border-bottom-left-radius($radius)
+			border-bottom-left-radius: 0;
+		}
+		&:not(:last-child) {
+			//Instead of the line below you could use @include border-top-right-radius($radius)
+			border-top-right-radius: 0;
+			//Instead of the line below you could use @include border-bottom-right-radius($radius)
+			border-bottom-right-radius: 0;
 		}
 	}
 }

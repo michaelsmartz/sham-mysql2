@@ -243,7 +243,7 @@ class RecruitmentRequestsController extends CustomController
         $data = $this->contextObj->findData($id);
 
         $recruitmentCandidates = $data->candidates()->orderBy('candidate_recruitment.id','asc')->pluck('first_name','candidate_recruitment.candidate_id');
-        $candidates = Candidate::pluck('first_name', 'id');
+        $candidates = Candidate::pluck('name', 'id');
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.manage-candidate', compact('data', 'candidates', 'recruitmentCandidates'))->renderSections();

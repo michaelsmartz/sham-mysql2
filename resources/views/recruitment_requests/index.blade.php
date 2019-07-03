@@ -40,7 +40,7 @@
                             <li><p class="menu-label">Quick Filters</p></li>
                             <li style="line-height: 0px;">
                                 <a href="{{route('recruitment_requests.index')}}?is_approved=1"><span class="icon circle info"></span>Approved</a>
-                                <a href="{{route('recruitment_requests.index')}}?is_approved=0"><span class="icon circle default"></span>Decline</a>
+                                <a href="{{route('recruitment_requests.index')}}?is_approved=0"><span class="icon circle default"></span>Declined</a>
 
                                 <a href="{{route('recruitment_requests.index')}}?is_completed=1"><span class="icon circle info"></span>Completed</a>
                                 <a href="{{route('recruitment_requests.index')}}?is_completed=0"><span class="icon circle default"></span>Not Completed</a>
@@ -54,9 +54,17 @@
             @if(count($requests) > 0)
             <div id="toolbar" class="shadow-eff1">
                 <div class="btn-group">
+                    @if($allowedActions->contains('List'))
+                    <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
+                        <i class="glyphicon glyphicon-align-left"></i> 
+                        <span>Filters</span>
+                    </button>
+                    @endif
+                    @if($allowedActions->contains('Create'))
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
                     </button>
+                     @endif
                 </div>
             </div>
             @endif
@@ -68,11 +76,10 @@
                     <thead>
                         <tr>
                             <th data-sortable="true">Job Title</th>
-                            <th data-sortable="true">Start Date</th>
-                            <th data-sortable="true">End Date</th>
+                            <th data-sortable="true">Date Period</th>
                             <th data-sortable="true">Approved</th>
                             <th data-sortable="true">Completed</th>
-
+                            <th data-sortable="true">Positions</th>
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
@@ -80,11 +87,10 @@
                         @foreach($requests as $request)
                         <tr id="tr{{$request->id}}">
                             <td>{{ $request->job_title }}</td>
-                            <td>{{ $request->start_date }}</td>
-                            <td>{{ $request->end_date }}</td>
+                            <td>{{ $request->start_date }} <strong>to</strong> {{ $request->end_date }}</td>
                             <td>{!! ($request->is_approved) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
                             <td>{!! ($request->is_completed) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
-
+                            <td>{{ $request->quantity }}</td>
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
                                     <button class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$request->id}}', event)">

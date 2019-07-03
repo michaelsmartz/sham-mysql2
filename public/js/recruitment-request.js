@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 214);
+/******/ 	return __webpack_require__(__webpack_require__.s = 215);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -9915,40 +9915,40 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 214:
+/***/ 215:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(215);
+module.exports = __webpack_require__(216);
 
 
 /***/ }),
 
-/***/ 215:
+/***/ 216:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(global, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(4);
+/* WEBPACK VAR INJECTION */(function(global, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(5);
 
 
 window.on = global.on = __WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */];
 
-__webpack_require__(6);
-__webpack_require__(8);
+__webpack_require__(7);
+__webpack_require__(9);
 
 $('.select-multiple').SumoSelect({ csvDispCount: 10, up: true });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(1)))
 
 /***/ }),
 
-/***/ 4:
+/***/ 5:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return on; });
 /* unused harmony export off */
 /* unused harmony export fire */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_selector_set__ = __webpack_require__(6);
 
 
 var bubbleEvents = {};
@@ -10081,7 +10081,7 @@ function fire(target, name, detail) {
 
 /***/ }),
 
-/***/ 5:
+/***/ 6:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10495,7 +10495,7 @@ SelectorSet.prototype.matches = function(el) {
 
 /***/ }),
 
-/***/ 6:
+/***/ 7:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -11313,7 +11313,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ 8:
+/***/ 9:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery, global) {/*!
