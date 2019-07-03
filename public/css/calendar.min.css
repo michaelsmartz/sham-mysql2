@@ -255,6 +255,7 @@ previous button's border...
   border-collapse: collapse;
   border-spacing: 0;
   font-size: 1em;
+  font-style: italic;
   /* normalize cross-browser */ }
 
 .fc th {
@@ -263,9 +264,6 @@ previous button's border...
   background: #2B3E50;
   color: #ffffff;
   height: auto; }
-
-.fc td {
-  background: whitesmoke; }
 
 .fc th,
 .fc td {
@@ -842,5 +840,7 @@ button:focus {
 
 .fc-event-container {
   cursor: pointer; }
+fc-time-grid-event fc-event fc-start fc-end .fc-bg {
+  border: 2px solid #3097D1; }
 
 /*# sourceMappingURL=calendar.css.map*/
