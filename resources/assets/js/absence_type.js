@@ -15,7 +15,11 @@ on('change', '#eligibility_ends', function(event) {
 
 // Listen for browser-generated events.
 on('change', '#eligibility_begins', function(event) {
-    eligibility_error();
+    eligibility_ends_error();
+});
+
+on('change', '#eligibility_ends', function(event) {
+    eligibility_begins_error();
 });
 
 window.appEe.on('loadUrl', function(text){
@@ -30,7 +34,7 @@ function hideAccruePeriod(){
     }
 }
 
-function eligibility_error(){
+function eligibility_ends_error(){
     if ($("#eligibility_begins").val() === "1") {
         $("#eligibility_ends option[value='1']").hide();
         $('#eligibility_ends>option:eq(0)').prop('selected', true);
@@ -39,3 +43,13 @@ function eligibility_error(){
         $("#eligibility_ends option[value='1']").show();
     }
 }
+
+function eligibility_begins_error(){
+    if ($("#eligibility_ends").val() === "1") {
+        $("#eligibility_begins option[value='1']").hide();
+        $('#eligibility_begins>option:eq(0)').prop('selected', true);
+    }else{
+        $("#eligibility_begins option[value='1']").show();
+    }
+}
+
