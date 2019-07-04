@@ -79,7 +79,7 @@
                             <th data-sortable="true">Date Period</th>
                             <th data-sortable="true">Approved</th>
                             <th data-sortable="true">Completed</th>
-                            <th data-sortable="true">Positions</th>
+                            <th data-sortable="true">Hired / Positions</th>
                             <th data-sortable="false" data-tableexport-display="none">Actions</th>
                         </tr>
                     </thead>
@@ -90,7 +90,7 @@
                             <td>{{ $request->start_date }} <strong>to</strong> {{ $request->end_date }}</td>
                             <td>{!! ($request->is_approved) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
                             <td>{!! ($request->is_completed) ? '<span class="badge badge-info">Yes</span>' : '<span class="badge badge-default">No</span>' !!}</td>
-                            <td>{{ $request->quantity }}</td>
+                            <td>{{ $request->hired }} / {{ $request->quantity }}</td>
                             <td data-html2canvas-ignore="true">
                                 <div class="btn-group btn-group-xs" role="group">
                                     <button class="b-n b-n-r bg-transparent item-edit" data-wenk="Edit" onclick="editFullPage('{{$request->id}}', event)">

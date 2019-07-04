@@ -63,6 +63,7 @@ class Candidate extends Model
                   'city',
                   'province',
                   'zip',
+                  'is_hired'
               ];
 
     protected $searchable = [

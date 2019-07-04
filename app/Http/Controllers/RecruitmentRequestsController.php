@@ -87,7 +87,17 @@ class RecruitmentRequestsController extends CustomController
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_REQUESTS);
 
-        $requests = $this->contextObj::orderBy('start_date','DESC')->filtered()->paginate(10);
+        $requests = $this->contextObj::with('candidates')->orderBy('start_date','DESC')->filtered()->paginate(10);
+
+        foreach ($requests as $req) {
+            $count_hired_employees_for_position = 0;
+            foreach ($req['candidates'] as $candidate) {
+                if ($candidate->is_hired) {
+                    $count_hired_employees_for_position++;
+                }
+            }
+            $req->hired = $count_hired_employees_for_position;
+        }
 
         // handle empty result bug
         if (Input::has('page')) {
@@ -444,7 +454,7 @@ class RecruitmentRequestsController extends CustomController
             $count_hired_employees_for_position = 0;
 
             foreach($candidates as $candidate) {
-                if (!is_null($candidate->employee_no)) {
+                if ($candidate->is_hired) {
                     $count_hired_employees_for_position++;
                 }
             }
@@ -796,6 +806,7 @@ class RecruitmentRequestsController extends CustomController
 
                 if($candidate) {
                     $candidate->employee_no = $employee_no;
+                    $candidate->is_hired = true;
                     $candidate->save();
 
 
