@@ -736,4 +736,15 @@ class EmployeesController extends CustomController
         return $employees_ids;
     }
 
+    public static function getDepartmentEmployees($department_id){
+        $employees_ids  = DB::table('employees')->select('id','first_name','surname')
+            ->where(function($q){
+                $q->where('date_terminated','<=','NOW()')
+                    ->orWhereNull('date_terminated');
+            })
+            ->where('department_id', $department_id)
+            ->get();
+        return $employees_ids;
+    }
+
 }

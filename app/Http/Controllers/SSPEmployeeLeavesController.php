@@ -67,18 +67,23 @@ class SSPEmployeeLeavesController extends CustomController
     protected function renderCalendar($status,$filter = null)
     {
         $employee_id     = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-        $manager         = array(
-            'id'       => $employee_id,
-            'fullname' => EmployeesController::getEmployeeFullName($employee_id)
-        );
-        $employees       = EmployeesController::getManagerEmployees($employee_id);
+        $employee        = Employee::find($employee_id);
+        if($employee->jobTitle->is_manager == 1){
+            $manager         = array(
+                'id'       => $employee_id,
+                'fullname' => EmployeesController::getEmployeeFullName($employee_id)
+            );
+        }
+
+        $employees       = EmployeesController::getDepartmentEmployees($employee->department_id);
         $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
         $calendar        = app('CalendarEventService',[
-            'type'   => EmployeeLeave::class,
-            'view'   => 'data',
-            'status' => $status,
-            'filter' => $filter
-        ]);
+                            'type'       => EmployeeLeave::class,
+                            'department' => $employee->department_id,
+                            'view'       => 'data',
+                            'status'     => $status,
+                            'filter'     => $filter
+                        ]);
 
         if(!empty($filter)){
             $employee_select     = $filter['employee_id'];
@@ -101,11 +106,15 @@ class SSPEmployeeLeavesController extends CustomController
     public function historyLeave()
     {
         $employee_id     = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-        $manager         = array(
-            'id'       => $employee_id,
-            'fullname' => EmployeesController::getEmployeeFullName($employee_id)
-        );
-        $employees       = EmployeesController::getManagerEmployees($employee_id);
+        $employee        = Employee::find($employee_id);
+        if($employee->jobTitle->is_manager == 1){
+            $manager         = array(
+                'id'       => $employee_id,
+                'fullname' => EmployeesController::getEmployeeFullName($employee_id)
+            );
+        }
+
+        $employees       = EmployeesController::getDepartmentEmployees($employee->department_id);
         $leaves          = $this->getEmployeeLeavesHistory($employee_id);
         $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
 
@@ -129,11 +138,15 @@ class SSPEmployeeLeavesController extends CustomController
         if(!empty($request->input('employee_id')) && $request->input('employee_id') != 0){
             //employee's leave viewed from manager
             $employee_id = $request->input('employee_id');
-            $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
-            $manager         = array(
-                'id'       => \Auth::user()->employee_id,
-                'fullname' => EmployeesController::getEmployeeFullName(\Auth::user()->employee_id)
-            );
+            $employee        = Employee::find(\Auth::user()->employee_id);
+            if($employee->jobTitle->is_manager == 1){
+                $manager         = array(
+                    'id'       => $employee_id,
+                    'fullname' => EmployeesController::getEmployeeFullName($employee_id)
+                );
+            }
+
+            $employees       = EmployeesController::getDepartmentEmployees($employee->department_id);
             $selected    = $employee_id;
         }elseif ($request->input('employee_id') == 0){
             //manager's leave
@@ -362,7 +375,12 @@ class SSPEmployeeLeavesController extends CustomController
      */
     public function viewDetails($request_id)
     {
-        $leave = $this->getPendingRequest($request_id);
+        $leave = $this->getleaveDetails($request_id);
+
+        if(!empty($leave->media_id)){
+            $leave->download_link = $this->download($request_id,$leave->media_id);
+        }
+
         $view = view($this->baseViewPath .'.edit',compact('leave','id'))->renderSections();
         return response()->json([
             'title' => $view['modalTitle'],
@@ -505,10 +523,11 @@ class SSPEmployeeLeavesController extends CustomController
         return $taken[0];
     }
 
-    private function getPendingRequest($id){
-        $sql_request = "SELECT abe.id,abs.description as absence_description,abe.employee_id,CONCAT(emp.first_name,\" \",emp.surname) as employee,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status
+    private function getleaveDetails($id){
+        $sql_request = "SELECT abe.id,abe.comments,abs.description as absence_description,abe.employee_id,CONCAT(emp.first_name,\" \",emp.surname) as employee,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status,m.media_id
             FROM absence_type_employee abe
             LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
+            LEFT JOIN mediables m ON abe.id = m.mediable_id
             LEFT JOIN eligibility_employee ele ON (ele.absence_type_id =abs.id AND ele.employee_id =abe.employee_id)
             LEFT JOIN employees emp ON abe.employee_id = emp.id
             WHERE abe.id = $id;";

@@ -47,13 +47,7 @@
                             @endswitch
                         </td>
                         <td>
-                            @if((date($leave->starts_at) >= date("Y-m-d H:i")) && ($leave->status == App\Enums\LeaveStatusType::status_pending || $leave->status == App\Enums\LeaveStatusType::status_approved))
-                                <a href="/my-leaves/status/{{$leave->id}}/{{App\Enums\LeaveStatusType::status_cancelled}}" data-wenk="Cancel leave request" class="btn btn-cancel">
-                                    Cancel
-                                </a>
-                            @else
-                                <span class="col-md-offset-3"></span>
-                            @endif
+                            <a href="#light-modal" class="btn" onclick="loadUrl('/my-leaves/{{$leave->id}}/view')"><i class="glyphicon glyphicon-eye-open"></i> View</a>
                         </td>
                     </tr>
                 @endforeach

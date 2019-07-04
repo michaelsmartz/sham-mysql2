@@ -60,9 +60,9 @@ class CalendarEventServiceProvider extends ServiceProvider
         switch ($parameters['type']){
             case EmployeeLeave::class :
                 if(isset($parameters['filter']) && !empty($parameters['filter'])){
-                    $data   = $this->getCalendarLeavesFilter($parameters['filter']);
+                    $data   = $this->getCalendarLeavesFilter($parameters['department'],$parameters['filter']);
                 }else{
-                    $data   = $this->getCalendarLeaves($parameters['status']);
+                    $data   = $this->getCalendarLeaves($parameters['department'],$parameters['status']);
                 }
                 $title  = "Leaves Calendar";
                 break;
@@ -126,7 +126,7 @@ class CalendarEventServiceProvider extends ServiceProvider
                     'eventRender' => 'function(event,element) {
                       $(element).on("click",function(){
                              location.hash = "#light-modal";
-                            return loadUrl("my-leaves/"+event.id+"/view");
+                            return loadUrl("/my-leaves/"+event.id+"/view");
                       });  
                       $(element).find(".fc-content").remove();
                       $(element).prepend("<span data-wenk-pos=\'right\' data-wenk=\'"+event.wenk+"\' class=\'avatar-preview\'><img id=\'imagePreview\'  style=\'border: 2px solid "+event.textColor+";width: 27px;height:27px;border-radius: 100%;margin-right:5px;\' src=\'"+event.picture+"\'/><b style=\'font-size:13px\'>"+event.label+"</b></span>");
@@ -146,7 +146,7 @@ class CalendarEventServiceProvider extends ServiceProvider
         return $calendar;
     }
 
-    public static function getCalendarLeaves($status){
+    public static function getCalendarLeaves($department_id,$status){
         $calendar_leave = DB::table('calendar_events')
             ->select('calendar_events.title','calendar_events.start_date','calendar_events.end_date','calendar_events.calendable_id','employees.picture','colours.code as colour_code')
             ->leftjoin('absence_type_employee','absence_type_employee.id','=','calendar_events.calendable_id')
@@ -155,12 +155,13 @@ class CalendarEventServiceProvider extends ServiceProvider
             ->leftjoin('colours','colours.id','=','absence_types.colour_id')
             ->where('calendar_events.calendable_type', EmployeeLeave::class)
             ->where('absence_type_employee.status',$status)
+            ->where('employees.department_id',$department_id)
             ->get();
         return $calendar_leave;
 
     }
 
-    public static function getCalendarLeavesFilter($filter){
+    public static function getCalendarLeavesFilter($department_id,$filter){
         $calendar_leave = DB::table('calendar_events')
             ->select('calendar_events.title','calendar_events.start_date','calendar_events.end_date','calendar_events.calendable_id','employees.picture','colours.code as colour_code')
             ->leftjoin('absence_type_employee','absence_type_employee.id','=','calendar_events.calendable_id')
@@ -169,6 +170,7 @@ class CalendarEventServiceProvider extends ServiceProvider
             ->leftjoin('colours','colours.id','=','absence_types.colour_id')
             ->where('calendar_events.calendable_type', EmployeeLeave::class)
             ->where('absence_type_employee.status',$filter['leave_status'])
+            ->where('employees.department_id',$department_id)
             ->where('employees.id',$filter['employee_id'])
             ->get();
         return $calendar_leave;

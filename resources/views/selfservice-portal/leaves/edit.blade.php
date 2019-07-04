@@ -50,7 +50,25 @@
                         <span class="field">{{\Carbon\Carbon::parse($leave->ends_at)->format('l Y-m-d H:i')}}</span>
                     </div>
                 </div>
-</div>
+            </div>
+            @if(!empty($leave->comments))
+                <div class="row container-fluid">
+                    <legend><i class="glyphicon glyphicon-pencil"></i> Comments</legend>
+                    <div class="form-group col-sm-12">
+                        {!! $leave->comments !!}
+                    </div>
+                </div>
+            @endif
+            @if(!empty($leave->download_link))
+                <div class="row container-fluid">
+                    <legend><i class="glyphicon glyphicon-file"></i> Attachment</legend>
+                    <div class="form-group col-sm-12">
+                        <a href="{{$leave->download_link}}" download>
+                            <i class="glyphicon glyphicon-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection
