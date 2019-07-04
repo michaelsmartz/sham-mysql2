@@ -76,3 +76,6 @@ ADD `colour_id` INT(11) NULL DEFAULT '0' AFTER `duration_unit`;
 
 ALTER TABLE `absence_type_employee`
 ADD COLUMN `comments` TEXT NULL AFTER `updated_at`;
+
+ALTER TABLE `job_logs`
+	CHANGE COLUMN `message` `message` MEDIUMTEXT NOT NULL COLLATE 'utf8mb4_unicode_ci' AFTER `level`;
