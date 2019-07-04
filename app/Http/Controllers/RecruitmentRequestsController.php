@@ -438,6 +438,16 @@ class RecruitmentRequestsController extends CustomController
             $this->contextObj->with = [];
 
             $data = $this->contextObj->findData($id);
+
+            $candidates = $data->candidates()->get();
+
+            $count_hired_employees_for_position = 0;
+
+            foreach($candidates as $candidate) {
+                if (!is_null($candidate->employee_no)) {
+                    $count_hired_employees_for_position++;
+                }
+            }
         }
 
         $uploader = [
@@ -449,7 +459,7 @@ class RecruitmentRequestsController extends CustomController
             "multiple" => "multiple" // set as empty string for single file, default multiple if not set
         ];
 
-        return view($this->baseViewPath .'.stages', compact('data','uploader'));
+        return view($this->baseViewPath .'.stages', compact('data', 'count_hired_employees_for_position', 'uploader'));
     }
 
     /**

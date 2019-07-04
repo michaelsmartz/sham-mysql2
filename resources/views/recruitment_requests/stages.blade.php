@@ -1,6 +1,6 @@
 @extends('portal-index')
 @section('title',"Recruitment for $data->job_title")
-@section('subtitle',"$data->quantity position(s)")
+@section('subtitle',"$count_hired_employees_for_position hired/$data->quantity position(s)")
 @section('right-title')
     <a href="{{route('recruitment_requests.index') }}" class="btn btn-default pull-right" title="Show all Recruitment Requests">
         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
