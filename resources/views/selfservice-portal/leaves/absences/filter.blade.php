@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <form method="POST" action="{{route('leaves.filter')}}" id="leave_request_filter" name="leave_request_filter" accept-charset="UTF-8" class="form-horizontal">
+    <form method="POST" action="{{route('my-leaves.filter')}}" id="leave_request_filter" name="leave_request_filter" accept-charset="UTF-8" class="form-horizontal">
         <legend><i class="glyphicon glyphicon-filter"></i>  Filters</legend>
         <div class="form-group col-lg-2 employee-filter">
             <label for="absence_type"><span class="glyphicon glyphicon-tasks"></span> Leave type</label>
@@ -43,7 +43,7 @@
         @endif
         <div class="form-group col-lg-4 pull-right">
             <button id="btn-filter-date" class="btn btn-primary btn-filter" type="submit"><i class="glyphicon glyphicon-sort"></i> Filter</button>
-            <a href="{{route('leaves.history')}}" class="btn btn-primary btn-filter"><i class="glyphicon glyphicon-refresh"></i> Reset</a>
+            <a href="{{route('my-leaves.history')}}" class="btn btn-primary btn-filter"><i class="glyphicon glyphicon-refresh"></i> Reset</a>
         </div>
     </form>
 </div>

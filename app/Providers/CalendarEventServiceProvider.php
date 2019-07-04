@@ -126,7 +126,7 @@ class CalendarEventServiceProvider extends ServiceProvider
                     'eventRender' => 'function(event,element) {
                       $(element).on("click",function(){
                              location.hash = "#light-modal";
-                            return editForm(event.id, event,"leaves");
+                            return loadUrl("my-leaves/"+event.id+"/view");
                       });  
                       $(element).find(".fc-content").remove();
                       $(element).prepend("<span data-wenk-pos=\'right\' data-wenk=\'"+event.wenk+"\' class=\'avatar-preview\'><img id=\'imagePreview\'  style=\'border: 2px solid "+event.textColor+";width: 27px;height:27px;border-radius: 100%;margin-right:5px;\' src=\'"+event.picture+"\'/><b style=\'font-size:13px\'>"+event.label+"</b></span>");

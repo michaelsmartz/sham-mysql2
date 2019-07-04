@@ -34,7 +34,7 @@ class SSPEmployeeLeavesController extends CustomController
     {
         $this->contextObj = new EmployeeLeave();
         $this->baseViewPath = 'selfservice-portal.leaves';
-        $this->baseRoute = "leaves";
+        $this->baseRoute = "my-leaves";
         $this->baseFlash = "Employee's leave(s) ";
     }
 
@@ -217,8 +217,8 @@ class SSPEmployeeLeavesController extends CustomController
         $time_period        = $this->getTimePeriod($employee);
         $uploader           = [
                                 "fieldLabel" => "Attach Leave(s) Document",
-                                "restrictionMsg" => "Upload document file in the format doc, docx, ppt, pptx, pdf",
-                                "acceptedFiles" => "['doc', 'docx', 'ppt', 'pptx', 'pdf']",
+                                "restrictionMsg" => "Upload document file in the format doc, docx, pdf",
+                                "acceptedFiles" => "['doc', 'docx', 'pdf']",
                                 "fileMaxSize" => "1.2", // in MB
                                 "totalMaxSize" => "6", // in MB
                                 "multiple" => "multiple" // set as empty string for single file, default multiple if not set
@@ -360,21 +360,15 @@ class SSPEmployeeLeavesController extends CustomController
      *
      * @return Illuminate\View\View
      */
-    public function edit(Request $request)
+    public function viewDetails($request_id)
     {
-        $id = Route::current()->parameter('leaf');
-        $leave = $this->getPendingRequest($id);
-
-        if($request->ajax()) {
-            $view = view($this->baseViewPath .'.edit',compact('leave','id'))->renderSections();
-            return response()->json([
-                'title' => $view['modalTitle'],
-                'content' => $view['modalContent'],
-                'footer' => $view['modalFooter']
-            ]);
-        }
-
-        return view($this->baseViewPath .'.edit',compact('leave','id'));
+        $leave = $this->getPendingRequest($request_id);
+        $view = view($this->baseViewPath .'.edit',compact('leave','id'))->renderSections();
+        return response()->json([
+            'title' => $view['modalTitle'],
+            'content' => $view['modalContent'],
+            'footer' => $view['modalFooter']
+        ]);
     }
 
     public function show(){

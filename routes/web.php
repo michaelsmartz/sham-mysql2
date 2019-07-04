@@ -73,14 +73,15 @@ Auth::routes();
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');
 
             #Absences and leaves
-            Route::resource('leaves', 'SSPEmployeeLeavesController' );
-            Route::get('/leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
-            Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
-            Route::get('/leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
-            Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
-            Route::post('/leaves/filter/calendar', 'SSPEmployeeLeavesController@filterCalendar')->name('leaves.filter-calendar');
-            Route::any('/leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('leaves.history');
-            Route::any('/leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('leaves.pending');
+            Route::fileResource('my-leaves', 'SSPEmployeeLeavesController' );
+            Route::get('/my-leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
+            Route::get('/my-leaves/{leave_id}/view', 'SSPEmployeeLeavesController@viewDetails');
+            Route::get('/my-leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
+            Route::get('/my-leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
+            Route::post('/my-leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('my-leaves.filter');
+            Route::post('/my-leaves/filter/calendar', 'SSPEmployeeLeavesController@filterCalendar')->name('my-leaves.filter-calendar');
+            Route::any('/my-leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('my-leaves.history');
+            Route::any('/my-leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('my-leaves.pending');
         #endregion
 
         #region Central HR

@@ -7,7 +7,7 @@
     <button id="btn-leave-apply" class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Apply</button>
 @endsection
 
-@section('postModalUrl', route('leaves.store'))
+@section('postModalUrl', route('my-leaves.store'))
 
 @section('modalContent')
     <div class="row">
@@ -21,7 +21,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('leaves.store') }}" id="leave_form" name="leave_form" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('my-leaves.store') }}" id="leave_form" name="leave_form" accept-charset="UTF-8" >
         {{ csrf_field() }}
         {!! method_field('post') !!}
         <div class="box box-primary">

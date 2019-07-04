@@ -12,7 +12,7 @@
                     <div class="dashboard_wid_box_inner last-child">Pending<span class="box_count">{{$eligible->pending}}</span></div>
                 </a>
                 <div class="row">
-                    <a id="request_leave_{{$eligible->id}}" href="#light-modal" data-wenk="{{$eligible->absence_description}} application form" data-description="{{$eligible->absence_description}}" data-type-id="{{$eligible->id}}" class="btn btn-primary btn-apply" onclick="addFormType(event, '{{$eligible->id }}','{{ $eligible->absence_description }}', '{{ $selected['employee']->id}}', 'leaves')">
+                    <a id="request_leave_{{$eligible->id}}" href="#light-modal" data-wenk="{{$eligible->absence_description}} application form" data-description="{{$eligible->absence_description}}" data-type-id="{{$eligible->id}}" class="btn btn-primary btn-apply" onclick="addFormType(event, '{{$eligible->id }}','{{ $eligible->absence_description }}', '{{ $selected['employee']->id}}', 'my-leaves')">
                         <i class="glyphicon glyphicon-plane"></i>  Apply
                     </a>
                 </div>
