@@ -51,8 +51,10 @@ span.badge-status {
 }
 
 #bundle_submit {
-  top: 14px;
+  top: -30px;
   position: relative;
+  left: 101%;
+  height: 2.1em !important;
 }
 
 .btn-cancel {
@@ -154,6 +156,22 @@ box_link {
 .dashboard_wid_box_inner .box_count {
   font-size: 20px;
   display: block;
+}
+
+.btn-leave-filters {
+  position: relative;
+  top: -10px;
+}
+
+.btn-leave-filters button,
+.select-leave-filters {
+  height: 2.1em !important;
+}
+
+.btn-leave-command {
+  top: 19px;
+  left: -28px;
+  width: 255px;
 }
 
 
