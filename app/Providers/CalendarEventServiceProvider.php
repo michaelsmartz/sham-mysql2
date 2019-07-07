@@ -111,6 +111,11 @@ class CalendarEventServiceProvider extends ServiceProvider
                 $calendar = Calendar::addEvents($events)->setOptions([
                     'firstDay' => 1,
                     'weekNumbers' =>  true,
+                    'header' => [
+                        'left'   => 'today,month,agendaWeek,agendaDay',
+                        'center' => 'title',
+                        'right'  => 'prev,next',
+                    ]
                 ])->setCallbacks([
                     'eventRender' => 'function(event,element) {
                       $(element).find(".fc-content").remove();
@@ -122,6 +127,11 @@ class CalendarEventServiceProvider extends ServiceProvider
                 $calendar = Calendar::addEvents($events)->setOptions([
                     'firstDay' => 1,
                     'weekNumbers' =>  true,
+                    'header' => [
+                        'left'   => 'today,month,agendaWeek,agendaDay',
+                        'center' => 'title',
+                        'right'  => 'prev,next',
+                    ]
                 ])->setCallbacks([
                     'eventRender' => 'function(event,element) {
                       $(element).on("click",function(){
