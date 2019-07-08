@@ -19,6 +19,10 @@ Route::get('testunclaimedmonthly', 'MiscController@testunclaimedmonthly');
 
 Auth::routes();
 
+Route::group(['prefix' => '/vacancies', 'namespace' => 'Open'], function() {
+    Route::get('/', 'RecruitmentsController@publicHome');
+});
+
 #region auth middleware routes
     Route::group(['middleware' => ['auth']], function() {
 
@@ -84,7 +88,7 @@ Auth::routes();
             Route::any('/my-leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('my-leaves.pending');
 
             #vacancies
-            Route::resource('vacancies', 'SSPVacanciesController');
+            Route::resource('my-vacancies', 'SSPVacanciesController');
         #endregion
 
         #region Central HR
