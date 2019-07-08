@@ -7,10 +7,31 @@
     <link href="{{URL::to('/')}}/css/vacancies.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/jquery.nice-select.min.js"></script>
     <script>
+
+        $('.loader').hide();
         $(document).ready(function(){
             if(document.getElementById("selects")){
                 $('select').niceSelect();
             };
+
+            $('body').on('click', '.pagination a', function(e) {
+                e.preventDefault();
+                $('.loader').show();
+                let url = $(this).attr('href');
+                getVacancies(url);
+                window.history.pushState("", "", url);
+            });
+
+            function getVacancies(url) {
+                $.ajax({
+                    url : url
+                }).done(function (data) {
+                    $('.vacancies').html(data);
+                    $('.loader').hide();
+                }).fail(function () {
+                    alert('Vacancies could not be loaded.');
+                });
+            }
         });
     </script>
 @endsection
@@ -76,45 +97,17 @@
                             @endif
                         </ul>
 
-                        @if( sizeof($vacancies) == 0)
-                        <div class="col-sm-12 col-xs-12 col-md-4 col-lg-4 text-success">
-                            There are no vacancies available for the moment
+                        <div id="load" style="position: relative;">
+                            @if(sizeof($vacancies) == 0)
+                                <div class="col-sm-12 col-xs-12 col-md-4 col-lg-4 text-success">
+                                    There are no vacancies available for the moment
+                                </div>
+                            @else
+                                <section class="vacancies">
+                                 @include('selfservice-portal.vacancies.load')
+                                </section>
+                            @endif
                         </div>
-                        @else
-                        @foreach($vacancies as $vacancy)
-                            <div class="single-post d-flex flex-row">
-                                <div class="thumb">
-                                    <img src="{{URL::to('/')}}/img/job.png" alt="">
-                                    <ul class="tags">
-                                        @if( !is_null($vacancy->skills))
-                                            @foreach($vacancy->skills as $skill)
-                                                <li><a href="">{{ $skill->description }}</a></li>
-                                            @endforeach
-                                        @endif
-                                    </ul>
-                                </div>
-                                <div class="details">
-                                    <div class="title d-flex flex-row justify-content-between">
-                                        <p class="pull-right">{{ $vacancy->posted_on }}</p>
-                                        <div class="titles">
-                                            <a href=""><h4>{{ $vacancy->job_title }}</h4></a>
-                                            <h6>{{ $vacancy->department->description }}</h6>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        {{ $vacancy->description }}
-                                    </p>
-                                    <h5><span class="glyphicon glyphicon-briefcase"></span> Employment Type: {{ $vacancy->employeeStatus->description }}</h5>
-                                    <h5><span class="glyphicon glyphicon-education"></span> Qualification Required: {{ $vacancy->qualification->description }}</h5>
-                                    <h5><span class="glyphicon glyphicon-time"></span> Closing on: {{ $vacancy->start_date }}</h5>
-                                    @if( !is_null($vacancy->min_salary) && !is_null($vacancy->max_salary))
-                                    <p class="address"><span class="glyphicon glyphicon-piggy-bank"></span>  {{ $vacancy->min_salary }} - {{ $vacancy->max_salary }}</p>
-                                    @endif
-                                    <ul class="btns pull-right"><li><a href="#">Apply</a></li></ul>
-                                </div>
-                            </div>
-                        @endforeach
-                        @endif
                     </div>
                 </div>
             </div>

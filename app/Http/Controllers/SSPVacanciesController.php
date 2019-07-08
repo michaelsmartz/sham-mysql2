@@ -10,6 +10,7 @@ use App\Recruitment;
 use App\Support\Helper;
 use App\SystemSubModule;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
 class SSPVacanciesController extends CustomController
@@ -24,11 +25,11 @@ class SSPVacanciesController extends CustomController
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
+     * @throws \Throwable
      */
-    public function index()
+    public function index(Request $request)
     {
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
 
@@ -44,7 +45,6 @@ class SSPVacanciesController extends CustomController
 
         $employee =  Employee::find($employee_id);
 
-
         if(empty($employee)) {
             $warnings[] = 'Please check whether your profile is associated to an employee!';
         }
@@ -54,21 +54,22 @@ class SSPVacanciesController extends CustomController
             ->whereDate('end_date', '>', Carbon::now())
             ->whereIn('recruitment_type_id', [1, 3])
             ->orderBy('posted_on', 'desc')
-            ->paginate(10)
-            ->all();
+            ->paginate(2);
 
         foreach($vacancies as $vacancy) {
             $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
         }
 
-        //dd($vacancies);
-
         $jobStatuses = EmployeeStatus::get()->all();
         $jobDepartments = Department::pluck('description', 'id');
         $jobQualifications = QualificationRecruitment::pluck('description', 'id');
 
+        if ($request->ajax()) {
+            return view($this->baseViewPath .'.load', compact('vacancies'))->render();
+        }
+
         // load the view and pass the vacancies
-        return view($this->baseViewPath .'.index',compact('warnings', 'vacancies', 'jobStatuses' , 'jobDepartments', 'jobQualifications'));
+        return view($this->baseViewPath .'.index', compact('warnings', 'vacancies', 'jobStatuses' , 'jobDepartments', 'jobQualifications'));
     }
 }
 
