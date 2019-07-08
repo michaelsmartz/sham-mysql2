@@ -121,7 +121,7 @@
                 <div class="form-group col-xs-12">
                     <span class="field">
                         <label for="cover">Job Description</label>
-                        {!! Form::textarea('description', old('description', isset($request->description) ? $request->description : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Description', 'required', 'title'=>'Required','id'=>'description', 'maxlength' => '50']) !!}
+                        {!! Form::textarea('description', old('description', isset($request->description) ? $request->description : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Description', 'required', 'title'=>'Required','id'=>'description', 'maxlength' => '10000']) !!}
                     </span>
                 </div>
                 @if($_mode == 'show')

@@ -82,3 +82,16 @@ ALTER TABLE `job_logs`
 
 ALTER TABLE `candidates`
 ADD COLUMN `is_hired` TINYINT NULL DEFAULT 0 AFTER `zip`;
+
+UPDATE system_sub_modules
+SET deleted_at = null
+WHERE id = 23;
+
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '1', '23');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '2', '23');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '3', '23');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '4', '23');
+INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_profile_id`, `sham_permission_id`, `system_sub_module_id`) VALUES ('1', '5', '23');
+
+ALTER TABLE `recruitments`
+CHANGE COLUMN `description` `description` VARCHAR(10000) NULL DEFAULT NULL ;

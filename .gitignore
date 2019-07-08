@@ -37,6 +37,9 @@ pre-deploy-compress\.js
 /public/js/recruitment\.js
 /public/js/recruitment\.js\.map
 /public/js/recruitment\.min\.js
+/public/js/recruitment-request\.js
+/public/js/recruitment-request\.min\.js
+/public/js/recruitment-request\.js\.map
 /public/js/tables\.js
 /public/js/tables\.js\.map
 /public/js/tables\.min\.js

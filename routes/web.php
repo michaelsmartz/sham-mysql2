@@ -82,6 +82,9 @@ Auth::routes();
             Route::post('/my-leaves/filter/calendar', 'SSPEmployeeLeavesController@filterCalendar')->name('my-leaves.filter-calendar');
             Route::any('/my-leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('my-leaves.history');
             Route::any('/my-leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('my-leaves.pending');
+
+            #vacancies
+            Route::resource('vacancies', 'SSPVacanciesController');
         #endregion
 
         #region Central HR

@@ -73,16 +73,16 @@
                 <li class="{{ (Request::is('my-surveys') || Request::is('my-feedback')  ? 'active' : '') }}"> <a href="{{URL::to('/')}}/my-surveys">Surveys</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_LEAVES]))
-                <li class="{{ (Request::is('my-leaves') || Request::is('my-leaves/filter') || Request::is('my-leaves/filter/calendar') || Request::is('my-leaves-history') || Request::is('my-leaves-pending-request') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/leaves">Absences and leaves</a></li>
+                <li class="{{ (Request::is('my-leaves') || Request::is('my-leaves/filter') || Request::is('my-leaves/filter/calendar') || Request::is('my-leaves-history') || Request::is('my-leaves-pending-request') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/my-leaves">Absences and leaves</a></li>
+            @endif
+            @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_VACANCIES]))
+                <li> <a href="{{URL::to('/')}}/vacancies">Vacancies</a></li>
             @endif
             {{--
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_DISCIPLINARY_RECORDS]))
                 <li> <a href="{{URL::to('/')}}/my-timeline">Timeline</a></li>
             @endif
             --}}
-            @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_VACANCIES]))
-                <li> <a data-menu-href="{{URL::to('/')}}/ssp-jobadverts" href="{{URL::to('/')}}/ssp-vacancies">Vacancies</a></li>
-            @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_ASSESSMENTS]))
                 <li> <a href="{{URL::to('/')}}/my-assessments">My assessments</a></li>
             @endif
