@@ -9,6 +9,7 @@ use App\QualificationRecruitment;
 use App\Recruitment;
 use App\Support\Helper;
 use App\SystemSubModule;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 
 class SSPVacanciesController extends CustomController
@@ -48,7 +49,19 @@ class SSPVacanciesController extends CustomController
             $warnings[] = 'Please check whether your profile is associated to an employee!';
         }
 
-        $vacancies = $this->contextObj::with(['department','employeeStatus','qualification', 'skills'])->get()->all();
+        $vacancies = $this->contextObj::with(['department','employeeStatus','qualification', 'skills'])
+            ->where('is_approved', '=', 1)
+            ->whereDate('end_date', '>', Carbon::now())
+            ->whereIn('recruitment_type_id', [1, 3])
+            ->orderBy('posted_on', 'desc')
+            ->paginate(10)
+            ->all();
+
+        foreach($vacancies as $vacancy) {
+            $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
+        }
+
+        //dd($vacancies);
 
         $jobStatuses = EmployeeStatus::get()->all();
         $jobDepartments = Department::pluck('description', 'id');

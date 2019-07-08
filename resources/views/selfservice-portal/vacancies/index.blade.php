@@ -28,38 +28,38 @@
         <div class="banner-content col-lg-12">
             <form action="" class="search-form-area">
                 <div class="row justify-content-center form-wrap">
-                    <div class="col-lg-4 form-cols">
-                        <input type="text" class="form-control" name="search" placeholder="what are you looking for?">
-                    </div>
                     <div class="col-lg-3 form-cols">
+                        <input type="text" class="form-control datepicker" name="search_closing_date" placeholder="Search Closing Date">
+                    </div>
+                    <div class="col-lg-4 form-cols">
+                            <div class="default-select" id="selects">
+                            <select>
+                                <option value="0">All Qualifications</option>
+                                @if( sizeof($jobQualifications) != 0)
+                                    @foreach($jobQualifications as $id => $jobQualification)
+                                        <option value="{{ $id }}">{{ $jobQualification }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 form-cols">
                         <div class="default-select" id="selects">
-                        <select>
-                            <option value="0">All Qualifications</option>
-                            @if( sizeof($jobQualifications) != 0)
-                                @foreach($jobQualifications as $id => $jobQualification)
-                                    <option value="{{ $id }}">{{ $jobQualification }}</option>
-                                @endforeach
-                            @endif
-                        </select>
+                            <select>
+                                <option value="0">All Departments</option>
+                                @if( sizeof($jobDepartments) != 0)
+                                    @foreach($jobDepartments as $id => $jobDepartment)
+                                        <option value="{{ $id }}">{{ $jobDepartment }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-3 form-cols">
-                    <div class="default-select" id="selects">
-                        <select>
-                            <option value="0">All Departments</option>
-                            @if( sizeof($jobDepartments) != 0)
-                                @foreach($jobDepartments as $id => $jobDepartment)
-                                    <option value="{{ $id }}">{{ $jobDepartment }}</option>
-                                @endforeach
-                            @endif
-                        </select>
+                    <div class="col-lg-1 form-cols">
+                        <button type="button" class="btn btn-info">
+                           Search
+                        </button>
                     </div>
-                </div>
-                <div class="col-lg-2 form-cols">
-                    <button type="button" class="btn btn-info">
-                        <span class="glyphicon glyphicon-search"></span> Search
-                    </button>
-                </div>
                 </div>
             </form>
         </div>
@@ -95,6 +95,7 @@
                                 </div>
                                 <div class="details">
                                     <div class="title d-flex flex-row justify-content-between">
+                                        <p class="pull-right">{{ $vacancy->posted_on }}</p>
                                         <div class="titles">
                                             <a href=""><h4>{{ $vacancy->job_title }}</h4></a>
                                             <h6>{{ $vacancy->department->description }}</h6>
@@ -103,8 +104,9 @@
                                     <p>
                                         {{ $vacancy->description }}
                                     </p>
-                                    <h5><span class="glyphicon glyphicon-briefcase"></span> Job Nature: {{ $vacancy->employeeStatus->description }}</h5>
+                                    <h5><span class="glyphicon glyphicon-briefcase"></span> Employment Type: {{ $vacancy->employeeStatus->description }}</h5>
                                     <h5><span class="glyphicon glyphicon-education"></span> Qualification Required: {{ $vacancy->qualification->description }}</h5>
+                                    <h5><span class="glyphicon glyphicon-time"></span> Closing on: {{ $vacancy->start_date }}</h5>
                                     @if( !is_null($vacancy->min_salary) && !is_null($vacancy->max_salary))
                                     <p class="address"><span class="glyphicon glyphicon-piggy-bank"></span>  {{ $vacancy->min_salary }} - {{ $vacancy->max_salary }}</p>
                                     @endif

@@ -76,7 +76,7 @@
                 <li class="{{ (Request::is('my-leaves') || Request::is('my-leaves/filter') || Request::is('my-leaves/filter/calendar') || Request::is('my-leaves-history') || Request::is('my-leaves-pending-request') ? 'active' : '') }}"> <a href="{{URL::to('/')}}/my-leaves">Absences and leaves</a></li>
             @endif
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_VACANCIES]))
-                <li> <a href="{{URL::to('/')}}/vacancies">Vacancies</a></li>
+                <li> <a href="{{URL::to('/')}}/my-vacancies">Vacancies</a></li>
             @endif
             {{--
             @if (isset($allowedmodules[App\SystemModule::CONST_EMPLOYEE_PORTAL][App\SystemSubModule::CONST_MY_DISCIPLINARY_RECORDS]))

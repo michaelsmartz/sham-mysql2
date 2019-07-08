@@ -95,3 +95,7 @@ INSERT INTO `sham_permission_sham_user_profile_system_sub_module` (`sham_user_pr
 
 ALTER TABLE `recruitments`
 CHANGE COLUMN `description` `description` VARCHAR(10000) NULL DEFAULT NULL ;
+
+ALTER TABLE `recruitments`
+ADD COLUMN `posted_on` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `end_date`;
+
