@@ -29,7 +29,9 @@
                 <h5><span class="glyphicon glyphicon-education"></span> Qualification Required: {{ $vacancy->qualification->description }}</h5>
                 <h5><span class="glyphicon glyphicon-time"></span> Closing on: {{ $vacancy->start_date }}</h5>
                 @if( !is_null($vacancy->min_salary) && !is_null($vacancy->max_salary))
-                    <p class="address"><span class="glyphicon glyphicon-piggy-bank"></span>  {{ $vacancy->min_salary }} - {{ $vacancy->max_salary }}</p>
+                    <p class="salary"><span class="glyphicon glyphicon-piggy-bank"></span>  {{ $vacancy->min_salary }} - {{ $vacancy->max_salary }}</p>
+                @else
+                    <p class="salary"><span class="glyphicon glyphicon-piggy-bank"></span>  Not disclosed </p>
                 @endif
                 <ul class="btns pull-right"><li><a href="#">Apply</a></li></ul>
             </div>
