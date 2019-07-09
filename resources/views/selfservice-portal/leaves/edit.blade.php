@@ -64,7 +64,7 @@
                     <legend><i class="glyphicon glyphicon-file"></i> Attachment</legend>
                     <div class="form-group col-sm-12">
                         <a href="{{$leave->download_link}}" download>
-                            <i class="glyphicon glyphicon-download"></i> Download
+                            <i class="fa fa-download"></i> Download
                         </a>
                     </div>
                 </div>

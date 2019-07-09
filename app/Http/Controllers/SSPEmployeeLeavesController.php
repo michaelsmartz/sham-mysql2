@@ -73,9 +73,11 @@ class SSPEmployeeLeavesController extends CustomController
                 'id'       => $employee_id,
                 'fullname' => EmployeesController::getEmployeeFullName($employee_id)
             );
+            $employees       = EmployeesController::getDepartmentEmployees($employee->department_id,$employee->id);
+        }else{
+            $employees       = null;
         }
 
-        $employees       = EmployeesController::getDepartmentEmployees($employee->department_id);
         $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
         $calendar        = app('CalendarEventService',[
                             'type'       => EmployeeLeave::class,
@@ -112,10 +114,15 @@ class SSPEmployeeLeavesController extends CustomController
                 'id'       => $employee_id,
                 'fullname' => EmployeesController::getEmployeeFullName($employee_id)
             );
+            $employees       = EmployeesController::getDepartmentEmployees($employee->department_id,$employee->id);
+        }else{
+            $employees       = null;
         }
 
-        $employees       = EmployeesController::getDepartmentEmployees($employee->department_id);
-        $leaves          = $this->getEmployeeLeavesHistory($employee_id);
+        $default_from    = (new DateTime('first day of this month'))->format('Y-m-d');
+        $default_to      = (new DateTime('last day of next month'))->format('Y-m-d');
+
+        $leaves          = $this->getEmployeeLeavesHistory($employee_id,$default_from,$default_to);
         $eligibility     = $this->getEmployeeLeavesStatus($employee_id);
 
 
@@ -123,7 +130,7 @@ class SSPEmployeeLeavesController extends CustomController
             'employee' => Employee::find($employee_id)
         );
 
-        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees','manager', 'selected'));
+        return view($this->baseViewPath .'.index', compact('leaves','eligibility','employees','manager', 'selected','default_from','default_to'));
 
     }
 
@@ -141,21 +148,27 @@ class SSPEmployeeLeavesController extends CustomController
             $employee        = Employee::find(\Auth::user()->employee_id);
             if($employee->jobTitle->is_manager == 1){
                 $manager         = array(
-                    'id'       => $employee_id,
-                    'fullname' => EmployeesController::getEmployeeFullName($employee_id)
+                    'id'       => $employee->id,
+                    'fullname' => EmployeesController::getEmployeeFullName($employee->id)
                 );
+                $employees       = EmployeesController::getDepartmentEmployees($employee->department_id,$employee->id);
+            }else{
+                $employees       = null;
             }
-
-            $employees       = EmployeesController::getDepartmentEmployees($employee->department_id);
-            $selected    = $employee_id;
+            $selected        = $employee_id;
         }elseif ($request->input('employee_id') == 0){
             //manager's leave
-            $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
-            $employees   = EmployeesController::getManagerEmployees(\Auth::user()->employee_id);
-            $manager         = array(
-                'id'       => $employee_id,
-                'fullname' => EmployeesController::getEmployeeFullName($employee_id)
-            );
+            $employee_id   = (\Auth::check()) ? \Auth::user()->employee_id : 0;
+            $employee      = Employee::find(\Auth::user()->employee_id);
+            if($employee->jobTitle->is_manager == 1){
+                $manager         = array(
+                    'id'       => $employee->id,
+                    'fullname' => EmployeesController::getEmployeeFullName($employee->id)
+                );
+                $employees       = EmployeesController::getDepartmentEmployees($employee->department_id,$employee->id);
+            }else{
+                $employees       = null;
+            }
             $selected    = null;
         }else{
             //employee's leave
@@ -172,13 +185,20 @@ class SSPEmployeeLeavesController extends CustomController
             $absence_type = null;
         }
 
+        //Filter by status
+        if(!is_null($request->input('status')) && $request->input('status') != -1){
+            $status = $request->input('status');
+        }else{
+            $status = null;
+        }
 
-        $leaves      = $this->getEmployeeLeavesHistory($employee_id,$request->input('from'),$request->input('to'),$absence_type);
+        $leaves      = $this->getEmployeeLeavesHistory($employee_id,$request->input('from'),$request->input('to'),$absence_type,$status);
         $eligibility = $this->getEmployeeLeavesStatus($employee_id);
 
         $selected = array(
             'employee'    => Employee::find($employee_id),
-            'absence_id'  => $absence_type
+            'absence_id'  => $absence_type,
+            'status'      => $status
         );
 
         return view($this->baseViewPath .'.index', compact('manager','leaves','eligibility','employees','selected'));
@@ -190,9 +210,6 @@ class SSPEmployeeLeavesController extends CustomController
         if(!empty($request->input('employee_id')) && $request->input('employee_id') != 0){
             //employee's leave viewed from manager
             $employee_id = $request->input('employee_id');
-        }elseif ($request->input('employee_id') == 0){
-            //manager's leave
-            $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
         }else{
             //employee's leave
             $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
@@ -378,7 +395,7 @@ class SSPEmployeeLeavesController extends CustomController
         $leave = $this->getleaveDetails($request_id);
 
         if(!empty($leave->media_id)){
-            $leave->download_link = $this->download($request_id,$leave->media_id);
+            $leave->download_link = 'my-leaves/'.$request_id.'/attachment/'.$leave->media_id;
         }
 
         $view = view($this->baseViewPath .'.edit',compact('leave','id'))->renderSections();
@@ -393,7 +410,7 @@ class SSPEmployeeLeavesController extends CustomController
         return redirect()->route($this->baseRoute .'.index');
     }
 
-    public static function getEmployeeLeavesHistory($employee_id,$date_from = null,$date_to = null,$absence_type = null){
+    public static function getEmployeeLeavesHistory($employee_id,$date_from = null,$date_to = null,$absence_type = null,$status = null){
         $sql_request = "SELECT DISTINCT(abe.id),abs.description as absence_description,abe.employee_id,ele.total,ele.taken,(ele.total - ele.taken) as remaining,abe.starts_at,abe.ends_at,abe.status,CONCAT(emp.first_name,\" \",emp.surname) as validator
             FROM absence_type_employee abe
             LEFT JOIN absence_types abs ON abs.id = abe.absence_type_id
@@ -403,11 +420,15 @@ class SSPEmployeeLeavesController extends CustomController
         if(empty($date_from) && empty($date_to)){
             $sql_request .= " WHERE abe.employee_id = $employee_id AND YEAR(abe.starts_at) = YEAR(CURDATE()) AND ele.employee_id = $employee_id";
         }else{
-            $sql_request .= " WHERE abe.employee_id = $employee_id AND ele.employee_id = $employee_id AND abe.starts_at BETWEEN '$date_from' AND '$date_to'";;
+            $sql_request .= " WHERE abe.employee_id = $employee_id AND ele.employee_id = $employee_id AND abe.starts_at >= '$date_from' AND abe.starts_at < '$date_to'";;
         }
 
         if(!empty($absence_type)){
             $sql_request .= " AND abs.id = $absence_type";
+        }
+
+        if(!is_null($status)){
+            $sql_request .= " AND abe.status = $status";
         }
 
         $sql_request .= " ORDER BY abe.starts_at DESC;";

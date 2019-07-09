@@ -19,23 +19,31 @@ on('change','.pending_box',function(event){
 
 
 on('click','.fc-more,.fc-toolbar button',function(event){
-    var leave_ids = ($('#leave_list').val().slice(0,-1)).split(',');
+    if($('#leave_list').length){
+        var leave_ids = ($('#leave_list').val().slice(0,-1)).split(',');
 
-    $( "input[class='pending_box']" ).each(function(index) {
-        if($.inArray($(this).val(),leave_ids) !== -1){
-            $(this).prop('checked',true);
-        }else{
-            $(this).prop('checked',false);
-        }
-    });
+        $( "input[class='pending_box']" ).each(function(index) {
+            if($.inArray($(this).val(),leave_ids) !== -1){
+                $(this).prop('checked',true);
+            }else{
+                $(this).prop('checked',false);
+            }
+        });
+    }
+
 });
 
 
 on('click','#bundle_submit',function(event){
+    if($('#leave_list').val() === ''){
+        event.preventDefault();
+    }else{
         var leave_ids = $('#leave_list').val().slice(0,-1);
         var status = $('#batch_operation').find(":selected").val();
-        
-        window.location = "/leaves/batch/"+leave_ids+"/"+status;
+
+        window.location = "/my-leaves/batch/"+leave_ids+"/"+status;
+    }
+
 });
 
 on('click','#bundle_check',function(event){

@@ -373,7 +373,7 @@
         </svg>
     </a>
 
-    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My absences and leaves" href="{{URL::to('/')}}/leaves">
+    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My absences and leaves" href="{{URL::to('/')}}/my-leaves">
         <svg class="icon" width="47" height="40">
             <use xlink:href="#time-5" />
         </svg>

@@ -20,6 +20,7 @@ class Router
                 if(empty($controllerName)){
                     $controller = Str::studly(str_replace('.', ' ', $module)) . 'Controller';
                 } else {
+                    $name       = str_replace("-","",$name);
                     $controller = $controllerName;
                 }
 
