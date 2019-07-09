@@ -8,6 +8,7 @@
         <meta name="author" content="Kalija Global">
         <meta name="csrf-token" content="{{csrf_token()}}">
         <title>Smartz Human Asset Management</title>
+        <link href="{{URL::to('/')}}/css/public-vacancies.css" rel="stylesheet">
         <style>
             body{margin:0;background-color:#F8F8F8}
             header{
@@ -611,51 +612,74 @@
                 }
             }
         </style>
+
+        <style>
+            /**, *:before, *:after {
+                box-sizing: border-box;
+            }
+
+            .flex-container {
+                display:flex;
+                flex-flow :row wrap;
+                justify-content: space-around;
+                width: 96%;
+            }
+
+            article{
+                display:flex;
+                flex-flow :row wrap;
+                justify-content: space-around;
+                align-items: stretch;
+            }
+
+            .card {
+                flex: 0 0 96%;
+            }
+
+            article header{
+                display: flex;
+                flex-flow :row wrap;
+                justify-content: space-between;
+                align-items: start;
+                flex: 0 0 100%;
+                
+            }
+            article header *{
+                margin: 0;
+                padding: 10px;
+            }
+            article section {
+                display: flex;
+            }*/
+        </style>
     </head>
     <body>
         <header>
             <img src="{{asset('../images/logo-gold-header2.png')}}" width="170px" height="50px" />
         </header>
-        <section>
-            <div class="jp_job_post_main_wrapper_cont">
-                <div class="jp_job_post_main_wrapper">
-                    <div class="row">
-                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                                <div class="jp_job_post_side_img">
-                                    <img src="images/content/job_post_img1.jpg" alt="post_img">
-                                </div>
-                                <div class="jp_job_post_right_cont">
-                                    <h4>HTML Developer (1 - 2 Yrs Exp.)</h4>
-                                    <p>Webstrot Technology Pvt. Ltd.</p>
-                                    <ul>
-                                        <li><i class="fa fa-cc-paypal"></i>&nbsp; $12K - 15k P.A.</li>
-                                        <li><i class="fa fa-map-marker"></i>&nbsp; Caliphonia, PO 455001</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                <div class="jp_job_post_right_btn_wrapper">
-                                    <ul>
-                                        <li><a href="#">Part Time</a></li>
-                                        <li><a href="#">Apply</a></li>
-                                    </ul>
-                                </div>
-                            </div>	
-                        </div>	
-                        </div>
-                        <div class="jp_job_post_keyword_wrapper">
-                        <ul>
-                            <li><i class="fa fa-tags"></i>Keywords :</li>
-                            <li><a href="#">ui designer,</a></li>
-                            <li><a href="#">developer,</a></li>
-                            <li><a href="#">senior</a></li>
-                            <li><a href="#">it company,</a></li>
-                            <li><a href="#">design,</a></li>
-                            <li><a href="#">call center</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <main class="grid">
+            @forelse($vacancies as $vacancy)
+            <article class="grid-item">
+                <header>
+                    <h4>{{ $vacancy->job_title }}</h4>
+                    <small>{{ $vacancy->posted_on }}</small>
+                </header>
+                <section>
+                    <p>
+                        {{ $vacancy->description }}
+                    </p>
+                </section>
+                <footer></footer>
+            </article>
+            @empty
+                <article class="card">
+                    <section>
+                        <p>
+                            There are no job openings at the moment
+                        </p>
+                    </section>
+                </article>
+            @endforelse
+        </main>
     </body>
 </html>

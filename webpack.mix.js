@@ -110,6 +110,9 @@ mix.sass('resources/assets/sass/calendar.scss', 'public/css', {
 mix.sass('resources/assets/sass/portal-calendar.scss', 'public/css', {
   outputStyle: 'nested'
 });
+mix.sass('resources/assets/sass/public-vacancies.scss', 'public/css', {
+  outputStyle: 'nested'
+});
 
 mix/*.webpackConfig({
     externals:{
@@ -145,6 +148,7 @@ mix.minify('public/css/flatpickr.css');
 mix.minify('public/css/leaves.css');
 mix.minify('public/css/calendar.css');
 mix.minify('public/css/portal-calendar.css');
+mix.minify('public/csspublic-vacancies.css');
 
 mix.then(() => {
     minifier.minify('public/css/app.css');
