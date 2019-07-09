@@ -99,3 +99,5 @@ CHANGE COLUMN `description` `description` VARCHAR(10000) NULL DEFAULT NULL ;
 ALTER TABLE `recruitments`
 ADD COLUMN `posted_on` DATETIME NULL DEFAULT CURRENT_TIMESTAMP AFTER `end_date`;
 
+ALTER TABLE `candidates`
+ADD COLUMN `is_internal` TINYINT(4) NULL DEFAULT '0' AFTER `is_hired`;
