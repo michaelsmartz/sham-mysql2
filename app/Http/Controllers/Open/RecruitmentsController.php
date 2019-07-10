@@ -30,6 +30,15 @@ class RecruitmentsController extends Controller
 
         foreach($vacancies as $vacancy) {
             $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
+            $dt = Carbon::now();
+            $dtEndDate = Carbon::createFromFormat('Y-m-d', $vacancy->end_date);
+            if($dt->diffInHours($dtEndDate) > 72){
+                $vacancy->rel_calendar_id = "wait";
+            }elseif($dt->diffInHours($dtEndDate) <= 72){
+                $vacancy->rel_calendar_id = "hourglass-1";
+            }else{
+                $vacancy->rel_calendar_id = "hourglass";
+            }
         }
         return view('public.index', compact('vacancies'));
     }

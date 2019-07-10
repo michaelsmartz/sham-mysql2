@@ -1,30 +1,82 @@
-*, *:before, *:after {
-    box-sizing: border-box;
+body, html{
+    height: 100%;
 }
 
-// Flexbox Grid
+body{
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background-color:#F8F8F8;
+
+    & header{
+        min-height: 55px;
+        box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        background: #FFF;
+        z-index:1;
+    }
+}
+
 .grid{
-    max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 4fr));
+}
 
-    &-item{
-        min-width: 450px;
-        max-width: 450px;
-        flex: 1 1 450px;
-        padding-left: .5rem;
-        padding-right: .5rem;
-        margin-bottom: 1rem;
+.card{
+    transition: transform 1s;
+    background: #FFF;
+    margin: 15px;
+    padding: 15px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
 
-        & header{
-            display: flex;
-            justify-items: space-between;
-            & h4{
-                font-size: 1.5em;
-                font-size: 3vw;
+    & header{
+        display: flex;
+        flex-flow: wrap;
+        place-content: space-between;
+        box-shadow: unset;
+        min-height: unset;
+
+        & h4{
+            margin: 0 0 1rem 0.2rem;
+            font-size: calc(2.1rem - 1vw);
+            max-width: 80%;
+        }
+
+        & time{
+            color: #777;
+            font-style: italic;
+        }
+
+    }
+
+    & section{
+
+        & p.text{
+            color:#777;
+            margin: 0 15px;
+            cursor: pointer;
+            /* hide text if it more than N lines  */
+            overflow: hidden;
+            /* for set '...' in absolute position */
+            position: relative; 
+            /* use this value to count block height */
+            line-height: 1.5em;
+            /* max-height = line-height (1.2) * lines max number (4) */
+            //max-height: 6em; 
+            /* fix problem when last visible word doesn't adjoin right side  */
+            text-align: justify;  
+            /* place for '...' */
+            padding-right: 1em;
+            transition: height 1s;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+        }
+
+        & p{
+            & svg{
+                vertical-align: middle;
             }
         }
     }
+
 }
