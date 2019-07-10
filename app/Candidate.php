@@ -7,11 +7,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
 use San4io\EloquentFilter\Filters\LikeFilter;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Jedrzej\Searchable\SearchableTrait;
+use San4io\EloquentFilter\Traits\Filterable;
+use Yadahan\AuthenticationLog\AuthenticationLogable;
 
-class Candidate extends Model
+class Candidate extends Authenticatable
 {
-    use Mediable;
-    use SoftDeletes;
+
+    use Mediable,SoftDeletes, AuthenticationLogable, SearchableTrait, Filterable;
 
 
     /**
@@ -41,6 +46,7 @@ class Candidate extends Model
                   'surname',
                   'name',
                   'email',
+                  'password',
                   'home_address',
                   'id_number',
                   'immigration_status_id',
@@ -65,6 +71,15 @@ class Candidate extends Model
                   'zip',
                   'is_hired'
               ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
     protected $searchable = [
         'first_name',

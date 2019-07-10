@@ -20,7 +20,15 @@ Route::get('testunclaimedmonthly', 'MiscController@testunclaimedmonthly');
 Auth::routes();
 
 Route::group(['prefix' => '/vacancies', 'namespace' => 'Open'], function() {
-    Route::get('/', 'RecruitmentsController@publicHome');
+    Route::get('/', 'RecruitmentsController@publicHome')->name('candidate.vacancies');
+});
+
+Route::group(['prefix' => '/candidate'], function () {
+    //Route::get('/', 'Open\RecruitmentsController@publicHome')->name('candidate.dashboard');
+    //Route::get('dashboard', 'Open\RecruitmentsController@publicHome')->name('candidate.dashboard');
+    Route::get('login', 'Auth\CandidateLoginController@login')->name('candidate.auth.login');
+    Route::post('login', 'Auth\CandidateLoginController@loginCandidate')->name('candidate.auth.loginCandidate');
+    Route::post('logout', 'Auth\CandidateLoginController@logout')->name('candidate.auth.logout');
 });
 
 #region auth middleware routes

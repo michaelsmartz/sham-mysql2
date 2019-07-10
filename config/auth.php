@@ -45,6 +45,11 @@ return [
             'driver' => 'token',
             'provider' => 'users',
         ],
+
+        'candidate' => [
+            'driver' => 'session',
+            'provider' => 'candidates',
+        ],
     ],
 
     /*
@@ -70,7 +75,10 @@ return [
             'driver' => 'cache-user' /*'caching'*/,
             'model' => App\User::class,
         ],
-
+        'candidates' => [
+            'driver' => 'eloquent',
+            'model' => App\Candidate::class,
+        ],
         // uncommented originally by laravel
         /*
         'users' => [
@@ -106,6 +114,11 @@ return [
             'provider' => 'users',
             'table' => 'password_resets',
             'expire' => 60,
+        ],
+        'candidates' => [
+            'provider' => 'candidates',
+            'table' => 'password_resets',
+            'expire' => 30,
         ],
     ],
 

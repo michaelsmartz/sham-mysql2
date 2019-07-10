@@ -23,5 +23,6 @@ return [
     'Register' => 'Register',
     'email_error' => 'Email address not found',
     'password_error' => 'Incorrect password',
+    'candidateLogin' => 'Candidate Login',
 
 ];
