@@ -95,6 +95,8 @@ Route::group(['prefix' => '/candidate'], function () {
             Route::any('/my-leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('my-leaves.history');
             Route::any('/my-leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('my-leaves.pending');
 
+            #my-team
+            Route::resource('my-team', 'SSPMyTeamController');
             #my-vacancies
             Route::resource('my-vacancies', 'SSPMyVacanciesController');
             Route::post('my-vacancies/{recruitment_id}/apply', 'SSPMyVacanciesController@applyInterview')->name('recruitment_requests.apply-interview');

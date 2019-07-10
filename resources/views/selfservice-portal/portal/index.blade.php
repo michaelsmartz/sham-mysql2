@@ -378,6 +378,12 @@
             <use xlink:href="#time-5" />
         </svg>
     </a>
+
+    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My Team" href="{{URL::to('/')}}/my-team">
+        <svg class="icon" width="47" height="40">
+            <use xlink:href="#communication" />
+        </svg>
+    </a>
 </div>
 @endsection
 
