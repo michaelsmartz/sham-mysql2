@@ -5,6 +5,7 @@
 @section('scripts')
     <link href="{{URL::to('/')}}/css/nice-select.css" rel="stylesheet">
     <link href="{{URL::to('/')}}/css/vacancies.css" rel="stylesheet">
+    <script src="{{URL::to('/')}}/js/my-vacancies.min.js"></script>
     <script src="{{URL::to('/')}}/js/jquery.nice-select.min.js"></script>
     <script>
 
@@ -85,7 +86,7 @@
             </form>
         </div>
 
-        <section class="post-area section-gap">
+        <section id="my-vacancies" class="post-area section-gap">
             <div class="container">
                 <div class="row justify-content-center d-flex">
                     <div class="col-lg-12 post-list">

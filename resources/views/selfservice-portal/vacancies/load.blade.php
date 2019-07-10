@@ -33,10 +33,18 @@
                 @else
                     <p class="salary"><span class="glyphicon glyphicon-piggy-bank"></span>  Not disclosed </p>
                 @endif
-                <ul class="btns pull-right"><li><a href="#">Apply</a></li></ul>
+                <ul class="btns pull-right">
+                    <li>
+                        <a role="button"
+                           {{--id="apply_{{ $vacancy->id }}" --}}
+                           {{--v-bind:disabled="apply_{{ $vacancy->id }} !== null"  --}}
+                           @click="applyVacancy({{ $vacancy->id }}, '{{ $vacancy->job_title }}')">Apply</a>
+                    </li>
+                </ul>
             </div>
         </div>
     @endforeach
+    @component('partials.index', [])
+    @endcomponent
 </div>
-
 {{ $vacancies->links() }}

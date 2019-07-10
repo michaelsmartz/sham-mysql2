@@ -65,6 +65,7 @@ mix.js('resources/assets/js/uploader.js', 'public/js');
 mix.js('resources/assets/js/parsley.js', 'public/js');
 mix.js('resources/assets/js/recruitment.js', 'public/js');
 mix.js('resources/assets/js/recruitment-request.js', 'public/js');
+mix.js('resources/assets/js/my-vacancies.js', 'public/js');
 mix.js('resources/assets/js/candidates.js', 'public/js');
 mix.js('resources/assets/js/leaves.js', 'public/js');
 //mix.js('resources/assets/js/vue-component-test.js', 'public/js');
@@ -131,6 +132,8 @@ if(!mix.inProduction){
 }
 mix.minify('public/js/uploader.js');
 mix.minify('public/js/recruitment.js');
+mix.minify('public/js/recruitment-request.js');
+mix.minify('public/js/my-vacancies.js');
 mix.minify('public/js/candidates.js');
 
 mix.minify('public/js/leaves.js');
@@ -168,6 +171,7 @@ mix.then(() => {
     minifier.minify('public/js/parsley.js');
     minifier.minify('public/js/recruitment.js');
     minifier.minify('public/js/recruitment-request.js');
+    minifier.minify('public/js/my-vacancies.js');
     minifier.minify('public/js/candidates.js');
     minifier.minify('public/js/leaves.js');
     minifier.minify('public/js/app2.js');

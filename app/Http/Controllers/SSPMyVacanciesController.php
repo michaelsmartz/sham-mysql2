@@ -10,10 +10,11 @@ use App\Recruitment;
 use App\Support\Helper;
 use App\SystemSubModule;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
-class SSPVacanciesController extends CustomController
+class SSPMyVacanciesController extends CustomController
 {
     /**
      * Create a new controller instance.
@@ -70,6 +71,16 @@ class SSPVacanciesController extends CustomController
 
         // load the view and pass the vacancies
         return view($this->baseViewPath .'.index', compact('warnings', 'vacancies', 'jobStatuses' , 'jobDepartments', 'jobQualifications'));
+    }
+
+    public function applyInterview(Request $request){
+        $recruitment_id = $request->get('recruitment_id');
+
+        try {
+            //dd($recruitment_id);
+        }catch(Exception $exception) {
+            dd($exception->getMessage());
+        }
     }
 }
 
