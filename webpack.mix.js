@@ -68,6 +68,7 @@ mix.js('resources/assets/js/recruitment-request.js', 'public/js');
 mix.js('resources/assets/js/my-vacancies.js', 'public/js');
 mix.js('resources/assets/js/candidates.js', 'public/js');
 mix.js('resources/assets/js/leaves.js', 'public/js');
+mix.js('resources/assets/js/myteam.js', 'public/js');
 //mix.js('resources/assets/js/vue-component-test.js', 'public/js');
 mix.js('resources/assets/js/tinymce.js', 'public/js');
 mix.js('resources/assets/js/app2.js', 'public/js');
@@ -105,6 +106,9 @@ mix.sass('resources/assets/sass/flatpickr.scss', 'public/css', {
 mix.sass('resources/assets/sass/leaves.scss', 'public/css', {
   outputStyle: 'nested'
 });
+mix.sass('resources/assets/sass/myteam.scss', 'public/css', {
+    outputStyle: 'nested'
+});
 mix.sass('resources/assets/sass/calendar.scss', 'public/css', {
     outputStyle: 'nested'
 });
@@ -137,6 +141,7 @@ mix.minify('public/js/my-vacancies.js');
 mix.minify('public/js/candidates.js');
 
 mix.minify('public/js/leaves.js');
+mix.minify('public/js/myteam.js');
 mix.minify('public/js/tinymce.js');
 
 mix.minify('public/css/app.css');
@@ -149,6 +154,7 @@ mix.minify('public/css/nav-wizard.css');
 mix.minify('public/css/candidates.css');
 mix.minify('public/css/flatpickr.css');
 mix.minify('public/css/leaves.css');
+mix.minify('public/css/myteam.css');
 mix.minify('public/css/calendar.css');
 mix.minify('public/css/portal-calendar.css');
 mix.minify('public/csspublic-vacancies.css');
@@ -165,6 +171,7 @@ mix.then(() => {
     minifier.minify('public/css/tinymce-custom.css');
     minifier.minify('public/css/flatpickr.css');
     minifier.minify('public/css/leaves.css');
+    minifier.minify('public/css/myteam.css');
 
     minifier.minify('public/js/tables.js');
     minifier.minify('public/js/uploader.js');
@@ -174,6 +181,7 @@ mix.then(() => {
     minifier.minify('public/js/my-vacancies.js');
     minifier.minify('public/js/candidates.js');
     minifier.minify('public/js/leaves.js');
+    minifier.minify('public/js/myteam.js');
     minifier.minify('public/js/app2.js');
     
 });
