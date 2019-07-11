@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Auth;
+use Barryvdh\Debugbar\Facade as Debugbar;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\Input;
+use Redirect;
 
 class CandidateLoginController extends Controller
 {
@@ -30,6 +34,7 @@ class CandidateLoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest:candidate')->except('logout');
+        Debugbar::disable();
     }
 
     /**
@@ -57,7 +62,9 @@ class CandidateLoginController extends Controller
       }
 
       // if unsuccessful, then redirect back to the login with the form data
-      return redirect()->back()->withInput($request->only('email', 'remember'));
+      $errors = new MessageBag(['password' => ['Email and/or password invalid.']]);
+      return Redirect::back()->withErrors($errors)->withInput(Input::except('password'));
+      
     }
 
     public function logout()
