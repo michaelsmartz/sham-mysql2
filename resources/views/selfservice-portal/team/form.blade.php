@@ -4,33 +4,34 @@
     </div>
 </div>
 <div class="row">
-    <div class="form-group col-md-2">
+    <div class="form-group col-md-3">
         <label><i class="glyphicon glyphicon-user"></i>  Employee</label>
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-3">
         {{$data->full_name}}
     </div>
-    <div class="form-group col-md-2">
+    <div class="form-group col-md-3">
         <label><i class="glyphicon glyphicon-envelope"></i>  Email</label>
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-3">
         {{$data->email}}
     </div>
 </div>
 <div class="row">
-    <div class="form-group col-md-2">
+    <div class="form-group col-md-3">
         <label><i class="glyphicon glyphicon-signal"></i>  User profil</label>
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-3">
         {{$data->user_profil}}
     </div>
-    <div class="form-group col-md-2">
+    <div class="form-group col-md-3">
         <label><i class="glyphicon glyphicon-qrcode"></i>  Cell number</label>
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-3">
         {{$data->cell_number}}
     </div>
 </div>
+<br>
 <div class="row">
     <div class="form-group col-md-12 {{ $errors->has('password') ? 'has-error' : '' }}">
         <legend><i class="glyphicon glyphicon-lock"></i> Password</legend>

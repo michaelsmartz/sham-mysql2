@@ -16,11 +16,11 @@
             </div>
         </div>
         <br>
-        <div class="container">
+        <div class="container-fluid">
             <a class="row">
                 @foreach($employees as $employee)
                     <a href="#light-modal" class="my-team" data-team="{{$employee->first_name}} {{$employee->surname}}" onclick="editForm({{ $employee->user_id }}, event,'my-team');">
-                        <div class="col-md-4 col-sm-6" >
+                        <div class="col-md-3 col-sm-6" >
                             <div class="our-team">
                                 <img src="@if(!empty($employee->picture)){{$employee->picture}} @elseif(strtolower($employee->gender) == 'female') {{asset('/img/female.jpeg')}} @else {{asset('/img/male.jpeg')}} @endif">
                                 <div class="team-content">
