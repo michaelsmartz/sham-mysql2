@@ -716,6 +716,8 @@ class EmployeesController extends CustomController
               ->orWhereNull('date_terminated');
         })
         ->where('employees.line_manager_id', $manager_id)
+        ->orderby('employees.surname','asc')
+        ->orderby('employees.first_name','asc')
         ->get();
         return $employees_ids;
     }

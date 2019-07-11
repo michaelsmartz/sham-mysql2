@@ -1,6 +1,6 @@
 @extends('portal-index')
 @section('title','My Team')
-@section('subtitle', 'View and manager your associated team members')
+@section('subtitle', 'View associated team members (Note : Click on team member to change his/her password)')
 <link rel="stylesheet" href="{{URL::to('/')}}/css/myteam.min.css">
 
 @section('content')

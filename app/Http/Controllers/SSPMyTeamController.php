@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ShamUserProfile;
 use App\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -42,9 +43,13 @@ class SSPMyTeamController extends Controller
         if($id == 0){
             $id = \Auth::user()->id;
         }
+        $data = $this->contextObj->findData($id);
+        $data->full_name     = EmployeesController::getEmployeeFullName($data->employee_id);
+        $data->user_profil   = ShamUserProfile::GetDescription($data->sham_user_profile_id);
+
 
         if($request->ajax()) {
-            $view = view($this->baseViewPath . '.edit', compact('id'))->renderSections();
+            $view = view($this->baseViewPath . '.edit', compact('id','data'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -52,7 +57,7 @@ class SSPMyTeamController extends Controller
                 'url' => $view['postModalUrl']
             ]);
         }
-        return view($this->baseViewPath . '.edit', compact('id'));
+        return view($this->baseViewPath . '.edit', compact('id','data'));
     }
 
     /**

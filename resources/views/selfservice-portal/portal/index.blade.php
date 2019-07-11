@@ -379,11 +379,13 @@
         </svg>
     </a>
 
+    @if($is_manager == 1)
     <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My Team" href="{{URL::to('/')}}/my-team">
         <svg class="icon" width="47" height="40">
             <use xlink:href="#communication" />
         </svg>
     </a>
+    @endif
 </div>
 @endsection
 

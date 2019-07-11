@@ -1,8 +1,8 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Edit User')
+@section('title', 'Reset password')
 
 
-@section('modalTitle', 'Edit User')
+@section('modalTitle', 'Reset password')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>
