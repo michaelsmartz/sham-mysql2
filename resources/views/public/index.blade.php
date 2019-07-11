@@ -69,7 +69,11 @@
                         Application Deadline: <strong>{{ $vacancy->end_date }}</strong>
                     </p>
                 </section>
-                <footer></footer>
+                <footer>
+                        @auth('candidate')
+                        Candidate logged-in
+                        @endauth
+                </footer>
             </article>
             @empty
                 <article class="card">

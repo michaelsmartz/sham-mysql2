@@ -13,6 +13,7 @@ class CandidateController extends Controller
     public function __construct()
     {
         $this->middleware('auth:candidate',['only' => 'index','edit']);
+        Debugbar::disable();
     }
 
     /**
