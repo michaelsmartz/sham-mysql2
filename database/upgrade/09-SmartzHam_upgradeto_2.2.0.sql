@@ -74,6 +74,10 @@ CREATE TABLE `candidate_interviewers` (
 ALTER TABLE `absence_types`
 ADD `colour_id` INT(11) NULL DEFAULT '0' AFTER `duration_unit`;
 
+ALTER TABLE `absence_type_employee` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `absence_type_employee` ADD `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `absence_type_employee` ADD `deleted_at` DATETIME NULL;
+
 ALTER TABLE `absence_type_employee`
 ADD COLUMN `comments` TEXT NULL AFTER `updated_at`;
 
