@@ -101,10 +101,12 @@ Route::group(['prefix' => '/candidate'], function () {
 
             #my-team
             Route::resource('my-team', 'SSPMyTeamController');
+
             #my-vacancies
+            Route::post('my-vacancies/apply', 'SSPMyVacanciesController@applyInterview')->name('my-vacancies.apply-interview');
+            Route::get('my-vacancies/{recruitment_id}/salary-expectation', 'SSPMyVacanciesController@addSalaryExpectation')->name('my-vacancies.add-salary-expectation');
             Route::resource('my-vacancies', 'SSPMyVacanciesController');
-            Route::post('my-vacancies/{recruitment_id}/apply', 'SSPMyVacanciesController@applyInterview')->name('recruitment_requests.apply-interview');
-        #endregion
+            #endregion
 
         #region Central HR
             // "duplicate" routes to work with both create and edit mode

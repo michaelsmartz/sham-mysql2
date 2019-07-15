@@ -828,7 +828,7 @@ class RecruitmentRequestsController extends CustomController
                             'addr_line_4',
                             'city',
                             'province',
-                            'zip',
+                            'zip_code',
                             'preferred_notification_id',
                             'created_at',
                             'updated_at',

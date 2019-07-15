@@ -371,31 +371,31 @@ sup, sub, u, del {
   color: #49e4fa;
 }
 
-h1 {
+#my-vacancies h1 {
   font-size: 36px;
 }
 
-h2 {
+#my-vacancies h2 {
   font-size: 30px;
 }
 
-h3 {
+#my-vacancies h3 {
   font-size: 24px;
 }
 
-h4 {
+#my-vacancies h4 {
   font-size: 18px;
 }
 
-h5 {
+#my-vacancies h5 {
   font-size: 16px;
 }
 
-h6 {
+#my-vacancies h6 {
   font-size: 14px;
 }
 
-h1, h2, h3, h4, h5, h6 {
+#my-vacancies h1, #my-vacancies h2, #my-vacancies h3, #my-vacancies h4, #my-vacancies h5, #my-vacancies h6 {
   line-height: 1.5em;
 }
 
@@ -528,20 +528,6 @@ h1, h2, h3, h4, h5, h6 {
   .section-title p br {
     display: none;
   }
-}
-
-.p1-gradient-bg, .banner-area .overlay-bg, .submit-right, .submit-left, .contact-btns, .form-area .primary-btn {
-  background-image: -moz-linear-gradient(0deg, #bfacff 0%, #795fff 100%);
-  background-image: -webkit-linear-gradient(0deg, #bfacff 0%, #795fff 100%);
-  background-image: -ms-linear-gradient(0deg, #bfacff 0%, #795fff 100%);
-}
-
-.p1-gradient-color, .feat-txt h1 {
-  background: -moz-linear-gradient(0deg, #bfacff 0%, #795fff 100%);
-  background: -webkit-linear-gradient(0deg, #bfacff 0%, #795fff 100%);
-  background: -ms-linear-gradient(0deg, #bfacff 0%, #795fff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .primary-btn {
@@ -808,7 +794,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-.buttons {
+#my-vacancies .buttons {
   background: #fff;
   display: flex;
   padding: 20px 30px 0px 30px;
@@ -822,24 +808,24 @@ h1, h2, h3, h4, h5, h6 {
   color: #222;
 }
 
-.buttons i {
+#my-vacancies .buttons i {
   font-size: 40px;
   padding-right: 20px;
   color: #49e4fa;
 }
 
-.buttons:hover {
+#my-vacancies .buttons:hover {
   cursor: pointer;
   box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.1);
   background: #49e4fa;
   color: #fff;
 }
 
-.buttons:hover i, .buttons:hover a {
+#my-vacancies .buttons:hover i, .buttons:hover a {
   color: #fff !important;
 }
 
-.buttons a {
+#my-vacancies .buttons a {
   color: #222;
 }
 
@@ -849,7 +835,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 1024px) {
-  .buttons {
+  #my-vacancies .buttons {
     margin-bottom: 30px;
   }
 }

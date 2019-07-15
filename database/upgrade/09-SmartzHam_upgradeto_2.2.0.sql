@@ -109,3 +109,13 @@ ADD COLUMN `is_internal` TINYINT(4) NULL DEFAULT '0' AFTER `is_hired`;
 ALTER TABLE `candidates`
 	ADD COLUMN `password` VARCHAR(100) NULL DEFAULT NULL AFTER `deleted_at`,
 	ADD COLUMN `remember_token` VARCHAR(100) NULL DEFAULT NULL AFTER `password`;
+
+ALTER TABLE `candidates`
+DROP COLUMN `salary_expectation`;
+
+ALTER TABLE `candidate_recruitment`
+ADD COLUMN `salary_expectation` INT(10) NULL DEFAULT NULL AFTER `status`;
+
+ALTER TABLE `candidates`
+CHANGE COLUMN `zip` `zip_code` VARCHAR(50) NULL DEFAULT NULL ;
+

@@ -341,7 +341,6 @@ class CandidatesController extends CustomController
             'phone' => 'nullable',
             'id_number' => 'required|string|min:1|max:50',
             'date_available' => 'nullable|string|min:0',
-            'salary_expectation' => 'nullable|numeric|min:0',
             'overview' => 'nullable|string|min:0',
             'cover' => 'nullable|string|min:0',
             'addr_line_1' => 'nullable|string|min:0|max:50',
@@ -350,7 +349,7 @@ class CandidatesController extends CustomController
             'addr_line_4' => 'nullable|string|min:0|max:50',
             'city' => 'nullable|string|min:0|max:50',
             'province' => 'nullable|string|min:0|max:50',
-            'zip' => 'nullable|string|min:0|max:50'
+            'zip_code' => 'nullable|string|min:0|max:50'
         ];
 
         $this->validate($request, $validateFields);

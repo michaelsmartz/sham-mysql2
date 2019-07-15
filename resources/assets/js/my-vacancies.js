@@ -1,4 +1,6 @@
 import {on} from 'delegated-events';
+
+require('parsleyjs');
 window.Vue = require('vue/dist/vue.common.js');
 Vue.config.productionTip = false;
 
@@ -8,9 +10,7 @@ let token = document.querySelector('meta[name="csrf-token"]').getAttribute('cont
 
 var vm = new Vue({
 	el: "#my-vacancies",
-	data: {
-		button: 'Apply'
-	},
+	data: {},
 	computed: {},
 	methods: {
         applyVacancy: function(recruitment_id, job_title){
@@ -18,29 +18,11 @@ var vm = new Vue({
 
             alerty.confirm(
                 "Are you sure you want to <strong class='text-danger'> apply </strong> for <strong class='text-danger'>" + job_title + "</strong> position?<br>", {
-                    okLabel: '<span class="text-danger">Yes</span>',
+                    okLabel: '<a class="text-danger" href="#light-modal">Yes</a>',
                     cancelLabel: 'No'
                 },
                 function () {
-                    fetch('./my-vacancies/' + recruitment_id + '/apply', {
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/json, */*",
-                            "X-Requested-With": "XMLHttpRequest",
-                            "X-CSRF-TOKEN": token
-                        },
-                        method: 'post',
-                        body: JSON.stringify({ recruitment_id: recruitment_id}),
-                        credentials: "same-origin"
-                    })
-					.then(function (res) {
-						if (res.ok == true) {
-							alerty.toasts('Operation successful',{'place':'top','time':3500},function(){
-                                // location.reload();
-							});
-						}
-
-					});
+                    window.loadUrl('my-vacancies/' + recruitment_id + '/salary-expectation');
                 }
             );
 		}

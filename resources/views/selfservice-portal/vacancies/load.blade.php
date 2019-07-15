@@ -33,14 +33,18 @@
                 @else
                     <p class="salary"><span class="glyphicon glyphicon-piggy-bank"></span>  Not disclosed </p>
                 @endif
+                @if(is_null($vacancy->already_apply))
                 <ul class="btns pull-right">
                     <li>
                         <a role="button"
-                           {{--id="apply_{{ $vacancy->id }}" --}}
-                           {{--v-bind:disabled="apply_{{ $vacancy->id }} !== null"  --}}
-                           @click="applyVacancy({{ $vacancy->id }}, '{{ $vacancy->job_title }}')">Apply</a>
+                           @click="applyVacancy({{ $vacancy->id }}, '{{ $vacancy->job_title }}')">
+                           Apply
+                        </a>
                     </li>
                 </ul>
+                @else
+                    <span class="btns pull-right">Applied!</span>
+                @endif
             </div>
         </div>
     @endforeach

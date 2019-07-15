@@ -56,7 +56,6 @@ class Candidate extends Authenticatable
                   'nationality',
                   'notice_period',
                   'date_available',
-                  'salary_expectation',
                   'phone',
                   'preferred_notification_id',
                   'birth_date',
@@ -69,7 +68,7 @@ class Candidate extends Authenticatable
                   'addr_line_4',
                   'city',
                   'province',
-                  'zip',
+                  'zip_code',
                   'is_hired'
               ];
 

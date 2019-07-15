@@ -152,8 +152,8 @@
             </div>
             <div class="form-group col-sm-2">
                 <span class="field">
-                     <label for="zip">Zip Code</label>
-                    {!! Form::text('zip', old('zip', isset($candidate->zip) ? $candidate->zip : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'zip']) !!}
+                     <label for="zip_code">Zip Code</label>
+                    {!! Form::text('zip_code', old('zip_code', isset($candidate->zip_code) ? $candidate->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip Code', 'id'=>'zip_code']) !!}
                 </span>
             </div>
 
@@ -309,17 +309,6 @@
                              </span>
                         </label>
                         {!! Form::number('notice_period', old('notice_period', isset($candidate->notice_period) ? $candidate->notice_period : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Notice Period','id'=>'notice_period', 'maxlength' => '50', 'min'=> '0']) !!}
-                    </span>
-            </div>
-
-            <div class="form-group col-xs-2">
-                    <span class="field">
-                        <label for="salary_expectation">Salary Expectation</label>
-                        {!! Form::text('salary_expectation', old('salary_expectation', isset($candidate->salary_expectation) ? $candidate->salary_expectation : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Salary Expectation', 'required', 'title'=>'Required','id'=>'salary_expectation', 'maxlength' => '50',
-                        'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
-                        'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
-                        'data-parsley-trigger'=>'focusout'])
-                        !!}
                     </span>
             </div>
 
