@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\HasBaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,7 +17,7 @@ use Yadahan\AuthenticationLog\AuthenticationLogable;
 class Candidate extends Authenticatable
 {
 
-    use Mediable,SoftDeletes, AuthenticationLogable, SearchableTrait, Filterable;
+    use HasBaseModel, Mediable, SoftDeletes, AuthenticationLogable, SearchableTrait, Filterable;
 
 
     /**
