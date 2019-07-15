@@ -4,32 +4,11 @@
     <div class="limiter">
         <div class="container-login100">
             <div class="wrap-login100">
-                <div class="login100-form-title" style="background: url({{asset('/img/candidate.jpg')}});background-position:center;background-repeat:no-repeat;height: 350px;">
-                    <div class="logobox">
-                        <legend>Candidate Register</legend>
-                        <picture>
-                            <source
-                                    media="(max-width: 767px)"
-                                    sizes="(max-width: 200px) 100vw, 200px"
-                                    srcset="
-                        /dist/img/logo-gold-login_dy8gg5_ar_1_1,c_fill,g_auto__c_scale,w_200.png 200w">
-                            <source
-                                    media="(min-width: 768px) and (max-width: 991px)"
-                                    sizes="(max-width: 286px) 70vw, 200px"
-                                    srcset="
-                        /dist/img/logo-gold-login_dy8gg5_ar_4_3,c_fill,g_auto__c_scale,w_200.png 200w">
-                            <source
-                                    media="(min-width: 992px) and (max-width: 1199px)"
-                                    sizes="(max-width: 333px) 60vw, 200px"
-                                    srcset="
-                        /dist/img/logo-gold-login_dy8gg5_ar_16_9,c_fill,g_auto__c_scale,w_200.png 200w">
-                            <img
-                                    sizes="(max-width: 500px) 40vw, 200px"
-                                    srcset="
-                        /dist/img/logo-gold-login_dy8gg5_c_scale,w_200.png 200w"
-                                    src="/dist/img/logo-gold-login_dy8gg5_c_scale,w_200.png"
-                                    alt="">
-                        </picture>
+                <div class="login100-form-title" style="background: url({{asset('/img/candidate.jpg')}});background-position:center;background-repeat:no-repeat;height: 240px;">
+                    <div class="logobox-login">
+                        <img src="/dist/img/logo-gold-login_dy8gg5_c_scale,w_200.png" class="img-responsive center-block" width="130" height="130">
+                        <hr>
+                        <label>Candidate Register</label>
                     </div>
 
                 </div>
