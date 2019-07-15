@@ -109,6 +109,9 @@ mix.sass('resources/assets/sass/leaves.scss', 'public/css', {
 mix.sass('resources/assets/sass/myteam.scss', 'public/css', {
     outputStyle: 'nested'
 });
+mix.sass('resources/assets/sass/candidate-login.scss', 'public/css', {
+    outputStyle: 'nested'
+});
 mix.sass('resources/assets/sass/calendar.scss', 'public/css', {
     outputStyle: 'nested'
 });
@@ -155,6 +158,7 @@ mix.minify('public/css/candidates.css');
 mix.minify('public/css/flatpickr.css');
 mix.minify('public/css/leaves.css');
 mix.minify('public/css/myteam.css');
+mix.minify('public/css/candidate-login.css');
 mix.minify('public/css/calendar.css');
 mix.minify('public/css/portal-calendar.css');
 mix.minify('public/csspublic-vacancies.css');
@@ -172,6 +176,7 @@ mix.then(() => {
     minifier.minify('public/css/flatpickr.css');
     minifier.minify('public/css/leaves.css');
     minifier.minify('public/css/myteam.css');
+    minifier.minify('public/css/candidate-login.css');
 
     minifier.minify('public/js/tables.js');
     minifier.minify('public/js/uploader.js');
