@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Candidate;
 use App\CandidatePreviousEmployment;
 use App\CandidateQualification;
@@ -220,11 +221,14 @@ class CandidatesController extends CustomController
 
     }
 
-    public function edit(Request $request)
+    public function edit(Request $request,$mode = 'default')
     {
 
         $data = $titles = $genders = $maritalstatuses = null;
         $id = Route::current()->parameter('candidate');
+        if(empty($id) && $mode == 'external'){
+            $id = Auth::guard('candidate')->user()->id;
+        }
 
         $uploader = [
             "fieldLabel" => "Attach Files",
@@ -262,7 +266,13 @@ class CandidatesController extends CustomController
 
         $candidateDisabilities = $data->disabilities->pluck('id');
 
-        return view($this->baseViewPath .'.edit',
+        if($mode == 'external'){
+            $view = 'public.candidate-form';
+        }else{
+            $view = $this->baseViewPath .'.edit';
+
+        }
+        return view($view,
             compact('data', 'uploader', 'titles','genders','maritalstatuses','jobTitles','skills', 'preferredNotifications',
                 'disabilities', 'candidateSkills','candidateDisabilities','qualifications', 'countries', 'immigrationStatuses'));
     }

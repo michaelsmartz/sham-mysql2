@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\CandidatesController;
 use App\Http\Controllers\Controller;
 use Auth;
 use Barryvdh\Debugbar\Facade as Debugbar;
@@ -58,13 +59,29 @@ class CandidateLoginController extends Controller
       // Attempt to log the user in
       if (Auth::guard('candidate')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
         // if successful, then redirect to their intended location
-        return redirect()->intended(route('candidate.vacancies'));
+        if(Auth::guard('candidate')->user()->profil_complete == 1){
+            return redirect()->intended(route('candidate.vacancies'));
+        }else{
+            return redirect()->intended(route('candidate.auth.details'));
+        }
+
       }
 
       // if unsuccessful, then redirect back to the login with the form data
       $errors = new MessageBag(['password' => ['Email and/or password invalid.']]);
       return Redirect::back()->withErrors($errors)->withInput(Input::except('password'));
       
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function details(Request $request)
+    {
+        $candidate = new CandidatesController();
+        return $candidate->edit($request,'external');
     }
 
     public function logout()

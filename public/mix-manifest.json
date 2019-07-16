@@ -17,6 +17,7 @@
     "/css/leaves.css": "/css/leaves.css",
     "/css/myteam.css": "/css/myteam.css",
     "/css/candidate-login.css": "/css/candidate-login.css",
+    "/css/candidate-form.css": "/css/candidate-form.css",
     "/css/calendar.css": "/css/calendar.css",
     "/css/portal-calendar.css": "/css/portal-calendar.css",
     "/css/public-vacancies.css": "/css/public-vacancies.css",
@@ -34,6 +35,7 @@
     "/css/leaves.css.map": "/css/leaves.css.map",
     "/css/myteam.css.map": "/css/myteam.css.map",
     "/css/candidate-login.css.map": "/css/candidate-login.css.map",
+    "/css/candidate-form.css.map": "/css/candidate-form.css.map",
     "/css/calendar.css.map": "/css/calendar.css.map",
     "/css/portal-calendar.css.map": "/css/portal-calendar.css.map",
     "/css/public-vacancies.css.map": "/css/public-vacancies.css.map",
@@ -87,6 +89,7 @@
     "/css/leaves.min.css": "/css/leaves.min.css",
     "/css/myteam.min.css": "/css/myteam.min.css",
     "/css/candidate-login.min.css": "/css/candidate-login.min.css",
+    "/css/candidate-form.min.css": "/css/candidate-form.min.css",
     "/css/calendar.min.css": "/css/calendar.min.css",
     "/css/portal-calendar.min.css": "/css/portal-calendar.min.css",
     "/csspublic-vacancies.min.css": "/csspublic-vacancies.min.css"
