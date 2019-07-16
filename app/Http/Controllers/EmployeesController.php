@@ -712,7 +712,7 @@ class EmployeesController extends CustomController
         ->leftjoin('genders','genders.id','=','employees.gender_id')
         ->leftjoin('users','users.employee_id','=','employees.id')
         ->where(function($q){
-            $q->where('employees.date_terminated','<=','NOW()')
+            $q->where('employees.date_terminated','<=',date("Y-m-d"))
               ->orWhereNull('date_terminated');
         })
         ->where('employees.line_manager_id', $manager_id)
@@ -733,7 +733,7 @@ class EmployeesController extends CustomController
     public static function getManagerEmployeeIds($manager_id){
         $employees_ids  = Employee::where('line_manager_id', $manager_id)
         ->where(function($q){
-            $q->where('date_terminated','<=','NOW()')
+            $q->where('date_terminated','<=',date("Y-m-d"))
               ->orWhereNull('date_terminated');
         })
         ->pluck('id')
@@ -745,7 +745,7 @@ class EmployeesController extends CustomController
        if(empty($manager_id)){
            $employees_ids  = DB::table('employees')->select('id','first_name','surname')
                ->where(function($q){
-                   $q->where('date_terminated','<=','NOW()')
+                   $q->where('date_terminated','<=',date("Y-m-d"))
                      ->orWhereNull('date_terminated');
                })
                ->where('department_id', $department_id)
@@ -753,7 +753,7 @@ class EmployeesController extends CustomController
        }else{
            $employees_ids  = DB::table('employees')->select('id','first_name','surname')
                ->where(function($q){
-                   $q->where('date_terminated','<=','NOW()')
+                   $q->where('date_terminated','<=',date("Y-m-d"))
                        ->orWhereNull('date_terminated');
                })
                ->where('department_id', $department_id)
