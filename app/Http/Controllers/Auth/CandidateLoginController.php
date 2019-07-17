@@ -87,6 +87,6 @@ class CandidateLoginController extends Controller
     public function logout()
     {
         Auth::guard('candidate')->logout();
-        return redirect()->route('candidate.auth.login');
+        return redirect()->route('candidate.vacancies');
     }
 }

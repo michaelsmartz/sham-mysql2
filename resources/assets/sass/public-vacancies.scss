@@ -1,3 +1,22 @@
+$animation-speed: 150ms;
+
+$button-bg-color: tomato;
+$button-text-color: white;
+$button-text-size: 1.25em;
+$button-spacing: 1.5rem;
+
+@function tint(
+  $color,
+  $percent
+) {
+  @if not _is-color($color) {
+    @error "`#{$color}` is not a valid color for the `$color` argument in " +
+           "the `tint` mixin.";
+  } @else {
+    @return mix(#fff, $color, $percent);
+  }
+}
+
 body, html{
     height: 100%;
 }
@@ -12,12 +31,19 @@ body{
         box-shadow: 0 0 2px rgba(0,0,0,0.3);
         background: #FFF;
         z-index:1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        & a{
+            margin: 20px;
+        }
     }
 }
 
 .grid{
     display: grid;
-    grid-gap: 25px;
+    gap: 25px 25px 0px 25px;
     grid-template-columns: repeat(auto-fit, minmax(11rem, 4fr));
 }
 
@@ -79,4 +105,37 @@ body{
         }
     }
 
+    & footer{
+        .button{
+            display: inline-block;
+            margin: $button-spacing / 2 0;
+            padding: ($button-spacing / 2) $button-spacing;
+            border: none;
+            border-radius: $button-spacing / 8;
+            outline: none;
+            background-color: $button-bg-color;
+            color: $button-text-color;
+            font-family: inherit;
+            font-size: $button-text-size;
+            font-weight: 400;
+            line-height: $button-spacing;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all $animation-speed ease-out;
+        
+            &:focus, &:hover {
+                background-color: tint($button-bg-color, 10%);
+                box-shadow: 0 0 0 ($button-spacing / 8) $button-text-color, 0 0 0 ($button-spacing / 4) tint($button-bg-color, 10%);
+            }
+
+            &:active{
+                background-color: shade($button-bg-color, 5%);
+                box-shadow: 0 0 0 ($button-spacing / 8) shade($button-bg-color, 5%), 0 0 0 ($button-spacing / 4) shade($button-bg-color, 5%);
+                transition-duration: $animation-speed / 2;
+            }
+
+        }
+
+    }
 }
