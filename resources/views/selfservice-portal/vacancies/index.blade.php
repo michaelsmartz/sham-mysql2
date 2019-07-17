@@ -48,18 +48,22 @@
         </div>
     @endif
         <div class="banner-content col-lg-12">
-            <form action="" class="search-form-area">
+            <form method="POST" action="{{route('my-vacancies.filter')}}" class="search-form-area">
                 <div class="row justify-content-center form-wrap">
                     <div class="col-lg-3 form-cols">
-                        <input type="text" class="form-control datepicker" name="search_closing_date" placeholder="Search Closing Date">
+                        <input type="text" class="form-control datepicker"
+                               value="{{ ($closing_date) ? $closing_date : '' }}"
+                               name="closing_date" placeholder="Search Closing Date">
                     </div>
                     <div class="col-lg-4 form-cols">
                             <div class="default-select" id="selects">
-                            <select>
+                            <select id="qualification" name="qualification">
                                 <option value="0">All Qualifications</option>
-                                @if(is_array($jobQualifications) &&  sizeof($jobQualifications) != 0)
+                                @if(sizeof($jobQualifications) != 0)
                                     @foreach($jobQualifications as $id => $jobQualification)
-                                        <option value="{{ $id }}">{{ $jobQualification }}</option>
+                                        <option value="{{ $id }}" {{ $qualification == $id ? 'selected' : '' }}>
+                                            {{ $jobQualification }}
+                                        </option>
                                     @endforeach
                                 @endif
                             </select>
@@ -67,18 +71,20 @@
                     </div>
                     <div class="col-lg-4 form-cols">
                         <div class="default-select" id="selects">
-                            <select>
+                            <select id="department" name="department">
                                 <option value="0">All Departments</option>
-                                @if(is_array($jobDepartments) && sizeof($jobDepartments) != 0)
+                                @if(sizeof($jobDepartments) != 0)
                                     @foreach($jobDepartments as $id => $jobDepartment)
-                                        <option value="{{ $id }}">{{ $jobDepartment }}</option>
+                                        <option value="{{ $id }}" {{ $department == $id ? 'selected' : '' }}>
+                                            {{ $jobDepartment }}
+                                        </option>
                                     @endforeach
                                 @endif
                             </select>
                         </div>
                     </div>
                     <div class="col-lg-1 form-cols">
-                        <button type="button" class="btn btn-info">
+                        <button type="submit" class="btn btn-info">
                            Search
                         </button>
                     </div>

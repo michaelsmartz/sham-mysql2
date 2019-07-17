@@ -23,7 +23,8 @@ class SSPMyVacanciesController extends CustomController
      * Create a new controller instance.
      *
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->contextObj = new Recruitment();
         $this->baseViewPath = 'selfservice-portal.vacancies';
     }
@@ -39,7 +40,7 @@ class SSPMyVacanciesController extends CustomController
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_VACANCIES);
 
-        if ($allowedActions == null || !$allowedActions->contains('List')){
+        if ($allowedActions == null || !$allowedActions->contains('List')) {
             return View('not-allowed')
                 ->with('title', 'Vacancies')
                 ->with('warnings', array('You do not have permissions to access this page.'));
@@ -48,25 +49,37 @@ class SSPMyVacanciesController extends CustomController
         $warnings = [];
         $already_apply = null;
 
-        $employee =  Employee::find($employee_id);
+        $employee = Employee::find($employee_id);
 
-        $candidate = Candidate::where('employee_no', $employee->employee_no)->get()->first();
-
-        if(empty($employee)) {
+        if (empty($employee)) {
             $warnings[] = 'Please check whether your profile is associated to an employee!';
         }
 
-        $vacancies = $this->contextObj::with(['department','employeeStatus','qualification', 'skills'])
-            ->where('is_approved', '=', 1)
-            ->whereDate('end_date', '>', Carbon::now())
-            ->whereIn('recruitment_type_id', [1, 3])
-            ->orderBy('posted_on', 'desc')
-            ->paginate(2);
+        $candidate = Candidate::where('employee_no', $employee->employee_no)->get()->first();
 
-        foreach($vacancies as $vacancy) {
+        //Filter by closing_date
+        $closing_date = $request->get('closing_date', null);
+
+        //Filter by qualification
+        if(!empty($request->input('qualification')) && $request->input('qualification') != 0){
+            $qualification = $request->input('qualification');
+        }else{
+            $qualification = null;
+        }
+
+        //Filter by department
+        if(!empty($request->input('department')) && $request->input('department') != 0){
+            $department = $request->input('department');
+        }else{
+            $department = null;
+        }
+
+        $vacancies = $this->getVacancies($closing_date, $qualification, $department);
+
+        foreach ($vacancies as $vacancy) {
             $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
 
-            if(!is_null($candidate) && !is_null($vacancy->id)) {
+            if (!is_null($candidate) && !is_null($vacancy->id)) {
                 $already_apply = DB::table('candidate_recruitment')->where('candidate_id', $candidate->id)
                     ->where('recruitment_id', $vacancy->id)->get()->first();
             }
@@ -79,14 +92,15 @@ class SSPMyVacanciesController extends CustomController
         $jobQualifications = QualificationRecruitment::pluck('description', 'id');
 
         if ($request->ajax()) {
-            return view($this->baseViewPath .'.load', compact('vacancies'))->render();
+            return view($this->baseViewPath . '.load', compact('vacancies'))->render();
         }
 
         // load the view and pass the vacancies
-        return view($this->baseViewPath .'.index', compact('warnings', 'vacancies', 'jobStatuses' , 'jobDepartments', 'jobQualifications'));
+        return view($this->baseViewPath . '.index', compact('warnings', 'vacancies', 'jobStatuses', 'department', 'jobDepartments', 'qualification', 'jobQualifications', 'closing_date'));
     }
 
-    public function update(Request $request){
+    public function update(Request $request)
+    {
         $already_candidate = null;
         $candidate_id = null;
 
@@ -94,25 +108,24 @@ class SSPMyVacanciesController extends CustomController
         $salary_expectation = ($request->has('salary_expectation')) ? $request->get('salary_expectation') : null;
         $recruitment_id = ($request->has('recruitment_id')) ? $request->get('recruitment_id') : null;
 
-        if(!is_null($salary_expectation) && !is_null($recruitment_id)){
+        if (!is_null($salary_expectation) && !is_null($recruitment_id)) {
 
             $recruitment = Recruitment::find($recruitment_id);
-            $employee =  Employee::with(['addresses'=> function ($query)
-                {
-                    return  $query->where('address_type_id', 1);
-                }])
+            $employee = Employee::with(['addresses' => function ($query) {
+                return $query->where('address_type_id', 1);
+            }])
                 ->where('id', $employee_id)
                 ->get()
                 ->first();
 
-            if(!empty($employee) && !empty($recruitment)) {
-                if($employee->employee_no){
+            if (!empty($employee) && !empty($recruitment)) {
+                if ($employee->employee_no) {
                     $already_candidate = Candidate::where('employee_no', $employee->employee_no)->get()->first();
-                    $candidate_id = ($already_candidate)? $already_candidate->id: null;
+                    $candidate_id = ($already_candidate) ? $already_candidate->id : null;
                 }
 
                 //if not in candidate table do insert
-                if(is_null($already_candidate)) {
+                if (is_null($already_candidate)) {
                     $employee_arr = $employee->ToArray();
 
                     $data_employee = array_only($employee_arr,
@@ -153,13 +166,13 @@ class SSPMyVacanciesController extends CustomController
                     }
                 }
 
-                if(!is_null($candidate_id) && !is_null($recruitment_id)){
+                if (!is_null($candidate_id) && !is_null($recruitment_id)) {
 
                     $already_apply = DB::table('candidate_recruitment')->where('candidate_id', $candidate_id)
-                        ->where('recruitment_id',$recruitment_id)->get()->first();
+                        ->where('recruitment_id', $recruitment_id)->get()->first();
 
                     //if already applied do not insert again
-                    if(is_null($already_apply)) {
+                    if (is_null($already_apply)) {
                         $candidate_recruitment = [
                             'candidate_id' => $candidate_id,
                             'recruitment_id' => $recruitment_id,
@@ -175,17 +188,20 @@ class SSPMyVacanciesController extends CustomController
 
         return redirect()->route('my-vacancies.index');
     }
+    public function store(Request $request){}
+
 
     //TODO fix bug on path pointing to update action instead
-    public function applyInterview(Request $request){
+    public function applyInterview(Request $request)
+    {
     }
 
     public function addSalaryExpectation(Request $request)
     {
         $recruitment_id = Route::current()->parameter('recruitment_id');
 
-        if($request->ajax()) {
-            $view = view($this->baseViewPath .'.salary', compact('recruitment_id'))->renderSections();
+        if ($request->ajax()) {
+            $view = view($this->baseViewPath . '.salary', compact('recruitment_id'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -194,7 +210,100 @@ class SSPMyVacanciesController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath .'.salary', compact('recruitment_id'));
+        return view($this->baseViewPath . '.salary', compact('recruitment_id'));
+    }
+
+    /**
+     * @param $closing_date
+     * @param $qualification
+     * @param $department
+     * @return mixed
+     */
+    private function getVacancies($closing_date, $qualification, $department){
+        if (!is_null($closing_date) && is_null($qualification) && is_null($department)) {
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->whereDate('end_date', '>', $closing_date);
+        }
+        else if (!is_null($closing_date) && is_null($qualification) && !is_null($department)) {
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->where('department_id', $department)
+                ->whereDate('end_date', '>', $closing_date);
+        }
+        elseif (is_null($closing_date) && !is_null($qualification) && is_null($department)){
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->where('qualification_id', $qualification);
+        }
+        elseif (is_null($closing_date) && !is_null($qualification) && !is_null($department)){
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->where('qualification_id', $qualification)
+                ->where('department_id', $department);
+        }
+        elseif (!is_null($closing_date) && !is_null($qualification) && is_null($department)){
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->where('qualification_id', $qualification)
+                ->whereDate('end_date', '>', $closing_date);
+        }
+        elseif (!is_null($closing_date) && !is_null($qualification) && !is_null($department)){
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->where('qualification_id', $qualification)
+                ->where('department_id', $department)
+                ->whereDate('end_date', '>', $closing_date);
+        }
+        elseif (is_null($closing_date) && is_null($qualification) && is_null($department)){
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->whereDate('end_date', '>', Carbon::now());
+        }
+        elseif (is_null($closing_date) && is_null($qualification) && !is_null($department)){
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->where('department_id', $department);
+        }
+        else {
+            $vacancies = $this->contextObj::with([
+                'department',
+                'qualification',
+                'employeeStatus',
+                'skills'])
+                ->whereDate('end_date', '>', Carbon::now());
+        }
+
+        $vacancies = $vacancies->where('is_approved', '=', 1)
+            ->whereIn('recruitment_type_id', [1, 3])
+            ->orderBy('posted_on', 'desc')
+            ->paginate(2);
+
+        return $vacancies;
     }
 }
 
