@@ -60,7 +60,7 @@ $courseBgClasses = ['bg-lightBlue','bg-teal','bg-amber','bg-mauve','bg-taupe','b
                     </tr>
                     </thead>
                     <tbody>
-                    @if(!empty($myCourses) && sizeof($myCourses)>0)
+                    @if(!empty($myCourses) && is_array($myCourses) && sizeof($myCourses)>0)
                         @foreach($myCourses as $course)
                             <tr>
                                 <td class="course-name">

@@ -137,7 +137,7 @@ if(count($coursesAvailable)>12)
             <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#sectionA">Available</a>
             </li>
-            @if(sizeof($warnings) == 0)
+            @if(is_array($warnings) && sizeof($warnings) == 0)
                 <li class="nav-item">
                     <a class="nav-link" id="mycourses" data-toggle="tab" href="#myCoursesTab">My courses</a>
                 </li>

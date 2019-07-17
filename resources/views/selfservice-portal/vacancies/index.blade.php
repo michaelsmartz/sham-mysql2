@@ -57,7 +57,7 @@
                             <div class="default-select" id="selects">
                             <select>
                                 <option value="0">All Qualifications</option>
-                                @if( sizeof($jobQualifications) != 0)
+                                @if(is_array($jobQualifications) &&  sizeof($jobQualifications) != 0)
                                     @foreach($jobQualifications as $id => $jobQualification)
                                         <option value="{{ $id }}">{{ $jobQualification }}</option>
                                     @endforeach
@@ -69,7 +69,7 @@
                         <div class="default-select" id="selects">
                             <select>
                                 <option value="0">All Departments</option>
-                                @if( sizeof($jobDepartments) != 0)
+                                @if(is_array($jobDepartments) && sizeof($jobDepartments) != 0)
                                     @foreach($jobDepartments as $id => $jobDepartment)
                                         <option value="{{ $id }}">{{ $jobDepartment }}</option>
                                     @endforeach
@@ -91,7 +91,7 @@
                 <div class="row justify-content-center d-flex">
                     <div class="col-lg-12 post-list">
                         <ul class="cat-list">
-                            @if( sizeof($jobStatuses) != 0)
+                            @if(is_array($jobStatuses) && sizeof($jobStatuses) != 0)
                                 @foreach($jobStatuses as $jobStatus)
                                     <li><a href="#">{{ $jobStatus->description }}</a></li>
                                 @endforeach
@@ -99,7 +99,7 @@
                         </ul>
 
                         <div id="load" style="position: relative;">
-                            @if(sizeof($vacancies) == 0)
+                            @if(is_array($vacancies) && sizeof($vacancies) == 0)
                                 <div class="col-sm-12 col-xs-12 col-md-4 col-lg-4 text-success">
                                     There are no vacancies available for the moment
                                 </div>

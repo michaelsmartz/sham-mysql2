@@ -473,8 +473,8 @@
                         <div class="row">
                             <div class="timesheet">
                                 <div class="working-hours">
-                                    @if(isset($workingHours['team']) && sizeof($workingHours['team']) > 0
-                                             && isset($workingHours['timegroup']) && sizeof($workingHours['timegroup']) > 0
+                                    @if(isset($workingHours['team']) && is_array($workingHours['team']) && sizeof($workingHours['team']) > 0
+                                             && isset($workingHours['timegroup']) && is_array($workingHours['timegroup']) && sizeof($workingHours['timegroup']) > 0
                                     )
                                         @if(!empty($workingHours['team']))
                                             <h2 class="list title">{{ $workingHours['team'] }}</h2>
@@ -521,9 +521,9 @@
                                                 @endif
                                             </ul>
                                         @endif
-                                    @elseif(isset($workingHours['timegroup']) && sizeof($workingHours['timegroup']) == 0)
+                                    @elseif(isset($workingHours['timegroup']) && is_array($workingHours['timegroup']) && sizeof($workingHours['timegroup']) == 0)
                                         <p style="color: #ffffee ">Your team has not been allocated to a time group yet</p>
-                                    @elseif(isset($workingHours['team']) && sizeof($workingHours['team']) == 0)
+                                    @elseif(isset($workingHours['team']) && is_array($workingHours['team']) && sizeof($workingHours['team']) == 0)
                                         <p style="color: #ffffee ">You have not been assigned to a team.</p>
                                     @else
                                         <p style="color: #ffffee ">An error occured</p>
