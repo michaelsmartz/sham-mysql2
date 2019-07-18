@@ -40,13 +40,23 @@ class SSPMyTeamController extends Controller
     public function edit(Request $request)
     {
         $id = Route::current()->parameter('my_team');
-        if($id == 0){
-            $id = \Auth::user()->id;
+        if($id == -1){
+            if($request->ajax()) {
+                $view = view($this->baseViewPath . '.default')->renderSections();
+                return response()->json([
+                    'title' => $view['modalTitle'],
+                    'content' => $view['modalContent'],
+                    'footer' => $view['modalFooter'],
+                    'url' => $view['postModalUrl']
+                ]);
+            }else{
+                return view($this->baseViewPath . '.default');
+            }
+        }else{
+            $data = $this->contextObj->findData($id);
+            $data->full_name     = EmployeesController::getEmployeeFullName($data->employee_id);
+            $data->user_profil   = ShamUserProfile::GetDescription($data->sham_user_profile_id);
         }
-        $data = $this->contextObj->findData($id);
-        $data->full_name     = EmployeesController::getEmployeeFullName($data->employee_id);
-        $data->user_profil   = ShamUserProfile::GetDescription($data->sham_user_profile_id);
-
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.edit', compact('id','data'))->renderSections();

@@ -19,7 +19,7 @@
         <div class="container-fluid">
             <a class="row">
                 @foreach($employees as $employee)
-                    <a href="#light-modal" class="my-team" data-team="{{$employee->first_name}} {{$employee->surname}}" onclick="editForm({{ $employee->user_id }}, event,'my-team');">
+                    <a href="#light-modal" class="my-team" data-team="{{$employee->first_name}} {{$employee->surname}}" onclick="editForm(@if(!empty($employee->user_id)) {{ $employee->user_id }} @else -1 @endif, event,'my-team');">
                         <div class="col-md-3 col-sm-6" >
                             <div class="our-team">
                                 <img src="@if(!empty($employee->picture)){{$employee->picture}} @elseif(strtolower($employee->gender) == 'female') {{asset('/img/female.jpeg')}} @else {{asset('/img/male.jpeg')}} @endif">
