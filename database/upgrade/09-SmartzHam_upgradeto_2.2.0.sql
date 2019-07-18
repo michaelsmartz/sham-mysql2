@@ -119,3 +119,5 @@ ADD COLUMN `salary_expectation` INT(10) NULL DEFAULT NULL AFTER `status`;
 ALTER TABLE `candidates`
 CHANGE COLUMN `zip` `zip_code` VARCHAR(50) NULL DEFAULT NULL ;
 
+ALTER TABLE  `candidates`
+ADD COLUMN `profill_complete` TINYINT(4) NULL AFTER `remember_token`;

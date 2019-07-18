@@ -178,7 +178,14 @@ if(document.getElementById("candidates-app")) {
             },
             fetchQualifications: function () {
 
-                if (!route().current("candidates.create")) {
+                if (route().current("candidate.auth.details")) {
+                    var id = document.getElementById("candidate_id").value;
+                    fetch('/candidates/'+id+'/candidate-qualifications')
+                        .then(res => res.json())
+                        .then(res => {
+                            this.quals = res;
+                        })
+                }else if (!route().current("candidates.create")) {
                 fetch('./candidate-qualifications')
                     .then(res => res.json())
                     .then(res => {
@@ -188,7 +195,14 @@ if(document.getElementById("candidates-app")) {
             },
             fetchQPreviousEmployments: function () {
 
-                if (!route().current("candidates.create")) {
+                if (route().current("candidate.auth.details")) {
+                    var id = document.getElementById("candidate_id").value;
+                    fetch('/candidates/'+id+'/previous_employments')
+                        .then(res => res.json())
+                        .then(res => {
+                            this.employments = res;
+                        })
+                }else if (!route().current("candidates.create")) {
                     fetch('./previous_employments')
                         .then(res => res.json())
                         .then(res => {

@@ -447,7 +447,7 @@ class SSPEmployeeLeavesController extends CustomController
             FROM eligibility_employee ele
             LEFT JOIN absence_types abs ON abs.id = ele.absence_type_id
             LEFT JOIN colours c ON c.id = abs.colour_id 
-            WHERE ele.start_date <= ".date("Y-m-d")." AND CURDATE() BETWEEN ele.start_date AND ele.end_date AND ele.employee_id = $employee_id ;"
+            WHERE ele.start_date <= NOW() AND CURDATE() BETWEEN ele.start_date AND ele.end_date AND ele.employee_id = $employee_id ;"
         );
 
         return $employee_leave;
@@ -463,7 +463,7 @@ class SSPEmployeeLeavesController extends CustomController
             abt.description,(ele.total - ele.taken) as remaining 
             FROM eligibility_employee ele
             LEFT JOIN absence_types abt ON abt.id = ele.absence_type_id
-            WHERE ele.start_date <= ".date("Y-m-d")." AND ele.employee_id = $employee_id";
+            WHERE ele.start_date <= NOW() AND ele.employee_id = $employee_id";
        
 
         if(!empty($absence_type_id)){

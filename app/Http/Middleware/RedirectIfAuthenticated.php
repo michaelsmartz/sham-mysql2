@@ -22,7 +22,6 @@ class RedirectIfAuthenticated
             case 'candidate':
               if (Auth::guard($guard)->check()) {
                 //return redirect()->route('dashboard');
-                echo 'candidate authenticated';
               }
               break;
             default:

@@ -648,3 +648,33 @@ textarea.input100 {
   }
 }
 
+.field input,.field select,.field textarea,.form-group input,.form-group select,.SumoSelect > .CaptionCont{
+  background-color: transparent !important;
+  border : none !important;
+  border-radius: 0px !important;
+  box-shadow: none;
+  webkit-box-shadow: none;
+  border-bottom: 2px solid whitesmoke !important;
+}
+
+
+#qualification,#motivation{
+  display: none;
+}
+
+.candidate_section{
+  margin: 3%;
+  min-height: 55%
+}
+
+.nav .nav-item{
+  width: 33.33%;
+  float: left;
+  text-align: center;
+}
+
+.nav .active{
+  color: #d4a71a;
+  background: #fff;
+  font-size: 16px;
+}
