@@ -1,6 +1,6 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Warning ! : No user associated')
-@section('modalTitle', 'Warning ! : No user associated')
+@section('title', 'Notice : No credentials associated')
+@section('modalTitle', 'Notice : No credentials associated')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
 @endsection
@@ -10,7 +10,7 @@
 @section('modalContent')
     <div class="row">
         <div class="col-sm-12">
-            This employee can't be modified.
+            No credentials associated to this employee therefore,this employee can't be modified.
         </div>
     </div>
     @if(!Request::ajax())
