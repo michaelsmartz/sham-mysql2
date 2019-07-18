@@ -9915,15 +9915,15 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 218:
+/***/ 219:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(219);
+module.exports = __webpack_require__(220);
 
 
 /***/ }),
 
-/***/ 219:
+/***/ 220:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12415,12 +12415,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       // Value could be overriden in DOM
       if ('function' === typeof this.options.value) return this.options.value(this);else if ('undefined' !== typeof this.options.value) return this.options.value;
 
-<<<<<<< Updated upstream
-/***/ 219:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(220);
-=======
       // Radio input case
       if (this.element.nodeName === 'INPUT') {
         var type = Utils.getType(this.element);
@@ -12429,7 +12423,6 @@ module.exports = __webpack_require__(220);
         // checkbox input case
         if (type === 'checkbox') {
           var values = [];
->>>>>>> Stashed changes
 
           this._findRelated().filter(':checked').each(function () {
             values.push($(this).val());
@@ -12439,13 +12432,8 @@ module.exports = __webpack_require__(220);
         }
       }
 
-<<<<<<< Updated upstream
-/***/ 220:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-=======
       // Select multiple case
       if (this.element.nodeName === 'SELECT' && null === this.$element.val()) return [];
->>>>>>> Stashed changes
 
       // Default case that should never happen
       return this.$element.val();

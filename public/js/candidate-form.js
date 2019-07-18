@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 403);
+/******/ 	return __webpack_require__(__webpack_require__.s = 399);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10055,6 +10055,14 @@ function fire(target, name, detail) {
 
 /***/ }),
 
+/***/ 399:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(400);
+
+
+/***/ }),
+
 /***/ 4:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -10469,15 +10477,7 @@ SelectorSet.prototype.matches = function(el) {
 
 /***/ }),
 
-/***/ 403:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(404);
-
-
-/***/ }),
-
-/***/ 404:
+/***/ 400:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10487,23 +10487,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 window.on = global.on = __WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */];
 
-Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('keyup', '#search-team', function (event) {
-    var str = $('#search-team').val();
-    $('.my-team').hide();
-    $(".my-team").each(function (index) {
-        if ($(this).attr('data-team').toLowerCase().search(str.toLowerCase()) !== -1) {
-            $(this).show();
-        }
-    });
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-personal', function (event) {
+    $('.candidate_section').hide();
+    $('#personal').show();
 });
 
-Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#reset-search', function (event) {
-    $('#search-team').val('');
-    $('.my-team').show();
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-qualification', function (event) {
+    $('.candidate_section').hide();
+    $('#qualification').show();
+});
+
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-motivation', function (event) {
+    $('.candidate_section').hide();
+    $('#motivation').show();
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(1)))
 
 /***/ })
 
 /******/ });
-//# sourceMappingURL=myteam.js.map
+//# sourceMappingURL=candidate-form.js.map
