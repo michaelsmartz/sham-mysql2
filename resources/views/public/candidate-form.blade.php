@@ -348,7 +348,7 @@
 
 
                             <div class="container-fluid">
-                                <div class="form-html col-xs-12">
+                                <div class="form-html notice-confirm col-xs-12">
                                     <p><b>By clicking the submit button below, I certify that all of the information provided by me on this application is true and complete, and I understand that if any false information, ommissions, or misrepresentations are discovered, my application may be rejected and, if I am employed, my employement may be terminated at any time. &nbsp;</b></p>
                                     <p><b>I also understand and agree that the terms and conditions of my employment may be changed, with or without cause, and with or without notice, at any time by the company. &nbsp;</b></p>
                                 </div>

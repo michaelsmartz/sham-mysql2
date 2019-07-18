@@ -655,6 +655,7 @@ textarea.input100 {
   box-shadow: none;
   webkit-box-shadow: none;
   border-bottom: 2px solid whitesmoke !important;
+  margin:2%;
 }
 
 
@@ -677,4 +678,8 @@ textarea.input100 {
   color: #d4a71a;
   background: #fff;
   font-size: 16px;
+}
+
+.notice-confirm p{
+  font-size: 12px;
 }
