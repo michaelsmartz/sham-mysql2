@@ -74,7 +74,10 @@ class SSPMyVacanciesController extends CustomController
             $department = null;
         }
 
-        $vacancies = $this->getVacancies($closing_date, $qualification, $department);
+        //Filter by quick filter employee status
+        $search_employee_status = $request->get('search_employee_status', null);
+
+        $vacancies = $this->getVacancies($closing_date, $qualification, $department, $search_employee_status);
 
         foreach ($vacancies as $vacancy) {
             $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
@@ -94,6 +97,8 @@ class SSPMyVacanciesController extends CustomController
         if ($request->ajax()) {
             return view($this->baseViewPath . '.load', compact('vacancies'))->render();
         }
+
+        //dd($vacancies);
 
         // load the view and pass the vacancies
         return view($this->baseViewPath . '.index', compact('warnings', 'vacancies', 'jobStatuses', 'department', 'jobDepartments', 'qualification', 'jobQualifications', 'closing_date'));
@@ -217,93 +222,64 @@ class SSPMyVacanciesController extends CustomController
      * @param $closing_date
      * @param $qualification
      * @param $department
-     * @return mixed
+     * @param $search_employee_status
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    private function getVacancies($closing_date, $qualification, $department){
-        if (!is_null($closing_date) && is_null($qualification) && is_null($department)) {
-            $vacancies = $this->contextObj::with([
+    private function getVacancies($closing_date, $qualification, $department, $search_employee_status){
+
+        $vacancies = $this->contextObj::with([
                 'department',
                 'qualification',
                 'employeeStatus',
-                'skills'])
+                'skills']);
+
+        if (!is_null($closing_date) && is_null($qualification) && is_null($department)) {
+            $vacancies = $vacancies
                 ->whereDate('end_date', '>', $closing_date);
         }
         else if (!is_null($closing_date) && is_null($qualification) && !is_null($department)) {
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
+            $vacancies = $vacancies
                 ->where('department_id', $department)
                 ->whereDate('end_date', '>', $closing_date);
         }
         elseif (is_null($closing_date) && !is_null($qualification) && is_null($department)){
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
+            $vacancies = $vacancies
                 ->where('qualification_id', $qualification);
         }
         elseif (is_null($closing_date) && !is_null($qualification) && !is_null($department)){
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
+            $vacancies = $vacancies
                 ->where('qualification_id', $qualification)
                 ->where('department_id', $department);
         }
         elseif (!is_null($closing_date) && !is_null($qualification) && is_null($department)){
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
+            $vacancies = $vacancies
                 ->where('qualification_id', $qualification)
-                ->whereDate('end_date', '>', $closing_date);
+                ->whereDate('end_date', '<', $closing_date);
         }
         elseif (!is_null($closing_date) && !is_null($qualification) && !is_null($department)){
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
+            $vacancies = $vacancies
                 ->where('qualification_id', $qualification)
                 ->where('department_id', $department)
-                ->whereDate('end_date', '>', $closing_date);
+                ->whereDate('end_date', '>=', Carbon::createFromFormat('d/m/Y', $closing_date)->format('Y-m-d'));
         }
         elseif (is_null($closing_date) && is_null($qualification) && is_null($department)){
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
-                ->whereDate('end_date', '>', Carbon::now());
+            $vacancies = $vacancies
+                ->whereDate('end_date', '>=', Carbon::now());
         }
         elseif (is_null($closing_date) && is_null($qualification) && !is_null($department)){
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
+            $vacancies = $vacancies
                 ->where('department_id', $department);
         }
-        else {
-            $vacancies = $this->contextObj::with([
-                'department',
-                'qualification',
-                'employeeStatus',
-                'skills'])
-                ->whereDate('end_date', '>', Carbon::now());
+
+        if(!is_null($search_employee_status)) {
+            $vacancies = $vacancies
+                ->where('employee_status_id', $search_employee_status);
         }
 
-        $vacancies = $vacancies->where('is_approved', '=', 1)
+        return $vacancies->where('is_approved', '=', 1)
             ->whereIn('recruitment_type_id', [1, 3])
             ->orderBy('posted_on', 'desc')
             ->paginate(2);
-
-        return $vacancies;
     }
 }
 

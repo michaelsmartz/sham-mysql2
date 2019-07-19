@@ -99,7 +99,9 @@
                         <ul class="cat-list">
                             @if(is_array($jobStatuses) && sizeof($jobStatuses) != 0)
                                 @foreach($jobStatuses as $jobStatus)
-                                    <li><a href="#">{{ $jobStatus->description }}</a></li>
+                                    <li>
+                                        <a href="{{route('my-vacancies.index')}}?search_employee_status={{ $jobStatus->id }}">{{ $jobStatus->description }}</a>
+                                    </li>
                                 @endforeach
                             @endif
                         </ul>
