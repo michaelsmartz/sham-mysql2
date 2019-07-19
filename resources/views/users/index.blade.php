@@ -8,6 +8,39 @@
         <li><a href="{{URL::to('/')}}/general_options">General Options</a></li>
     </ul>
     <div class="flex-wrapper">
+        <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
+            <form action="" class="">
+                <ul style="margin-left:0;padding-left:0" class="list-unstyled">
+                    <li>
+                        <input type="hidden" name="username" class="submitable-column-name" id="submitable-column-name" value="">
+                        <div class="table-search-form">
+                            <input type="search" name="search-term" value="{{old('search-term', null)}}" placeholder="Search" class="search-input" data-mirror="#submitable-column-name">
+                            <div class="search-option">
+                                <button type="submit" data-wenk="Do the Search">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <a href="{{route('users.index')}}" role="button" data-wenk="Reset all Criteria & reload the list">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="table-search-form" style="height:50px">
+                            <button type="button" class="search-column-chooser-btn">
+                                <p class="search-small">Search by</p>
+                                <p class="search-large">Username</p>
+                            </button>
+                        </div>
+                        <ul class="search-column-list">
+                            <li data-filter-column="username">By Username</li>
+                            <li data-filter-column="email">By Email</li>
+                            <li data-filter-column="full_name">By Employee</li>
+                        </ul>
+                    </li>
+                </ul>
+            </form>
+        </div>
         <div id="table-container">
             @if(count($users) > 0)
             <div id="toolbar" class="shadow-eff1">

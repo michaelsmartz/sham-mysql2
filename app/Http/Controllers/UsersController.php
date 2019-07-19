@@ -29,12 +29,29 @@ class UsersController extends CustomController
     }
 
     /**
-     * Display a listing of the users.
-     *
-     * @return Illuminate\View\View
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        $username = $request->get('username', null);
+
+        if(!empty($username)){
+            $request->merge(['username' => '%'.$username.'%']);
+        }
+
+        $email = $request->get('email', null);
+
+        if(!empty($email)){
+            $request->merge(['email' => '%'.$email.'%']);
+        }
+
+        $full_name = $request->get('full_name', null);
+
+        if(!empty($full_name)){
+            $request->merge(['name' => '%'.$full_name.'%']);
+        }
+
         //$users = $this->contextObj::filtered()->paginate(10);
         $users = $this->contextObj::with('shamUserProfile','employee')->filtered()->paginate(10);
         return view($this->baseViewPath .'.index', compact('users'));
