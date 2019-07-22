@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <p>
-                    {{ $vacancy->description }}
+                    {!! $vacancy->description  !!}
                 </p>
                 <h5><span class="glyphicon glyphicon-briefcase"></span> Employment Type: {{ $vacancy->employeeStatus->description }}</h5>
                 <h5><span class="glyphicon glyphicon-education"></span> Qualification Required: {{ $vacancy->qualification->description }}</h5>

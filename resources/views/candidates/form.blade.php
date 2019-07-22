@@ -322,14 +322,14 @@
             <div class="form-group col-xs-12">
                     <span class="field">
                         <label for="overview">Overview</label>
-                        {!! Form::textarea('overview', old('overview', isset($candidate->overview) ? $candidate->overview : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Overview', 'required', 'title'=>'Required','id'=>'overview', 'maxlength' => '50']) !!}
+                        {!! Form::textarea('overview', old('overview', isset($candidate->overview) ? htmlspecialchars_decode($candidate->overview) : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Overview', 'required', 'title'=>'Required','id'=>'overview', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
             <div class="form-group col-xs-12">
                     <span class="field">
                         <label for="cover">Cover Letter</label>
-                        {!! Form::textarea('cover', old('cover', isset($candidate->cover) ? $candidate->cover : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Cover Letter', 'required', 'title'=>'Required','id'=>'cover', 'maxlength' => '50']) !!}
+                        {!! Form::textarea('cover', old('cover', isset($candidate->cover) ? htmlspecialchars_decode($candidate->cover) : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Cover Letter', 'required', 'title'=>'Required','id'=>'cover', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
@@ -349,7 +349,12 @@
 
     <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
+
+    <script src="{{URL::to('/')}}/plugins/ckeditor_basic_nightly/ckeditor/ckeditor.js"></script>
+
     <script>
+        CKEDITOR.replace('overview');
+        CKEDITOR.replace('cover');
         var initializeFileUpload = function() {
             $('#one').fileUploader({
                 lang: 'en',

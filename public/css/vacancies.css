@@ -39,10 +39,10 @@ body {
   position: relative;
 }
 
-ol, ul {
-  margin: 0;
-  list-style: none;
-}
+/*ol, ul {*/
+  /*margin: 0;*/
+  /*list-style: none;*/
+/*}*/
 
 select {
   display: block;

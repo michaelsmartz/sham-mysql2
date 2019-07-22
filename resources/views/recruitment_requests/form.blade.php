@@ -121,9 +121,17 @@
                 <div class="form-group col-xs-12">
                     <span class="field">
                         <label for="cover">Job Description</label>
-                        {!! Form::textarea('description', old('description', isset($request->description) ? $request->description : null), ($_mode=='show')?['class'=>'form-control','disabled']:['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Description', 'required', 'title'=>'Required','id'=>'description', 'maxlength' => '10000']) !!}
+                         <textarea name="description" id="description"
+                                   required
+                                   placeholder="description"
+                                   maxlength ='10000'
+                                   title='Required'
+                                   autocomplete='off'
+                                   {{ ($_mode=='show')? 'class="form-control"  disabled': 'class="form-control"'}}
+                         >{!! isset($request->description) ? $request->description : null !!}</textarea>
                     </span>
                 </div>
+
                 @if($_mode == 'show')
                 <div class="form-group col-xs-12 {{ $errors->has('is_approved') ? 'has-error' : '' }}">
                     <label for="is_approved">Approved</label>
@@ -186,4 +194,10 @@
 @section('post-body')
     <link href="{{URL::to('/')}}/plugins/sumoselect/sumoselect.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/recruitment-request.min.js"></script>
+    <script src="{{URL::to('/')}}/plugins/ckeditor_basic_nightly/ckeditor/ckeditor.js"></script>
+
+    <script>
+        CKEDITOR.replace('description');
+        CKEDITOR.htmlEncodeOutput = true;
+    </script>
 @endsection
