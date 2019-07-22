@@ -28,12 +28,16 @@ class RecruitmentsController extends Controller
 
         $a = $this->contextObj::with(['department', 'employeeStatus', 'qualification', 'skills'
         ])->where('is_approved', '=', 1)
+        ->where('end_date', '>', Carbon::now())
         ->whereIn('recruitment_type_id', [2, 3])
         ->orderBy('posted_on', 'desc');
 
-        $b = $this->contextObj::with(['department', 'employeeStatus', 'qualification', 'skills',
-            'candidates' => $candidateFilter
-        ])->whereHas('candidates', $candidateFilter);
+        $b = $this->contextObj::with([
+            'department', 'employeeStatus', 'qualification', 'skills',
+            'candidates' => function ($query) use ($candidateId) {
+                return $query->where('candidate_id', $candidateId);
+            }
+        ])->whereIn('recruitment_type_id', [2, 3]);
 
         if($candidateId == 0){
             $vacancies = $a->get();
@@ -48,6 +52,9 @@ class RecruitmentsController extends Controller
             $diff = $dt->diffInHours($dtEndDate, false);
 
             $vacancy->dateOk = true;
+            $vacancy->canApply = false;
+            $vacancy->hasApplied = false;
+
             if($diff > 72){
                 $vacancy->rel_calendar_id = "hourglass-relax";
             }elseif($diff >0 && $diff <= 72){
@@ -57,15 +64,15 @@ class RecruitmentsController extends Controller
                 $vacancy->dateOk = false;
             }
 
-            $vacancy->canApply = false;
+            if( sizeof($vacancy->candidates) > 0 ){
+                $vacancy->hasApplied = true;
+            }
 
-            if($candidateId == 0){
+            if($vacancy->dateOk && !$vacancy->hasApplied){
                 $vacancy->canApply = true;
             }
 
-            if( !isset($vacancy->candidates) && $vacancy->dateOk ){
-                $vacancy->canApply = true;
-            }
+            //echo $diff, '  ',(int) $vacancy->dateOk,'  ', (int) $vacancy->canApply, '  ', (int) $vacancy->hasApplied, '<br>';
 
         }
         return view('public.index', compact('vacancies'));

@@ -2,8 +2,8 @@ $animation-speed: 150ms;
 
 $button-bg-color: tomato;
 $button-text-color: white;
-$button-text-size: 1.25em;
-$button-spacing: 1.5rem;
+$button-text-size: 1.1em;
+$button-spacing: 1.3rem;
 
 @function tint(
   $color,
@@ -26,7 +26,7 @@ body{
     font-family: "Poppins", sans-serif;
     background-color:#F8F8F8;
 
-    & header{
+    > header{
         min-height: 55px;
         box-shadow: 0 0 2px rgba(0,0,0,0.3);
         background: #FFF;
@@ -34,6 +34,7 @@ body{
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding-left: 5px;
 
         & a{
             margin: 20px;
@@ -60,6 +61,7 @@ body{
         place-content: space-between;
         box-shadow: unset;
         min-height: unset;
+        margin-left: 0;
 
         & h4{
             margin: 0 0 1rem 0.2rem;
@@ -70,6 +72,7 @@ body{
         & time{
             color: #777;
             font-style: italic;
+            font-size: 80%;
         }
 
     }
@@ -106,9 +109,12 @@ body{
     }
 
     & footer{
+        display: flex;
+        justify-content: flex-end;
+
         .button{
             display: inline-block;
-            margin: $button-spacing / 2 0;
+            margin: 0;
             padding: ($button-spacing / 2) $button-spacing;
             border: none;
             border-radius: $button-spacing / 8;
@@ -138,4 +144,12 @@ body{
         }
 
     }
+}
+
+.footer{
+    padding: 10px 0;
+    border-top: 1px solid #CAD0D6;
+    line-height: 20px;
+    text-align: center;
+    font-size: 80%;
 }
