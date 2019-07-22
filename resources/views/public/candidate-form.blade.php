@@ -46,21 +46,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group col-sm-3">
-                                    <label for="birth_date">Date of birth</label>
-                                    {!! Form::text('birth_date', old('birth_date', isset($candidate->birth_date) ? $candidate->birth_date : null), ['class'=>'form-control fix-case field-required datepicker', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
-                                </div>
-                                <div class="form-group col-sm-2">
-                                    <label for="gender_id">Gender</label>
-                                    {!! Form::select('gender_id', $genders, old('gender_id', isset($candidate->gender_id) ? $candidate->gender_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Gender..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
-                                </div>
                                 <div class="form-group col-sm-2">
                                     <label for="title_id">Title</label>
                                     {!! Form::select('title_id', $titles, old('title_id', isset($candidate->title_id) ? $candidate->title_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Title..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
-                                </div>
-                                <div class="form-group col-sm-3">
-                                    <label for="marital_status_id">Marital Status</label>
-                                    {!! Form::select('marital_status_id', $maritalstatuses, old('marital_status_id', isset($candidate->marital_status_id) ? $candidate->marital_status_id : null), ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Marital Status..']) !!}
                                 </div>
                                 <div class="form-group col-xs-3">
                                 <span class="field">
@@ -74,23 +62,13 @@
                                     {!! Form::text('surname', old('surname', isset($candidate->surname) ? $candidate->surname : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Surname', 'required', 'title'=>'Required','id'=>'surname', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
                                 </span>
                                 </div>
-                                <div class="form-group col-xs-4">
-                                <span class="field">
-                                    <label for="email">Personal Email</label>
-                                    {!! Form::email('email', old('email', isset($candidate->email) ? $candidate->email : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
-                                </span>
+                                <div class="form-group col-sm-2">
+                                    <label for="birth_date">Date of birth</label>
+                                    {!! Form::text('birth_date', old('birth_date', isset($candidate->birth_date) ? $candidate->birth_date : null), ['class'=>'form-control fix-case field-required datepicker', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
                                 </div>
-                                <div class="form-group col-xs-3">
-                                <span class="field">
-                                    <label for="phone">Phone Number</label>
-                                    {!! Form::text('phone', old('phone', isset($candidate->phone) ? $candidate->phone : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Phone', 'required', 'title'=>'Required','id'=>'phone', 'maxlength' => '50',
-                                    'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
-                                    'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
-                                    'data-parsley-trigger'=>'focusout'])
-                                    !!}
-                                </span>
-                                </div>
-                                <div class="form-group col-xs-3">
+
+
+                                <div class="form-group col-sm-4">
                                 <span class="field">
                                     <label for="id_number">Id Number</label>
                                     {!! Form::text('id_number', old('id_number', isset($candidate->id_number) ? $candidate->id_number : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Id Number', 'required', 'title'=>'Required','id'=>'idNumber', 'maxlength' => '50',
@@ -101,11 +79,47 @@
                                     !!}
                                 </span>
                                 </div>
+                                <div class="form-group col-sm-3">
+                                    <label for="gender_id">Gender</label>
+                                    {!! Form::select('gender_id', $genders, old('gender_id', isset($candidate->gender_id) ? $candidate->gender_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Gender..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
+                                </div>
+                                <div class="form-group col-xs-3">
+                                    <label for="marital_status_id">Marital Status</label>
+                                    {!! Form::select('marital_status_id', $maritalstatuses, old('marital_status_id', isset($candidate->marital_status_id) ? $candidate->marital_status_id : null), ['id' =>'marital_status_id', 'name'=>'marital_status_id', 'class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Marital Status..']) !!}
+                                </div>
+
+                                <div class="row col-md-12">
+                                    <div class="form-group col-lg-4">
+                                        <span class="field">
+                                            <label for="email">Personal Email</label>
+                                            {!! Form::email('email', old('email', isset($candidate->email) ? $candidate->email : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
+                                        </span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <span class="field">
+                                            <label for="phone">Phone Number</label>
+                                            {!! Form::text('phone', old('phone', isset($candidate->phone) ? $candidate->phone : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Phone', 'required', 'title'=>'Required','id'=>'phone', 'maxlength' => '50',
+                                            'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
+                                            'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
+                                            'data-parsley-trigger'=>'focusout'])
+                                            !!}
+                                        </span>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <span class="field">
+                                             <label for="nationality">Nationality</label>
+                                            {!! Form::text('nationality', old('nationality', isset($candidate->nationality) ? $candidate->nationality : null),['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Nationality', 'maxlength' => '50']) !!}
+                                        </span>
+                                    </div>
+
+
+                                </div>
+
                                 <div class="form-group col-xs-4">
-                                <span class="field">
-                                    <label for="passport_country">Passport Country</label>
-                                    {!! Form::select('passport_country_id', $countries, old('passport_country_id', isset($candidate->passport_country_id) ? $candidate->passport_country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Passport Country..', 'id'=>'passport_country_id']) !!}
-                                </span>
+                                        <span class="field">
+                                            <label for="passport_country">Passport Country</label>
+                                            {!! Form::select('passport_country_id', $countries, old('passport_country_id', isset($candidate->passport_country_id) ? $candidate->passport_country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Passport Country..', 'id'=>'passport_country_id']) !!}
+                                        </span>
                                 </div>
                                 <div class="form-group col-xs-3">
                                 <span class="field">
@@ -126,12 +140,7 @@
                                     {!! Form::select('immigration_status_id', $immigrationStatuses, old('immigration_status_id', isset($candidate->immigration_status_id) ? $candidate->immigration_status_id : null), ['class'=>'form-control', 'dependsOnFieldNotEmpty'=>'passport_country_id', 'autocomplete'=>'off', 'placeholder'=>'Immigration Status..']) !!}
                                 </span>
                                 </div>
-                                <div class="form-group col-xs-3">
-                                <span class="field">
-                                     <label for="nationality">Nationality</label>
-                                    {!! Form::text('nationality', old('nationality', isset($candidate->nationality) ? $candidate->nationality : null),['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Nationality', 'maxlength' => '50']) !!}
-                                </span>
-                                </div>
+
                                 <div class="form-group col-sm-3">
                                 <span class="field">
                                     <label for="addr_line_1">Address Line 1</label>

@@ -571,7 +571,7 @@ class SSPEmployeeLeavesController extends CustomController
             $tg = TimeGroup::find($team['time_group_id']);
         }
 
-        if(sizeof($tg) > 0) {
+        if(is_array($tg) && sizeof($tg) > 0) {
             $tgTimePeriods = $tg->timePeriods()->get(['description', 'start_time', 'end_time', 'time_period_type'])->all();
 
             if ($tgTimePeriods != null) {
