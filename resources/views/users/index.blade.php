@@ -44,6 +44,10 @@
         <div id="table-container">
             @if(count($users) > 0)
             <div id="toolbar" class="shadow-eff1">
+                <button id="sidebarCollapse" class="btn btn-default" data-toggle="offcanvas">
+                    <i class="glyphicon glyphicon-align-left"></i>
+                    <span>Filters</span>
+                </button>
                 <div class="btn-group">
                     <button id="item-create" type="button" class="btn btn-sham" data-wenk="Add new" data-wenk-pos="bottom">
                         <i class="glyphicon glyphicon-plus"></i> Add New
