@@ -189,6 +189,9 @@ class CandidatesController extends CustomController
             $input['picture'] = $contents;
         }
 
+        //candidate has filled required informations
+        $input['profil_complete'] = 1;
+
         if ($id == null) { // Create
             $data = $this->contextObj->addData($input);
         } else { // Update

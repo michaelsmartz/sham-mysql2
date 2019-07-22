@@ -15,40 +15,6 @@
                 <form class="login100-form validate-form" method="POST" action="{{ route('candidate.register.store') }}" autocomplete="off">
                     {{ csrf_field() }}
                     <input type="hidden" name="timezone" id="timezone">
-                    <div class="wrap-input100 validate-input m-b-26">
-                        <span class="label-input100"><i class="glyphicon glyphicon-envelope"></i> @lang('auth.E-mail')</span>
-                        <input class="input100" type="text" name="email" value="{{ Request::has('email')? request('email') : old('email')  }}" placeholder="Enter e-mail address">
-                        <span class="focus-input100"></span>
-                        @if ($errors->has('email'))
-                            <span class="help-block">
-                                    <strong>{{ $errors->first('email') }}</strong>
-                                </span>
-                        @endif
-                    </div>
-
-                    <div class="wrap-input100 validate-input m-b-18">
-                        <span class="label-input100"><i class="glyphicon glyphicon-lock"></i> @lang('auth.Password')</span>
-                        <input class="input100" type="password" name="password" value="{{ Request::has('password')? request('password') : old('password') }}" placeholder="Enter password">
-                        <span class="focus-input100"></span>
-                        @if ($errors->has('password'))
-                            <span class="help-block">
-                                    <strong>{{ $errors->first('password') }}</strong>
-                                </span>
-                        @endif
-                    </div>
-
-                    <div class="wrap-input100 validate-input m-b-18">
-                        <span class="label-input100"><i class="glyphicon glyphicon-lock"></i> Confirm password</span>
-                        <input class="input100" type="password" name="password_confirmation" value="{{ Request::has('password')? request('password') : old('password') }}" placeholder="Enter password">
-                        <span class="focus-input100"></span>
-                    </div>
-
-                    <div class="container-login100-form-btn">
-                        <button type="submit" class="btn bg-gold b-r4 text-white">
-                            <i class="fa fa-btn fa-sign-in"></i> Register
-                        </button>
-                    </div>
-                    <br>
                     @if ($errors->has('email') || $errors->has('password'))
                         <div class="alert alert-danger">
                             @if ($errors->has('email'))
@@ -59,6 +25,31 @@
                             @endif
                         </div>
                     @endif
+                    <br>
+                    <div class="wrap-input100 validate-input m-b-26">
+                        <span class="label-input100"><i class="glyphicon glyphicon-envelope"></i> @lang('auth.E-mail')</span>
+                        <input class="input100" type="text" name="email" required  placeholder="Enter e-mail address">
+                        <span class="focus-input100"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-18">
+                        <span class="label-input100"><i class="glyphicon glyphicon-lock"></i> @lang('auth.Password')</span>
+                        <input class="input100" type="password" name="password" required  placeholder="Enter password">
+                        <span class="focus-input100"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-18">
+                        <span class="label-input100"><i class="glyphicon glyphicon-lock"></i> Confirm password</span>
+
+                        <input class="input100" id="password-confirm" type="password" class="form-control" name="password_confirmation" required  placeholder="Enter password">
+                        <span class="focus-input100"></span>
+                    </div>
+
+                    <div class="container-login100-form-btn">
+                        <button type="submit" class="btn bg-gold b-r4 text-white">
+                            <i class="fa fa-btn fa-sign-in"></i> Register
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -47,7 +47,7 @@ class CandidateController extends Controller
         // validate the data
         $this->validate($request, [
           'email'         => 'required',
-          'password'      => 'required'
+          'password'      => 'required|confirmed'
         ]);
 
         // store in the database

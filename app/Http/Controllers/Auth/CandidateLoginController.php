@@ -60,9 +60,9 @@ class CandidateLoginController extends Controller
       if (Auth::guard('candidate')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
         // if successful, then redirect to their intended location
         if(Auth::guard('candidate')->user()->profil_complete == 1){
-            return redirect()->intended(route('candidate.vacancies'));
+            return redirect()->route('candidate.vacancies');
         }else{
-            return redirect()->intended(route('candidate.auth.details'));
+            return redirect()->route('candidate.auth.details');
         }
 
       }
@@ -80,6 +80,9 @@ class CandidateLoginController extends Controller
      */
     public function details(Request $request)
     {
+        if(empty(Auth::guard('candidate')->user()->id)){
+            return redirect()->route('candidate.auth.login');
+        }
         $candidate = new CandidatesController();
         return $candidate->edit($request,'external');
     }
