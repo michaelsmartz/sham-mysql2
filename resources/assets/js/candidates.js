@@ -233,12 +233,46 @@ if(document.getElementById("candidates-app")) {
 
                 $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
 
+                window.Parsley.addValidator('requiredIf', {
+                    validateString: function (value, requirement) {
+                        if (jQuery(requirement).val()) {
+                            return !!value;
+                        }
+                        return true;
+                    }, priority: 33
+                });
+                window.Parsley.addAsyncValidator('checkId',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-id'
+                );
+                window.Parsley.addAsyncValidator('checkName',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-name'
+                );
+                window.Parsley.addAsyncValidator('checkPassport',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-passport'
+                );
+                window.Parsley.addAsyncValidator('checkEmployeeNo',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-employeeno'
+                );
                 window.Parsley.on('field:ajaxoptions', function(p1,ajaxOptions) {
-                    var id_number = $("[name=id_number]").val();
+                    var FirstName = $("[name=first_name]").val(),
+                        Surname = $("[name=surname]").val(),
+                        IdNumber = $("[name=id_number]").val(),
+                        PassportCountryId = $("[name=passport_country_id]").val(),
+                        PassportNo = $("[name=passport_no]").val(),
+                        EmployeeNo = $("[name=employee_no]").val();
 
                     var namedDataMap = {
-                        'id_number': { 'id_number':id_number },
-
+                        'id_number': { 'idNumber':IdNumber,'firstName':FirstName,'surname':Surname},
+                        'employee_no': { 'employeeNo':EmployeeNo},
+                        'passport_no': { 'passportCountryId':PassportCountryId,'passportNo':PassportNo,'firstName':FirstName,'surname':Surname},
                     };
 
                     ajaxOptions.global = false;
