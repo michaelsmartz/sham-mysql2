@@ -14,6 +14,16 @@
                 <form class="login100-form validate-form" method="POST" action="{{ route('candidate.auth.loginCandidate') }}" autocomplete="off">
                     {{ csrf_field() }}
                     <input type="hidden" name="timezone" id="timezone">
+                    @if ($errors->has('email') || $errors->has('password'))
+                        <div class="alert alert-danger" style="margin-top: 2%">
+                            @if ($errors->has('email'))
+                                <strong>{{  $errors->first('email') }}</strong>
+                            @endif
+                            @if ($errors->has('password'))
+                                <strong>{{ $errors->first('password') }}</strong>
+                            @endif
+                        </div>
+                    @endif
                     <div class="wrap-input100 validate-input m-b-26">
                         <span class="label-input100"><i class="glyphicon glyphicon-envelope"></i> @lang('auth.E-mail')</span>
                         <input class="input100" type="text" name="email" value="{{ Request::has('email')? request('email') : old('email')  }}" placeholder="Enter e-mail address">
@@ -46,17 +56,6 @@
                             <i class="fa fa-btn fa-sign-in"></i> @lang('auth.Login')
                         </button>
                     </div>
-
-                    @if ($errors->has('email') || $errors->has('password'))
-                        <div class="alert alert-danger" style="margin-top: 2%">
-                            @if ($errors->has('email'))
-                                <strong>{{  $errors->first('email') }}</strong>
-                            @endif
-                            @if ($errors->has('password'))
-                                <strong>{{ $errors->first('password') }}</strong>
-                            @endif
-                        </div>
-                    @endif
                 </form>
             </div>
         </div>
