@@ -37,7 +37,7 @@ Route::group(['prefix' => '/candidate'], function () {
 });
 
 #region auth middleware routes
-    Route::group(['middleware' => ['auth']], function() {
+    Route::group(['middleware' => ['auth:sham']], function() {
 
         // logout using get
         Route::get('auth/logout', 'Auth\LoginController@logout')->name('logout');

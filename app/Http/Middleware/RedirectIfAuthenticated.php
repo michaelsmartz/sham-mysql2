@@ -23,12 +23,19 @@ class RedirectIfAuthenticated
               if (Auth::guard($guard)->check()) {
                 //return redirect()->route('dashboard');
               }
-              break;
+            break;
+
+            case 'sham':
+              if (Auth::guard($guard)->check()) {
+                return redirect('/home');
+              }
+            break;
+
             default:
               if (Auth::guard($guard)->check()) {
                   return redirect('/home');
               }
-              break;
+            break;
         }
 
         return $next($request);

@@ -84,9 +84,22 @@ class CandidateLoginController extends Controller
         return $candidate->edit($request,'external');
     }
 
-    public function logout()
+    protected function guard()
     {
-        Auth::guard('candidate')->logout();
+        return Auth::guard('candidate');
+    }
+
+    public function logout(Request $request)
+    {
+        // Get the session key for this user
+        $sessionKey = $this->guard()->getName();
+
+        // Logout current user by guard
+        $this->guard()->logout();
+
+        // Delete single session key (just for this user)
+        $request->session()->forget($sessionKey);
+
         return redirect()->route('candidate.vacancies');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\User;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,8 +27,10 @@ class SuccessfulLogout
      */
     public function handle(Logout $event)
     {
-        //
-        session()->forget('allowedModules');
-        session()->forget('modulePermissions');
+        if($event->user instanceof \App\User){
+            session()->forget('allowedModules');
+            session()->forget('modulePermissions');
+        }
+
     }
 }
