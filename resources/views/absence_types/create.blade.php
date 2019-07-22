@@ -1,5 +1,5 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Add Absence Type')
+@section('title', 'Add Leave Type')
 
 @section('content')
     <div class="box box-primary">
@@ -16,7 +16,7 @@
                 </div>
                 <div class="box-footer">
                     <button class="btn btn-primary pull-right" type="submit">Add</button>
-                    <a href="{{ route('absence_types.index') }}" class="btn btn-default pull-right" title="Show all Absence Types">
+                    <a href="{{ route('absence_types.index') }}" class="btn btn-default pull-right" title="Show all Leave Types">
                         <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                     </a>
                 </div>

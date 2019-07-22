@@ -1,6 +1,6 @@
 @extends('portal-index')
-@section('title','Absence Types')
-@section('subtitle','Keep track of your absence types and leaves')
+@section('title','Leave Types')
+@section('subtitle','Keep track of your leaves')
 @section('content')
     <div class="flex-wrapper">
         <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">

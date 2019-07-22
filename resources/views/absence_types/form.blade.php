@@ -13,7 +13,7 @@
         <label for="duration_unit">Duration Unit
             <span>
                 <i class="fa fa-question-circle" aria-hidden="true"  data-wenk-pos="right"
-                data-wenk="The basic unit to calculate absence.
+                data-wenk="The basic unit to calculate leave.
 
     You need to decide which unit you would like to use:
 
@@ -40,7 +40,7 @@
                 <i class="fa fa-question-circle" aria-hidden="true" data-wenk-pos="left"
                 data-wenk="Colour codes are used in the Self-service Portal 
 
-where the absence types are shown in distinguishable colours"></i>
+where the leave types are shown in distinguishable colours"></i>
             </span>
         </label>
         @if($mode == 'create')

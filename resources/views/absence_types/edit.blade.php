@@ -1,7 +1,7 @@
 @extends(Request::ajax()?'blank':'portal-index')
-@section('title', 'Edit Absence Type')
+@section('title', 'Edit Leave Type')
 
-@section('modalTitle', 'Edit Absence Type')
+@section('modalTitle', 'Edit Leave Type')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
     <button class="btn btn-primary update_absence_type" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Update</button>

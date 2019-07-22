@@ -1,13 +1,12 @@
 <link rel="stylesheet" href="{{URL::to('/')}}/css/leaves.min.css">
 @extends('portal-index')
 @if(!empty($selected['employee']->id) && $selected['employee']->id !== \Auth::user()->employee_id)
-    @section('title',"My Absences and leaves : ".$selected['employee']->first_name." ".$selected['employee']->surname)
-    @section('subtitle', "Manage associated employee's absences and leaves")
+    @section('title',"My leaves : ".$selected['employee']->first_name." ".$selected['employee']->surname)
+    @section('subtitle', "Manage associated employee's leaves")
 @else
-    @section('title','My Absences and leaves')
-    @section('subtitle', 'Keep track and manage your absences and leaves')
+    @section('title','My leaves')
+    @section('subtitle', 'Keep track and manage your leaves')
 @endif
-@section('subtitle', 'Keep track and manage your absences and leaves')
 
 
 <div class="alert-container">
