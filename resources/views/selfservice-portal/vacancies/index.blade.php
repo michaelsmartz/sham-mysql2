@@ -43,27 +43,37 @@
             $('.details ul li a').removeClass('isDisabled');
         });
 
-        var initialLoadMoreContent = "";
-
-        $('.load-more-container').each(function(i, obj) {
-            wrapChildElements($(this));
-        });
-
-        function wrapChildElements(r){
-            initialLoadMoreContent = r.children();
-            var wrap = r.children().text();
-            r.html(wrap);
-        }
+        // var initialLoadMoreContent = "";
+        //
+        // $('.load-more-container').each(function(i, obj) {
+        //     wrapChildElements($(this));
+        // });
+        //
+        // function wrapChildElements(r){
+        //     initialLoadMoreContent = r.children();
+        //     var wrap = r.children().text();
+        //     r.html(wrap);
+        // }
+        //
+        // function RevealHiddenOverflow(d)
+        // {
+        //     if( d.style.whiteSpace == "nowrap" ) {
+        //         $('div.load-more-container').html(initialLoadMoreContent);
+        //         d.style.whiteSpace = "normal";
+        //     }
+        //     else {
+        //         var wrap = initialLoadMoreContent.children().text();
+        //         $('div.load-more-container').html(wrap);
+        //         d.style.whiteSpace = "nowrap";
+        //     }
+        // }
 
         function RevealHiddenOverflow(d)
         {
             if( d.style.whiteSpace == "nowrap" ) {
-                $('div.load-more-container').html(initialLoadMoreContent);
                 d.style.whiteSpace = "normal";
             }
             else {
-                var wrap = initialLoadMoreContent.children().text();
-                $('div.load-more-container').html(wrap);
                 d.style.whiteSpace = "nowrap";
             }
         }
