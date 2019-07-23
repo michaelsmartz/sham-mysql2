@@ -13,11 +13,14 @@
             Below is the progress so far:
         </div>
         <div class="col-sm-12">
-            <ul>
+            <div class="history-container">
+            <ul class="tl">
                 @foreach($recruitment->trackCandidateStatus as $candidate)
-                    <li>{!! App\Enums\CandidateStatusType::getDescription($candidate->pivot->status) !!}</li>
+                    <li><div class="item-detail">{!! App\Enums\CandidateStatusType::getDescription($candidate->pivot->status) !!}</div></li>
                 @endforeach
             </ul>
+            </div>
+
         </div>
     </div>
 @endsection

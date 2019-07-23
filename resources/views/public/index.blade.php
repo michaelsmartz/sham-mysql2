@@ -43,8 +43,10 @@
                     route = '{{URL::to('/')}}/' + baseUrl + '/';
                 }
 
-                if (id) {
+                if (event) {
                     loadUrl(route + id );
+                } else {
+                    window.location = route + id;
                 }
             };
         </script>
@@ -66,7 +68,7 @@
                     <p><strong>Job Description:</strong></p>
                     <div class="text" onclick="RevealHiddenOverflow(this)">
                         {!! $vacancy->description !!}
-                    </p>
+                    </div>
                     <p>Functional Area: <strong>{{ $vacancy->department->description }}</strong></p>
                     <p>Employment Type: <strong>{{ $vacancy->employeeStatus->description }}</strong></p>
                     @if( !is_null($vacancy->min_salary) && !is_null($vacancy->max_salary))
@@ -92,13 +94,13 @@
                     </p>
                 </section>
                 <footer>
-                        @if($vacancy->hasApplied)
-                            <a class="button" href="#light-modal" onclick="editForm({{$vacancy->id}}, event, 'vacancies/status')">Show More...</a>
-                        @else
-                            @if($vacancy->dateOk && $vacancy->canApply)
-                                <a class="button" href="#">Apply</a>
-                            @endif
+                    @if($vacancy->hasApplied)
+                        <a class="button" href="#light-modal" onclick="editForm({{$vacancy->id}}, event, 'vacancies/status')">View Applicant Status...</a>
+                    @else
+                        @if($vacancy->dateOk && $vacancy->canApply)
+                            <a class="button" href="#" onclick="editForm({{$vacancy->id}}, false, 'vacancies/apply')">Apply</a>
                         @endif
+                    @endif
                 </footer>
             </article>
             @empty

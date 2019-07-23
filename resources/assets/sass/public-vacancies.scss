@@ -176,6 +176,66 @@ a{
 	user-select: none;
 }
 
+.history-container{
+    width:50%;
+    margin:auto;
+    display:block;
+    position:relative;
+
+    & ul.tl{
+        margin:20px 0;
+        padding:0;
+        display:inline-block;
+
+        & li{
+            list-style: none;
+            margin:auto;
+            margin-left:50px;
+            min-height:50px;
+            /*background: rgba(255,255,0,0.1);*/
+            border-left:1px dashed #86D6FF;
+            padding:0 0 50px 30px;
+            position:relative;
+
+            ::before{
+                position: absolute;
+                left: -18px;
+                top: -5px;
+                content: " ";
+                border: 8px solid rgba(255, 255, 255, 0.74);
+                border-radius: 500%;
+                background: #258CC7;
+                height: 20px;
+                width: 20px;
+                transition: all 500ms ease-in-out;
+            }
+
+            &:hover::before{
+                border-color:  #258CC7;
+                transition: all 1000ms ease-in-out;
+            }
+
+            &:last-child{ border-left:0; }
+
+            & .item-detail{
+                color:rgba(0,0,0,0.5);
+                font-size:12px;
+            }
+
+            & .timestamp{
+                color: #8D8D8D;
+                position: absolute;
+                width:100px;
+                left: -50%;
+                text-align: right;
+                font-size: 12px;
+            }
+
+        }
+        
+    }
+}
+
 // Body
 $body-bg: #f8f8f8;
 

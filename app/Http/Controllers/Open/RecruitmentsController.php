@@ -85,13 +85,14 @@ class RecruitmentsController extends Controller
         return view('public.index', compact('vacancies'));
     }
 
-    /*
-    public function addSalaryExpectation(Request $request)
+    public function apply(Request $request)
     {
-        $recruitment_id = Route::current()->parameter('recruitment_id');
+        $candidateId = Auth::guard('candidate')->check() ? Auth::guard('candidate')->user()->id :0;
+        $recruitmentId = Route::current()->parameter('recruitment_id');
 
-        if ($request->ajax()) {
-            $view = view($this->baseViewPath . '.salary', compact('recruitment_id'))->renderSections();
+        // logged-in candidate is making an application
+        if($candidateId !=0){
+            $view = view($this->baseViewPath . '.salary', compact('recruitmentId'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -100,13 +101,11 @@ class RecruitmentsController extends Controller
             ]);
         }
 
-        return view($this->baseViewPath . '.salary', compact('recruitment_id'));
     }
-    */
-
+    
     public function showCandidateStatus(Request $request)
     {
-        
+
         $candidateId = Auth::guard('candidate')->check() ? Auth::guard('candidate')->user()->id :0;
 
         $recruitmentId = Route::current()->parameter('recruitment_id');

@@ -7,7 +7,7 @@
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Add</button>
 @endsection
 
-@section('postModalUrl', route('vacancies.apply-job')))
+@section('postModalUrl', '')
 
 @section('modalContent')
     <div class="row">
@@ -34,7 +34,7 @@
 @endsection
 
 @section('content')
-    <form method="POST" action="{{ route('my-vacancies.apply-interview') }}" id="apply_interview_form" name="apply_interview_form" enctype="multipart/form-data" accept-charset="UTF-8" >
+    <form method="POST" action="{{ route('vacancies.apply') }}" id="apply_interview_form" name="apply_interview_form" enctype="multipart/form-data" accept-charset="UTF-8" >
         <div class="box box-primary">
             <div class="box-body">
                 @yield('modalContent')

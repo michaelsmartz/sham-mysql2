@@ -24,9 +24,9 @@ Route::group(['prefix' => '/vacancies', 'namespace' => 'Open'], function() {
     Route::get('status/{recruitment_id}','RecruitmentsController@showCandidateStatus')
             ->middleware(['auth:candidate'])
             ->name('vacancies.status');
-    /*Route::any('apply/{recruitment_id}','RecruitmentsController@addSalaryExpectation')
+    Route::any('apply/{recruitment_id?}','RecruitmentsController@apply')
             ->middleware(['auth:candidate'])
-            ->name('vacancies.apply-interview');*/
+            ->name('vacancies.apply');
 });
 
 Route::group(['prefix' => '/candidate'], function () {
