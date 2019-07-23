@@ -141,4 +141,9 @@ class Recruitment extends Model
     {
         return $this->belongsToMany(Recruitment::class, 'recruitment_status')->withPivot(['id']);
     }
+
+    public function trackCandidateStatus()
+    {
+        return $this->belongsToMany(Candidate::class, 'recruitment_status')->withPivot(['id','status','comment'])->orderBy('pivot_status','asc');;
+    }
 }

@@ -7,6 +7,9 @@ use App\Recruitment;
 use App\Http\Controllers\Controller;
 use Barryvdh\Debugbar\Facade as Debugbar;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Route;
 
 class RecruitmentsController extends Controller
 {
@@ -22,6 +25,12 @@ class RecruitmentsController extends Controller
     public function publicHome() {
         $candidateId = Auth::guard('candidate')->check() ? Auth::guard('candidate')->user()->id :0;
 
+        $recruitmentId = Route::current()->parameter('recruitment_id');
+        $recruitment = Recruitment::with(['trackCandidateStatus' => function($query) use ($candidateId){
+            return $query->where('candidate_id',$candidateId);
+        }])->find(1);
+
+        //dump($recruitment);
         $candidateFilter = function ($q) use ($candidateId) {
             $q->where('candidate_id', $candidateId);
         };
@@ -64,7 +73,7 @@ class RecruitmentsController extends Controller
                 $vacancy->dateOk = false;
             }
 
-            if( sizeof($vacancy->candidates) > 0 ){
+            if( $candidateId != 0 && sizeof($vacancy->candidates) > 0 ){
                 $vacancy->hasApplied = true;
             }
 
@@ -72,10 +81,45 @@ class RecruitmentsController extends Controller
                 $vacancy->canApply = true;
             }
 
-            //echo $diff, '  ',(int) $vacancy->dateOk,'  ', (int) $vacancy->canApply, '  ', (int) $vacancy->hasApplied, '<br>';
-
         }
         return view('public.index', compact('vacancies'));
     }
 
+    /*
+    public function addSalaryExpectation(Request $request)
+    {
+        $recruitment_id = Route::current()->parameter('recruitment_id');
+
+        if ($request->ajax()) {
+            $view = view($this->baseViewPath . '.salary', compact('recruitment_id'))->renderSections();
+            return response()->json([
+                'title' => $view['modalTitle'],
+                'content' => $view['modalContent'],
+                'footer' => $view['modalFooter'],
+                'url' => $view['postModalUrl']
+            ]);
+        }
+
+        return view($this->baseViewPath . '.salary', compact('recruitment_id'));
+    }
+    */
+
+    public function showCandidateStatus(Request $request)
+    {
+        
+        $candidateId = Auth::guard('candidate')->check() ? Auth::guard('candidate')->user()->id :0;
+
+        $recruitmentId = Route::current()->parameter('recruitment_id');
+        $recruitment = Recruitment::with(['trackCandidateStatus' => function($query) use ($candidateId){
+            return $query->where('candidate_id',$candidateId);
+        }])->find($recruitmentId);
+
+        $view = view($this->baseViewPath . '.candidate-status', compact('recruitment'))->renderSections();
+
+        return response()->json([
+            'title' => $view['modalTitle'],
+            'content' => $view['modalContent'],
+            'footer' => $view['modalFooter']
+        ]);
+    }
 }
