@@ -667,10 +667,10 @@ sup, sub, u, del {
 }
 
 .post-list .single-post {
-    padding: 30px;
+    padding: 35px 35px 75px 35px;
     background-color: #fff;
     margin-bottom: 30px;
-    display: inline-flex;
+    /*display: inline-flex;*/
     width: 100%;
 }
 
@@ -764,12 +764,42 @@ sup, sub, u, del {
 
 .post-list .single-post .thumb{
     padding-right: 40px;
-    flex: 20%;
+    /*flex: 20%;*/
 }
 
 .post-list .single-post .details{
-    flex: 80%;
+    /*flex: 80%;*/
 }
+
+.isDisabled {
+  color: currentColor;
+  cursor: not-allowed;
+  opacity: 0.5;
+  text-decoration: none;
+}
+
+.load-more-container{
+  color: #777;
+  margin-bottom: 15px;
+  cursor: pointer;
+  /* hide text if it more than N lines  */
+  overflow: hidden;
+  /* for set '...' in absolute position */
+  position: relative;
+  /* use this value to count block height */
+  line-height: 1.5em;
+  /* max-height = line-height (1.2) * lines max number (4) */
+  /* fix problem when last visible word doesn't adjoin right side  */
+  text-align: justify;
+  /* place for '...' */
+  padding-right: 1em;
+  -webkit-transition: height 1s;
+  transition: height 1s;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*.nowrap { white-space: nowrap; }*/
 
 @media (max-width: 736px) {
   .post-list h4 {

@@ -111,10 +111,9 @@ Route::group(['prefix' => '/candidate'], function () {
             Route::resource('my-team', 'SSPMyTeamController');
 
             #my-vacancies
-            Route::post('my-vacancies/filter', 'SSPMyVacanciesController@index')->name('my-vacancies.filter');
             Route::post('my-vacancies/apply', 'SSPMyVacanciesController@applyInterview')->name('my-vacancies.apply-interview');
             Route::get('my-vacancies/{recruitment_id}/salary-expectation', 'SSPMyVacanciesController@addSalaryExpectation')->name('my-vacancies.add-salary-expectation');
-            Route::resource('my-vacancies', 'SSPMyVacanciesController');
+            Route::get('my-vacancies', 'SSPMyVacanciesController@index')->name('my-vacancies.index');
             #endregion
 
         #region Central HR

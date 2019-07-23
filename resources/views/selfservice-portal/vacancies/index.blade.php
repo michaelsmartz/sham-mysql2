@@ -29,11 +29,44 @@
                 }).done(function (data) {
                     $('.vacancies').html(data);
                     $('.loader').hide();
+                    $('.details ul').removeClass('isDisabled');
+                    $('.details ul li a').removeClass('isDisabled');
                 }).fail(function () {
                     alert('Vacancies could not be loaded.');
                 });
             }
         });
+
+        //disable button till page is fully loaded
+        window.addEventListener("load", function(event) {
+            $('.details ul').removeClass('isDisabled');
+            $('.details ul li a').removeClass('isDisabled');
+        });
+
+        var initialLoadMoreContent = "";
+
+        $('.load-more-container').each(function(i, obj) {
+            wrapChildElements($(this));
+        });
+
+        function wrapChildElements(r){
+            initialLoadMoreContent = r.children();
+            var wrap = r.children().text();
+            r.html(wrap);
+        }
+
+        function RevealHiddenOverflow(d)
+        {
+            if( d.style.whiteSpace == "nowrap" ) {
+                $('div.load-more-container').html(initialLoadMoreContent);
+                d.style.whiteSpace = "normal";
+            }
+            else {
+                var wrap = initialLoadMoreContent.children().text();
+                $('div.load-more-container').html(wrap);
+                d.style.whiteSpace = "nowrap";
+            }
+        }
     </script>
 @endsection
 
@@ -48,7 +81,7 @@
         </div>
     @endif
         <div class="banner-content col-lg-12">
-            <form method="POST" action="{{route('my-vacancies.filter')}}" class="search-form-area">
+            <form method="GET" action="{{route('my-vacancies.index')}}" class="search-form-area">
                 <div class="row justify-content-center form-wrap">
                     <div class="col-lg-3 form-cols">
                         <input type="text" class="form-control datepicker"

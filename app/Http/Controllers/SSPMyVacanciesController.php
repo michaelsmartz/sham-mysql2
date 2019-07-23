@@ -104,7 +104,7 @@ class SSPMyVacanciesController extends CustomController
         return view($this->baseViewPath . '.index', compact('warnings', 'vacancies', 'jobStatuses', 'department', 'jobDepartments', 'qualification', 'jobQualifications', 'closing_date'));
     }
 
-    public function update(Request $request)
+    public function applyInterview(Request $request)
     {
         $already_candidate = null;
         $candidate_id = null;
@@ -192,13 +192,6 @@ class SSPMyVacanciesController extends CustomController
         }
 
         return redirect()->route('my-vacancies.index');
-    }
-    public function store(Request $request){}
-
-
-    //TODO fix bug on path pointing to update action instead
-    public function applyInterview(Request $request)
-    {
     }
 
     public function addSalaryExpectation(Request $request)

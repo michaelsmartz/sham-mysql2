@@ -6,6 +6,7 @@
         <div class="single-post d-flex flex-row">
             <div class="thumb">
                 <img src="{{URL::to('/')}}/img/job.png" alt="">
+                <p class="pull-right">{{ $vacancy->posted_on }}</p>
                 <ul class="tags">
                     @if( !is_null($vacancy->skills))
                         @foreach($vacancy->skills as $skill)
@@ -16,15 +17,14 @@
             </div>
             <div class="details">
                 <div class="title d-flex flex-row justify-content-between">
-                    <p class="pull-right">{{ $vacancy->posted_on }}</p>
                     <div class="titles">
                         <a href=""><h4>{{ $vacancy->job_title }}</h4></a>
                         <h6>{{ $vacancy->department->description }}</h6>
                     </div>
                 </div>
-                <p>
+                <div class="load-more-container" onclick="RevealHiddenOverflow(this)">
                     {!! $vacancy->description  !!}
-                </p>
+                </div>
                 <h5><span class="glyphicon glyphicon-briefcase"></span> Employment Type: {{ $vacancy->employeeStatus->description }}</h5>
                 <h5><span class="glyphicon glyphicon-education"></span> Qualification Required: {{ $vacancy->qualification->description }}</h5>
                 <h5><span class="glyphicon glyphicon-time"></span> Closing on: {{ $vacancy->end_date }}</h5>
@@ -34,10 +34,10 @@
                     <p class="salary"><span class="glyphicon glyphicon-piggy-bank"></span>  Not disclosed </p>
                 @endif
                 @if(is_null($vacancy->already_apply))
-                <ul class="btns pull-right">
+                <ul class="btns pull-right isDisabled">
                     <li>
-                        <a role="button"
-                           @click="applyVacancy({{ $vacancy->id }}, '{{ $vacancy->job_title }}')">
+                        <a role="button" class="isDisabled"
+                           @click="applyVacancy({{ $vacancy->id }}, '{{ $vacancy->job_title }}', $event)">
                            Apply
                         </a>
                     </li>
@@ -51,4 +51,4 @@
     @component('partials.index', [])
     @endcomponent
 </div>
-{{ $vacancies->links() }}
+{{ $vacancies->appends(request()->except('filter'))->links() }}
