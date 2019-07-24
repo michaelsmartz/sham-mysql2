@@ -46,7 +46,7 @@
 
                         <div>
                             <a href="{{ route('candidate.register') }}" class="txt1">
-                                No account yet? Sign up here
+                                No account yet? Register here
                             </a>
                         </div>
                     </div>
