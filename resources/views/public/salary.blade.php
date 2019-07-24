@@ -4,15 +4,15 @@
 @section('modalTitle', 'Please complete information below')
 @section('modalFooter')
     <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
-    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Add</button>
+    <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Apply</button>
 @endsection
 
 @section('postModalUrl', "{{ route('vacancies.apply') }}")
 
 @section('modalContent')
     <div class="row">
-        <div class="col-sm-12">
-            <div class="form-group col-xs-12">
+        <div class="col-sm-6">
+            <div class="form-group">
                     <span class="field">
                         <label for="salary_expectation">What is your salary expectation?</label>
                         {!! Form::text('salary_expectation', old('salary_expectation', ''), ['class'=>'form-control fix-case field-required', 'required', 'autocomplete'=>'off', 'placeholder'=>'Salary Expectation', 'title'=>'Required','id'=>'salary_expectation', 'maxlength' => '50',
