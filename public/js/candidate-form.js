@@ -10094,6 +10094,11 @@ Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#
         $('#motivation').show();
         $('#nav-personal').removeClass('active');
         $('#nav-motivation').addClass('active');
+    } else if ($("#personal").find('li.parsley-required').length !== 0 && $("#motivation").find('li.parsley-required').length === 0) {
+        $('.candidate_section').hide();
+        $('#personal').show();
+        $('#nav-personal').addClass('active');
+        $('#nav-motivation').removeClass('active');
     }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(1)))

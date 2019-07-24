@@ -34,6 +34,18 @@ on('click','.fc-more,.fc-toolbar button',function(event){
 });
 
 
+on('click','.fc-more,.fc-toolbar button',function(event){
+    if($('.fc-agendaWeek-button').hasClass('fc-state-active') || $('.fc-agendaDay-button').hasClass('fc-state-active')){
+        $('.fc-time-grid-event .fc-bg').css('background','#3097D1');
+        $('.avatar-preview').css('z-index','2');
+    }else{
+        $('.fc-time-grid-event .fc-bg').css('background','transparent');
+        $('.avatar-preview').css('z-index','0');
+    }
+
+});
+
+
 on('click','#bundle_submit',function(event){
     if($('#leave_list').val() === ''){
         event.preventDefault();
