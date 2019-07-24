@@ -176,7 +176,8 @@ class CandidatesController extends CustomController
             'qualifications',
             'previous_employments',
             'picture',
-            'profile_pic'
+            'profile_pic',
+            'profil_complete'
         ];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
@@ -302,7 +303,12 @@ class CandidatesController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        if(isset(Auth::guard('candidate')->user()->id)){
+            return redirect()->route('candidate.vacancies');
+        }else{
+            return redirect()->route($this->baseViewPath .'.index');
+        }
+
     }
 
     /**

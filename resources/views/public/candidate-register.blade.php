@@ -45,10 +45,18 @@
                         <span class="focus-input100"></span>
                     </div>
 
-                    <div class="container-login100-form-btn">
-                        <button type="submit" class="btn bg-gold b-r4 text-white">
-                            <i class="fa fa-btn fa-sign-in"></i> Register
-                        </button>
+                    <div class="flex-sb-m w-full p-b-30">
+                        <div class="">
+                            <button type="submit" class="btn bg-gold b-r4 text-white">
+                                <i class="fa fa-btn fa-sign-in"></i> Register
+                            </button>
+                        </div>
+
+                        <div>
+                            <a href="{{ route('candidate.auth.login') }}" class="txt1">
+                                Already a candidate ? Login here
+                            </a>
+                        </div>
                     </div>
                 </form>
             </div>

@@ -45,8 +45,8 @@
                         </div>
 
                         <div>
-                            <a href="#" class="txt1">
-                                Forgot Password?
+                            <a href="{{ route('candidate.register') }}" class="txt1">
+                                No account yet? Sign up here
                             </a>
                         </div>
                     </div>

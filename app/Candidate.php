@@ -69,7 +69,8 @@ class Candidate extends Authenticatable
                   'city',
                   'province',
                   'zip_code',
-                  'is_hired'
+                  'is_hired',
+                  'profil_complete'
               ];
 
     /**
