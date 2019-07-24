@@ -15,11 +15,7 @@
             <div class="form-group col-xs-12">
                     <span class="field">
                         <label for="salary_expectation">What is your salary expectation?</label>
-                        {!! Form::text('salary_expectation', old('salary_expectation', ''), ['class'=>'form-control fix-case field-required', 'required', 'autocomplete'=>'off', 'placeholder'=>'Salary Expectation', 'title'=>'Required','id'=>'salary_expectation', 'maxlength' => '50',
-                        'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
-                        'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
-                        'data-parsley-trigger'=>'focusout'])
-                        !!}
+                        <input class="form-control" name="salary_expectation" type="number" id="salary_expectation" min="0" max="999999999" placeholder="Enter salary Expectation Here...">
                     </span>
             </div>
 
