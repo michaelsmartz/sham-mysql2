@@ -5,11 +5,9 @@
 
 @section('title','Candidate Information');
 @section('subtitle','Please fill in the 3 sections');
-<?php $candidate = $data; ?>
-
 
 @section('content')
-    <form method="POST" id="candidates" action="{{ route('candidates.update', $candidate->id) }}" name="edit_candidates_form" accept-charset="UTF-8" data-parsley-validate="" enctype="multipart/form-data">
+    <form method="POST" id="candidates" action="{{ route('candidate.auth.update', $candidate->id) }}" name="edit_candidates_form" accept-charset="UTF-8" data-parsley-validate="" enctype="multipart/form-data">
         {{ csrf_field() }}
         <input name="_method" type="hidden" value="PATCH">
         <section id="tabs">

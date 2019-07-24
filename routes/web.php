@@ -35,7 +35,8 @@ Route::group(['prefix' => '/candidate'], function () {
     Route::post('register', 'Open\CandidateController@store')->name('candidate.register.store');
     Route::get('login', 'Auth\CandidateLoginController@login')->name('candidate.auth.login');
     Route::post('login', 'Auth\CandidateLoginController@loginCandidate')->name('candidate.auth.loginCandidate');
-    Route::get('details', 'Auth\CandidateLoginController@details')->name('candidate.auth.details');
+    Route::get('details', 'Open\CandidateController@details')->name('candidate.auth.details');
+    Route::match(['put', 'patch'],'update/{id}', 'Open\CandidateController@update')->name('candidate.auth.update');
     // logout using get
     Route::get('logout', 'Auth\CandidateLoginController@logout')->name('candidate.auth.logout');
     Route::post('logout', 'Auth\CandidateLoginController@logout')->name('candidate.auth.logout');

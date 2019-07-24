@@ -225,14 +225,11 @@ class CandidatesController extends CustomController
 
     }
 
-    public function edit(Request $request,$mode = 'default')
+    public function edit(Request $request)
     {
 
         $data = $titles = $genders = $maritalstatuses = null;
         $id = Route::current()->parameter('candidate');
-        if(empty($id) && $mode == 'external'){
-            $id = Auth::guard('candidate')->user()->id;
-        }
 
         $uploader = [
             "fieldLabel" => "Attach Files",
@@ -270,13 +267,7 @@ class CandidatesController extends CustomController
 
         $candidateDisabilities = $data->disabilities->pluck('id');
 
-        if($mode == 'external'){
-            $view = 'public.candidate-form';
-        }else{
-            $view = $this->baseViewPath .'.edit';
-
-        }
-        return view($view,
+        return view($this->baseViewPath .'.edit',
             compact('data', 'uploader', 'titles','genders','maritalstatuses','jobTitles','skills', 'preferredNotifications',
                 'disabilities', 'candidateSkills','candidateDisabilities','qualifications', 'countries', 'immigrationStatuses'));
     }

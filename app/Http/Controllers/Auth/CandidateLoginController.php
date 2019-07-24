@@ -73,19 +73,6 @@ class CandidateLoginController extends Controller
       
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function details(Request $request)
-    {
-        if(empty(Auth::guard('candidate')->user()->id)){
-            return redirect()->route('candidate.auth.login');
-        }
-        $candidate = new CandidatesController();
-        return $candidate->edit($request,'external');
-    }
 
     protected function guard()
     {
