@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 class RecruitmentsController extends Controller
 {
@@ -89,16 +90,18 @@ class RecruitmentsController extends Controller
     {
         $candidateId = Auth::guard('candidate')->check() ? Auth::guard('candidate')->user()->id :0;
         $recruitmentId = Route::current()->parameter('recruitment_id');
+        $recruitment = Recruitment::find($recruitmentId);
+
+        Session::put('recruitmentId', $recruitmentId);
 
         // logged-in candidate is making an application
-        if($candidateId !=0){
-            $view = view($this->baseViewPath . '.salary', compact('recruitmentId'))->renderSections();
-            return response()->json([
-                'title' => $view['modalTitle'],
-                'content' => $view['modalContent'],
-                'footer' => $view['modalFooter'],
-                'url' => $view['postModalUrl']
-            ]);
+        if($candidateId !=0) {
+
+            return view('public.salary', compact('recruitmentId','recruitment'));
+        } else {
+
+            return redirect('candidate/login');
+
         }
 
     }

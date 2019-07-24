@@ -7,7 +7,7 @@
     <button class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Add</button>
 @endsection
 
-@section('postModalUrl', '')
+@section('postModalUrl', "{{ route('vacancies.apply') }}")
 
 @section('modalContent')
     <div class="row">
@@ -23,14 +23,9 @@
                     </span>
             </div>
 
-            <input id="recruitment_id" class="" name="recruitment_id" type="hidden" value="{!! isset($recruitment_id) ? $recruitment_id : null !!}" />
+            <input id="recruitment_id" class="" name="recruitment_id" type="hidden" value="{!! isset($recruitmentId) ? $recruitmentId : null !!}" />
         </div>
     </div>
-    @if(!Request::ajax())
-        <div class="box-footer">
-            @yield('modalFooter')
-        </div>
-    @endif
 @endsection
 
 @section('content')

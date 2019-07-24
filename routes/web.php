@@ -25,7 +25,6 @@ Route::group(['prefix' => '/vacancies', 'namespace' => 'Open'], function() {
             ->middleware(['auth:candidate'])
             ->name('vacancies.status');
     Route::any('apply/{recruitment_id?}','RecruitmentsController@apply')
-            ->middleware(['auth:candidate'])
             ->name('vacancies.apply');
 });
 
