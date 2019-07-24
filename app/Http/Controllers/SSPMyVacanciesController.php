@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -112,6 +113,7 @@ class SSPMyVacanciesController extends CustomController
         $employee_id = (\Auth::check()) ? \Auth::user()->employee_id : 0;
         $salary_expectation = ($request->has('salary_expectation')) ? $request->get('salary_expectation') : null;
         $recruitment_id = ($request->has('recruitment_id')) ? $request->get('recruitment_id') : null;
+        $page = ($request->has('page')) ? $request->get('page') : 1;
 
         if (!is_null($salary_expectation) && !is_null($recruitment_id)) {
 
@@ -191,15 +193,16 @@ class SSPMyVacanciesController extends CustomController
             }
         }
 
-        return redirect()->route('my-vacancies.index');
+        return Redirect::to("my-vacancies?page=".$page);
     }
 
     public function addSalaryExpectation(Request $request)
     {
         $recruitment_id = Route::current()->parameter('recruitment_id');
+        $page = Route::current()->parameter('page');
 
         if ($request->ajax()) {
-            $view = view($this->baseViewPath . '.salary', compact('recruitment_id'))->renderSections();
+            $view = view($this->baseViewPath . '.salary', compact('recruitment_id', 'page'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -208,7 +211,7 @@ class SSPMyVacanciesController extends CustomController
             ]);
         }
 
-        return view($this->baseViewPath . '.salary', compact('recruitment_id'));
+        return view($this->baseViewPath . '.salary', compact('recruitment_id', 'page'));
     }
 
     /**

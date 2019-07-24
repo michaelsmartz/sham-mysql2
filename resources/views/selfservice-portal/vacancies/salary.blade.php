@@ -24,6 +24,7 @@
             </div>
 
             <input id="recruitment_id" class="" name="recruitment_id" type="hidden" value="{!! isset($recruitment_id) ? $recruitment_id : null !!}" />
+            <input id="page" class="" name="page" type="hidden" value="{!! isset($page) ? $page : null !!}" />
         </div>
     </div>
     @if(!Request::ajax())

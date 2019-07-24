@@ -37,7 +37,7 @@
                 <ul class="btns pull-right isDisabled">
                     <li>
                         <a role="button" class="isDisabled"
-                           @click="applyVacancy({{ $vacancy->id }}, '{{ $vacancy->job_title }}', $event)">
+                           onclick="applyVacancy('{{ $vacancy->id }}', '{{ $vacancy->job_title }}', '{{  $vacancies->currentPage() }}', event)">
                            Apply
                         </a>
                     </li>

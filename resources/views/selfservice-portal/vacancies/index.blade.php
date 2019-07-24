@@ -5,9 +5,12 @@
 @section('scripts')
     <link href="{{URL::to('/')}}/css/nice-select.css" rel="stylesheet">
     <link href="{{URL::to('/')}}/css/vacancies.css" rel="stylesheet">
-    <script src="{{URL::to('/')}}/js/my-vacancies.min.js"></script>
     <script src="{{URL::to('/')}}/js/jquery.nice-select.min.js"></script>
     <script>
+
+        if($('#my-vacancies').length){
+            $("input[name='_method']").val('POST');
+        }
 
         $('.loader').hide();
         $(document).ready(function(){
@@ -23,25 +26,53 @@
                 window.history.pushState("", "", url);
             });
 
-            function getVacancies(url) {
-                $.ajax({
-                    url : url
-                }).done(function (data) {
-                    $('.vacancies').html(data);
-                    $('.loader').hide();
-                    $('.details ul').removeClass('isDisabled');
-                    $('.details ul li a').removeClass('isDisabled');
-                }).fail(function () {
-                    alert('Vacancies could not be loaded.');
-                });
-            }
         });
 
         //disable button till page is fully loaded
         window.addEventListener("load", function(event) {
-            $('.details ul').removeClass('isDisabled');
-            $('.details ul li a').removeClass('isDisabled');
+            $('.details .btns').removeClass('isDisabled');
+            $('.details .btns li a').removeClass('isDisabled');
         });
+
+        function getVacancies(url) {
+            $.ajax({
+                url : url
+            }).done(function (data) {
+                $('.vacancies').html(data);
+                $('.loader').hide();
+                $('.details .btns').removeClass('isDisabled');
+                $('.details .btns li a').removeClass('isDisabled');
+            }).fail(function () {
+                alert('Vacancies could not be loaded.');
+            });
+        }
+
+        function applyVacancy(recruitment_id, job_title, page, event){
+            //disable action till page is fully loaded
+           if(event.target.className != 'isDisabled') {
+                var vm = this;
+
+                alerty.confirm(
+                    "Are you sure you want to <strong class='text-danger'> apply </strong> for <strong class='text-danger'>" + job_title + "</strong> position?<br>", {
+                        okLabel: '<a class="text-danger" href="#light-modal">Yes</a>',
+                        cancelLabel: 'No'
+                    },
+                    function () {
+                        window.loadUrl('my-vacancies/' + recruitment_id + '/salary-expectation/'+ page + '/apply');
+                    }
+                );
+            }
+        }
+
+        function RevealHiddenOverflow(d)
+        {
+            if( d.style.whiteSpace == "nowrap" ) {
+                d.style.whiteSpace = "normal";
+            }
+            else {
+                d.style.whiteSpace = "nowrap";
+            }
+        }
 
         // var initialLoadMoreContent = "";
         //
@@ -68,15 +99,7 @@
         //     }
         // }
 
-        function RevealHiddenOverflow(d)
-        {
-            if( d.style.whiteSpace == "nowrap" ) {
-                d.style.whiteSpace = "normal";
-            }
-            else {
-                d.style.whiteSpace = "nowrap";
-            }
-        }
+        // $('.load-more-container').find('*').hide();
     </script>
 @endsection
 
