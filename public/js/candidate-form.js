@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 399);
+/******/ 	return __webpack_require__(__webpack_require__.s = 397);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10055,11 +10055,48 @@ function fire(target, name, detail) {
 
 /***/ }),
 
-/***/ 399:
+/***/ 397:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(400);
+module.exports = __webpack_require__(398);
 
+
+/***/ }),
+
+/***/ 398:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function(global, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(3);
+
+
+window.on = global.on = __WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */];
+
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-personal', function (event) {
+    $('.candidate_section').hide();
+    $('#personal').show();
+});
+
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-qualification', function (event) {
+    $('.candidate_section').hide();
+    $('#qualification').show();
+});
+
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-motivation', function (event) {
+    $('.candidate_section').hide();
+    $('#motivation').show();
+});
+
+Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#candidate_submit', function (event) {
+    if ($("#personal").find('li.parsley-required').length === 0 && $("#motivation").find('li.parsley-required').length !== 0) {
+        $('.candidate_section').hide();
+        $('#motivation').show();
+        $('#nav-personal').removeClass('active');
+        $('#nav-motivation').addClass('active');
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(1)))
 
 /***/ }),
 
@@ -10474,34 +10511,6 @@ SelectorSet.prototype.matches = function(el) {
   return matches.sort(sortById);
 };
 
-
-/***/ }),
-
-/***/ 400:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(global, $) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_delegated_events__ = __webpack_require__(3);
-
-
-window.on = global.on = __WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */];
-
-Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-personal', function (event) {
-    $('.candidate_section').hide();
-    $('#personal').show();
-});
-
-Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-qualification', function (event) {
-    $('.candidate_section').hide();
-    $('#qualification').show();
-});
-
-Object(__WEBPACK_IMPORTED_MODULE_0_delegated_events__["a" /* on */])('click', '#nav-motivation', function (event) {
-    $('.candidate_section').hide();
-    $('#motivation').show();
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2), __webpack_require__(1)))
 
 /***/ })
 

@@ -333,7 +333,7 @@
                                 </div>
 
                                 <div id="date-picker"> </div>
-                                <input class="btn btn-sham pull-right" style="margin: 1%" type="submit" value="Submit">
+                                <input id="candidate_submit" class="btn btn-sham pull-right" style="margin: 1%" type="submit" value="Submit">
                             </div>
 
                         </div>

@@ -19,3 +19,17 @@ on('click','#nav-motivation',function(event){
     $('#motivation').show()
 
 });
+
+on('click','#candidate_submit',function(event){
+    if(($("#personal").find('li.parsley-required').length === 0) && ($("#motivation").find('li.parsley-required').length !== 0)){
+        $('.candidate_section').hide();
+        $('#motivation').show()
+        $('#nav-personal').removeClass('active');
+        $('#nav-motivation').addClass('active');
+    }else if(($("#personal").find('li.parsley-required').length !== 0) && ($("#motivation").find('li.parsley-required').length === 0)){
+        $('.candidate_section').hide();
+        $('#personal').show()
+        $('#nav-personal').addClass('active');
+        $('#nav-motivation').removeClass('active')
+    }
+});
