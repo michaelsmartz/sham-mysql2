@@ -5,6 +5,8 @@ $button-text-color: white;
 $button-text-size: 1em;
 $button-spacing: 1rem;
 
+$auto-grid-min-size: 23rem;
+
 @function tint(
   $color,
   $percent
@@ -44,8 +46,8 @@ body{
 
 .grid{
     display: grid;
-    gap: 25px 25px 0px 25px;
-    grid-template-columns: repeat(auto-fit, minmax(11rem, 4fr));
+    grid-gap: 20px 15px;
+    grid-template-columns: repeat(auto-fit, minmax($auto-grid-min-size, 1fr));
 }
 
 .card{
@@ -177,63 +179,55 @@ a{
 }
 
 .history-container{
-    width:50%;
+    font-family: "Roboto",sans-serif;
+  width:65%;
+  margin:auto;
+  display:block;
+  position:relative;
+}
+.history-container ul.tl{
+    margin:20px 0;
+    padding:0;
+    display:inline-block;
+
+}
+.history-container ul.tl li{
+    list-style: none;
     margin:auto;
-    display:block;
+    min-height:10px;
+    border-left:1px dashed #86D6FF;
+    padding:0 0 50px 30px;
     position:relative;
+}
+.history-container ul.tl li:last-child{ border-left:0;padding-bottom: 5px;}
+.history-container ul.tl li::before{
+    position: absolute;
+    left: -18px;
+    top: -5px;
+    content: " ";
+    border: 8px solid rgba(255, 255, 255, 0.74);
+    border-radius: 500%;
+    background: #258CC7;
+    height: 20px;
+    width: 20px;
+    transition: all 500ms ease-in-out;
 
-    & ul.tl{
-        margin:20px 0;
-        padding:0;
-        display:inline-block;
-
-        & li{
-            list-style: none;
-            margin:auto;
-            margin-left:50px;
-            min-height:50px;
-            /*background: rgba(255,255,0,0.1);*/
-            border-left:1px dashed #86D6FF;
-            padding:0 0 50px 30px;
-            position:relative;
-
-            ::before{
-                position: absolute;
-                left: -18px;
-                top: -5px;
-                content: " ";
-                border: 8px solid rgba(255, 255, 255, 0.74);
-                border-radius: 500%;
-                background: #258CC7;
-                height: 20px;
-                width: 20px;
-                transition: all 500ms ease-in-out;
-            }
-
-            &:hover::before{
-                border-color:  #258CC7;
-                transition: all 1000ms ease-in-out;
-            }
-
-            &:last-child{ border-left:0; }
-
-            & .item-detail{
-                color:rgba(0,0,0,0.5);
-                font-size:12px;
-            }
-
-            & .timestamp{
-                color: #8D8D8D;
-                position: absolute;
-                width:100px;
-                left: -50%;
-                text-align: right;
-                font-size: 12px;
-            }
-
-        }
-        
-    }
+}
+.history-container ul.tl li:hover::before{
+    border-color:  #258CC7;
+    transition: all 1000ms ease-in-out;
+}
+ul.tl li .item-detail{
+    color:rgba(0,0,0,0.5);
+    font-size:14px;
+}
+ul.tl li .timestamp{
+    color: #8D8D8D;
+    position: absolute;
+    width:100px;
+    left: -40%;
+    text-align: right;
+    font-size: 12px;
 }
 
 // Body

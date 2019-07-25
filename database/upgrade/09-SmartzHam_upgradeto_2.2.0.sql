@@ -124,3 +124,8 @@ ADD COLUMN `profill_complete` TINYINT(4) NULL AFTER `remember_token`;
 
 ALTER TABLE `candidates`
 	CHANGE COLUMN `profill_complete` `profil_complete` TINYINT(4) NULL DEFAULT NULL AFTER `remember_token`;
+
+ALTER TABLE `recruitments`
+	CHANGE COLUMN `start_date` `start_date` DATETIME NULL DEFAULT NULL AFTER `year_experience`;
+ALTER TABLE `recruitments`
+	CHANGE COLUMN `end_date` `end_date` DATETIME NULL DEFAULT NULL AFTER `start_date`;  

@@ -53,8 +53,8 @@
     </head>
     <body>
         @include('public.header')
+        <h2 style="margin-left:15px">Are you looking for a job?</h2>
         @if(count($vacancies) > 0)
-            <h2 style="margin-left:15px">Are you looking for a job?</h2>
             <p style="margin-left:15px;margin-bottom:10px">We have the following job openings:</p>
         @endif
         <main class="grid">
@@ -107,7 +107,7 @@
                 <article class="card">
                     <section>
                         <p>
-                            There are no job openings at the moment
+                            There are no job openings at the moment.  Please keep checking this spot for future advertisements.
                         </p>
                     </section>
                 </article>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Open;
 
 use Auth;
+use App\Candidate;
 use App\Recruitment;
 use App\Http\Controllers\Controller;
 use Barryvdh\Debugbar\Facade as Debugbar;
@@ -18,7 +19,7 @@ class RecruitmentsController extends Controller
     protected $baseViewPath;
 
     public function __construct() {
-        Debugbar::disable();
+        Debugbar::enable();
         $this->contextObj = new Recruitment();
         $this->baseViewPath = 'public';
     }
@@ -27,18 +28,14 @@ class RecruitmentsController extends Controller
         $candidateId = Auth::guard('candidate')->check() ? Auth::guard('candidate')->user()->id :0;
 
         $recruitmentId = Route::current()->parameter('recruitment_id');
-        $recruitment = Recruitment::with(['trackCandidateStatus' => function($query) use ($candidateId){
-            return $query->where('candidate_id',$candidateId);
-        }])->find(1);
 
-        //dump($recruitment);
         $candidateFilter = function ($q) use ($candidateId) {
             $q->where('candidate_id', $candidateId);
         };
 
         $a = $this->contextObj::with(['department', 'employeeStatus', 'qualification', 'skills'
         ])->where('is_approved', '=', 1)
-        ->where('end_date', '>', Carbon::now())
+        ->where('end_date', '>=', Carbon::now()->endOfDay()->toDateTimeString())
         ->whereIn('recruitment_type_id', [2, 3])
         ->orderBy('posted_on', 'desc');
 
@@ -57,8 +54,8 @@ class RecruitmentsController extends Controller
 
         foreach($vacancies as $vacancy) {
             $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
-            $dt = Carbon::now();
-            $dtEndDate = Carbon::createFromFormat('Y-m-d', $vacancy->end_date);
+            $dt = Carbon::now('UTC');
+            $dtEndDate = Carbon::createFromFormat('Y-m-d H:i:s', $vacancy->end_date);
             $diff = $dt->diffInHours($dtEndDate, false);
 
             $vacancy->dateOk = true;
@@ -81,6 +78,8 @@ class RecruitmentsController extends Controller
             if($vacancy->dateOk && !$vacancy->hasApplied){
                 $vacancy->canApply = true;
             }
+
+            $vacancy->end_date = $dtEndDate->toFormattedDateString();
 
         }
         return view('public.index', compact('vacancies'));
@@ -116,7 +115,10 @@ class RecruitmentsController extends Controller
             return $query->where('candidate_id',$candidateId);
         }])->find($recruitmentId);
 
-        $view = view($this->baseViewPath . '.candidate-status', compact('recruitment'))->renderSections();
+        $candidate = Candidate::candidatesList()->with(['interviews', 'offers', 'contracts'])->find($candidateId);
+        //dump($candidate);
+
+        $view = view($this->baseViewPath . '.candidate-status', compact('recruitment','candidate'))->renderSections();
 
         return response()->json([
             'title' => $view['modalTitle'],

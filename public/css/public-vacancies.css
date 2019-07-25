@@ -33,8 +33,8 @@ body > header a {
 
 .grid {
   display: grid;
-  gap: 25px 25px 0px 25px;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 4fr));
+  grid-gap: 20px 15px;
+  grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
 }
 
 .card {
@@ -178,7 +178,8 @@ a {
 }
 
 .history-container {
-  width: 50%;
+  font-family: "Roboto",sans-serif;
+  width: 65%;
   margin: auto;
   display: block;
   position: relative;
@@ -193,15 +194,18 @@ a {
 .history-container ul.tl li {
   list-style: none;
   margin: auto;
-  margin-left: 50px;
-  min-height: 50px;
-  /*background: rgba(255,255,0,0.1);*/
+  min-height: 10px;
   border-left: 1px dashed #86D6FF;
   padding: 0 0 50px 30px;
   position: relative;
 }
 
-.history-container ul.tl li ::before {
+.history-container ul.tl li:last-child {
+  border-left: 0;
+  padding-bottom: 5px;
+}
+
+.history-container ul.tl li::before {
   position: absolute;
   left: -18px;
   top: -5px;
@@ -221,20 +225,16 @@ a {
   transition: all 1000ms ease-in-out;
 }
 
-.history-container ul.tl li:last-child {
-  border-left: 0;
-}
-
-.history-container ul.tl li .item-detail {
+ul.tl li .item-detail {
   color: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
+  font-size: 14px;
 }
 
-.history-container ul.tl li .timestamp {
+ul.tl li .timestamp {
   color: #8D8D8D;
   position: absolute;
   width: 100px;
-  left: -50%;
+  left: -40%;
   text-align: right;
   font-size: 12px;
 }
