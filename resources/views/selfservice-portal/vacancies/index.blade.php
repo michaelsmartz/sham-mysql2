@@ -64,6 +64,10 @@
             }
         }
 
+        function loadCandidateStatus(recruitment_id, candidate_id){
+            window.loadUrl('my-vacancies/' + recruitment_id + '/status/'+ candidate_id + '/apply');
+        }
+
         function RevealHiddenOverflow(d)
         {
             if( d.style.whiteSpace == "nowrap" ) {

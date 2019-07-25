@@ -49,6 +49,7 @@ class SSPMyVacanciesController extends CustomController
 
         $warnings = [];
         $already_apply = null;
+        $candidate_id = null;
 
         $employee = Employee::find($employee_id);
 
@@ -86,6 +87,8 @@ class SSPMyVacanciesController extends CustomController
             if (!is_null($candidate) && !is_null($vacancy->id)) {
                 $already_apply = DB::table('candidate_recruitment')->where('candidate_id', $candidate->id)
                     ->where('recruitment_id', $vacancy->id)->get()->first();
+
+                $candidate_id = $candidate->id;
             }
 
             $vacancy->already_apply = $already_apply;
@@ -102,7 +105,7 @@ class SSPMyVacanciesController extends CustomController
         //dd($vacancies);
 
         // load the view and pass the vacancies
-        return view($this->baseViewPath . '.index', compact('warnings', 'vacancies', 'jobStatuses', 'department', 'jobDepartments', 'qualification', 'jobQualifications', 'closing_date'));
+        return view($this->baseViewPath . '.index', compact('warnings', 'vacancies', 'candidate_id', 'jobStatuses', 'department', 'jobDepartments', 'qualification', 'jobQualifications', 'closing_date'));
     }
 
     public function applyInterview(Request $request)
@@ -276,6 +279,26 @@ class SSPMyVacanciesController extends CustomController
             ->whereIn('recruitment_type_id', [1, 3])
             ->orderBy('posted_on', 'desc')
             ->paginate(2);
+    }
+
+    public function showCandidateStatus(Request $request)
+    {
+        $candidateId = Route::current()->parameter('candidate_id');
+        $recruitmentId = Route::current()->parameter('recruitment_id');
+
+        $recruitment = Recruitment::with(['trackCandidateStatus' => function($query) use ($candidateId){
+            return $query->where('candidate_id',$candidateId);
+        }])->find($recruitmentId);
+
+        $candidate = Candidate::candidatesList()->with(['interviews', 'offers', 'contracts'])->find($candidateId);
+
+        $view = view($this->baseViewPath . '.candidate-status', compact('recruitment','candidate'))->renderSections();
+
+        return response()->json([
+            'title' => $view['modalTitle'],
+            'content' => $view['modalContent'],
+            'footer' => $view['modalFooter']
+        ]);
     }
 }
 

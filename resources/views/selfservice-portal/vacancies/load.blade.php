@@ -10,7 +10,7 @@
                 <ul class="tags">
                     @if( !is_null($vacancy->skills))
                         @foreach($vacancy->skills as $skill)
-                            <li><a href="">{{ $skill->description }}</a></li>
+                            <li><a>{{ $skill->description }}</a></li>
                         @endforeach
                     @endif
                 </ul>
@@ -43,7 +43,14 @@
                     </li>
                 </ul>
                 @else
-                    <span class="btns pull-right">Applied!</span>
+                    <ul class="btns pull-right isDisabled">
+                        <li>
+                            <a role="button" href="#light-modal"
+                               onclick="loadCandidateStatus('{{ $vacancy->id }}', '{{!is_null($candidate_id)?$candidate_id:0}}')">
+                            View Applicant Status...
+                            </a>
+                        </li>
+                    </ul>
                 @endif
             </div>
         </div>
