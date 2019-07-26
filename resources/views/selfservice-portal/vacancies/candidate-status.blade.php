@@ -7,7 +7,7 @@
 @endsection
 
 @section('modalContent')
-    @if(isset($recruitment->trackCandidateStatus))
+    @if(!$recruitment->trackCandidateStatus->isEmpty())
     <div class="row">
         <div class="col-sm-12">
             <strong>{{$recruitment->trackCandidateStatus[0]->first_name}}</strong>, keep checking this spot for more updates.

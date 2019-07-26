@@ -293,8 +293,6 @@ class SSPMyVacanciesController extends CustomController
 
         $candidate = Candidate::candidatesList()->with(['interviews', 'offers', 'contracts'])->find($candidateId);
 
-        dd($recruitment->trackCandidateStatus);
-
         $view = view($this->baseViewPath . '.candidate-status', compact('recruitment','candidate'))->renderSections();
 
         return response()->json([
