@@ -95,7 +95,7 @@
                 </section>
                 <footer>
                     @if($vacancy->hasApplied)
-                        <a class="button" href="#light-modal" onclick="editForm({{$vacancy->id}}, event, 'vacancies/status')">View Applicant Status...</a>
+                        <a class="button" href="#light-modal" onclick="editForm({{$vacancy->id}}, event, 'vacancies/status')">View Status...</a>
                     @else
                         @if($vacancy->dateOk && $vacancy->canApply)
                             <a class="button" href="#" onclick="editForm({{$vacancy->id}}, false, 'vacancies/apply')">Apply</a>

@@ -49,6 +49,21 @@
                         <div class="item-detail">An offer is in the pipeline</div>
                     </li>
                 @endif
+                @if($cdt->pivot->status == -2)
+                    <li>
+                        <div class="item-detail">Unfortunately, you have not made it past the interview(s)</div>
+                    </li>
+                @endif
+                @if($cdt->pivot->status == 3)
+                    <li>
+                        <div class="item-detail">You accepted the offer</div>
+                    </li>
+                @endif
+                @if($cdt->pivot->status == -3)
+                    <li>
+                        <div class="item-detail">You declined the offer</div>
+                    </li>
+                @endif
             @endforeach
         </ul>
     </div>

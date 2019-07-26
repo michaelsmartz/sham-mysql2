@@ -73,6 +73,10 @@ class CandidateLoginController extends Controller
       
     }
 
+    protected function authenticated(Request $request, $user)
+    {
+        session(['candidate.timezone' => $request->timezone]);
+    }
 
     protected function guard()
     {

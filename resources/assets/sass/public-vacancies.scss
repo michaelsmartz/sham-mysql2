@@ -67,8 +67,10 @@ body{
 
         & h4{
             margin: 0 0 1rem 0.2rem;
-            font-size: calc(2.1rem - 1vw);
-            max-width: 80%;
+            font-size: 16px/*calc(2.1rem - 1vw)*/;
+            min-width: 89%;
+            min-height: 40px;
+            border-bottom: 2px solid #d4a71a;
         }
 
         & time{
@@ -200,7 +202,7 @@ a{
     position:relative;
 }
 .history-container ul.tl li:last-child{ border-left:0;padding-bottom: 5px;}
-.history-container ul.tl li::before{
+.history-container ul.tl li:not(.timestamp)::before{
     position: absolute;
     left: -18px;
     top: -5px;

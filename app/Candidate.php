@@ -202,10 +202,9 @@ class Candidate extends Authenticatable
     public function scopeCandidatesList($query)
     {
         $query->leftJoin('candidate_previous_employments','candidate_previous_employments.candidate_id','=','candidates.id')
-              ->leftJoin('job_titles','job_titles.id','=','candidates.job_title_id')
               ->leftJoin('candidate_qualifications','candidate_qualifications.candidate_id','=','candidates.id')
               ->select('candidates.id','candidates.first_name','candidates.surname',
-                       'job_titles.description as job_title','candidate_previous_employments.previous_employer',
+                       'candidate_previous_employments.previous_employer',
                        'candidate_previous_employments.position','candidate_previous_employments.start_date',
                        'candidate_previous_employments.end_date')
               ;

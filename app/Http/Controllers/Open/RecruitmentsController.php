@@ -19,7 +19,7 @@ class RecruitmentsController extends Controller
     protected $baseViewPath;
 
     public function __construct() {
-        Debugbar::enable();
+        Debugbar::disable();
         $this->contextObj = new Recruitment();
         $this->baseViewPath = 'public';
     }
@@ -44,12 +44,24 @@ class RecruitmentsController extends Controller
             'candidates' => function ($query) use ($candidateId) {
                 return $query->where('candidate_id', $candidateId);
             }
-        ])->whereIn('recruitment_type_id', [2, 3]);
+        ])->whereIn('recruitment_type_id', [2, 3])
+          /*->where('end_date', '<', Carbon::yesterday()->endOfDay()->toDateTimeString())*/;
 
         if($candidateId == 0){
             $vacancies = $a->get();
         } else {
             $vacancies = $b->get();
+
+            $filtered = $vacancies->reject(function ($value) {
+                
+                $dtEndDate = Carbon::createFromFormat('Y-m-d H:i:s', $value->end_date);
+                $dt = Carbon::now('UTC');
+                if($dt->greaterThan($dtEndDate) && $value->candidates->count() == 0){
+                    return true;
+                }
+            });
+
+            $vacancies = $filtered;
         }
 
         foreach($vacancies as $vacancy) {
@@ -78,11 +90,12 @@ class RecruitmentsController extends Controller
             if($vacancy->dateOk && !$vacancy->hasApplied){
                 $vacancy->canApply = true;
             }
-
-            $vacancy->end_date = $dtEndDate->toFormattedDateString();
+            
+            $timezone = session('candidate.timezone');
+            $vacancy->end_date = $dtEndDate->setTimezone($timezone)->toFormattedDateString();
 
         }
-        return view('public.available-jobs', compact('vacancies'));
+        return view('public.index', compact('vacancies'));
     }
 
     public function apply(Request $request)
