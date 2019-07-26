@@ -40,6 +40,8 @@
             }).done(function (data) {
                 $('.vacancies').html(data);
                 $('.loader').hide();
+                //hide show less on pagination
+                show('less');
                 $('.details .btns').removeClass('isDisabled');
                 $('.details .btns li a').removeClass('isDisabled');
             }).fail(function () {
@@ -68,42 +70,31 @@
             window.loadUrl('my-vacancies/' + recruitment_id + '/status/'+ candidate_id + '/apply');
         }
 
-        function RevealHiddenOverflow(d)
+        $('.more,.view_less').hide();
+
+        function show(mode,id=null)
         {
-            if( d.style.whiteSpace == "nowrap" ) {
-                d.style.whiteSpace = "normal";
-            }
-            else {
-                d.style.whiteSpace = "nowrap";
+            if(id) {
+                if (mode === 'less') {
+                    $('#more-' + id).hide();
+                    $('#less-' + id).show();
+                    $('#view_more_' + id).show();
+                    $('#view_less_' + id).hide();
+                } else {
+                    $('#more-' + id).show();
+                    $('#less-' + id).hide();
+                    $('#view_more_' + id).hide();
+                    $('#view_less_' + id).show();
+                }
+            }else{
+                if (mode === 'less') {
+                    $('.more').hide();
+                    $('.less').show();
+                    $('.view_more').show();
+                    $('.view_less').hide();
+                }
             }
         }
-
-        // var initialLoadMoreContent = "";
-        //
-        // $('.load-more-container').each(function(i, obj) {
-        //     wrapChildElements($(this));
-        // });
-        //
-        // function wrapChildElements(r){
-        //     initialLoadMoreContent = r.children();
-        //     var wrap = r.children().text();
-        //     r.html(wrap);
-        // }
-        //
-        // function RevealHiddenOverflow(d)
-        // {
-        //     if( d.style.whiteSpace == "nowrap" ) {
-        //         $('div.load-more-container').html(initialLoadMoreContent);
-        //         d.style.whiteSpace = "normal";
-        //     }
-        //     else {
-        //         var wrap = initialLoadMoreContent.children().text();
-        //         $('div.load-more-container').html(wrap);
-        //         d.style.whiteSpace = "nowrap";
-        //     }
-        // }
-
-        // $('.load-more-container').find('*').hide();
     </script>
 @endsection
 

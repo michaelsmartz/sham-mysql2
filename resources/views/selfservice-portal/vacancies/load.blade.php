@@ -22,8 +22,15 @@
                         <h6>{{ $vacancy->department->description }}</h6>
                     </div>
                 </div>
-                <div class="load-more-container" onclick="RevealHiddenOverflow(this)">
-                    {!! $vacancy->description  !!}
+                <div class="text">
+                    <div id="less-{{$vacancy->id}}" class="less">
+                        {{ str_limit(strip_tags($vacancy->description), $limit = 500, $end = '...')}}
+                    </div>
+                    <div id="view_more_{{$vacancy->id}}" class="view_more" onclick="show('more',{{$vacancy->id}})">Read more</div>
+                    <div id="more-{{$vacancy->id}}" class="more">
+                        {!! $vacancy->description !!}
+                    </div>
+                    <div id="view_less_{{$vacancy->id}}" class="view_less" onclick="show('less',{{$vacancy->id}})">Show less</div>
                 </div>
                 <h5><span class="glyphicon glyphicon-briefcase"></span> Employment Type: {{ $vacancy->employeeStatus->description }}</h5>
                 <h5><span class="glyphicon glyphicon-education"></span> Qualification Required: {{ $vacancy->qualification->description }}</h5>

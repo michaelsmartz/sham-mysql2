@@ -778,28 +778,19 @@ sup, sub, u, del {
   text-decoration: none;
 }
 
-.load-more-container{
-  color: #777;
-  margin-bottom: 15px;
-  cursor: pointer;
-  /* hide text if it more than N lines  */
-  overflow: hidden;
-  /* for set '...' in absolute position */
-  position: relative;
-  /* use this value to count block height */
-  line-height: 1.5em;
-  /* max-height = line-height (1.2) * lines max number (4) */
-  /* fix problem when last visible word doesn't adjoin right side  */
-  text-align: justify;
-  /* place for '...' */
-  padding-right: 1em;
-  -webkit-transition: height 1s;
-  transition: height 1s;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.post-list .single-post .details .text{
+  margin-bottom: 30px;
 }
 
-/*.nowrap { white-space: nowrap; }*/
+.post-list .single-post .details .text .view_more,
+.post-list .single-post .details .text .view_less
+{
+  color: #222222;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  float: right;
+  cursor: pointer;
+}
 
 @media (max-width: 736px) {
   .post-list h4 {
