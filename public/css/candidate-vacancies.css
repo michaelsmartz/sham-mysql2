@@ -35,7 +35,7 @@ body > header a {
 .grid {
   display: grid;
   grid-gap: 20px 15px;
-  grid-template-columns: repeat(auto-fit, minmax(45rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
 }
 
 .card {
@@ -64,10 +64,10 @@ body > header a {
 
 .card header h4 {
   text-align: left;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
-  max-width: 80%;
-  min-width: 80%;
+  max-width: 85%;
+  min-width: 85%;
   min-height: 40px;
   border-bottom: 2px solid #d4a71a;
 }
@@ -116,7 +116,7 @@ body > header a {
   border: none;
   border-radius: 0.125rem;
   outline: none;
-  background-color: #d4a71a;
+  background-color: tomato;
   color: white;
   font-family: inherit;
   font-size: 1em;
@@ -131,15 +131,15 @@ body > header a {
 
 .card footer .button:focus,
 .card footer .button:hover {
-  background-color: #d4a71a;
-  -webkit-box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem #d4a71a;
-          box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem #d4a71a;
+  background-color: tomato;
+  -webkit-box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem tomato;
+          box-shadow: 0 0 0 0.125rem white, 0 0 0 0.25rem tomato;
 }
 
 .card footer .button:active {
-  background-color: shade(#d4a71a, 5%);
-  -webkit-box-shadow: 0 0 0 0.125rem shade(#d4a71a, 5%), 0 0 0 0.25rem shade(#d4a71a, 5%);
-          box-shadow: 0 0 0 0.125rem shade(#d4a71a, 5%), 0 0 0 0.25rem shade(#d4a71a, 5%);
+  background-color: shade(tomato, 5%);
+  -webkit-box-shadow: 0 0 0 0.125rem shade(tomato, 5%), 0 0 0 0.25rem shade(tomato, 5%);
+          box-shadow: 0 0 0 0.125rem shade(tomato, 5%), 0 0 0 0.25rem shade(tomato, 5%);
   -webkit-transition-duration: 75ms;
           transition-duration: 75ms;
 }
@@ -243,11 +243,11 @@ a {
 }
 
 .desc-wrap{
-  min-height: 250px;
+  min-height: 150px;
 }
 
 .less,.more{
-  min-height: 200px;
+  min-height: 150px;
 }
 
 .table-requirement table{
@@ -255,13 +255,25 @@ a {
 }
 
 .table-requirement td{
-  font-size: 12px;
+  font-size: 14px;
   min-width: 50px;
-  padding: 5%;
+  padding: 2%;
+}
+.table-area td{
+  font-size: 14px;
+  padding: 2%;
+}
+
+.td_label{
+  width: 140px;
+}
+
+.td_content{
+  width: 250px;
 }
 
 .desc{
-  width: 300px;
+  width: 200px;
 }
 
 .view_more,.view_less{
@@ -270,6 +282,17 @@ a {
   margin-top: 3%;
   float: right;
 }
+
+.field input,.field select,.field textarea,.form-group input,.form-group select,.SumoSelect > .CaptionCont{
+    background-color: transparent !important;
+    border : none !important;
+    border-radius: 0px !important;
+    box-shadow: none;
+    webkit-box-shadow: none;
+    border-bottom: 2px solid whitesmoke !important;
+    margin:2%;
+}
+
 /*!
    light-modal v1.1.0: A new lightweight css modal.
    (c) 2017 

@@ -26,6 +26,7 @@ Route::group(['prefix' => '/vacancies', 'namespace' => 'Open'], function() {
             ->name('vacancies.status');
     Route::any('apply/{recruitment_id?}','RecruitmentsController@apply')
             ->name('vacancies.apply');
+    Route::post('save', 'RecruitmentsController@applyInterview')->name('vacancies.save');
 });
 
 Route::group(['prefix' => '/candidate'], function () {
@@ -40,6 +41,7 @@ Route::group(['prefix' => '/candidate'], function () {
     // logout using get
     Route::get('logout', 'Auth\CandidateLoginController@logout')->name('candidate.auth.logout');
     Route::post('logout', 'Auth\CandidateLoginController@logout')->name('candidate.auth.logout');
+
 
 });
 

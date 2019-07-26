@@ -28,9 +28,18 @@
                             <div id="view_less_{{$vacancy->id}}" class="view_less" onclick="show('less',{{$vacancy->id}})">Show less</div>
                         </div>
                     </div>
-                    <br>
-                    <p>Functional Area: <strong>{{ $vacancy->department->description }}</strong></p>
-                    <p>Employment Type: <strong>{{ $vacancy->employeeStatus->description }}</strong></p>
+
+                    <table class="table-responsive table-area">
+                        <tr>
+                            <td class="td_label">Functional Area</td>
+                            <td class="td_content"><strong>{{ $vacancy->department->description }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Employment Type</td>
+                            <td><strong>{{ $vacancy->employeeStatus->description }}</strong></td>
+                        </tr>
+                    </table>
+
                     <br>
                     <table class="table-responsive table-requirement">
                         <tr>

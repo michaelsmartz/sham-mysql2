@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Open;
 
+use App\Employee;
 use Auth;
 use App\Candidate;
 use App\Recruitment;
 use App\Http\Controllers\Controller;
 use Barryvdh\Debugbar\Facade as Debugbar;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -95,7 +99,7 @@ class RecruitmentsController extends Controller
             $vacancy->end_date = $dtEndDate->setTimezone($timezone)->toFormattedDateString();
 
         }
-        return view('public.index', compact('vacancies'));
+        return view('public.available-jobs', compact('vacancies'));
     }
 
     public function apply(Request $request)
@@ -108,8 +112,48 @@ class RecruitmentsController extends Controller
 
         // logged-in candidate is making an application
         if($candidateId !=0) {
+            $recruitmentId = Route::current()->parameter('recruitment_id');
 
-            return view('public.salary', compact('recruitmentId','recruitment'));
+            $vacancy = $this->contextObj::with(['department', 'employeeStatus', 'qualification', 'skills'
+            ])->where('is_approved', '=', 1)
+                ->where('end_date', '>=', Carbon::now()->endOfDay()->toDateTimeString())
+                ->where('id', '=', $recruitmentId)
+                ->whereIn('recruitment_type_id', [2, 3])
+                ->orderBy('posted_on', 'desc')
+                ->get()
+                ->first();
+
+            $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
+            $dt = Carbon::now('UTC');
+            $dtEndDate = Carbon::createFromFormat('Y-m-d H:i:s', $vacancy->end_date);
+            $diff = $dt->diffInHours($dtEndDate, false);
+
+            $vacancy->dateOk = true;
+            $vacancy->canApply = false;
+            $vacancy->hasApplied = false;
+
+            if($diff > 72){
+                $vacancy->rel_calendar_id = "hourglass-relax";
+            }elseif($diff >0 && $diff <= 72){
+                $vacancy->rel_calendar_id = "hourglass-rush";
+            }else{
+                $vacancy->rel_calendar_id = "hourglass-cross";
+                $vacancy->dateOk = false;
+            }
+
+            if( $candidateId != 0 && sizeof($vacancy->candidates) > 0 ){
+                $vacancy->hasApplied = true;
+            }
+
+            if($vacancy->dateOk && !$vacancy->hasApplied){
+                $vacancy->canApply = true;
+            }
+
+            $timezone = session('candidate.timezone');
+            $vacancy->end_date = $dtEndDate->setTimezone($timezone)->toFormattedDateString();
+
+
+            return view('public.salary', compact('recruitmentId','recruitment','vacancy'));
         } else {
 
             return redirect('candidate/login');
@@ -117,7 +161,33 @@ class RecruitmentsController extends Controller
         }
 
     }
-    
+    public function applyInterview(Request $request)
+    {
+        try {
+            $candidate_id       = \Illuminate\Support\Facades\Auth::guard('candidate')->user()->id;
+            $salary_expectation = ($request->has('salary_expectation')) ? $request->get('salary_expectation') : null;
+            $recruitment_id     = ($request->has('recruitment_id')) ? $request->get('recruitment_id') : null;
+
+            $candidate_recruitment = [
+                'candidate_id' => $candidate_id,
+                'recruitment_id' => $recruitment_id,
+                'salary_expectation' => $salary_expectation
+            ];
+
+            DB::table('candidate_recruitment')->insert($candidate_recruitment);
+            \Session::put('success', 'Job applied successfully!!');
+
+        } catch (Exception $exception) {
+            dd($exception->getMessage());
+            \Session::put('error', 'could not update !');
+        }
+
+
+        return redirect()->route('candidate.vacancies');
+    }
+
+
+
     public function showCandidateStatus(Request $request)
     {
 
