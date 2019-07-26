@@ -971,3 +971,51 @@ sup, sub, u, del {
   top: 30%;
   z-index: 100000;
 }
+
+.history-container {
+  font-family: "Roboto",sans-serif;
+  width: 65%;
+  margin: auto;
+  display: block;
+  position: relative;
+}
+
+.history-container ul.tl {
+  margin: 20px 0;
+  padding: 0;
+  display: inline-block;
+}
+
+.history-container ul.tl li {
+  list-style: none;
+  margin: auto;
+  min-height: 10px;
+  border-left: 1px dashed #86D6FF;
+  padding: 0 0 50px 30px;
+  position: relative;
+}
+
+.history-container ul.tl li:last-child {
+  border-left: 0;
+  padding-bottom: 5px;
+}
+
+.history-container ul.tl li::before {
+  position: absolute;
+  left: -18px;
+  top: -5px;
+  content: " ";
+  border: 8px solid rgba(255, 255, 255, 0.74);
+  border-radius: 500%;
+  background: #258CC7;
+  height: 20px;
+  width: 20px;
+  -webkit-transition: all 500ms ease-in-out;
+  transition: all 500ms ease-in-out;
+}
+
+.history-container ul.tl li:hover::before {
+  border-color: #258CC7;
+  -webkit-transition: all 1000ms ease-in-out;
+  transition: all 1000ms ease-in-out;
+}

@@ -84,6 +84,9 @@ class SSPMyVacanciesController extends CustomController
         foreach ($vacancies as $vacancy) {
             $vacancy->posted_on = Carbon::createFromTimeStamp(strtotime($vacancy->posted_on))->diffForHumans();
 
+            $dtEndDate = Carbon::createFromFormat('Y-m-d H:i:s', $vacancy->end_date);
+            $vacancy->end_date = $dtEndDate->toFormattedDateString();
+
             if (!is_null($candidate) && !is_null($vacancy->id)) {
                 $already_apply = DB::table('candidate_recruitment')->where('candidate_id', $candidate->id)
                     ->where('recruitment_id', $vacancy->id)->get()->first();
@@ -99,10 +102,8 @@ class SSPMyVacanciesController extends CustomController
         $jobQualifications = QualificationRecruitment::pluck('description', 'id');
 
         if ($request->ajax()) {
-            return view($this->baseViewPath . '.load', compact('vacancies'))->render();
+            return view($this->baseViewPath . '.load', compact('vacancies', 'candidate_id'))->render();
         }
-
-        //dd($vacancies);
 
         // load the view and pass the vacancies
         return view($this->baseViewPath . '.index', compact('warnings', 'vacancies', 'candidate_id', 'jobStatuses', 'department', 'jobDepartments', 'qualification', 'jobQualifications', 'closing_date'));
@@ -291,6 +292,8 @@ class SSPMyVacanciesController extends CustomController
         }])->find($recruitmentId);
 
         $candidate = Candidate::candidatesList()->with(['interviews', 'offers', 'contracts'])->find($candidateId);
+
+        dd($recruitment->trackCandidateStatus);
 
         $view = view($this->baseViewPath . '.candidate-status', compact('recruitment','candidate'))->renderSections();
 
