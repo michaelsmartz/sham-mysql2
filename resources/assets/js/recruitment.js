@@ -350,7 +350,19 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, cdt.name + ' - offer letter.pdf');
+				//download(blob, cdt.name + ' - offer letter.pdf');
+				// https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/saving-a-blob.html
+				const blob1 = new Blob([blob]);
+				const fileStream = streamSaver.createWriteStream(cdt.name + ' - offer letter.pdf');
+				const readableStream = blob1.stream();
+
+				if (window.WritableStream && readableStream.pipeTo) {
+					console.log('In Statement');
+					return readableStream.pipeTo(fileStream).then(function () {
+						cdt.offers[0].offer_id = 1;
+						//return console.log('done writing...');
+					});
+				}
 			});
 		},
         importHired: function(){
@@ -409,7 +421,19 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, cdt.name + ' - contract.pdf');
+				//download(blob, cdt.name + ' - contract.pdf');
+				// https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/saving-a-blob.html
+				const blob1 = new Blob([blob]);
+				const fileStream = streamSaver.createWriteStream(cdt.name + ' - contract.pdf');
+				const readableStream = blob1.stream();
+
+				if (window.WritableStream && readableStream.pipeTo) {
+					console.log('In Statement');
+					return readableStream.pipeTo(fileStream).then(function () {
+						cdt.contracts[0].contract_id = 1;
+						//return console.log('done writing...');
+					});
+				}
 			});
 		},
 		downloadSignedOffer: function(){

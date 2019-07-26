@@ -112,6 +112,9 @@
 @endsection
 
 @section('post-body')
+    <script src="{{URL::to('/')}}/plugins/StreamSaver/Blob.js"></script>
+    <script src="{{URL::to('/')}}/plugins/StreamSaver/StreamSaver.js"></script>
+
     <link href="{{URL::to('/')}}/css/nav-wizard.min.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/recruitment.min.js"></script>
 
@@ -120,8 +123,6 @@
 
     <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
-
-
 
     <script>
         window.appEe.on('loadUrl', function(text){
