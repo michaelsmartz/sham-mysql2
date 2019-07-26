@@ -15,66 +15,68 @@
                     <time title="Posted">{{ $vacancy->posted_on }}</time>
                 </header>
                 <section>
-                    <p><strong>Job Description:</strong></p>
-                    <div class="text">
-                        <div id="less-{{$vacancy->id}}" class="less">
-                            {{ str_limit(strip_tags($vacancy->description), $limit = 150, $end = '...')}}
+                    <div class="desc-wrap">
+                        <p><strong>Job Description:</strong></p>
+                        <div class="text">
+                            <div id="less-{{$vacancy->id}}" class="less">
+                                {{ str_limit(strip_tags($vacancy->description), $limit = 450, $end = '...')}}
+                            </div>
+                            <div id="view_more_{{$vacancy->id}}" class="view_more" onclick="show('more',{{$vacancy->id}})">Read more</div>
+                            <div id="more-{{$vacancy->id}}" class="more">
+                                {!! $vacancy->description !!}
+                            </div>
+                            <div id="view_less_{{$vacancy->id}}" class="view_less" onclick="show('less',{{$vacancy->id}})">Show less</div>
                         </div>
-                        <div id="view_more_{{$vacancy->id}}" class="view_more" onclick="show('more',{{$vacancy->id}})">Read more</div>
-                        <div id="more-{{$vacancy->id}}" class="more">
-                            {!! $vacancy->description !!}
-                        </div>
-                        <div id="view_less_{{$vacancy->id}}" class="view_less" onclick="show('less',{{$vacancy->id}})">Show less</div>
                     </div>
                     <br>
                     <p>Functional Area: <strong>{{ $vacancy->department->description }}</strong></p>
                     <p>Employment Type: <strong>{{ $vacancy->employeeStatus->description }}</strong></p>
                     <br>
-                    <div class="row col-md-12 row-requirement">
-                        <div class="col-sm-2">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="#get-money" />
-                            </svg>
-                        </div>
-                        <div class="col-sm-5">
-                            Salary
-                        </div>
-                        <div class="col-sm-5">
-                            @if( !is_null($vacancy->min_salary) && !is_null($vacancy->max_salary))
-                                <strong>{{ $vacancy->min_salary }} - {{ $vacancy->max_salary }}</strong>
-                            @else
-                                <strong>Negotiable</strong>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="row col-md-12 row-requirement">
-                        <div class="col-sm-2">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="#skills" />
-                            </svg>
-                        </div>
-                        <div class="col-sm-5">
-                            Qualification(s) Required
-                        </div>
-                        <div class="col-sm-5">
-                            <strong>{{ $vacancy->qualification->description }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="row col-md-12 row-requirement">
-                        <div class="col-sm-2">
-                            <svg class="icon" width="35" height="35">
-                                <use xlink:href="#{{$vacancy->rel_calendar_id}}" />
-                            </svg>
-                        </div>
-                        <div class="col-sm-5">
-                            Application Deadline
-                        </div>
-                        <div class="col-sm-5">
-                            <strong>{{ $vacancy->end_date }}</strong>
-                        </div>
-                    </div>
+                    <table class="table-responsive table-requirement">
+                        <tr>
+                            <td>
+                                <svg class="icon" width="35" height="35">
+                                    <use xlink:href="#get-money" />
+                                </svg>
+                            </td>
+                            <td class="desc">
+                                Salary
+                            </td>
+                            <td class="desc">
+                                @if( !is_null($vacancy->min_salary) && !is_null($vacancy->max_salary))
+                                    <strong>{{ $vacancy->min_salary }} - {{ $vacancy->max_salary }}</strong>
+                                @else
+                                    <strong>Negotiable</strong>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <svg class="icon" width="35" height="35">
+                                    <use xlink:href="#skills" />
+                                </svg>
+                            </td>
+                            <td class="desc">
+                                Qualification(s) Required
+                            </td>
+                            <td class="desc">
+                                <strong>{{ $vacancy->qualification->description }}</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <svg class="icon" width="35" height="35">
+                                    <use xlink:href="#{{$vacancy->rel_calendar_id}}" />
+                                </svg>
+                            </td>
+                            <td class="desc">
+                                Application Deadline
+                            </td>
+                            <td class="desc">
+                                <strong>{{ $vacancy->end_date }}</strong>
+                            </td>
+                        </tr>
+                    </table>
                 </section>
                 <footer>
                     @if(!isset(Auth::guard('candidate')->user()->id))
