@@ -82,7 +82,7 @@ class RecruitmentsController extends Controller
             $vacancy->end_date = $dtEndDate->toFormattedDateString();
 
         }
-        return view('public.index', compact('vacancies'));
+        return view('public.available-jobs', compact('vacancies'));
     }
 
     public function apply(Request $request)

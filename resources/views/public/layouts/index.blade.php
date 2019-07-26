@@ -48,6 +48,14 @@
                                     </svg>
                                 </a>
                             </li>
+                            @else
+                                <li>
+                                    <a data-wenk="Login" data-wenk-pos="bottom" href="{{ route('candidate.auth.login') }}">
+                                        <svg class="icon" width="20" height="20">
+                                            <use xlink:href="#login" />
+                                        </svg>
+                                    </a>
+                                </li>
                             @endauth
                         </ul>
                     </div>

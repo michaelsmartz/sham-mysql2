@@ -1,4 +1,4 @@
-@extends(Request::ajax()?'blank':'portal-index')
+@extends('public.layouts.index')
 @section('title', 'Please complete information below')
 
 @section('modalTitle', 'Please complete information below')
