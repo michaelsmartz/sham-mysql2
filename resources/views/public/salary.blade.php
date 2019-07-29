@@ -4,7 +4,7 @@
 @section('modalTitle', 'Please complete information below')
 @section('modalFooter')
     <div class="pull-right">
-        <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
+        <a href="{{ route('candidate.vacancies') }}" class="btn" data-close="Close" data-dismiss="modal">Cancel</a>
         <button class="btn btn-sham" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Please wait">Apply</button>
     </div>
 @endsection
