@@ -191,6 +191,45 @@ class SSPMyVacanciesController extends CustomController
                         ];
 
                         DB::table('candidate_recruitment')->insert($candidate_recruitment);
+
+                        //insert in recruitment_status
+                        $recruitment_status = [
+                            'recruitment_id' =>  $recruitment_id,
+                            'candidate_id' =>  $candidate_id,
+                            'comment' => null
+                        ];
+
+                        DB::table('recruitment_status')
+                            ->insert($recruitment_status);
+
+                        //remove from three-way pivot table if not present candidate_recruitment
+                        $recruitment->interviews()
+                            ->where('recruitment_id', $recruitment_id)
+                            ->get()
+                            ->each(function ($interview) use ($candidate_id, $recruitment_id) {
+                                if ($interview->pivot->candidate_id == $candidate_id) {
+                                    dump('in');
+                                    $interview->pivot->delete();
+                                }
+                            });
+
+                        //add if does not exist in three-way pivot table
+                        $interview_types = $recruitment->interviewTypes()->get()->all();
+                        $add_candidate_interview_recruitment_pivot = [];
+
+                        $hasCandidate = $recruitment->interviews()->where('candidate_id', $candidate_id)->exists();
+
+                        if(!$hasCandidate) {
+                            foreach ($interview_types as $interview_type) {
+                                $add_candidate_interview_recruitment_pivot[] = [
+                                    'candidate_id' => $candidate_id,
+                                    'interview_id' => $interview_type->id,
+                                    'recruitment_id' => $recruitment_id,
+                                ];
+                            }
+                        }
+
+                        $recruitment->interviews()->attach($add_candidate_interview_recruitment_pivot);
                     }
                 }
 
