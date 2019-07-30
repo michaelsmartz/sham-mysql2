@@ -794,13 +794,8 @@ class RecruitmentRequestsController extends CustomController
             $data = Recruitment::find($id);
 
             if($data) {
-                $status = $data->status()->where(['recruitment_id'=>$id, 'candidate_id'=>$candidateId])->get()->first();
-
-                if(is_null($status)) {
-                    DB::table('recruitment_status')->insert($dataSet);
-                } else {
-                    DB::table('recruitment_status')->where(['id' => $status->pivot->id])->update($dataSet);
-                }
+                $status = $data->status()->where(['recruitment_id'=>$id, 'candidate_id'=>$candidateId, 'status'=>1])->get()->first();
+                DB::table('recruitment_status')->where(['id' => $status->pivot->id])->update($dataSet);
             }
 
 
@@ -893,6 +888,7 @@ class RecruitmentRequestsController extends CustomController
                     $recruitment_status = [
                       'recruitment_id' =>  $recruitment_id,
                       'candidate_id' =>  $candidate_id,
+                      'status' =>  4,
                       'comment' => $comments
                     ];
 
@@ -902,10 +898,6 @@ class RecruitmentRequestsController extends CustomController
 
                     //if employee_no already exist update else insert
                     if (in_array($data_employee['employee_no'], array_column($all_employees, 'employee_no'))) { // search value in the array
-                        DB::table('recruitment_status')
-                            ->where('recruitment_id', $recruitment_id)
-                            ->where('candidate_id', $candidate_id)
-                            ->update($recruitment_status);
 
                         $data = Employee::where('employee_no', $data_employee['employee_no'])->get()->first();
 
@@ -913,12 +905,15 @@ class RecruitmentRequestsController extends CustomController
                         TimelineManager::updateEmployeeTimelineHistory($data);
 
                     } else {
-                        DB::table('recruitment_status')
-                            ->insert($recruitment_status);
-
                         $data = $employee->addData($data_employee);
                         TimelineManager::addEmployeeTimelineHistory($data);
                     }
+
+                    DB::table('recruitment_status')
+                        ->where('recruitment_id', $recruitment_id)
+                        ->where('candidate_id', $candidate_id)
+                        ->where('status', 4)
+                        ->update($recruitment_status);
 
                     if(empty($candidate_arr['phone'])) {
                         TelephoneNumber::where('employee_id', '=', $data->id)->delete();
