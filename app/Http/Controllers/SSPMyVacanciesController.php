@@ -330,9 +330,17 @@ class SSPMyVacanciesController extends CustomController
             return $query->where('candidate_id',$candidateId);
         }])->find($recruitmentId);
 
-        $candidate = Candidate::candidatesList()->with(['interviews' => function($query) use ($recruitmentId){
-            return $query->where('recruitment_id', $recruitmentId);
-        },'offers', 'contracts'])->find($candidateId);
+        $candidate = Candidate::candidatesList()->with([
+            'interviews' => function($query) use ($recruitmentId){
+                return $query->where('recruitment_id', $recruitmentId);
+            },
+            'offers' => function($query) use ($recruitmentId){
+                return $query->where('recruitment_id', $recruitmentId);
+            },
+            'contracts'  => function($query) use ($recruitmentId){
+                return $query->where('recruitment_id', $recruitmentId);
+            }
+            ])->find($candidateId);
 
         $view = view('public.candidate-status', compact('recruitment','candidate'))->renderSections();
 
