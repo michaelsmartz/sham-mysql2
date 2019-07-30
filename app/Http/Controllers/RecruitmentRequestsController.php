@@ -302,8 +302,13 @@ class RecruitmentRequestsController extends CustomController
                         'comment' => null
                     ];
 
-                    DB::table('recruitment_status')
-                        ->insert($recruitment_status);
+                    $status = $recruitment->status()->where(['recruitment_id'=>$recruitment_id, 'candidate_id'=>$candidate_id])->get()->first();
+
+                    if(is_null($status)) {
+                        DB::table('recruitment_status')->insert($recruitment_status);
+                    } else {
+                        DB::table('recruitment_status')->where(['id' => $status->pivot->id])->update($recruitment_status);
+                    }
 
                     if(!$hasCandidate) {
                         foreach ($interview_types as $interview_type) {
