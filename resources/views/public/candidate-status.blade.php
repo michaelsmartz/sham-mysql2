@@ -28,13 +28,8 @@
                 @if($cdt->pivot->status == 1)
                     @foreach($candidate->interviews as $interview)
                         <li>
-                            <div class="timestamp">
-                                {{\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$interview->pivot->schedule_at)->format('jS F Y')}}
-                                <br>
-                                {{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$interview->pivot->schedule_at)->format('\a\t h:i:s A')}}
-                            </div>
                             <div class="item-title">{{$interview->description}} interview</div>
-                            <div class="item-detail">A <strong>{{$interview->description}}</strong> interview has been scheduled for you</div>
+                            <div class="item-detail">A <strong>{{$interview->description}}</strong> interview has been scheduled for you  {{ isset($interview->pivot->schedule_at)? ' on ' .\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$interview->pivot->schedule_at)->format('jS F Y \a\t H:i:s A') : '' }}</div>
                         </li>
                     @endforeach
                 @endif
@@ -62,6 +57,16 @@
                 @if($cdt->pivot->status == -3)
                     <li>
                         <div class="item-detail">You declined the offer</div>
+                    </li>
+                @endif
+                @if($cdt->pivot->status == 4)
+                    <li>
+                        <div class="item-detail">You accepted the terms of agreement</div>
+                    </li>
+                @endif
+                @if($cdt->pivot->status == -4)
+                    <li>
+                        <div class="item-detail">You have not signed the terms of agreement</div>
                     </li>
                 @endif
             @endforeach
