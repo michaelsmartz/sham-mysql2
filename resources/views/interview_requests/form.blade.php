@@ -37,7 +37,7 @@
             <label for="skill">Select Interviewers</label>
             {!! Form::select('interviewers[]', $interviewers,
                 old('interviewers', isset($candidateInterviewers) ? $candidateInterviewers : null),
-                ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
+                ['class' => 'form-control select-multiple', 'multiple'=>'multiple', 'required']
             ) !!}
         </div>
 

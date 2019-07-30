@@ -50,7 +50,7 @@
             <div class="form-group col-xs-4">
                     <span class="field">
                         <label for="email">Personal Email</label>
-                        {!! Form::email('email', old('email', isset($candidate->email) ? $candidate->email : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
+                        {!! Form::email('email', old('email', isset($candidate->email) ? $candidate->email : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
