@@ -19,6 +19,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 
 class CandidateController extends Controller
 {
@@ -62,13 +63,15 @@ class CandidateController extends Controller
     {
         // validate the data
         $this->validate($request, [
-          'email'         => 'required',
+          'email'         => [
+              'required',
+              'unique:candidates,email'
+          ],
           'password'      => 'required|confirmed'
         ]);
 
         // store in the database
         $candidate = new Candidate;
-
         $candidate->email = $request->email;
         $candidate->password = bcrypt($request->password);
         $candidate->save();
