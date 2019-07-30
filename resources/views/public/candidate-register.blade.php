@@ -8,9 +8,8 @@
                     <div class="logobox-login">
                         <img src="/dist/img/logo-gold-login_dy8gg5_c_scale,w_200.png" class="img-responsive center-block" width="130" height="130">
                         <hr>
-                        <label>Candidate Register</label>
+                        <label class="lbl-form">Candidate Register</label>
                     </div>
-
                 </div>
                 <form class="login100-form validate-form" method="POST" action="{{ route('candidate.register.store') }}" autocomplete="off">
                     {{ csrf_field() }}
