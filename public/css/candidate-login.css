@@ -167,7 +167,7 @@ label {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  padding: 43px 88px 93px 190px;
+  padding: 40px 88px 70px 190px;
 }
 
 .wrap-input100 {
@@ -308,6 +308,11 @@ input.input100 {
 
 .login100-form-btn:hover {
   background-color: #333333;
+}
+
+.lbl-form {
+  font-size: 16px;
+  border-bottom: 2px solid #d4a71a;
 }
 
 @media (max-width: 576px) {
