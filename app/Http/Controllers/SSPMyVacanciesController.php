@@ -342,7 +342,7 @@ class SSPMyVacanciesController extends CustomController
             }
             ])->find($candidateId);
 
-        $view = view('public.candidate-status', compact('recruitment','candidate'))->renderSections();
+        $view = view($this->baseViewPath . '.candidate-status', compact('recruitment','candidate'))->renderSections();
 
         return response()->json([
             'title' => $view['modalTitle'],
