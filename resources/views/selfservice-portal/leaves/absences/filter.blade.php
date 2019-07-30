@@ -45,7 +45,7 @@
                 {!! Form::text('to',$default_to, ['class'=>'form-control datepicker', 'autocomplete'=>'off', 'placeholder'=>'To', 'id'=>'to']) !!}
             </span>
             </div>
-            @if(count($employees)>0)
+            @if(is_array($employees) && (count($employees)>0))
                 <div class="form-group col-lg-3">
                     <label for="employee_id"><span class="glyphicon glyphicon-user"></span> Employee</label>
                     <select class="form-control" id="employee_id" name="employee_id">

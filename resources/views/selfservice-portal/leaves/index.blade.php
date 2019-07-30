@@ -33,7 +33,7 @@
         <div class="row panel section-leaves col-sm-12">
             <ul class="nav nav-tabs nav-tabs-leaves" style="background: #FFFFFF">
                 <li @if($_SERVER['REQUEST_URI'] == '/my-leaves' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_approved))class="active"@endif><a href="/my-leaves"><i class="glyphicon glyphicon-calendar"></i> Calendar</a></li>
-                @if(count($employees) > 0)
+                @if(is_array($employees) && (count($employees)>0))
                 <li @if($_SERVER['REQUEST_URI'] == '/my-leaves-pending-request' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_pending))class="active"@endif><a href="/my-leaves-pending-request"><i class="glyphicon glyphicon-exclamation-sign"></i>  Pending requests</a></li>
                 @endif
                 <li @if($_SERVER['REQUEST_URI'] == '/my-leaves-history' || $_SERVER['REQUEST_URI'] == '/my-leaves/filter')class="active"@endif><a href="/my-leaves-history"><i class="glyphicon glyphicon-list"></i>  History</a></li>

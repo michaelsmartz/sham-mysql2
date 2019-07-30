@@ -1,6 +1,6 @@
 <div class="container col-md-7">
     <form method="POST" action="{{route('my-leaves.filter-calendar')}}" id="leave_request_filter" name="leave_request_filter" accept-charset="UTF-8" class="form-horizontal">
-        @if(count($employees)>0)
+        @if(is_array($employees) && (count($employees)>0))
             <div class="form-group col-lg-4">
                 <i class="glyphicon glyphicon-user"></i> Employee
                 <select class="form-control select-leave-filters" id="employee_id" name="employee_id">

@@ -38,10 +38,10 @@
 
                     <div class="flex-sb-m w-full p-b-30">
                         <div class="contact100-form-checkbox">
-                            <input class="input-checkbox100" id="ckb1" type="checkbox" name="remember">
-                            <label class="label-checkbox100" for="ckb1">
-                                @lang('auth.RememberMe')
-                            </label>
+                            <input class="" id="ckb1" type="checkbox" name="remember">
+                            <span class="txt1">
+                                <i>@lang('auth.RememberMe')</i>
+                            </span>
                         </div>
 
                         <div>
