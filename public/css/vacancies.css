@@ -1010,3 +1010,8 @@ sup, sub, u, del {
   -webkit-transition: all 1000ms ease-in-out;
   transition: all 1000ms ease-in-out;
 }
+
+*:before, *:after {
+  -webkit-box-sizing: unset !important;
+  box-sizing: unset !important;
+}
