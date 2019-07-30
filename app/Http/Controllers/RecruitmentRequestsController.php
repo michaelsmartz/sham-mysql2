@@ -595,10 +595,27 @@ class RecruitmentRequestsController extends CustomController
         $result = true;
 
         $recruitment = Recruitment::find($id);
-        $dataToSync = ['candidate_id' => $candidate, 'status' => $state];
+
+        $candidate_recruitment = [
+            'candidate_id' => $candidate,
+            'status' => $state
+        ];
+
+        $recruitment_status = [
+            'recruitment_id' =>  $id,
+            'candidate_id' =>  $candidate,
+            'status' => $state
+        ];
         
         try{
-            $recruitment->candidates()->updateExistingPivot($candidate, $dataToSync);
+            if($recruitment) {
+                $recruitment->candidates()->updateExistingPivot($candidate, $candidate_recruitment);
+
+                if ($state != 0) {
+                    DB::table('recruitment_status')->insert($recruitment_status);
+                }
+
+            }
         } catch(Exception $exception) {
             $result = false;
         }
