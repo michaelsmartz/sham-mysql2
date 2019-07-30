@@ -235,10 +235,16 @@ class RecruitmentsController extends Controller
 
         $recruitmentId = Route::current()->parameter('recruitment_id');
         $recruitment = Recruitment::with(['trackCandidateStatus' => function($query) use ($candidateId){
-            return $query->where('candidate_id',$candidateId);
+            return $query->where('candidate_id', $candidateId);
         }])->find($recruitmentId);
 
-        $candidate = Candidate::candidatesList()->with(['interviews', 'offers', 'contracts'])->find($candidateId);
+        $candidate = Candidate::candidatesList()->with(['interviews' => function($query) use ($candidateId){
+            return $query->where('candidate_id', $candidateId);
+        }, 'offers' => function($query) use ($candidateId){
+            return $query->where('candidate_id', $candidateId);
+        }, 'contracts' => function($query) use ($candidateId){
+            return $query->where('candidate_id', $candidateId);
+        }])->find($candidateId);
         //dump($candidate);
 
         $view = view($this->baseViewPath . '.candidate-status', compact('recruitment','candidate'))->renderSections();
