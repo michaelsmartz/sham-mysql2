@@ -288,13 +288,22 @@ class RecruitmentRequestsController extends CustomController
                         }
                     });
 
-
                 //add if does not exist in three-way pivot table
                 $interview_types = $recruitment->interviewTypes()->get()->all();
                 $add_candidate_interview_recruitment_pivot = [];
 
                 foreach ($candidates as $key => $candidate_id) {
                     $hasCandidate = $recruitment->interviews()->where('candidate_id', $candidate_id)->exists();
+
+                    //insert in recruitment_status
+                    $recruitment_status = [
+                        'recruitment_id' =>  $recruitment_id,
+                        'candidate_id' =>  $candidate_id,
+                        'comment' => null
+                    ];
+
+                    DB::table('recruitment_status')
+                        ->insert($recruitment_status);
 
                     if(!$hasCandidate) {
                         foreach ($interview_types as $interview_type) {
@@ -370,7 +379,9 @@ class RecruitmentRequestsController extends CustomController
                         return  $query->where('recruitment_id', $id);
                     },
                     'interviews.media',
-                    'recruitment_status',
+                    'recruitment_status' => function ($query) use ($id){
+                        return  $query->where('recruitment_id', $id);
+                    },
                     'interviews'=> function ($query) use ($id)
                     {
                         return  $query->where('recruitment_id', $id);
