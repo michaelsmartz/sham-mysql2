@@ -80,6 +80,8 @@ class Employee extends Model implements AuditableContract
 				$builder->addSelect('*');
 			}
             $builder->addSelect(DB::raw('CONCAT(first_name, " ", surname) AS full_name'));
+
+            $builder->addSelect(DB::raw('CONCAT(first_name, " ", surname, " - ", employee_no) AS full_name_withemployeeno'));
         });
     }
 	
