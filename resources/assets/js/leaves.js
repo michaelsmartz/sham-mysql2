@@ -1,9 +1,7 @@
 import {on} from "delegated-events";
 
 window.on = global.on = on;
-if($('#leaves_apply').length){
-    $("input[name='_method']").val('POST');
-}
+$("#leaves_apply input[name='_method']").val('POST');
 
 
 on('change','.pending_box',function(event){

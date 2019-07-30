@@ -8,9 +8,7 @@
     <script src="{{URL::to('/')}}/js/jquery.nice-select.min.js"></script>
     <script>
 
-        if($('#my-vacancies').length){
-            $("input[name='_method']").val('POST');
-        }
+        $("#my-vacancies input[name='_method']").val('POST');
 
         $('.loader').hide();
         $(document).ready(function(){
