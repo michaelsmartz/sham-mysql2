@@ -1,11 +1,4 @@
         <div class="form-group col-md-12">
-            <span class="field">
-                <label for="schedule_on">Schedule On</label>
-                {!! Form::text('schedule_at', old('schedule_at', isset($interview->pivot->schedule_at) ? $interview->pivot->schedule_at : null), ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Schedule On', 'required', 'title'=>'Required','id'=>'schedule_at']) !!}
-            </span>
-        </div>
-
-        <div class="form-group col-md-12">
                 <span class="field">
                 <label for="recruitment_type_id">Status</label>
                     {!! Form::select('status', $status, old('status', isset($interview->pivot->status) ? $interview->pivot->status : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Status..', 'data-field-name'=>'Status', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
@@ -33,6 +26,21 @@
             </span>
         </div>
 
+        <div class="form-group col-md-12">
+            <span class="field">
+                <label for="schedule_on">Schedule On</label>
+                {!! Form::text('schedule_at', old('schedule_at', isset($interview->pivot->schedule_at) ? $interview->pivot->schedule_at : null), ['class'=>'form-control fix-case field-required datepicker', 'data-date-format'=> "Y-m-d H:i", 'data-enable-time'=> "true",'autocomplete'=>'off', 'placeholder'=>'Schedule On', 'required', 'title'=>'Required','id'=>'schedule_at']) !!}
+            </span>
+        </div>
+
+        <div class="form-group col-xs-12">
+            <label for="skill">Select Interviewers</label>
+            {!! Form::select('interviewers[]', $interviewers,
+                old('interviewers', isset($candidateInterviewers) ? $candidateInterviewers : null),
+                ['class' => 'form-control select-multiple', 'multiple'=>'multiple', 'required']
+            ) !!}
+        </div>
+
         <div class="form-group col-xs-12 {{ $errors->has('attachment') ? 'has-error' : '' }}">
             @include('partials.uploader',[
                 'fieldLabel' => 'Attach Interview Document',
@@ -51,6 +59,7 @@
                     Yes
                 </label>
             </div>
+        </div>
 
         {!! $errors->first('is_completed', '<p class="help-block">:message</p>') !!}
 

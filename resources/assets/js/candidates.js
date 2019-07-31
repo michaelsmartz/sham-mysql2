@@ -28,154 +28,6 @@ function readURL(input) {
     }
 }
 
-if(document.getElementById("candidates-table")) {
-    var table = new Vue({
-        el: '#candidates-table',
-        data: function () {
-            return {
-                columns: [
-                    'title',
-                    'gender',
-                    'surname',
-                    'firstName',
-                    'personalEmail',
-                    'phone',
-                    'actions'
-                ],
-                subColumns: [
-                    'cv',
-                ],
-                data: getData(),
-                options: {
-                    filter: false,
-                    filterByColumn: false,
-                    perPage: 2,
-                    texts: {
-                        filter: "Filter:",
-                        filterBy: 'Filter by {column}',
-                        count: ' '
-                    },
-                    pagination: {chunk: 10},
-                    headings: {
-                        title: "Title",
-                        gender: "Gender",
-                        maritalStatus: "Marital Status",
-                        surname: "Surname",
-                        firstName: "FirstName",
-                        dob: "Date of Birth",
-                        personalEmail: "Personal Email",
-                        homeAddress: "Home Address",
-                        phone: "Phone",
-                        idNumber: "ID number",
-                        skills: "Skills",
-                        qualifications: "Qualifications",
-                        disabilities: "Disabilities",
-                    },
-                    // sortable: [
-                    //     'title',
-                    //     'gender',
-                    //     'maritalStatus',
-                    //     'surname',
-                    //     'firstName',
-                    //     'dob',
-                    //     'personalEmail',
-                    //     'homeAddress',
-                    //     'phone',
-                    //     'idNumber',
-                    //     'skills',
-                    //     'disabilities',
-                    // ],
-                    sortable: [],
-                    filterable: false
-                    // filterable: [
-                    // 'title',
-                    // 'gender',
-                    // 'maritalStatus',
-                    // 'surname',
-                    // 'firstName',
-                    // 'dob',
-                    // 'personalEmail',
-                    // 'homeAddress',
-                    // 'phone',
-                    // 'idNumber',
-                    // 'skills',
-                    // 'disabilities'
-                    // ]
-                },
-                subOptions: {
-                    filter: false,
-                    filterByColumn: false,
-                    headings: {
-                        cv: "Filename"
-                    },
-                    filterable: false
-                },
-                methods: {
-                    stages: function (id) {
-                        window.location.href = '/recruitment';
-                    },
-                    erase: function (id) {
-                        alert(id);
-                    },
-                    edit: function (id) {
-                        window.location.href = '/recruitment';
-                    },
-                    download: function (id) {
-                        alert(id);
-                    }
-                }
-            }
-        }
-    });
-}
-
-function getData() {
-    return [{
-        id:1,
-        title: "Mr",
-        gender: "Male",
-        surname: "El",
-        firstName: "Nino",
-        personalEmail: "elnino@gmail.com",
-        phone: "+3322323333",
-        idNumber: "p1212362112436w",
-        skills: "php",
-        qualifications: "Masters",
-        disabilities: "Tinnitus, Mobility of limbs",
-        attachments: [{
-            cv:"cv.pdf"
-        },{
-            cv:"cv2.pdf"
-        },
-        {
-            cv:"cv3.pdf"
-        }],
-        photo: "photo.jpg"
-    },{
-        id:2,
-        title: "Miss",
-        gender: "Female",
-        maritalStatus: "Single",
-        surname: "Nina",
-        firstName: "Williams",
-        dob: "23/12/89",
-        personalEmail: "NinaWilliams@gmail.com",
-        homeAddress: "43 river land, Long Mountain",
-        phone: "+33444444444",
-        idNumber: "p527993424234o",
-        skills: "Mysql",
-        qualifications: "phD",
-        disabilities: "Optic Atropy",
-        attachments: [{
-            cv:"cv.pdf"
-        },{
-            cv:"cv2.pdf"
-        }],
-        photo: "photo.jpg"
-    },
-    ];
-}
-
 if(document.getElementById("candidates-app")) {
     const rr = new Vue({
         el: '#candidates-app',
@@ -186,7 +38,8 @@ if(document.getElementById("candidates-app")) {
             },
             quals: [],
             employment: {
-                previous_employer: '', position: '', salary: '', reason_leaving: '', start_date: '', end_date: ''
+                previous_employer: '', position: '', salary: '',
+                reason_leaving: '', start_date: '', end_date: '', contact: ''
             },
             employments: [],
             errors: [],
@@ -325,7 +178,14 @@ if(document.getElementById("candidates-app")) {
             },
             fetchQualifications: function () {
 
-                if (!route().current("candidates.create")) {
+                if (route().current("candidate.auth.details")) {
+                    var id = document.getElementById("candidate_id").value;
+                    fetch('/candidates/'+id+'/candidate-qualifications')
+                        .then(res => res.json())
+                        .then(res => {
+                            this.quals = res;
+                        })
+                }else if (!route().current("candidates.create")) {
                 fetch('./candidate-qualifications')
                     .then(res => res.json())
                     .then(res => {
@@ -335,7 +195,14 @@ if(document.getElementById("candidates-app")) {
             },
             fetchQPreviousEmployments: function () {
 
-                if (!route().current("candidates.create")) {
+                if (route().current("candidate.auth.details")) {
+                    var id = document.getElementById("candidate_id").value;
+                    fetch('/candidates/'+id+'/previous_employments')
+                        .then(res => res.json())
+                        .then(res => {
+                            this.employments = res;
+                        })
+                }else if (!route().current("candidates.create")) {
                     fetch('./previous_employments')
                         .then(res => res.json())
                         .then(res => {
@@ -366,12 +233,46 @@ if(document.getElementById("candidates-app")) {
 
                 $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
 
+                window.Parsley.addValidator('requiredIf', {
+                    validateString: function (value, requirement) {
+                        if (jQuery(requirement).val()) {
+                            return !!value;
+                        }
+                        return true;
+                    }, priority: 33
+                });
+                window.Parsley.addAsyncValidator('checkId',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-id'
+                );
+                window.Parsley.addAsyncValidator('checkName',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-name'
+                );
+                window.Parsley.addAsyncValidator('checkPassport',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-passport'
+                );
+                window.Parsley.addAsyncValidator('checkEmployeeNo',
+                    function(xhr) {
+                        return xhr.responseText !== 'false';
+                    }, './check-employeeno'
+                );
                 window.Parsley.on('field:ajaxoptions', function(p1,ajaxOptions) {
-                    var id_number = $("[name=id_number]").val();
+                    var FirstName = $("[name=first_name]").val(),
+                        Surname = $("[name=surname]").val(),
+                        IdNumber = $("[name=id_number]").val(),
+                        PassportCountryId = $("[name=passport_country_id]").val(),
+                        PassportNo = $("[name=passport_no]").val(),
+                        EmployeeNo = $("[name=employee_no]").val();
 
                     var namedDataMap = {
-                        'id_number': { 'id_number':id_number },
-
+                        'id_number': { 'idNumber':IdNumber,'firstName':FirstName,'surname':Surname},
+                        'employee_no': { 'employeeNo':EmployeeNo},
+                        'passport_no': { 'passportCountryId':PassportCountryId,'passportNo':PassportNo,'firstName':FirstName,'surname':Surname},
                     };
 
                     ajaxOptions.global = false;

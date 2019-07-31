@@ -1,6 +1,6 @@
 @extends('portal-index')
-@section('title','Absence Types')
-@section('subtitle','Keep track of your absence types and leaves')
+@section('title','Leave Types')
+@section('subtitle','Keep track of your leaves')
 @section('content')
     <div class="flex-wrapper">
         <div id="filter-sidebar" class="card shadow-eff1 sidebar-nav" role="navigation">
@@ -80,7 +80,7 @@
                         @foreach($absenceTypes as $absenceType)
                         <tr id="tr{{$absenceType->id}}">
                             <td>{{ $absenceType->description }}</td>
-                            <td>{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!}</td>
+                            <td>{{ $absenceType->amount_earns + 0 . ' ' }}{!! App\Enums\LeaveDurationUnitType::getDescription($absenceType->duration_unit) !!}</td>
                             <td>{!! App\Enums\LeaveEmployeeGainEligibilityType::getDescription($absenceType->eligibility_begins) !!}</td>
                             <td>{!! App\Enums\LeaveEmployeeLossEligibilityType::getDescription($absenceType->eligibility_ends) !!}</td>
                             <td>{!! App\Enums\LeaveAccruePeriodType::getDescription($absenceType->accrue_period) !!}</td>
@@ -92,9 +92,9 @@
                                             <i class="glyphicon glyphicon-edit text-primary"></i>
                                         </a>
                                     @endif
-                                    {{--@if($allowedActions->contains('Delete'))--}}
-                                    @if($absenceType->eligibilityEmployees->count() == 0 && $absenceType->jobTitles->count() == 0 && $absenceType->absenceTypeEmployees->count() == 0)
-                                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}')">
+                                    @if($allowedActions->contains('Delete'))
+                                    {{--@if($absenceType->eligibilityEmployees->count() == 0 && $absenceType->jobTitles->count() == 0 && $absenceType->absenceTypeEmployees->count() == 0)--}}
+                                        <button class="b-n b-n-r bg-transparent item-remove" data-wenk="Remove" onclick="deleteForm('{{$absenceType->id}}', '<strong class=text-danger>Entitlements</strong> and <strong class=text-danger>leave applications</strong> will also be deleted')">
                                             <i class="glyphicon glyphicon-remove text-danger"></i>
                                         </button>
                                     @endif
@@ -119,11 +119,5 @@
 @section('post-body')
     <link href="{{URL::to('/')}}/plugins/sumoselect/sumoselect.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/js/parsley.min.js"></script>
-    <script src="{{URL::to('/')}}/plugins/sumoselect/jquery.sumoselect.min.js"></script>
-    <script>
-        $('document').ready(function() {
-            $('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
-        });
-    </script>
     <script src="{{URL::to('/')}}/js/absence_type.min.js"></script>
 @endsection

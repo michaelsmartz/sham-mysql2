@@ -95,10 +95,8 @@
 @endsection
 
 @section('post-body')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.0/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data.js"></script>
     <script>
-        var timezone = moment.tz.guess();
+        var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         $('#timezone').val(timezone);
     </script>
 @endsection

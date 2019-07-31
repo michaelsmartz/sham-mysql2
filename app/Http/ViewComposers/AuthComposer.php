@@ -15,15 +15,19 @@ class AuthComposer
      */
     public function compose(View $view)
     {
-        $user = app('current_user');
-        $allowedModules = array();
-        if(session()->has('allowedModules')){
-            $allowedModules = session()->get('allowedModules');
+        // hide sensitive user and allowed modules from public views
+        if (!starts_with(strtolower($view->getName()), 'public.')) {
+            $user = app('current_user');
+            $allowedModules = array();
+            if(session()->has('allowedModules')){
+                $allowedModules = session()->get('allowedModules');
+            }
+            $view->with([
+                'user' => $user,
+                'allowedmodules' => $allowedModules
+            ]);
         }
-        $view->with([
-            'user' => $user,
-            'allowedmodules' => $allowedModules
-        ]);
+
     }
 
 }

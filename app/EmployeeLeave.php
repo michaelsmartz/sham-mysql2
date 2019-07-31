@@ -2,10 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Plank\Mediable\Mediable;
 
 class EmployeeLeave extends Model
 {
+    use Mediable;
     /**
      * The database table used by the model.
      *
@@ -13,6 +14,9 @@ class EmployeeLeave extends Model
      */
     protected $table = 'absence_type_employee';
 
+    protected $fillable = [
+        'absence_type_id',
+    ];
     /**
      * The database primary key value.
      *
@@ -28,6 +32,10 @@ class EmployeeLeave extends Model
     public function AbsenceType()
     {
         return $this->belongsTo(AbsenceType::class);
+    }
+
+    public function CalendarEvents(){
+        return $this->morphMany(CalendarEvent::class,'calendable');
     }
 
 }

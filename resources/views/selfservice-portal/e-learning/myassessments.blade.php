@@ -106,11 +106,13 @@ $courseCssClasses = ['lightBlue', 'teal', 'amber', 'mauve', 'taupe', 'steel', 'o
                                                                         <span>Will be reviewed by trainer</span>
                                                                     @endif
                                                                 @else
-                                                                    @for($i = 0; $i < sizeof($choices); $i++)
-                                                                        @if($choicePoints[$i] > 0)
-                                                                            <p>{{$choices[$i]}}</p>
-                                                                        @endif
-                                                                    @endfor
+                                                                    @if(is_array($choices))
+                                                                        @for($i = 0; $i < sizeof($choices); $i++)
+                                                                            @if($choicePoints[$i] > 0)
+                                                                                <p>{{$choices[$i]}}</p>
+                                                                            @endif
+                                                                        @endfor
+                                                                    @endif
                                                                 @endif
                                                             </td>
                                                         </tr>

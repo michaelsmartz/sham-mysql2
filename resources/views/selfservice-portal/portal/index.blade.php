@@ -373,11 +373,19 @@
         </svg>
     </a>
 
-    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My absences and leaves" href="{{URL::to('/')}}/leaves">
+    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My leaves" href="{{URL::to('/')}}/my-leaves">
         <svg class="icon" width="47" height="40">
             <use xlink:href="#time-5" />
         </svg>
     </a>
+
+    @if($is_manager == 1)
+    <a class="btn" data-container="svg" data-wenk-pos="bottom" data-wenk="My Team" href="{{URL::to('/')}}/my-team">
+        <svg class="icon" width="47" height="40">
+            <use xlink:href="#communication" />
+        </svg>
+    </a>
+    @endif
 </div>
 @endsection
 
@@ -465,8 +473,8 @@
                         <div class="row">
                             <div class="timesheet">
                                 <div class="working-hours">
-                                    @if(isset($workingHours['team']) && sizeof($workingHours['team']) > 0
-                                             && isset($workingHours['timegroup']) && sizeof($workingHours['timegroup']) > 0
+                                    @if(isset($workingHours['team']) && is_array($workingHours['team']) && sizeof($workingHours['team']) > 0
+                                             && isset($workingHours['timegroup']) && is_array($workingHours['timegroup']) && sizeof($workingHours['timegroup']) > 0
                                     )
                                         @if(!empty($workingHours['team']))
                                             <h2 class="list title">{{ $workingHours['team'] }}</h2>
@@ -513,9 +521,9 @@
                                                 @endif
                                             </ul>
                                         @endif
-                                    @elseif(isset($workingHours['timegroup']) && sizeof($workingHours['timegroup']) == 0)
+                                    @elseif(isset($workingHours['timegroup']) && is_array($workingHours['timegroup']) && sizeof($workingHours['timegroup']) == 0)
                                         <p style="color: #ffffee ">Your team has not been allocated to a time group yet</p>
-                                    @elseif(isset($workingHours['team']) && sizeof($workingHours['team']) == 0)
+                                    @elseif(isset($workingHours['team']) && is_array($workingHours['team']) && sizeof($workingHours['team']) == 0)
                                         <p style="color: #ffffee ">You have not been assigned to a team.</p>
                                     @else
                                         <p style="color: #ffffee ">An error occured</p>

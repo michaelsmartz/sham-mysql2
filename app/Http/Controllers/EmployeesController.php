@@ -707,24 +707,59 @@ class EmployeesController extends CustomController
 
 
     public static function getManagerEmployees($manager_id){
-        $employees_ids  = DB::table('employees')->select('id','first_name','surname')
+        $employees_ids  = DB::table('employees')->select('employees.id','employees.first_name','employees.surname','employees.picture','genders.description as gender','job_titles.description as job_title','users.id as user_id')
+        ->leftjoin('job_titles','job_titles.id','=','employees.job_title_id')
+        ->leftjoin('genders','genders.id','=','employees.gender_id')
+        ->leftjoin('users','users.employee_id','=','employees.id')
         ->where(function($q){
-            $q->where('date_terminated','<=','NOW()')
+            $q->where('employees.date_terminated','<=',date("Y-m-d"))
               ->orWhereNull('date_terminated');
         })
-        ->where('line_manager_id', $manager_id)
+        ->where('employees.line_manager_id', $manager_id)
+        ->orderby('employees.surname','asc')
+        ->orderby('employees.first_name','asc')
         ->get();
         return $employees_ids;
+    }
+
+    public static function getEmployeeFullName($employee_id){
+        $fullname = Employee::select(DB::raw("CONCAT(first_name,' ',surname) as fullname"))
+            ->where('id', $employee_id)
+            ->pluck('fullname')
+            ->first();
+        return $fullname;
     }
 
     public static function getManagerEmployeeIds($manager_id){
         $employees_ids  = Employee::where('line_manager_id', $manager_id)
         ->where(function($q){
-            $q->where('date_terminated','<=','NOW()')
+            $q->where('date_terminated','<=',date("Y-m-d"))
               ->orWhereNull('date_terminated');
         })
         ->pluck('id')
         ->toArray();
+        return $employees_ids;
+    }
+
+    public static function getDepartmentEmployees($department_id,$manager_id = null){
+       if(empty($manager_id)){
+           $employees_ids  = DB::table('employees')->select('id','first_name','surname')
+               ->where(function($q){
+                   $q->where('date_terminated','<=',date("Y-m-d"))
+                     ->orWhereNull('date_terminated');
+               })
+               ->where('department_id', $department_id)
+               ->get();
+       }else{
+           $employees_ids  = DB::table('employees')->select('id','first_name','surname')
+               ->where(function($q){
+                   $q->where('date_terminated','<=',date("Y-m-d"))
+                       ->orWhereNull('date_terminated');
+               })
+               ->where('department_id', $department_id)
+               ->where('id','!=',$manager_id)
+               ->get();
+       }
         return $employees_ids;
     }
 

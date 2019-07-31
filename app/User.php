@@ -10,6 +10,9 @@ use App\Events\UserAmended;
 use Illuminate\Database\Eloquent\SoftDeletes;
 Use Carbon\Carbon;
 use Jedrzej\Searchable\SearchableTrait;
+use San4io\EloquentFilter\Filters\LikeFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Jedrzej\Searchable\Constraint;
 use San4io\EloquentFilter\Traits\Filterable;
 use Yadahan\AuthenticationLog\AuthenticationLogable;
 
@@ -40,7 +43,13 @@ class User extends Authenticatable
     ];
 
 
-    public $searchable = ['username', 'email_address'];
+    public $searchable = ['username', 'email', 'name'];
+
+    protected $filterable = [
+        'username' => LikeFilter::class,
+        'email' => LikeFilter::class,
+        'name' => LikeFilter::class,
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -80,5 +89,20 @@ class User extends Authenticatable
         return $this->hasOne('App\Employee','id','employee_id');
     }
 
+    protected function processNameFilter(Builder $builder, Constraint $constraint)
+    {
+        // this logic should happen for LIKE/EQUAL operators only
+        if ($constraint->getOperator() === Constraint::OPERATOR_LIKE || $constraint->getOperator() === Constraint::OPERATOR_EQUAL) {
+
+            $builder->with('employee')
+                ->whereHas('employee',function ($q) use ($constraint){
+                    $q->where('employees.first_name', $constraint->getOperator(), $constraint->getValue())
+                        ->orWhere('employees.surname', $constraint->getOperator(), $constraint->getValue());
+                });
+
+            return true;
+        }
+        return false;
+    }
 
 }

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\AbsenceType;
 use App\SysConfigValue;
+use App\Observers\AbsenceTypeObserver;
 use Illuminate\Support\Facades\App;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
@@ -42,6 +44,8 @@ class ShamServiceProvider extends ServiceProvider
         
         \App\Providers\ViewComposerServiceProvider::class,
         \Collective\Html\HtmlServiceProvider::class,
+        \App\Providers\CalendarEventServiceProvider::class,
+        \MaddHatter\LaravelFullcalendar\ServiceProvider::class,
     ];
 
     /**
@@ -66,6 +70,8 @@ class ShamServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        AbsenceType::observe(AbsenceTypeObserver::class);
+        
         if (App::environment('local')) {
             $this->registerDevOnlyServiceProviders();
             $this->registerDevOnlyFacadeAliases();

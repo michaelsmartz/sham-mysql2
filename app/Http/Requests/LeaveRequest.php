@@ -3,21 +3,14 @@
 namespace App\Http\Requests;
 
 use App\Employee;
-use App\EmployeeLeave;
-use App\EmployeeEligibility;
 use App\Http\Controllers\SSPEmployeeLeavesController;
-use App\Enums\DayType;
 use App\Enums\LeaveDurationUnitType;
-use App\TimeGroup;
-use App\Http\Requests\LeaveRequest;
-use Illuminate\Support\Facades\Route;
 use DateInterval;
 use DateTime;
 use DatePeriod;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Validator;
+use App\Rules\GreaterOrEqual;
 
 class LeaveRequest extends FormRequest
 {
@@ -38,11 +31,9 @@ class LeaveRequest extends FormRequest
      */
     public function rules()
     {
-        $remaining     = Input::get('remaining_balance');
-        //$monthly_allowance    = Input::get('monthly_allowance');
         $duration_unit = Input::get('duration_unit');
         $employee      = Employee::find(Input::get('employee_id'));
-        $absence_type_id    = Input::get('absence_type_id');
+
 
         $request_from = date_create(Input::get('leave_from'))->format("Y-m-d");
         $request_to   = date_create(Input::get('leave_to'))->format("Y-m-d");
@@ -96,21 +87,20 @@ class LeaveRequest extends FormRequest
             }
         }
 
-        //if apply count greater than monthly_allowance to return an error message
 
-        return [
-            'remaining_balance' => 'greater_or_equal:'.$count,
-            //'monthly_allowance' => 'less_or_equal:'. $count,
+        $validators = [
+            'remaining_balance' => new GreaterOrEqual($count),
             'leave_to'          => 'after:'.Input::get('leave_from')
         ];
+
+        return $validators;
     }
 
     public function messages()
     {
         return [
-            'remaining_balance.greater_or_equal' => 'Amount of leave(s) requested exceeds remaining!',
-            //'monthly_allowance.less_or_equal'    => 'Amount of leave(s) requested exceeds monthly allowance!',
-            'leave_to.after'                     => "'Date to' must be after 'Date from'"
+            'remaining_balance' => 'Amount of leave(s) requested exceeds remaining!',
+            'leave_to.after'    => "'Date to' must be after 'Date from'"
         ];
     }
 

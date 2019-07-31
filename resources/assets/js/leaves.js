@@ -1,7 +1,8 @@
 import {on} from "delegated-events";
 
 window.on = global.on = on;
-$("input[name='_method']").val('POST');
+$("#leaves_apply input[name='_method']").val('POST');
+
 
 on('change','.pending_box',function(event){
     if(this.checked) {
@@ -14,11 +15,45 @@ on('change','.pending_box',function(event){
        
 });
 
+
+on('click','.fc-more,.fc-toolbar button',function(event){
+    if($('#leave_list').length){
+        var leave_ids = ($('#leave_list').val().slice(0,-1)).split(',');
+
+        $( "input[class='pending_box']" ).each(function(index) {
+            if($.inArray($(this).val(),leave_ids) !== -1){
+                $(this).prop('checked',true);
+            }else{
+                $(this).prop('checked',false);
+            }
+        });
+    }
+
+});
+
+
+on('click','.fc-more,.fc-toolbar button',function(event){
+    if($('.fc-agendaWeek-button').hasClass('fc-state-active') || $('.fc-agendaDay-button').hasClass('fc-state-active')){
+        $('.fc-time-grid-event .fc-bg').css('background','#3097D1');
+        $('.avatar-preview').css('z-index','2');
+    }else{
+        $('.fc-time-grid-event .fc-bg').css('background','transparent');
+        $('.avatar-preview').css('z-index','0');
+    }
+
+});
+
+
 on('click','#bundle_submit',function(event){
+    if($('#leave_list').val() === ''){
+        event.preventDefault();
+    }else{
         var leave_ids = $('#leave_list').val().slice(0,-1);
         var status = $('#batch_operation').find(":selected").val();
-        
-        window.location = "/leaves/batch/"+leave_ids+"/"+status;
+
+        window.location = "/my-leaves/batch/"+leave_ids+"/"+status;
+    }
+
 });
 
 on('click','#bundle_check',function(event){
@@ -83,3 +118,4 @@ on('focusin', 'input.datepicker-leave', function(event) {
     
 
 });
+

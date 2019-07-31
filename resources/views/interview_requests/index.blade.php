@@ -81,9 +81,6 @@
                                     </td>
                                     <td>@{{interview.description}}</td>
                                     <td>@{{interview.pivot.schedule_at}}</td>
-                                    {{--<td>!{$interviewStatus = @{{interview.pivot.status}} }!</td>--}}
-                                    {{--<td>{!! App\Enums\InterviewStatusType::getDescription($interviewStatus= @{{ interview.pivot.status }}) !!}</td>--}}
-                                    {{--<td v-bind:interview="{{ Auth::user()->id }}">@{{interview.pivot.status}}</td>--}}
                                     <td>@{{interview.pivot.status}}</td>
                                     <td>@{{interview.pivot.reasons}}</td>
                                     <td>@{{interview.pivot.results}}</td>

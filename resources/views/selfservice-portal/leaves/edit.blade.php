@@ -2,14 +2,13 @@
 @section('title', 'Leave request from '.$leave->employee)
 @section('modalTitle', 'Leave request from '.$leave->employee)
 
-
 @section('modalFooter')
-    <a href="/leaves/status/{{$id}}/{{App\Enums\LeaveStatusType::status_denied}}" data-wenk="Deny leave request" class="btn btn-danger">
-       Deny
-    </a>
-    <a href="/leaves/status/{{$id}}/{{App\Enums\LeaveStatusType::status_approved}}" data-wenk="Approve leave request" class="btn btn-success">
-       Approve
-    </a>
+    @if((date($leave->starts_at) >= date("Y-m-d H:i")) && ($leave->status == App\Enums\LeaveStatusType::status_pending || $leave->status == App\Enums\LeaveStatusType::status_approved))
+        <a href="/my-leaves/status/{{$leave->id}}/{{App\Enums\LeaveStatusType::status_cancelled}}" data-wenk="Cancel leave request" class="btn btn-cancel">
+            Cancel
+        </a>
+    @endif
+    <a href="#!" class="btn" data-close="Close" data-dismiss="modal">Close</a>
 @endsection
 
 
@@ -51,7 +50,25 @@
                         <span class="field">{{\Carbon\Carbon::parse($leave->ends_at)->format('l Y-m-d H:i')}}</span>
                     </div>
                 </div>
-</div>
+            </div>
+            @if(!empty($leave->comments))
+                <div class="row container-fluid">
+                    <legend><i class="glyphicon glyphicon-pencil"></i> Comments</legend>
+                    <div class="form-group col-sm-12">
+                        {!! $leave->comments !!}
+                    </div>
+                </div>
+            @endif
+            @if(!empty($leave->download_link))
+                <div class="row container-fluid">
+                    <legend><i class="glyphicon glyphicon-file"></i> Attachment</legend>
+                    <div class="form-group col-sm-12">
+                        <a href="{{$leave->download_link}}" download>
+                            <i class="fa fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection

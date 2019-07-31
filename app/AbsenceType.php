@@ -22,10 +22,13 @@ class AbsenceType extends Model implements AuditableContract
                   'amount_earns',
                   'description',
                   'duration_unit',
+                  'colour_id',
                   'eligibility_ends',
                   'eligibility_begins',
                   'non_working_days'
               ];
+
+    protected $cascadeDeletes = ['eligibilityEmployees', 'jobTitles', 'absenceTypeEmployees'];
 
     public $searchable = [ 'accrue_period',
                             'amount_earns',
@@ -70,6 +73,11 @@ class AbsenceType extends Model implements AuditableContract
     public function absenceTypeEmployees()
     {
         return $this->belongsToMany('App\Employee','absence_type_employee');
+    }
+
+    public function colour()
+    {
+        return $this->belongsTo('App\Colour');
     }
 
 

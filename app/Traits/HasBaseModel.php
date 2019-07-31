@@ -46,7 +46,7 @@ trait HasBaseModel
 
     public function destroyData($id)
     {
-        return static::where('id', $id)->delete();
+        return static::where('id', $id)->first()->delete();
     }
 
     public function scopeOfSort($query, $sort)

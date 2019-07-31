@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Candidate;
+use App\CandidateInterviewer;
 use App\Department;
 use App\EmailAddress;
 use App\Employee;
@@ -86,7 +87,17 @@ class RecruitmentRequestsController extends CustomController
 
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_REQUESTS);
 
-        $requests = $this->contextObj::orderBy('start_date','DESC')->filtered()->paginate(10);
+        $requests = $this->contextObj::with('candidates')->orderBy('start_date','DESC')->filtered()->paginate(10);
+
+        foreach ($requests as $req) {
+            $count_hired_employees_for_position = 0;
+            foreach ($req['candidates'] as $candidate) {
+                if ($candidate->is_hired) {
+                    $count_hired_employees_for_position++;
+                }
+            }
+            $req->hired = $count_hired_employees_for_position;
+        }
 
         // handle empty result bug
         if (Input::has('page')) {
@@ -242,7 +253,7 @@ class RecruitmentRequestsController extends CustomController
         $data = $this->contextObj->findData($id);
 
         $recruitmentCandidates = $data->candidates()->orderBy('candidate_recruitment.id','asc')->pluck('first_name','candidate_recruitment.candidate_id');
-        $candidates = Candidate::pluck('first_name', 'id');
+        $candidates = Candidate::pluck('name', 'id');
 
         if($request->ajax()) {
             $view = view($this->baseViewPath . '.manage-candidate', compact('data', 'candidates', 'recruitmentCandidates'))->renderSections();
@@ -277,13 +288,27 @@ class RecruitmentRequestsController extends CustomController
                         }
                     });
 
-
                 //add if does not exist in three-way pivot table
                 $interview_types = $recruitment->interviewTypes()->get()->all();
                 $add_candidate_interview_recruitment_pivot = [];
 
                 foreach ($candidates as $key => $candidate_id) {
                     $hasCandidate = $recruitment->interviews()->where('candidate_id', $candidate_id)->exists();
+
+                    //insert in recruitment_status
+                    $recruitment_status = [
+                        'recruitment_id' =>  $recruitment_id,
+                        'candidate_id' =>  $candidate_id,
+                        'comment' => null
+                    ];
+
+                    $status = $recruitment->status()->where(['recruitment_id'=>$recruitment_id, 'candidate_id'=>$candidate_id])->get()->first();
+
+                    if(is_null($status)) {
+                        DB::table('recruitment_status')->insert($recruitment_status);
+                    } else {
+                        DB::table('recruitment_status')->where(['id' => $status->pivot->id])->update($recruitment_status);
+                    }
 
                     if(!$hasCandidate) {
                         foreach ($interview_types as $interview_type) {
@@ -359,7 +384,9 @@ class RecruitmentRequestsController extends CustomController
                         return  $query->where('recruitment_id', $id);
                     },
                     'interviews.media',
-                    'recruitment_status',
+                    'recruitment_status' => function ($query) use ($id){
+                        return  $query->where('recruitment_id', $id);
+                    },
                     'interviews'=> function ($query) use ($id)
                     {
                         return  $query->where('recruitment_id', $id);
@@ -377,6 +404,10 @@ class RecruitmentRequestsController extends CustomController
 
             foreach($candidates as $candidate){
                 foreach ($candidate['interviews'] as $interview){
+                    //send enum type description
+                    $interview->pivot->results = InterviewResultsType::getDescription($interview->pivot->results);
+                    $interview->pivot->status = InterviewStatusType::getDescription($interview->pivot->status);
+
                     $interviewMedias =
                         DB::table('mediables')
                             ->join('media', 'mediables.media_id', '=', 'media.id')
@@ -433,6 +464,16 @@ class RecruitmentRequestsController extends CustomController
             $this->contextObj->with = [];
 
             $data = $this->contextObj->findData($id);
+
+            $candidates = $data->candidates()->get();
+
+            $count_hired_employees_for_position = 0;
+
+            foreach($candidates as $candidate) {
+                if ($candidate->is_hired) {
+                    $count_hired_employees_for_position++;
+                }
+            }
         }
 
         $uploader = [
@@ -444,7 +485,7 @@ class RecruitmentRequestsController extends CustomController
             "multiple" => "multiple" // set as empty string for single file, default multiple if not set
         ];
 
-        return view($this->baseViewPath .'.stages', compact('data','uploader'));
+        return view($this->baseViewPath .'.stages', compact('data', 'count_hired_employees_for_position', 'uploader'));
     }
 
     /**
@@ -458,14 +499,26 @@ class RecruitmentRequestsController extends CustomController
         $candidate_id = Route::current()->parameter('candidate');
 
         $data = $this->contextObj::find($recruitment_id);
+
+        $candidateInterviewers = [];
+
         $interview = $data->interviews()
             ->where('recruitment_id', $recruitment_id)
             ->where('interview_id', $interview_id)
             ->where('candidate_id', $candidate_id)
             ->first();
 
+        $pivot_table_id = $interview->pivot->id;
+
+        $candidate_interviewers = DB::table('candidate_interviewers')->select('employee_id')->where('candidate_interview_recruitment_id', $pivot_table_id)->get()->all();
+
+        foreach ($candidate_interviewers as $candidate_interviewer){
+            $candidateInterviewers[] = $candidate_interviewer->employee_id;
+        }
+
         $status = InterviewStatusType::ddList();
         $results = InterviewResultsType::ddList();
+        $interviewers = Employee::pluck('full_name','id')->all();
 
         $uploader = [
             "fieldLabel" => "Add attachments...",
@@ -477,7 +530,7 @@ class RecruitmentRequestsController extends CustomController
         ];
 
         if($request->ajax()) {
-            $view = view('interview_requests.edit', compact('data','status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'))->renderSections();
+            $view = view('interview_requests.edit', compact('data','status','results','interview', 'interviewers', 'candidateInterviewers', 'recruitment_id', 'interview_id', 'candidate_id','uploader'))->renderSections();
             return response()->json([
                 'title' => $view['modalTitle'],
                 'content' => $view['modalContent'],
@@ -486,7 +539,7 @@ class RecruitmentRequestsController extends CustomController
             ]);
         }
 
-        return view('interview_requests.edit', compact('data','status','results','interview', 'recruitment_id', 'interview_id', 'candidate_id','uploader'));
+        return view('interview_requests.edit', compact('data','status','results','interview', 'interviewers', 'candidateInterviewers', 'recruitment_id', 'interview_id', 'candidate_id','uploader'));
     }
 
     /**
@@ -500,7 +553,9 @@ class RecruitmentRequestsController extends CustomController
     public function updateInterview(Request $request, $id)
     {
         try {
-            $input = array_except($request->all(),array('_token','_method','attachment','schedule_at_submit'));
+            $candidate_interviewers = [];
+            $interviewers = array_only($request->all(),['interviewers']);
+            $input = array_except($request->all(),array('_token','_method','attachment','schedule_at_submit','interviewers'));
             $data = Recruitment::find($id);
 
             $interview = $data->interviews()
@@ -510,6 +565,16 @@ class RecruitmentRequestsController extends CustomController
                 ->get()->first();
 
             $pivot_table_id = $interview->pivot->id;
+
+            foreach ($interviewers['interviewers'] as $interviewer){
+                $candidate_interviewers[] = ['candidate_interview_recruitment_id' => $pivot_table_id,
+                                             'employee_id' => $interviewer
+                                            ];
+            }
+
+            DB::statement('DELETE FROM candidate_interviewers WHERE candidate_interview_recruitment_id = '.$pivot_table_id);
+
+            CandidateInterviewer::insert($candidate_interviewers);
 
             DB::table('candidate_interview_recruitment')
                 ->where('id', $pivot_table_id)
@@ -535,10 +600,27 @@ class RecruitmentRequestsController extends CustomController
         $result = true;
 
         $recruitment = Recruitment::find($id);
-        $dataToSync = ['candidate_id' => $candidate, 'status' => $state];
+
+        $candidate_recruitment = [
+            'candidate_id' => $candidate,
+            'status' => $state
+        ];
+
+        $recruitment_status = [
+            'recruitment_id' =>  $id,
+            'candidate_id' =>  $candidate,
+            'status' => $state
+        ];
         
         try{
-            $recruitment->candidates()->updateExistingPivot($candidate, $dataToSync);
+            if($recruitment) {
+                $recruitment->candidates()->updateExistingPivot($candidate, $candidate_recruitment);
+
+                if ($state != 0) {
+                    DB::table('recruitment_status')->insert($recruitment_status);
+                }
+
+            }
         } catch(Exception $exception) {
             $result = false;
         }
@@ -717,13 +799,8 @@ class RecruitmentRequestsController extends CustomController
             $data = Recruitment::find($id);
 
             if($data) {
-                $status = $data->status()->where(['recruitment_id'=>$id, 'candidate_id'=>$candidateId])->get()->first();
-
-                if(is_null($status)) {
-                    DB::table('recruitment_status')->insert($dataSet);
-                } else {
-                    DB::table('recruitment_status')->where(['id' => $status->pivot->id])->update($dataSet);
-                }
+                $status = $data->status()->where(['recruitment_id'=>$id, 'candidate_id'=>$candidateId, 'status'=>1])->get()->first();
+                DB::table('recruitment_status')->where(['id' => $status->pivot->id])->update($dataSet);
             }
 
 
@@ -757,6 +834,7 @@ class RecruitmentRequestsController extends CustomController
 
                 if($candidate) {
                     $candidate->employee_no = $employee_no;
+                    $candidate->is_hired = true;
                     $candidate->save();
 
 
@@ -778,7 +856,7 @@ class RecruitmentRequestsController extends CustomController
                             'addr_line_4',
                             'city',
                             'province',
-                            'zip',
+                            'zip_code',
                             'preferred_notification_id',
                             'created_at',
                             'updated_at',
@@ -815,6 +893,7 @@ class RecruitmentRequestsController extends CustomController
                     $recruitment_status = [
                       'recruitment_id' =>  $recruitment_id,
                       'candidate_id' =>  $candidate_id,
+                      'status' =>  4,
                       'comment' => $comments
                     ];
 
@@ -824,10 +903,6 @@ class RecruitmentRequestsController extends CustomController
 
                     //if employee_no already exist update else insert
                     if (in_array($data_employee['employee_no'], array_column($all_employees, 'employee_no'))) { // search value in the array
-                        DB::table('recruitment_status')
-                            ->where('recruitment_id', $recruitment_id)
-                            ->where('candidate_id', $candidate_id)
-                            ->update($recruitment_status);
 
                         $data = Employee::where('employee_no', $data_employee['employee_no'])->get()->first();
 
@@ -835,12 +910,15 @@ class RecruitmentRequestsController extends CustomController
                         TimelineManager::updateEmployeeTimelineHistory($data);
 
                     } else {
-                        DB::table('recruitment_status')
-                            ->insert($recruitment_status);
-
                         $data = $employee->addData($data_employee);
                         TimelineManager::addEmployeeTimelineHistory($data);
                     }
+
+                    DB::table('recruitment_status')
+                        ->where('recruitment_id', $recruitment_id)
+                        ->where('candidate_id', $candidate_id)
+                        ->where('status', 4)
+                        ->update($recruitment_status);
 
                     if(empty($candidate_arr['phone'])) {
                         TelephoneNumber::where('employee_id', '=', $data->id)->delete();

@@ -13,11 +13,16 @@ class Router
     public static function registerMacros()
     {
         if (!DefaultRouter::hasMacro('fileResource')) {
-            DefaultRouter::macro('fileResource', function ($module) {
+            DefaultRouter::macro('fileResource', function ($module, $controllerName = null) {
 
                 $url        = str_replace('.', '', Str::plural($module));
                 $name       = Str::singular($module);
-                $controller = Str::studly(str_replace('.', ' ', $module)) . 'Controller';
+                if(empty($controllerName)){
+                    $controller = Str::studly(str_replace('.', ' ', $module)) . 'Controller';
+                } else {
+                    $name       = str_replace("-","",$name);
+                    $controller = $controllerName;
+                }
 
                 DefaultRouter::group([
                     'middleware' => ['auth'],

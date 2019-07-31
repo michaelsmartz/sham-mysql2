@@ -71,7 +71,7 @@ class ShamUserProfile extends Model
     public static function GetDescription($Id)
     {
         $item = static::find($Id);
-        if ($item!=null) return $item->Name;
+        if ($item!=null) return $item->name;
         else return "";
     }
 

@@ -40,6 +40,11 @@ class SSPController extends CustomController
     {
         $employee_id  = (\Auth::check()) ? \Auth::user()->employee_id : 0;
         $employeeObject =  $this->contextObj::find($employee_id);
+        if(!empty($employeeObject->jobTitle)){
+            $is_manager     =  $employeeObject->jobTitle->is_manager;
+        }else{
+            $is_manager     =  0;
+        }
 
         $warnings = array();
 
@@ -67,7 +72,7 @@ class SSPController extends CustomController
 
         // load the view and pass the parameters
         return view($this->baseViewPath .'.index',
-            compact('warnings', 'announcements', 'assets','workingHours', 'allowedActionsAssets', 'allowedActionsAnnouncements'));
+            compact('warnings', 'announcements', 'assets','workingHours', 'allowedActionsAssets', 'allowedActionsAnnouncements','is_manager'));
     }
 
     private function getWorkingHours($employee){

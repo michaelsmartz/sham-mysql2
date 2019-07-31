@@ -19,8 +19,34 @@ Route::get('testunclaimedmonthly', 'MiscController@testunclaimedmonthly');
 
 Auth::routes();
 
+Route::group(['prefix' => '/vacancies', 'namespace' => 'Open'], function() {
+    Route::get('/', 'RecruitmentsController@publicHome')->name('candidate.vacancies');
+    Route::get('status/{recruitment_id}','RecruitmentsController@showCandidateStatus')
+            ->middleware(['auth:candidate'])
+            ->name('vacancies.status');
+    Route::any('apply/{recruitment_id?}','RecruitmentsController@apply')
+            ->name('vacancies.apply');
+    Route::post('save', 'RecruitmentsController@applyInterview')->name('vacancies.save');
+});
+
+Route::group(['prefix' => '/candidate'], function () {
+    //Route::get('/', 'Open\RecruitmentsController@publicHome')->name('candidate.dashboard');
+    //Route::get('dashboard', 'Open\RecruitmentsController@publicHome')->name('candidate.dashboard');
+    Route::get('register', 'Open\CandidateController@create')->name('candidate.register');
+    Route::post('register', 'Open\CandidateController@store')->name('candidate.register.store');
+    Route::get('login', 'Auth\CandidateLoginController@login')->name('candidate.auth.login');
+    Route::post('login', 'Auth\CandidateLoginController@loginCandidate')->name('candidate.auth.loginCandidate');
+    Route::get('details', 'Open\CandidateController@details')->name('candidate.auth.details');
+    Route::match(['put', 'patch'],'update/{id}', 'Open\CandidateController@update')->name('candidate.auth.update');
+    // logout using get
+    Route::get('logout', 'Auth\CandidateLoginController@logout')->name('candidate.auth.logout');
+    Route::post('logout', 'Auth\CandidateLoginController@logout')->name('candidate.auth.logout');
+
+
+});
+
 #region auth middleware routes
-    Route::group(['middleware' => ['auth']], function() {
+    Route::group(['middleware' => ['auth:sham']], function() {
 
         // logout using get
         Route::get('auth/logout', 'Auth\LoginController@logout')->name('logout');
@@ -71,7 +97,28 @@ Auth::routes();
 
             Route::resource('my-surveys', 'SSPMySurveysController');
             Route::any('survey-thumbnail/{formId}', 'SSPMySurveysController@getFormData');
-        #endregion
+
+            #Absences and leaves
+            Route::fileResource('my-leaves', 'SSPEmployeeLeavesController' );
+            Route::get('/my-leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
+            Route::get('/my-leaves/{leave_id}/view', 'SSPEmployeeLeavesController@viewDetails');
+            Route::get('/my-leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
+            Route::get('/my-leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
+            Route::post('/my-leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('my-leaves.filter');
+            Route::post('/my-leaves/filter/calendar', 'SSPEmployeeLeavesController@filterCalendar')->name('my-leaves.filter-calendar');
+            Route::any('/my-leaves-history', 'SSPEmployeeLeavesController@historyLeave')->name('my-leaves.history');
+            Route::any('/my-leaves-pending-request', 'SSPEmployeeLeavesController@pendingLeave')->name('my-leaves.pending');
+
+            #my-team
+            Route::resource('my-team', 'SSPMyTeamController');
+
+            #my-vacancies
+            Route::get('my-vacancies/{recruitment_id}/status/{candidate_id}/apply','SSPMyVacanciesController@showCandidateStatus')
+                ->name('my-vacancies.status');
+            Route::post('my-vacancies/apply', 'SSPMyVacanciesController@applyInterview')->name('my-vacancies.apply-interview');
+            Route::get('my-vacancies/{recruitment_id}/salary-expectation/{page}/apply', 'SSPMyVacanciesController@addSalaryExpectation')->name('my-vacancies.add-salary-expectation');
+            Route::get('my-vacancies', 'SSPMyVacanciesController@index')->name('my-vacancies.index');
+            #endregion
 
         #region Central HR
             // "duplicate" routes to work with both create and edit mode
@@ -123,7 +170,7 @@ Auth::routes();
             });
             Route::resource('disciplinary_decisions', 'DisciplinaryDecisionsController');
             Route::resource('disabilities', 'DisabilitiesController');
-            Route::resource('disability_categories', 'DisabilityCategoriesController');
+            //Route::resource('disability_categories', 'DisabilityCategoriesController');
             Route::resource('law_categories', 'LawCategoriesController');
             Route::resource('policy_categories', 'PolicyCategoriesController');
             Route::resource('genders', 'GendersController');
@@ -184,14 +231,6 @@ Auth::routes();
             ]);
             Route::get('module_assessments/{response}/responses/{module_assessment}/employee/{employee_id}/editAssessment', 'ModuleAssessmentResponsesController@editAssessment');
             Route::resource('course_training_sessions', 'CourseTrainingSessionsController' );
-        #endregion
-
-        #region Absences and leaves
-        Route::resource('leaves', 'SSPEmployeeLeavesController' );
-        Route::get('/leaves/create/{leave_id}/{leave_desc}/{employee_id}', 'SSPEmployeeLeavesController@create');
-        Route::get('/leaves/status/{leave_id}/{status}', 'SSPEmployeeLeavesController@changeStatus');
-        Route::get('/leaves/batch/{leave_ids}/{status}', 'SSPEmployeeLeavesController@batchChangeStatus');
-        Route::post('/leaves/filter', 'SSPEmployeeLeavesController@filterLeave')->name('leaves.filter');
         #endregion
 
         #region Quality

@@ -55,6 +55,16 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
     {
         try {
 
+            if(is_null($this->workYearStart) || is_null($this->workYearEnd)) {
+                $this->summary = [
+                    'skipped' => 'Yes', 
+                    'inserted' => 'Missing working year value(s)' 
+                ];
+                $this->logToDb(null, null,1000);
+
+                return false;
+            }
+            
             $employees = [];
 
             if ( !is_null($this->absenceTypes) ){
@@ -80,8 +90,19 @@ class UpdateUnclaimedMonthlyLeaves implements ShouldQueue
                 }
             }
 
+            return true;
+
         } catch(Exception $e) {
 
+            DB::table('job_logs')->insert([
+                'message' => 'Exception',
+                'level' => 1000,
+                'context' => 'FlushDashboardCachedQueries',
+                'extra' => json_encode($e),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+            
+            return false;
         }
     }
 

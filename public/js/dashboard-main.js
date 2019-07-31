@@ -79,7 +79,7 @@ var DashboardApp = (function () {
             } else {
                 Object.assign(chartOptions, {
                     id: ["Sex", "Ethnicity"],
-                    size: "size",
+                    size: "Size",
                     color: {
                         "scale": ["#60C2BB", "#FA7240", "#FFD35F"],
                         "heatmap": ["#60C2BB", "#FA7240", "#FFD35F"],

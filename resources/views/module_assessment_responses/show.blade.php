@@ -71,16 +71,18 @@
                                     $choices = explode('|', $responseDetail->question_choices);
                                     $choicePoints = explode('|', $responseDetail->question_choices_points);
                                 @endphp
-                                @for($i = 0; $i < sizeof($choices); $i++)
-                                    <div class="col-xs-6 col-md-3">
-                                        <strong>{{$choices[$i]}}</strong>
-                                        @if($choicePoints[$i] > 0)
-                                            <span class="label label-success">Correct</span>
-                                        @else
-                                            <span class="label label-danger">Incorrect</span>
-                                        @endif
-                                    </div>
-                                @endfor
+                                @if(is_array($choices))
+                                    @for($i = 0; $i < sizeof($choices); $i++)
+                                        <div class="col-xs-6 col-md-3">
+                                            <strong>{{$choices[$i]}}</strong>
+                                            @if($choicePoints[$i] > 0)
+                                                <span class="label label-success">Correct</span>
+                                            @else
+                                                <span class="label label-danger">Incorrect</span>
+                                            @endif
+                                        </div>
+                                    @endfor
+                                @endif
                             </div>
                         </div>
                     @endif
@@ -136,16 +138,18 @@
                                         $choices = explode('|', $responseDetailTrashed->question_choices);
                                         $choicePoints = explode('|', $responseDetailTrashed->question_choices_points);
                                     @endphp
-                                    @for($i = 0; $i < sizeof($choices); $i++)
-                                        <div class="col-xs-6 col-md-3">
-                                            <strong>{{$choices[$i]}}</strong>
-                                            @if($choicePoints[$i] > 0)
-                                                <span class="label label-success">Correct</span>
-                                            @else
-                                                <span class="label label-danger">Incorrect</span>
-                                            @endif
-                                        </div>
-                                    @endfor
+                                    @if(is_array($choices))
+                                        @for($i = 0; $i < sizeof($choices); $i++)
+                                            <div class="col-xs-6 col-md-3">
+                                                <strong>{{$choices[$i]}}</strong>
+                                                @if($choicePoints[$i] > 0)
+                                                    <span class="label label-success">Correct</span>
+                                                @else
+                                                    <span class="label label-danger">Incorrect</span>
+                                                @endif
+                                            </div>
+                                        @endfor
+                                    @endif
                                 </div>
                             </div>
                         @endif

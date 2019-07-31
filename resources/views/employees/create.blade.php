@@ -40,7 +40,7 @@
             filenameTest: function(fileName, fileExt, $container) {
                 var allowedExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "jpg", "jpeg", "png"];
                 
-                @if(!empty($uploader['acceptedFiles'] && sizeof($uploader['acceptedFiles'])>0))
+                @if(!empty($uploader['acceptedFiles'] && is_array($uploader['acceptedFiles']) && sizeof($uploader['acceptedFiles'])>0))
                 allowedExts = {!! $uploader['acceptedFiles'] !!};
                 @endif
 

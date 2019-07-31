@@ -17,7 +17,7 @@
 
 <div class="row">
     <div class="form-group col-sm-6">
-        <label class="control-label">From</label>
+        <label class="control-label"><i class="glyphicon glyphicon-calendar"></i> From</label>
         <div class="">
             <span class="field">
                 {!! Form::text('leave_from', '', ['class'=>'form-control datepicker-leave', 'autocomplete'=>'off','data-min-date'=> $working_year_start,'data-max-date'=> $working_year_end,'data-date-format'=> "Y-m-d H:i", 'data-enable-time'=> "true",  'placeholder'=>'Starts at', 'id'=>'leave_from','required' ]) !!}
@@ -26,11 +26,24 @@
     </div>
 
     <div class="form-group col-sm-6">
-        <label class="control-label">To</label>
+        <label class="control-label"><i class="glyphicon glyphicon-calendar"></i> To</label>
         <div class="">
            <span class="field">
                 {!! Form::text('leave_to', '', ['class'=>'form-control datepicker-leave','data-date-format'=> "Y-m-d H:i",'data-min-date'=> $working_year_start,'data-max-date'=> $working_year_end, 'data-enable-time'=> "true", 'autocomplete'=>'off', 'placeholder'=>'Ends at', 'id'=>'leave_to','required']) !!}
             </span>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-sm-12 {{ $errors->has('attachment') ? 'has-error' : '' }}">
+    @include('partials.uploader')
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-sm-12">
+        <div class="md-form">
+            <i class="glyphicon glyphicon-pencil"></i><label for="comments"> Comments</label>
+            <textarea id="comments" name="comments" class="md-textarea form-control" rows="3"></textarea>
         </div>
     </div>
 </div>

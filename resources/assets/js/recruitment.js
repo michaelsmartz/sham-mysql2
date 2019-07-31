@@ -1,6 +1,8 @@
 import {on} from 'delegated-events';
 import moment from 'moment';
 
+require('sumoselect');
+
 window.Vue = require('vue/dist/vue.common.js');
 Vue.config.productionTip = false;
 
@@ -38,6 +40,10 @@ Vue.filter('prettyBytes', function (num) {
 	unit = units[exponent];
 
 	return (neg ? '-' : '') + num + ' ' + unit;
+});
+
+window.appEe.on('loadUrl', function(text){
+	$('.select-multiple').SumoSelect({csvDispCount: 10, up: true});
 });
 
 Vue.prototype.window = window;
@@ -86,6 +92,8 @@ var vm = new Vue({
 	methods: {
 		setCurrent: function (item) {
 			let scope = this;
+			scope.currentComment = "";
+
 			// handle empty offer letters error
 			if(item.offers.length == 0) {
 				item.offers.push({offer_id: 0,starting_on:""});
@@ -102,9 +110,13 @@ var vm = new Vue({
 			}
 
             if(item.recruitment_status.length == 0) {
-                this.currentComment = "";
+				scope.currentComment = "";
             } else {
-                this.currentComment = item.recruitment_status[0].comment;
+				item.recruitment_status.forEach(function(el) {
+					if(el.status == vm.selectedCategory){
+						scope.currentComment = el.comment;
+					}
+				});
             }
 			if(item.interviews.length == 0) {
 				scope.interviewMedias = [];
@@ -176,42 +188,16 @@ var vm = new Vue({
 		},
         editInterviewForm: function(interview_id, candidate_id, e){
 			e.stopPropagation();
-            this.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
+			window.loadUrl('stages/' + interview_id + '/candidate/'+ candidate_id + '/edit-interview');
 		},
         uploadSignedOffer: function(candidateId){
 			var offerId = $('#offer_id option:selected').val();
-            this.loadUrl('./candidate/'+ candidateId + '/offer/' + offerId + '/upload-offer-form');
+			window.loadUrl('./candidate/'+ candidateId + '/offer/' + offerId + '/upload-offer-form');
 		},
         uploadSignedContract: function(candidateId){
 			var contractId = $('#contract_id option:selected').val();
-            this.loadUrl('./candidate/'+ candidateId + '/contract/' + contractId + '/upload-contract-form');
+            window.loadUrl('./candidate/'+ candidateId + '/contract/' + contractId + '/upload-contract-form');
 		},
-        loadUrl: function(url) {
-            $(".light-modal-body").empty().html('Loading...please wait...');
-            $.get(url).done(function(data) {
-                $(".light-modal-heading").empty().html(data.title);
-                $(".light-modal-body").empty().html(data.content);
-                $(".light-modal-footer .buttons").empty().html(data.footer);
-                $("#modalForm").attr('action',data.url);
-
-                $('.multipleSelect').each(function(){
-                    $(this).multiselect({
-                        submitAllLeft:false,
-                        sort: false,
-                        keepRenderingSort: false,
-                        search: {
-                            left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-                            right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-                        },
-                        fireSearch: function(value) {
-                            return value.length > 3;
-                        }
-                    });
-                });
-            }).fail(function() {
-                alerty.alert("An error has occurred. Please try again!",{okLabel:'Ok'});
-            });
-        },
 		deleteInterviewMedia: function(current, interview_id, media, e){
 			let vm = this;
 			e.stopPropagation();
@@ -364,7 +350,19 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, cdt.name + ' - offer letter.pdf');
+				//download(blob, cdt.name + ' - offer letter.pdf');
+				// https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/saving-a-blob.html
+				const blob1 = new Blob([blob]);
+				const fileStream = streamSaver.createWriteStream(cdt.name + ' - offer letter.pdf');
+				const readableStream = blob1.stream();
+
+				if (window.WritableStream && readableStream.pipeTo) {
+					console.log('In Statement');
+					return readableStream.pipeTo(fileStream).then(function () {
+						cdt.offers[0].offer_id = 1;
+						//return console.log('done writing...');
+					});
+				}
 			});
 		},
         importHired: function(){
@@ -423,7 +421,19 @@ var vm = new Vue({
 			}).then(function(resp) {
 				return resp.blob();
 			}).then(function(blob) {
-				download(blob, cdt.name + ' - contract.pdf');
+				//download(blob, cdt.name + ' - contract.pdf');
+				// https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/saving-a-blob.html
+				const blob1 = new Blob([blob]);
+				const fileStream = streamSaver.createWriteStream(cdt.name + ' - contract.pdf');
+				const readableStream = blob1.stream();
+
+				if (window.WritableStream && readableStream.pipeTo) {
+					console.log('In Statement');
+					return readableStream.pipeTo(fileStream).then(function () {
+						cdt.contracts[0].contract_id = 1;
+						//return console.log('done writing...');
+					});
+				}
 			});
 		},
 		downloadSignedOffer: function(){

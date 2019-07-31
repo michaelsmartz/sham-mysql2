@@ -78,8 +78,12 @@ class EvaluationsController extends CustomController
             $request->merge(['reference_no' => '%'.$referenceno.'%']);
         }
 
-        $evaluations = $this->contextObj::with('assessment','useremployee','department')->filtered()->where('is_active',1)
-            ->where('createdby_employee_id',$employeeid = \Auth::user()->employee->id)
+
+        $evaluations = $this->contextObj::with(['assessment','useremployee','department','employee'])->filtered()
+            ->where('is_active',1)
+            ->where('createdby_employee_id',\Auth::user()->employee->id)
+            ->whereHas('useremployee')
+            ->whereHas('employee')
             ->orderBy('feedback_date', 'desc')
             ->paginate(10);
 
@@ -91,11 +95,11 @@ class EvaluationsController extends CustomController
 
     public function create()
     {
-        $assessments = Assessment::pluck('name','id')->all();
-        $employees = Employee::where('date_terminated',null)->pluck('full_name', 'id')->all();
-        $departments = Department::pluck('description','id')->all();
-        $productCategories = ProductCategory::pluck('description','id')->all();
-        $languages = Language::pluck('description','id')->all();
+        $assessments = Assessment::orderBy('name')->pluck('name','id')->all();
+        $employees = Employee::orderBy('full_name')->pluck('full_name_withemployeeno', 'id')->all();
+        $departments = Department::orderBy('description')->pluck('description','id')->all();
+        $productCategories = ProductCategory::orderBy('description')->pluck('description','id')->all();
+        $languages = Language::orderBy('description')->pluck('description','id')->all();
         //$evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
         $evaluationStatuses = EvaluationStatusType::ddList();
         $feedbackdate = \Carbon\Carbon::now()->toDateString();
@@ -213,13 +217,14 @@ class EvaluationsController extends CustomController
             $data = $this->contextObj->findData($id);
         }
 
-        $assessments = Assessment::pluck('name','id')->all();
-        $employees = Employee::where('date_terminated',null)->pluck('full_name', 'id')->all();
-        $departments = Department::pluck('description','id')->all();
-        $productCategories = ProductCategory::pluck('description','id')->all();
-        $languages = Language::pluck('description','id')->all();
+        $assessments = Assessment::orderBy('name')->pluck('name','id')->all();
+        $employees = Employee::orderBy('full_name')->pluck('full_name_withemployeeno', 'id')->all();
+        $departments = Department::orderBy('description')->pluck('description','id')->all();
+        $productCategories = ProductCategory::orderBy('description')->pluck('description','id')->all();
+        $languages = Language::orderBy('description')->pluck('description','id')->all();
         //$evaluationStatuses = EvaluationStatus::pluck('description','id')->all();
         $evaluationStatuses = EvaluationStatusType::ddList();
+
         $selectecAssessors = $data->assessors()->pluck('full_name','employee_evaluation.employee_id');
 
         return view($this->baseViewPath .'.edit',

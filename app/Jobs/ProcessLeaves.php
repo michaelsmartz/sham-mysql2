@@ -73,53 +73,51 @@ class ProcessLeaves implements ShouldQueue
 
         try {
 
-            $employees = [];
+            $employees = $jobIds = $filteredEmployees = [];
 
             if(is_null($this->workYearStart) || is_null($this->workYearEnd)) {
                 $this->summary = [
                     'skipped' => 'Yes', 
                     'inserted' => 'Missing working year value(s)' 
                 ];
+                $this->logToDb(null, null,1000);
 
-                \DB::table('job_logs')->insert([
-                    'message' => 'Missing working year value(s)',
-                    'level' => 1000,
-                    'context' => $this->displayName(),
-                    'extra' => '',
-                    'created_at' => date('Y-m-d H:i:s'),
-                ]);
-
-                var_dump($this->summary);
-
-                exit(1);
+                return false;
             }
 
             if ( !is_null($this->absenceTypes) ){
                 // looping each AbsenceType
-    
+
                 foreach($this->absenceTypes as $absenceType) {
-
+                    // check main basic requirements
                     if(is_null($absenceType->amount_earns)){
-
-                        \DB::table('job_logs')->insert([
-                            'loggable_id' => $absenceType->id,
-                            'loggable_type' => get_class($absenceType),
-                            'message' => 'Missing amount_earns value',
-                            'level' => 1000,
-                            'context' => $this->displayName(),
-                            'extra' => '',
-                            'created_at' => date('Y-m-d H:i:s'),
-                        ]);
-                        
-                        $this->summary['absenceType'][$absenceType->id] = [
-                            'skipped' => 'yes', 
-                            'inserted' => 'no' 
+                        $this->summary = [
+                            'skipped' => 'Yes', 
+                            'inserted' => 'Missing amount earns value' 
                         ];
+                        $this->logToDb($absenceType->id, get_class($absenceType),1000);
+
                         continue;
                     }
+
+                    if($absenceType->eligibility_begins == LeaveEmployeeGainEligibilityType::probation_end && 
+                       $absenceType->eligibility_ends == LeaveEmployeeLossEligibilityType::probation_end ){
+                        $this->summary = [
+                            'skipped' => 'Yes', 
+                            'inserted' => "Invalid eligibility values: $absenceType->eligibility_begins <-> $absenceType->eligibility_ends" 
+                        ];
+                        $this->logToDb($absenceType->id, get_class($absenceType),1000);
+
+                        continue;
+                    }
+
                     // empty at start of each iteration
                     $insertArray = [];
-
+                    // default
+                    $this->summary['absenceType'][$absenceType->id] = [
+                        'skipped' => 'yes', 
+                        'inserted' => 'no' 
+                    ];
                     $durations = $this->getDurationUnitPeriods($absenceType->accrue_period, $this->workYearStart, $this->workYearEnd);
     
                     $absenceKey =  $absenceType->duration_unit . $absenceType->eligibility_begins . 
@@ -128,7 +126,8 @@ class ProcessLeaves implements ShouldQueue
                     //prepare for dynamic instantiation of the class rule name
                     $classAbsenceKey = 'App\LeaveRules\Rule'. $absenceKey;
 
-                    $insertArray = [];
+                    $insertArray = $jobIds = [];
+                    $sJobIds = "";
 
                     // for 1 employee only
                     if(!is_null($this->employeeId)) {
@@ -141,13 +140,17 @@ class ProcessLeaves implements ShouldQueue
                     }
 
                     //filter job title
-                    if(sizeof($absenceType->jobTitles) > 0) {
+                    if(count($absenceType->jobTitles) > 0) {
                         $jobIds = $absenceType->jobTitles->flatten()->pluck('id');
-                        //dump($jobIds);
-                        $employees = $employees->whereIn('job_title_id', $jobIds)->all();
                     }
-                    //dump(sizeof($employees));
 
+                    if(count($jobIds) > 0){
+                        $sJobIds = implode(',', $jobIds->all());
+                        $filteredEmployees = $employees->whereIn('job_title_id', $jobIds)->all();
+                        $employees = $filteredEmployees;
+                    }
+
+                    //dd($employees);
                     // from here, process 1 or all employees
                     foreach($employees as $employee) {
                         $leaverule = new $classAbsenceKey($employee,$absenceType,$durations['start_date'], $durations['end_date']);
@@ -175,22 +178,25 @@ class ProcessLeaves implements ShouldQueue
 
                         $this->summary = [
                             'skipped' => 'no', 
-                            'inserted' => $colInsert->implode('employee_id', ', ') 
+                            'inserted' => count($insertArray) .' employees '. $colInsert->implode('employee_id', ', '),
+                            'jobIds' => count($jobIds) .' job ids '. $sJobIds,
+                            'filtered' => count($filteredEmployees)
+
                         ];
 
                         $this->logToDb($absenceType->id, get_class($absenceType));
 
                     } catch(Exception $e) {
-                        //var_dump($e);
+                        return false;
                     }
 
                     var_dump($this->summary);
-
+                    return true;
                 }
             }
 
         } catch (Exception $exception) {
-
+            return false;
         }
 
     }
@@ -279,7 +285,7 @@ class ProcessLeaves implements ShouldQueue
         DB::table('eligibility_employee')->insert($toInsert);
     }
 
-    private function logToDb($id, $type, $level = 900)
+    private function logToDb($id, $type, $level = 900, $extra = '')
     {
         \DB::table('job_logs')->insert([
             'loggable_id' => $id,
@@ -287,7 +293,7 @@ class ProcessLeaves implements ShouldQueue
             'message' => json_encode($this->summary),
             'level' => $level,
             'context' => $this->displayName(),
-            'extra' => '',
+            'extra' => $extra,
             'created_at' => date('Y-m-d H:i:s'),
         ]);
     }

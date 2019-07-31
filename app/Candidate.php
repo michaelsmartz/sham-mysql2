@@ -2,16 +2,22 @@
 
 namespace App;
 
+use App\Traits\HasBaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Plank\Mediable\Mediable;
 use San4io\EloquentFilter\Filters\LikeFilter;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Jedrzej\Searchable\SearchableTrait;
+use San4io\EloquentFilter\Traits\Filterable;
+use Yadahan\AuthenticationLog\AuthenticationLogable;
 
-class Candidate extends Model
+class Candidate extends Authenticatable
 {
-    use Mediable;
-    use SoftDeletes;
+
+    use HasBaseModel, Mediable, SoftDeletes, AuthenticationLogable, SearchableTrait, Filterable;
 
 
     /**
@@ -41,11 +47,15 @@ class Candidate extends Model
                   'surname',
                   'name',
                   'email',
+                  'password',
                   'home_address',
                   'id_number',
-                  'job_title_id',
+                  'immigration_status_id',
+                  'passport_country_id',
+                  'passport_no',
+                  'nationality',
+                  'notice_period',
                   'date_available',
-                  'salary_expectation',
                   'phone',
                   'preferred_notification_id',
                   'birth_date',
@@ -58,23 +68,32 @@ class Candidate extends Model
                   'addr_line_4',
                   'city',
                   'province',
-                  'zip',
+                  'zip_code',
+                  'is_hired',
+                  'profil_complete'
               ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
     protected $searchable = [
         'first_name',
         'surname',
         'email',
-        'phone',
-        'jobTitle:job_title_id'
+        'phone'
     ];
 
     protected $filterable = [
         'first_name' => LikeFilter::class,
         'surname' => LikeFilter::class,
         'email' => LikeFilter::class,
-        'phone' => LikeFilter::class,
-        'jobTitle:job_title_id' => LikeFilter::class
+        'phone' => LikeFilter::class
     ];
 
     /**
@@ -146,6 +165,11 @@ class Candidate extends Model
         return $this->hasMany('App\CandidatePreviousEmployment','candidate_id','id');
     }
 
+    public function interviewers()
+    {
+        return $this->hasMany('App\CandidateInterviewer','candidate_id','id');
+    }
+
     public function status()
     {
         return $this->belongsToMany(Recruitment::class, 'candidate_recruitment')
@@ -155,7 +179,7 @@ class Candidate extends Model
     public function recruitment_status()
     {
         return $this->belongsToMany(Recruitment::class, 'recruitment_status')
-            ->select(['candidate_id','comment']);
+            ->select(['candidate_id','comment', 'status']);
     }
 
     public function interviews()
@@ -178,10 +202,9 @@ class Candidate extends Model
     public function scopeCandidatesList($query)
     {
         $query->leftJoin('candidate_previous_employments','candidate_previous_employments.candidate_id','=','candidates.id')
-              ->leftJoin('job_titles','job_titles.id','=','candidates.job_title_id')
               ->leftJoin('candidate_qualifications','candidate_qualifications.candidate_id','=','candidates.id')
               ->select('candidates.id','candidates.first_name','candidates.surname',
-                       'job_titles.description as job_title','candidate_previous_employments.previous_employer',
+                       'candidate_previous_employments.previous_employer',
                        'candidate_previous_employments.position','candidate_previous_employments.start_date',
                        'candidate_previous_employments.end_date')
               ;

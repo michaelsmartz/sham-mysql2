@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Candidate;
 use App\CandidatePreviousEmployment;
 use App\CandidateQualification;
+use App\Country;
 use App\DisabilityCategory;
 use App\Enums\PreferredNotificationType;
 use App\Gender;
+use App\ImmigrationStatus;
 use App\JobTitle;
 use App\MaritalStatus;
 use App\Qualification;
@@ -72,12 +75,6 @@ class CandidatesController extends CustomController
             $request->merge(['phone' => '%'.$phone.'%']);
         }
 
-        $job_title_id = $request->get('job_title_id', null);
-
-        if(!empty($job_title_id)){
-            $request->merge(['job_title_id' => '%'.$job_title_id.'%']);
-        }
-
         $allowedActions = Helper::getAllowedActions(SystemSubModule::CONST_RECRUITMENT_CANDIDATES);
 
         $candidates = $this->contextObj::filtered()->paginate(10);
@@ -111,7 +108,8 @@ class CandidatesController extends CustomController
         $titles = Title::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $genders = Gender::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
         $maritalstatuses = MaritalStatus::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
-        $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+        $countries = Country::orderBy('is_preferred','desc')->pluck('description','id')->all();
+        $immigrationStatuses = ImmigrationStatus::pluck('description','id')->all();
 
         $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
 
@@ -122,7 +120,7 @@ class CandidatesController extends CustomController
         $candidate = $this->contextObj;
 
         return view($this->baseViewPath .'.create', compact('titles', 'candidate', 'uploader', 'genders',
-            'maritalstatuses', 'jobTitles','disabilities', 'skills', 'preferredNotifications'));
+            'maritalstatuses', 'countries', 'immigrationStatuses', 'disabilities', 'skills', 'preferredNotifications'));
     }
 
     public function qualifications(Request $request)
@@ -178,7 +176,8 @@ class CandidatesController extends CustomController
             'qualifications',
             'previous_employments',
             'picture',
-            'profile_pic'
+            'profile_pic',
+            'profil_complete'
         ];
         foreach($otherFields as $field){
             ${$field} = array_get($request->all(), $field);
@@ -190,6 +189,9 @@ class CandidatesController extends CustomController
             $contents = 'data:' . $image->getMimeType() .';base64,' .base64_encode(file_get_contents($image->getRealPath()));
             $input['picture'] = $contents;
         }
+
+        //candidate has filled required informations
+        $input['profil_complete'] = 1;
 
         if ($id == null) { // Create
             $data = $this->contextObj->addData($input);
@@ -257,7 +259,8 @@ class CandidatesController extends CustomController
             $skills = Skill::pluck('description','id')->all();
             $disabilities = DisabilityCategory::with('disabilities')->withGlobalScope('system_predefined',1)->get();
             $preferredNotifications = PreferredNotificationType::ddList();
-            $jobTitles = JobTitle::withoutGlobalScope('system_predefined')->pluck('description','id')->all();
+            $countries = Country::orderBy('is_preferred','desc')->pluck('description','id')->all();
+            $immigrationStatuses = ImmigrationStatus::pluck('description','id')->all();
         }
 
         $candidateSkills = $data->skills->pluck('id');
@@ -266,7 +269,7 @@ class CandidatesController extends CustomController
 
         return view($this->baseViewPath .'.edit',
             compact('data', 'uploader', 'titles','genders','maritalstatuses','jobTitles','skills', 'preferredNotifications',
-                'disabilities', 'candidateSkills','candidateDisabilities','qualifications'));
+                'disabilities', 'candidateSkills','candidateDisabilities','qualifications', 'countries', 'immigrationStatuses'));
     }
 
     /**
@@ -291,7 +294,12 @@ class CandidatesController extends CustomController
             \Session::put('error', 'could not update '. $this->baseFlash . '!');
         }
 
-        return redirect()->route($this->baseViewPath .'.index');
+        if(isset(Auth::guard('candidate')->user()->id)){
+            return redirect()->route('candidate.vacancies');
+        }else{
+            return redirect()->route($this->baseViewPath .'.index');
+        }
+
     }
 
     /**
@@ -332,14 +340,17 @@ class CandidatesController extends CustomController
             'preferred_notification_id' => 'nullable',
             'title_id' => 'required',
             'marital_status_id' => 'nullable',
-            'job_title_id' => 'nullable',
+            'immigration_status_id' => 'nullable',
+            'passport_country_id' => 'nullable',
+            'passport_no' => 'nullable',
+            'nationality' => 'nullable',
+            'notice_period' => 'nullable',
             'first_name' => 'required|string|min:0|max:50',
             'surname' => 'required|string|min:0|max:50',
             'email' => 'nullable',
             'phone' => 'nullable',
             'id_number' => 'required|string|min:1|max:50',
             'date_available' => 'nullable|string|min:0',
-            'salary_expectation' => 'nullable|numeric|min:0',
             'overview' => 'nullable|string|min:0',
             'cover' => 'nullable|string|min:0',
             'addr_line_1' => 'nullable|string|min:0|max:50',
@@ -348,7 +359,7 @@ class CandidatesController extends CustomController
             'addr_line_4' => 'nullable|string|min:0|max:50',
             'city' => 'nullable|string|min:0|max:50',
             'province' => 'nullable|string|min:0|max:50',
-            'zip' => 'nullable|string|min:0|max:50'
+            'zip_code' => 'nullable|string|min:0|max:50'
         ];
 
         $this->validate($request, $validateFields);

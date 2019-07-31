@@ -1,0 +1,240 @@
+$animation-speed: 150ms;
+
+$button-bg-color: tomato;
+$button-text-color: white;
+$button-text-size: 1em;
+$button-spacing: 1rem;
+
+$auto-grid-min-size: 23rem;
+
+@function tint(
+  $color,
+  $percent
+) {
+  @if not _is-color($color) {
+    @error "`#{$color}` is not a valid color for the `$color` argument in " +
+           "the `tint` mixin.";
+  } @else {
+    @return mix(#fff, $color, $percent);
+  }
+}
+
+body, html{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background-color:#F8F8F8;
+
+    > header{
+        min-height: 55px;
+        box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        background: #FFF;
+        z-index:1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 5px;
+
+        & a{
+            margin: 20px;
+        }
+    }
+}
+
+.grid{
+    display: grid;
+    grid-gap: 20px 15px;
+    grid-template-columns: repeat(auto-fit, minmax($auto-grid-min-size, 1fr));
+}
+
+.card{
+    transition: transform 1s;
+    background: #FFF;
+    margin: 15px;
+    padding: 15px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
+
+    & header{
+        display: flex;
+        flex-flow: wrap;
+        place-content: space-between;
+        box-shadow: unset;
+        min-height: unset;
+        margin-left: 0;
+
+        & h4{
+            margin: 0 0 1rem 0.2rem;
+            font-size: 16px/*calc(2.1rem - 1vw)*/;
+            min-width: 89%;
+            min-height: 40px;
+            border-bottom: 2px solid #d4a71a;
+        }
+
+        & time{
+            color: #777;
+            font-style: italic;
+            font-size: 80%;
+        }
+
+    }
+
+    & section{
+
+        & .text{
+            color:#777;
+            margin: 0 15px;
+            cursor: pointer;
+            /* hide text if it more than N lines  */
+            overflow: hidden;
+            /* use this value to count block height */
+            line-height: 1.5em;
+            /* max-height = line-height (1.2) * lines max number (4) */
+            //max-height: 6em; 
+            /* fix problem when last visible word doesn't adjoin right side  */
+            text-align: justify;  
+            /* place for '...' */
+            padding-right: 0.2em;
+            transition: height 1s;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+        }
+
+        & p{
+            & svg{
+                vertical-align: middle;
+            }
+        }
+    }
+
+    & footer{
+        display: flex;
+        justify-content: flex-end;
+
+        .button{
+            display: inline-block;
+            margin: 0;
+            padding: ($button-spacing / 2) $button-spacing;
+            border: none;
+            border-radius: $button-spacing / 8;
+            outline: none;
+            background-color: $button-bg-color;
+            color: $button-text-color;
+            font-family: inherit;
+            font-size: $button-text-size;
+            font-weight: 400;
+            line-height: $button-spacing;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all $animation-speed ease-out;
+        
+            &:focus, &:hover {
+                background-color: tint($button-bg-color, 10%);
+                box-shadow: 0 0 0 ($button-spacing / 8) $button-text-color, 0 0 0 ($button-spacing / 4) tint($button-bg-color, 10%);
+            }
+
+            &:active{
+                background-color: shade($button-bg-color, 5%);
+                box-shadow: 0 0 0 ($button-spacing / 8) shade($button-bg-color, 5%), 0 0 0 ($button-spacing / 4) shade($button-bg-color, 5%);
+                transition-duration: $animation-speed / 2;
+            }
+
+        }
+
+    }
+}
+
+.footer{
+    padding: 10px 0;
+    border-top: 1px solid #CAD0D6;
+    line-height: 20px;
+    text-align: center;
+    font-size: 80%;
+}
+
+a{
+    color: #222;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+.btn {
+	display: inline-block;
+	margin-bottom: 0;
+	font-weight: normal;
+	text-align: center;
+	vertical-align: middle;
+	touch-action: manipulation;
+	cursor: pointer;
+	background-image: none;
+	border: 1px solid transparent;
+	white-space: nowrap;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.4;
+	border-radius: 4px;
+	user-select: none;
+}
+
+.history-container{
+    font-family: "Roboto",sans-serif;
+  width:65%;
+  margin:auto;
+  display:block;
+  position:relative;
+}
+.history-container ul.tl{
+    margin:20px 0;
+    padding:0;
+    display:inline-block;
+
+}
+.history-container ul.tl li{
+    list-style: none;
+    margin:auto;
+    min-height:10px;
+    border-left:1px dashed #86D6FF;
+    padding:0 0 50px 30px;
+    position:relative;
+}
+.history-container ul.tl li:last-child{ border-left:0;padding-bottom: 5px;}
+.history-container ul.tl li:not(.timestamp)::before{
+    position: absolute;
+    left: -18px;
+    top: -5px;
+    content: " ";
+    border: 8px solid rgba(255, 255, 255, 0.74);
+    border-radius: 500%;
+    background: #258CC7;
+    height: 20px;
+    width: 20px;
+    transition: all 500ms ease-in-out;
+
+}
+.history-container ul.tl li:hover::before{
+    border-color:  #258CC7;
+    transition: all 1000ms ease-in-out;
+}
+ul.tl li .item-detail{
+    color:rgba(0,0,0,0.5);
+    font-size:14px;
+}
+ul.tl li .timestamp{
+    color: #8D8D8D;
+    position: absolute;
+    width:100px;
+    left: -40%;
+    text-align: right;
+    font-size: 12px;
+}
+
+// Body
+$body-bg: #f8f8f8;
+
+//light-modal
+//see "node_modules/light-modal/light-modal.css"
+@import "light-modal";

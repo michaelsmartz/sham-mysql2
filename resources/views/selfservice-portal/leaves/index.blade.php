@@ -1,13 +1,12 @@
-<link rel="stylesheet" href="{{URL::to('/')}}/css/leaves.min.css"">
+<link rel="stylesheet" href="{{URL::to('/')}}/css/leaves.min.css">
 @extends('portal-index')
 @if(!empty($selected['employee']->id) && $selected['employee']->id !== \Auth::user()->employee_id)
-    @section('title',"My Absences and leaves : ".$selected['employee']->first_name." ".$selected['employee']->surname)
-    @section('subtitle', "Manage associated employee's absences and leaves")
+    @section('title',"My leaves : ".$selected['employee']->first_name." ".$selected['employee']->surname)
+    @section('subtitle', "Manage associated employee's leaves")
 @else
-    @section('title','My Absences and leaves')
-    @section('subtitle', 'Keep track and manage your absences and leaves')
+    @section('title','My leaves')
+    @section('subtitle', 'Keep track and manage your leaves')
 @endif
-@section('subtitle', 'Keep track and manage your absences and leaves')
 
 
 <div class="alert-container">
@@ -28,29 +27,38 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-@if(count($employees)>0)8 space-margin @else 12 @endif">
-                <div class="row">
-                    @include('selfservice-portal.leaves.absences.status')
-                </div>
-                <br>
-                <div class="row panel">
+            @include('selfservice-portal.leaves.absences.status')
+        </div>
+        <br>
+        <div class="row panel section-leaves col-sm-12">
+            <ul class="nav nav-tabs nav-tabs-leaves" style="background: #FFFFFF">
+                <li @if($_SERVER['REQUEST_URI'] == '/my-leaves' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_approved))class="active"@endif><a href="/my-leaves"><i class="glyphicon glyphicon-calendar"></i> Calendar</a></li>
+                @if(is_array($employees) && (count($employees)>0))
+                <li @if($_SERVER['REQUEST_URI'] == '/my-leaves-pending-request' || (isset($filter) && $filter['leave_status'] == App\Enums\LeaveStatusType::status_pending))class="active"@endif><a href="/my-leaves-pending-request"><i class="glyphicon glyphicon-exclamation-sign"></i>  Pending requests</a></li>
+                @endif
+                <li @if($_SERVER['REQUEST_URI'] == '/my-leaves-history' || $_SERVER['REQUEST_URI'] == '/my-leaves/filter')class="active"@endif><a href="/my-leaves-history"><i class="glyphicon glyphicon-list"></i>  History</a></li>
+            </ul>
+            <div class="">
+                @if(isset($calendar))
                     <br>
-                    @include('selfservice-portal.leaves.absences.absence')
-                </div>
+                    @include('selfservice-portal.leaves.absences.filter-calendar')
+                    @include('calendar_events.calendar')
+                @else
 
-                <br>
+                    @include('selfservice-portal.leaves.absences.absence')
+                @endif
             </div>
-            @if(count($employees)>0)
-                <div class="col-sm-4">
-                    @include('selfservice-portal.leaves.absences.notification')
-                </div>
-            @endif
         </div>
     </div>
-
-
+    @component('partials.index')
+    @endcomponent
 @endsection
+
 @section('scripts')
-    <script src="{{url('/')}}/plugins/chartjs/dist/Chart.js"></script>
     <script src="{{URL::to('/')}}/js/leaves.min.js"></script>
+    @if(isset($calendar))
+        <script src="{{url('/')}}/plugins/moment-2.9.0/moment.min.js"></script>
+        <script src="{{url('/')}}/plugins/fullcalendar-2.2.7/fullcalendar.min.js"></script>
+        {!! $calendar->script() !!}
+    @endif
 @endsection

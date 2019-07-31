@@ -46,7 +46,7 @@
     <section id="survey">
         <p></p>
         <div class="row">
-            @if( sizeof($surveys) == 0)
+            @if(is_array($surveys) && sizeof($surveys) == 0)
                 <div class="col-sm-12 col-xs-12 col-md-4 col-lg-4 text-success">
                     There are no surveys available for the moment
                 </div>

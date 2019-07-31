@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <div class="form-group col-sm-2">
+            <div class="form-group col-sm-3">
                 <label for="birth_date">Date of birth</label>
                 {!! Form::text('birth_date', old('birth_date', isset($candidate->birth_date) ? $candidate->birth_date : null), ['class'=>'form-control fix-case field-required datepicker', 'minage'=>'18', 'autocomplete'=>'off', 'placeholder'=>'Date Of Birth', 'required', 'title'=>'Required', 'id'=>'birth_date']) !!}
             </div>
@@ -24,7 +24,7 @@
                 <label for="gender_id">Gender</label>
                 {!! Form::select('gender_id', $genders, old('gender_id', isset($candidate->gender_id) ? $candidate->gender_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Gender..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
             </div>
-            <div class="form-group col-sm-3">
+            <div class="form-group col-sm-2">
                 <label for="title_id">Title</label>
                 {!! Form::select('title_id', $titles, old('title_id', isset($candidate->title_id) ? $candidate->title_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Title..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
             </div>
@@ -34,13 +34,13 @@
             </div>
 
 
-            <div class="form-group col-xs-5">
+            <div class="form-group col-xs-3">
                 <span class="field">
                     <label for="first_name">First Name</label>
                     {!! Form::text('first_name', old('first_name', isset($candidate->first_name) ? $candidate->first_name : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'First Name', 'required', 'title'=>'Required','id'=>'first_name', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
                 </span>
             </div>
-            <div class="form-group col-xs-5">
+            <div class="form-group col-xs-3">
                 <span class="field">
                     <label for="surname">Surname</label>
                     {!! Form::text('surname', old('surname', isset($candidate->surname) ? $candidate->surname : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Surname', 'required', 'title'=>'Required','id'=>'surname', 'data-parsley-pattern' => '^[a-zA-ZÀ-ÖØ-öø-ÿ\-]+( [a-zA-ZÀ-ÖØ-öø-ÿ]+)*$', 'maxlength' => '50', 'data-parsley-trigger'=>'focusout']) !!}
@@ -50,7 +50,7 @@
             <div class="form-group col-xs-4">
                     <span class="field">
                         <label for="email">Personal Email</label>
-                        {!! Form::email('email', old('email', isset($candidate->email) ? $candidate->email : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
+                        {!! Form::email('email', old('email', isset($candidate->email) ? $candidate->email : null), ['class'=>'form-control field-required', 'autocomplete'=>'off', 'placeholder'=>'Personal Email', 'required', 'title'=>'Required','id'=>'personalEmail', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
@@ -75,6 +75,41 @@
                         'data-parsley-remote-message' => 'Id Number is already in use'])
                         !!}
                     </span>
+            </div>
+
+            <div class="form-group col-xs-4">
+                <span class="field">
+                    <label for="passport_country">Passport Country</label>
+                    {!! Form::select('passport_country_id', $countries, old('passport_country_id', isset($candidate->passport_country_id) ? $candidate->passport_country_id : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Passport Country..', 'id'=>'passport_country_id']) !!}
+                </span>
+            </div>
+
+            <div class="form-group col-xs-3">
+                <span class="field">
+                    <label for="passport_no">Passport No/Work Permit</label>
+                        {!! Form::text('passport_no', old('passport_no', isset($candidate->passport_no) ? $candidate->passport_no : null), ['class'=>'form-control', 'dependsOnFieldNotEmpty'=>'passport_country_id', 'autocomplete'=>'off', 'placeholder'=>'Passport No', 'maxlength' => '50',
+                                'data-parsley-validate-if-empty'=>'true',
+                                'data-parsley-required-if'=>'#passport_country_id',
+                                'data-parsley-trigger'=>'focusout',
+                                'data-parsley-remote',
+                                'data-parsley-remote-validator'=>'checkPassport',
+                                'data-parsley-remote-message'=>'Passport Number is already in use'])
+                        !!}
+                </span>
+            </div>
+
+            <div class="form-group col-xs-3">
+                <span class="field">
+                    <label for="immigration_status_id">Immigration Status</label>
+                    {!! Form::select('immigration_status_id', $immigrationStatuses, old('immigration_status_id', isset($candidate->immigration_status_id) ? $candidate->immigration_status_id : null), ['class'=>'form-control', 'dependsOnFieldNotEmpty'=>'passport_country_id', 'autocomplete'=>'off', 'placeholder'=>'Immigration Status..']) !!}
+                </span>
+            </div>
+
+            <div class="form-group col-xs-3">
+                <span class="field">
+                     <label for="nationality">Nationality</label>
+                    {!! Form::text('nationality', old('nationality', isset($candidate->nationality) ? $candidate->nationality : null),['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Nationality', 'maxlength' => '50']) !!}
+                </span>
             </div>
 
             <div class="form-group col-sm-3">
@@ -103,7 +138,7 @@
                 </span>
             </div>
 
-            <div class="form-group col-sm-2">
+            <div class="form-group col-sm-3">
                 <span class="field">
                     <label for="city">City</label>
                     {!! Form::text('city', old('city', isset($candidate->city) ? $candidate->city : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'City', 'id'=>'city', 'maxlength'=>'50']) !!}
@@ -115,13 +150,14 @@
                     {!! Form::text('province', old('province', isset($candidate->province) ? $candidate->province : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Province', 'id'=>'province', 'maxlength'=>'50']) !!}
                 </span>
             </div>
-            <div class="form-group col-sm-1">
+            <div class="form-group col-sm-2">
                 <span class="field">
-                     <label for="zip">Zip Code</label>
-                    {!! Form::text('zip', old('zip', isset($candidate->zip) ? $candidate->zip : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip', 'id'=>'zip']) !!}
+                     <label for="zip_code">Zip Code</label>
+                    {!! Form::text('zip_code', old('zip_code', isset($candidate->zip_code) ? $candidate->zip_code : null), ['class'=>'form-control', 'autocomplete'=>'off', 'placeholder'=>'Zip Code', 'id'=>'zip_code']) !!}
                 </span>
             </div>
-            <div class="form-group col-xs-3">
+
+            <div class="form-group col-xs-4">
                 <label for="skill">Select skills</label>
                 {!! Form::select('skills[]', $skills,
                     old('skills', isset($candidateSkills) ? $candidateSkills : null),
@@ -130,13 +166,12 @@
             </div>
 
             <div class="form-group col-xs-4">
-                <label for="disability">Select disability</label>
+                <label for="disability">Select disabilities</label>
                 {!! Form::groupRelationSelect('disabilities[]', $disabilities, 'disabilities',
             'description', 'description', 'id',
             isset($candidateDisabilities) ? $candidateDisabilities : null, ['class' => 'form-control select-multiple', 'multiple'=>'multiple']
             ) !!}
             </div>
-
 
             <div class="form-group col-xs-12">
                 <fieldset>
@@ -209,8 +244,9 @@
                             <label class="col-sm-2">Position</label>
                             <label class="col-sm-1">Salary</label>
                             <label class="col-sm-2">Reason for leaving?</label>
-                            <label class="col-sm-2">Start Date</label>
-                            <label class="col-sm-2">End Date</label>
+                            <label class="col-sm-1">Start Date</label>
+                            <label class="col-sm-1">End Date</label>
+                            <label class="col-sm-2">Employer's Contact Number</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -238,41 +274,41 @@
                                 <input v-model="employment.reason_leaving" type="text"
                                        :name="'previous_employments['+index+'][reason_leaving]'" class="form-control">
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-1">
                                 <input v-model="employment.start_date" type="text"
                                        :name="'previous_employments['+index+'][start_date]'" class="form-control datepicker">
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-1">
                                 <input v-model="employment.end_date" type="text"
                                        :name="'previous_employments['+index+'][end_date]'" class="form-control datepicker">
+                            </div>
+                            <div class="col-sm-2">
+                                <input v-model="employment.contact" type="text"
+                                       :name="'previous_employments['+index+'][contact]'" class="form-control">
                             </div>
                         </div>
                     </div>
                 </fieldset>
             </div>
 
-            <div class="form-group col-xs-4">
-                <span class="field">
-                    <label for="position_applying_for">Position Applying For</label>
-                    {!! Form::select('job_title_id', $jobTitles, old('job_title_id', isset($candidate->job_title_id) ? $candidate->job_title_id : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Position Applying For..', 'required', 'title'=>'Required', 'data-parsley-trigger'=>'focusout']) !!}
-                </span>
-            </div>
 
             <div class="form-group col-xs-2">
                     <span class="field">
-                        <label for="date_available">Date Available</label>
-                        {!! Form::text('date_available', old('date_available', isset($candidate->date_available) ? $candidate->date_available : null), ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Date Available', 'required', 'title'=>'Required','id'=>'date_available', 'maxlength' => '50']) !!}
+                        <label for="date_available">Possible Start Date</label>
+                        {!! Form::text('date_available', old('date_available', isset($candidate->date_available) ? $candidate->date_available : null), ['class'=>'form-control fix-case field-required datepicker', 'autocomplete'=>'off', 'placeholder'=>'Possible Start Date', 'required', 'title'=>'Required','id'=>'possible_start_date', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
             <div class="form-group col-xs-2">
                     <span class="field">
-                        <label for="salary_expectation">Salary Expectation</label>
-                        {!! Form::text('salary_expectation', old('salary_expectation', isset($candidate->salary_expectation) ? $candidate->salary_expectation : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Salary Expectation', 'required', 'title'=>'Required','id'=>'salary_expectation', 'maxlength' => '50',
-                        'data-parsley-pattern'=>"^[\d\+\-\.\(\)\/\s]*$",
-                        'data-filter'=>"([A-Z]{0,3}|[A-Z]{3}[0-9]*)",
-                        'data-parsley-trigger'=>'focusout'])
-                        !!}
+                        <label for="notice_period">Notice Period
+                             <span>
+                                <i class="fa fa-question-circle" aria-hidden="true"
+                                   data-wenk-pos="top" data-wenk="Notice period in month">
+                                </i>
+                             </span>
+                        </label>
+                        {!! Form::number('notice_period', old('notice_period', isset($candidate->notice_period) ? $candidate->notice_period : null), ['class'=>'form-control fix-case', 'autocomplete'=>'off', 'placeholder'=>'Notice Period','id'=>'notice_period', 'maxlength' => '50', 'min'=> '0']) !!}
                     </span>
             </div>
 
@@ -286,14 +322,14 @@
             <div class="form-group col-xs-12">
                     <span class="field">
                         <label for="overview">Overview</label>
-                        {!! Form::textarea('overview', old('overview', isset($candidate->overview) ? $candidate->overview : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Overview', 'required', 'title'=>'Required','id'=>'overview', 'maxlength' => '50']) !!}
+                        {!! Form::textarea('overview', old('overview', isset($candidate->overview) ? htmlspecialchars_decode($candidate->overview) : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Overview', 'required', 'title'=>'Required','id'=>'overview', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
             <div class="form-group col-xs-12">
                     <span class="field">
                         <label for="cover">Cover Letter</label>
-                        {!! Form::textarea('cover', old('cover', isset($candidate->cover) ? $candidate->cover : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Cover Letter', 'required', 'title'=>'Required','id'=>'cover', 'maxlength' => '50']) !!}
+                        {!! Form::textarea('cover', old('cover', isset($candidate->cover) ? htmlspecialchars_decode($candidate->cover) : null), ['class'=>'form-control fix-case field-required', 'autocomplete'=>'off', 'placeholder'=>'Cover Letter', 'required', 'title'=>'Required','id'=>'cover', 'maxlength' => '50']) !!}
                     </span>
             </div>
 
@@ -313,7 +349,12 @@
 
     <link href="{{URL::to('/')}}/plugins/fileUploader/fileUploader.css" rel="stylesheet">
     <script src="{{URL::to('/')}}/plugins/fileUploader/fileUploader.js"></script>
+
+    <script src="{{URL::to('/')}}/plugins/ckeditor_basic_nightly/ckeditor/ckeditor.js"></script>
+
     <script>
+        CKEDITOR.replace('overview');
+        CKEDITOR.replace('cover');
         var initializeFileUpload = function() {
             $('#one').fileUploader({
                 lang: 'en',
@@ -358,7 +399,7 @@
                 },
                 langs: {
                     'en': {
-                        intro_msg: "{{ 'Attach Testmonials (CV, certificates, qualifications, ..etc)' }}",
+                        intro_msg: "{{ 'Attach supporting documents. (Passport, ID, CV, Certificates, Qualifications, Testimonials,..etc)' }}",
                         dropZone_msg:
                             '<p><strong>Drop</strong>&nbsp;your files here or <strong class="text-primary">click</strong>&nbsp;on this area' +
                             '<br><small class="text-muted">{{ "You can upload any related files" }}.\n' +

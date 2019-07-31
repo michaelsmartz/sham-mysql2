@@ -8,7 +8,7 @@
     
     <div class="form-group col-xs-12 {{ $errors->has('assessment_id') ? 'has-error' : '' }}">
         <label for="assessment_id">Assessment</label>
-            <select class="form-control" id="assessment_id" name="assessment_id" required="true">
+            <select class="form-control searchfilter" id="assessment_id" name="assessment_id" required="true">
                     <option value="" style="display: none;" {{ old('assessment_id', optional($evaluation)->assessment_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select assessment</option>
                 @foreach ($assessments as $key => $assessment)
                     <option value="{{ $key }}" {{ old('assessment_id', optional($evaluation)->assessment_id) == $key ? 'selected' : '' }}>
@@ -22,7 +22,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('user_employee_id') ? 'has-error' : '' }}">
         <label for="user_employee_id">Employee</label>
-            <select class="form-control" id="user_employee_id" name="user_employee_id" required="true">
+            <select class="form-control searchfilter" id="user_employee_id" name="user_employee_id" required="true">
                     <option value="" style="display: none;" {{ old('user_employee_id', optional($evaluation)->user_employee_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select user employee</option>
                 @foreach ($employees as $key => $employee)
                     <option value="{{ $key }}" {{ old('user_employee_id', optional($evaluation)->user_employee_id) == $key ? 'selected' : '' }}>
@@ -36,7 +36,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('department_id') ? 'has-error' : '' }}">
         <label for="department_id">Department</label>
-            <select class="form-control" id="department_id" name="department_id" required="true">
+            <select class="form-control searchfilter" id="department_id" name="department_id" required="true">
                     <option value="" style="display: none;" {{ old('department_id', optional($evaluation)->department_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select department</option>
                 @foreach ($departments as $key => $department)
                     <option value="{{ $key }}" {{ old('department_id', optional($evaluation)->department_id) == $key ? 'selected' : '' }}>
@@ -62,7 +62,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('productcategory_id') ? 'has-error' : '' }}">
         <label for="productcategory_id">Product category</label>
-            <select class="form-control" id="productcategory_id" name="productcategory_id" required="true">
+            <select class="form-control searchfilter" id="productcategory_id" name="productcategory_id" required="true">
                     <option value="" style="display: none;" {{ old('productcategory_id', optional($evaluation)->productcategory_id ?: '') == '' ? 'selected' : '' }} disabled selected>Select product category</option>
                 @foreach ($productCategories as $key => $productCategory)
                     <option value="{{ $key }}" {{ old('productcategory_id', optional($evaluation)->productcategory_id) == $key ? 'selected' : '' }}>
@@ -76,7 +76,7 @@
 
     <div class="form-group col-xs-6 {{ $errors->has('language_id') ? 'has-error' : '' }}">
         <label for="language_id">Language</label>
-            <select class="form-control" id="language_id" name="language_id" required="true">
+            <select class="form-control searchfilter" id="language_id" name="language_id" required="true">
                     <option value="" style="display: none;" {{ old('language_id', optional($evaluation)->language_id ?: '') == '' ? 'selected' : '' }} disabled selected>Enter language</option>
                 @foreach ($languages as $key => $language)
                     <option value="{{ $key }}" {{ old('language_id', optional($evaluation)->language_id) == $key ? 'selected' : '' }}>
@@ -268,6 +268,10 @@
     <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/css/jquery.dataTables.css"/>
     <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.0/jquery.dataTables.min.js"></script>
 
+    <link href="{{URL::to('/')}}/plugins/select2-4.0.3/css/select2.min.css" rel="stylesheet">
+    <link href="{{URL::to('/')}}/plugins/select2-4.0.3/css/select2-bootstrap.min.css" rel="stylesheet">
+    <script src="{{URL::to('/')}}/plugins/select2-4.0.3/js/select2.js"></script>
+
     <script>
 
         $(function () {
@@ -451,6 +455,14 @@
                 }
             }
         });
+
+        $('.searchfilter').select2({
+            //placeholder: "Select Employee",
+            allowClear: true,
+            //containerCssClass: "form-control",
+            width: "100%",
+            theme: 'bootstrap'
+        })
 
         /*var player = document.getElementByClassName("chataudio");
         player.addEventListener("play", function () {

@@ -1,18 +1,21 @@
 import {on} from 'delegated-events';
 import Popper from 'popper.js';
 import asyncJS from 'async-js';
-
-// Need to add base css for flatpickr
-import 'flatpickr/dist/flatpickr.min.css';
-
-var $ = require('jquery');
-
-require('touch-dnd/touch-dnd.js');
+import 'flatpickr/dist/flatpickr.min.css'; // flatpickr base css
+import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
+import ready from '@benjaminreid/ready.js';
 
 var flatpickr = require("flatpickr");
+var EventEmitter = require('events');
+var $ = require('jquery');
+require('touch-dnd/touch-dnd.js');
+
 // https://chmln.github.io/flatpickr/plugins/
 import ConfirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate.js';
-import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
+
+window.EventEmitter = global.EventEmitter = EventEmitter;
+window.appEe = new EventEmitter();
+window.asyncJS = global.asyncJS = asyncJS;
 
 // Override Global settings
 flatpickr.setDefaults({
@@ -90,18 +93,15 @@ window.on = global.on = on;
 // Listen for browser-generated events.
 on('focusin', 'input.datepicker', function(event) {
 
-    var el = $(this),
-        val = el.val(),
+    var el = $(this), val = el.val(),
         toPickerId = $(this).data('pairElementId'),
         elFlatpickr = el._flatpickr;
-
 
     var options = {
         defaultDate: val,
         locale: {
             "firstDayOfWeek": 1 // start week on Monday
         }
-        
     }
 
     if(typeof el._flatpickr === "undefined") {
@@ -132,5 +132,3 @@ window.Util = require('exports-loader?Util!bootstrap/js/dist/util'); // eslint-d
 window.Dropdown = require('exports-loader?Dropdown!bootstrap/js/dist/dropdown'); // eslint-disable-line
 window.Tab = require('exports-loader?Tab!bootstrap/js/dist/tab'); // eslint-disable-line
 window.Collapse= require('exports-loader?Collapse!bootstrap/js/dist/collapse'); // eslint-disable-line
-
-window.asyncJS = global.asyncJS = asyncJS;
